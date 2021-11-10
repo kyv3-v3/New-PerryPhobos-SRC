@@ -16,8 +16,8 @@ public class MixinVerifier extends SimpleVerifier
     private List<Type> currentClassInterfaces;
     private boolean isInterface;
     
-    public MixinVerifier(final Type currentClass, final Type currentSuperClass, final List<Type> currentClassInterfaces, final boolean isInterface) {
-        super(currentClass, currentSuperClass, (List)currentClassInterfaces, isInterface);
+    public MixinVerifier(final Type currentClass,  final Type currentSuperClass,  final List<Type> currentClassInterfaces,  final boolean isInterface) {
+        super(currentClass,  currentSuperClass,  (List)currentClassInterfaces,  isInterface);
         this.currentClass = currentClass;
         this.currentSuperClass = currentSuperClass;
         this.currentClassInterfaces = currentClassInterfaces;
@@ -39,7 +39,7 @@ public class MixinVerifier extends SimpleVerifier
         return (c == null) ? null : Type.getType("L" + c.getName() + ";");
     }
     
-    protected boolean isAssignableFrom(final Type type, final Type other) {
+    protected boolean isAssignableFrom(final Type type,  final Type other) {
         if (type.equals((Object)other)) {
             return true;
         }
@@ -50,16 +50,16 @@ public class MixinVerifier extends SimpleVerifier
             if (this.isInterface) {
                 return other.getSort() == 10 || other.getSort() == 9;
             }
-            return this.isAssignableFrom(type, this.getSuperClass(other));
+            return this.isAssignableFrom(type,  this.getSuperClass(other));
         }
         else if (this.currentClass != null && other.equals((Object)this.currentClass)) {
-            if (this.isAssignableFrom(type, this.currentSuperClass)) {
+            if (this.isAssignableFrom(type,  this.currentSuperClass)) {
                 return true;
             }
             if (this.currentClassInterfaces != null) {
                 for (int i = 0; i < this.currentClassInterfaces.size(); ++i) {
                     final Type v = this.currentClassInterfaces.get(i);
-                    if (this.isAssignableFrom(type, v)) {
+                    if (this.isAssignableFrom(type,  v)) {
                         return true;
                     }
                 }

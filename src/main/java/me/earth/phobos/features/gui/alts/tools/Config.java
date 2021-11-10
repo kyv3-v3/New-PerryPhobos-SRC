@@ -17,10 +17,10 @@ public class Config implements Serializable
     public static final long serialVersionUID = -559038737L;
     private static final String configFileName = ".iasx";
     private static Config instance;
-    private final ArrayList<Pair<String, Object>> field_218893_c;
+    private final ArrayList<Pair<String,  Object>> field_218893_c;
     
     private Config() {
-        this.field_218893_c = new ArrayList<Pair<String, Object>>();
+        this.field_218893_c = new ArrayList<Pair<String,  Object>>();
         Config.instance = this;
     }
     
@@ -38,7 +38,7 @@ public class Config implements Serializable
     }
     
     private static void readFromFile() {
-        final File f = new File(Standards.IASFOLDER, ".iasx");
+        final File f = new File(Standards.IASFOLDER,  ".iasx");
         if (f.exists()) {
             try {
                 final ObjectInputStream stream = new ObjectInputStream(new FileInputStream(f));
@@ -60,9 +60,9 @@ public class Config implements Serializable
     
     private static void saveToFile() {
         try {
-            final Path file = new File(Standards.IASFOLDER, ".iasx").toPath();
-            final DosFileAttributes attr = Files.readAttributes(file, DosFileAttributes.class, new LinkOption[0]);
-            final DosFileAttributeView view = Files.getFileAttributeView(file, DosFileAttributeView.class, new LinkOption[0]);
+            final Path file = new File(Standards.IASFOLDER,  ".iasx").toPath();
+            final DosFileAttributes attr = Files.readAttributes(file,  DosFileAttributes.class,  new LinkOption[0]);
+            final DosFileAttributeView view = Files.getFileAttributeView(file,  DosFileAttributeView.class,  new LinkOption[0]);
             if (attr.isHidden()) {
                 view.setHidden(false);
             }
@@ -72,7 +72,7 @@ public class Config implements Serializable
             e.printStackTrace();
         }
         try {
-            final ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(new File(Standards.IASFOLDER, ".iasx")));
+            final ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(new File(Standards.IASFOLDER,  ".iasx")));
             out.writeObject(Config.instance);
             out.close();
         }
@@ -80,9 +80,9 @@ public class Config implements Serializable
             e2.printStackTrace();
         }
         try {
-            final Path file = new File(Standards.IASFOLDER, ".iasx").toPath();
-            final DosFileAttributes attr = Files.readAttributes(file, DosFileAttributes.class, new LinkOption[0]);
-            final DosFileAttributeView view = Files.getFileAttributeView(file, DosFileAttributeView.class, new LinkOption[0]);
+            final Path file = new File(Standards.IASFOLDER,  ".iasx").toPath();
+            final DosFileAttributes attr = Files.readAttributes(file,  DosFileAttributes.class,  new LinkOption[0]);
+            final DosFileAttributeView view = Files.getFileAttributeView(file,  DosFileAttributeView.class,  new LinkOption[0]);
             if (!attr.isHidden()) {
                 view.setHidden(true);
             }
@@ -93,7 +93,7 @@ public class Config implements Serializable
     }
     
     private static void loadFromOld() {
-        final File f = new File(Minecraft.getMinecraft().gameDir, "user.cfg");
+        final File f = new File(Minecraft.getMinecraft().gameDir,  "user.cfg");
         if (f.exists()) {
             try {
                 final ObjectInputStream stream = new ObjectInputStream(new FileInputStream(f));
@@ -111,7 +111,7 @@ public class Config implements Serializable
         }
     }
     
-    public void setKey(final Pair<String, Object> key) {
+    public void setKey(final Pair<String,  Object> key) {
         if (this.getKey(key.getValue1()) != null) {
             this.removeKey(key.getValue1());
         }
@@ -119,12 +119,12 @@ public class Config implements Serializable
         save();
     }
     
-    public void setKey(final String key, final AltDatabase value) {
-        this.setKey(new Pair<String, Object>(key, value));
+    public void setKey(final String key,  final AltDatabase value) {
+        this.setKey(new Pair<String,  Object>(key,  value));
     }
     
     public Object getKey(final String key) {
-        for (final Pair<String, Object> aField_218893_c : this.field_218893_c) {
+        for (final Pair<String,  Object> aField_218893_c : this.field_218893_c) {
             if (aField_218893_c.getValue1().equals(key)) {
                 return aField_218893_c.getValue2();
             }

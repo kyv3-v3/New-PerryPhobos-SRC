@@ -18,10 +18,10 @@ public class NoEntityTrace extends Module
     public boolean noTrace;
     
     public NoEntityTrace() {
-        super("NoEntityTrace", "Mine through entities.", Module.Category.PLAYER, false, false, false);
-        this.pick = (Setting<Boolean>)this.register(new Setting("Pick", (T)true));
-        this.gap = (Setting<Boolean>)this.register(new Setting("Gap", (T)false));
-        this.obby = (Setting<Boolean>)this.register(new Setting("Obby", (T)false));
+        super("NoEntityTrace",  "Mine through entities.",  Module.Category.PLAYER,  false,  false,  false);
+        this.pick = (Setting<Boolean>)this.register(new Setting("Pick", true));
+        this.gap = (Setting<Boolean>)this.register(new Setting("Gap", false));
+        this.obby = (Setting<Boolean>)this.register(new Setting("Obby", false));
         this.setInstance();
     }
     

@@ -28,20 +28,20 @@ public class ExtensionCheckClass implements IExtension
             context.getClassNode().accept((ClassVisitor)new CheckClassAdapter((ClassVisitor)new MixinClassWriter(2)));
         }
         catch (RuntimeException ex) {
-            throw new ValidationFailedException(ex.getMessage(), ex);
+            throw new ValidationFailedException(ex.getMessage(),  ex);
         }
     }
     
     @Override
-    public void export(final MixinEnvironment env, final String name, final boolean force, final byte[] bytes) {
+    public void export(final MixinEnvironment env,  final String name,  final boolean force,  final byte[] bytes) {
     }
     
     public static class ValidationFailedException extends MixinException
     {
         private static final long serialVersionUID = 1L;
         
-        public ValidationFailedException(final String message, final Throwable cause) {
-            super(message, cause);
+        public ValidationFailedException(final String message,  final Throwable cause) {
+            super(message,  cause);
         }
         
         public ValidationFailedException(final String message) {

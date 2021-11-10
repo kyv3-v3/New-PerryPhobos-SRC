@@ -53,31 +53,31 @@ public class Nametags extends Module
     private final Setting<Boolean> smartScale;
     
     public Nametags() {
-        super("Nametags", "Better Nametags.", Module.Category.RENDER, false, false, false);
-        this.health = (Setting<Boolean>)this.register(new Setting("Health", (T)true));
-        this.armor = (Setting<Boolean>)this.register(new Setting("Armor", (T)true));
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", (T)Mode.MINIMAL));
-        this.scaling = (Setting<Float>)this.register(new Setting("Size", (T)0.3f, (T)0.1f, (T)20.0f));
-        this.invisibles = (Setting<Boolean>)this.register(new Setting("Invisibles", (T)false));
-        this.ping = (Setting<Boolean>)this.register(new Setting("Ping", (T)true));
-        this.totemPops = (Setting<Boolean>)this.register(new Setting("TotemPops", (T)true));
-        this.gamemode = (Setting<Boolean>)this.register(new Setting("Gamemode", (T)false));
-        this.entityID = (Setting<Boolean>)this.register(new Setting("ID", (T)false));
-        this.rect = (Setting<Boolean>)this.register(new Setting("Rectangle", (T)true));
-        this.outline = (Setting<Boolean>)this.register(new Setting("Outline", (T)false, v -> this.rect.getValue()));
-        this.colorSync = (Setting<Boolean>)this.register(new Setting("Sync", (T)false, v -> this.outline.getValue()));
-        this.redSetting = (Setting<Integer>)this.register(new Setting("Red", (T)255, (T)0, (T)255, v -> this.outline.getValue()));
-        this.greenSetting = (Setting<Integer>)this.register(new Setting("Green", (T)255, (T)0, (T)255, v -> this.outline.getValue()));
-        this.blueSetting = (Setting<Integer>)this.register(new Setting("Blue", (T)255, (T)0, (T)255, v -> this.outline.getValue()));
-        this.alphaSetting = (Setting<Integer>)this.register(new Setting("Alpha", (T)255, (T)0, (T)255, v -> this.outline.getValue()));
-        this.lineWidth = (Setting<Float>)this.register(new Setting("LineWidth", (T)1.5f, (T)0.1f, (T)5.0f, v -> this.outline.getValue()));
-        this.sneak = (Setting<Boolean>)this.register(new Setting("SneakColor", (T)false));
-        this.heldStackName = (Setting<Boolean>)this.register(new Setting("StackName", (T)false));
-        this.whiter = (Setting<Boolean>)this.register(new Setting("White", (T)false));
-        this.onlyFov = (Setting<Boolean>)this.register(new Setting("OnlyFov", (T)false));
-        this.scaleing = (Setting<Boolean>)this.register(new Setting("Scale", (T)false));
-        this.factor = (Setting<Float>)this.register(new Setting("Factor", (T)0.3f, (T)0.1f, (T)1.0f, v -> this.scaleing.getValue()));
-        this.smartScale = (Setting<Boolean>)this.register(new Setting("SmartScale", (T)false, v -> this.scaleing.getValue()));
+        super("Nametags",  "Better Nametags.",  Module.Category.RENDER,  false,  false,  false);
+        this.health = (Setting<Boolean>)this.register(new Setting("Health", true));
+        this.armor = (Setting<Boolean>)this.register(new Setting("Armor", true));
+        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.MINIMAL));
+        this.scaling = (Setting<Float>)this.register(new Setting("Size", 0.3f, 0.1f, 20.0f));
+        this.invisibles = (Setting<Boolean>)this.register(new Setting("Invisibles", false));
+        this.ping = (Setting<Boolean>)this.register(new Setting("Ping", true));
+        this.totemPops = (Setting<Boolean>)this.register(new Setting("TotemPops", true));
+        this.gamemode = (Setting<Boolean>)this.register(new Setting("Gamemode", false));
+        this.entityID = (Setting<Boolean>)this.register(new Setting("ID", false));
+        this.rect = (Setting<Boolean>)this.register(new Setting("Rectangle", true));
+        this.outline = (Setting<Boolean>)this.register(new Setting("Outline", false,  v -> this.rect.getValue()));
+        this.colorSync = (Setting<Boolean>)this.register(new Setting("Sync", false,  v -> this.outline.getValue()));
+        this.redSetting = (Setting<Integer>)this.register(new Setting("Red", 255, 0, 255,  v -> this.outline.getValue()));
+        this.greenSetting = (Setting<Integer>)this.register(new Setting("Green", 255, 0, 255,  v -> this.outline.getValue()));
+        this.blueSetting = (Setting<Integer>)this.register(new Setting("Blue", 255, 0, 255,  v -> this.outline.getValue()));
+        this.alphaSetting = (Setting<Integer>)this.register(new Setting("Alpha", 255, 0, 255,  v -> this.outline.getValue()));
+        this.lineWidth = (Setting<Float>)this.register(new Setting("LineWidth", 1.5f, 0.1f, 5.0f,  v -> this.outline.getValue()));
+        this.sneak = (Setting<Boolean>)this.register(new Setting("SneakColor", false));
+        this.heldStackName = (Setting<Boolean>)this.register(new Setting("StackName", false));
+        this.whiter = (Setting<Boolean>)this.register(new Setting("White", false));
+        this.onlyFov = (Setting<Boolean>)this.register(new Setting("OnlyFov", false));
+        this.scaleing = (Setting<Boolean>)this.register(new Setting("Scale", false));
+        this.factor = (Setting<Float>)this.register(new Setting("Factor", 0.3f, 0.1f, 1.0f,  v -> this.scaleing.getValue()));
+        this.smartScale = (Setting<Boolean>)this.register(new Setting("SmartScale", false,  v -> this.scaleing.getValue()));
         this.setInstance();
     }
     
@@ -99,16 +99,16 @@ public class Nametags extends Module
                     if (this.onlyFov.getValue() && RotationUtil.isInFov((Entity)player)) {
                         continue;
                     }
-                    final double x = this.interpolate(player.lastTickPosX, player.posX, event.getPartialTicks()) - Nametags.mc.getRenderManager().renderPosX;
-                    final double y = this.interpolate(player.lastTickPosY, player.posY, event.getPartialTicks()) - Nametags.mc.getRenderManager().renderPosY;
-                    final double z = this.interpolate(player.lastTickPosZ, player.posZ, event.getPartialTicks()) - Nametags.mc.getRenderManager().renderPosZ;
-                    this.renderNameTag(player, x, y, z, event.getPartialTicks());
+                    final double x = this.interpolate(player.lastTickPosX,  player.posX,  event.getPartialTicks()) - Nametags.mc.getRenderManager().renderPosX;
+                    final double y = this.interpolate(player.lastTickPosY,  player.posY,  event.getPartialTicks()) - Nametags.mc.getRenderManager().renderPosY;
+                    final double z = this.interpolate(player.lastTickPosZ,  player.posZ,  event.getPartialTicks()) - Nametags.mc.getRenderManager().renderPosZ;
+                    this.renderNameTag(player,  x,  y,  z,  event.getPartialTicks());
                 }
             }
         }
     }
     
-    public void drawRect(final float x, final float y, final float w, final float h, final int color) {
+    public void drawRect(final float x,  final float y,  final float w,  final float h,  final int color) {
         final float alpha = (color >> 24 & 0xFF) / 255.0f;
         final float red = (color >> 16 & 0xFF) / 255.0f;
         final float green = (color >> 8 & 0xFF) / 255.0f;
@@ -118,18 +118,18 @@ public class Nametags extends Module
         GlStateManager.enableBlend();
         GlStateManager.disableTexture2D();
         GlStateManager.glLineWidth((float)this.lineWidth.getValue());
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-        bufferbuilder.pos((double)x, (double)h, 0.0).color(red, green, blue, alpha).endVertex();
-        bufferbuilder.pos((double)w, (double)h, 0.0).color(red, green, blue, alpha).endVertex();
-        bufferbuilder.pos((double)w, (double)y, 0.0).color(red, green, blue, alpha).endVertex();
-        bufferbuilder.pos((double)x, (double)y, 0.0).color(red, green, blue, alpha).endVertex();
+        GlStateManager.tryBlendFuncSeparate(770,  771,  1,  0);
+        bufferbuilder.begin(7,  DefaultVertexFormats.POSITION_COLOR);
+        bufferbuilder.pos((double)x,  (double)h,  0.0).color(red,  green,  blue,  alpha).endVertex();
+        bufferbuilder.pos((double)w,  (double)h,  0.0).color(red,  green,  blue,  alpha).endVertex();
+        bufferbuilder.pos((double)w,  (double)y,  0.0).color(red,  green,  blue,  alpha).endVertex();
+        bufferbuilder.pos((double)x,  (double)y,  0.0).color(red,  green,  blue,  alpha).endVertex();
         tessellator.draw();
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
     }
     
-    public void drawOutlineRect(final float x, final float y, final float w, final float h, final int color) {
+    public void drawOutlineRect(final float x,  final float y,  final float w,  final float h,  final int color) {
         final float alpha = (color >> 24 & 0xFF) / 255.0f;
         final float red = (color >> 16 & 0xFF) / 255.0f;
         final float green = (color >> 8 & 0xFF) / 255.0f;
@@ -139,18 +139,18 @@ public class Nametags extends Module
         GlStateManager.enableBlend();
         GlStateManager.disableTexture2D();
         GlStateManager.glLineWidth((float)this.lineWidth.getValue());
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-        bufferbuilder.begin(2, DefaultVertexFormats.POSITION_COLOR);
-        bufferbuilder.pos((double)x, (double)h, 0.0).color(red, green, blue, alpha).endVertex();
-        bufferbuilder.pos((double)w, (double)h, 0.0).color(red, green, blue, alpha).endVertex();
-        bufferbuilder.pos((double)w, (double)y, 0.0).color(red, green, blue, alpha).endVertex();
-        bufferbuilder.pos((double)x, (double)y, 0.0).color(red, green, blue, alpha).endVertex();
+        GlStateManager.tryBlendFuncSeparate(770,  771,  1,  0);
+        bufferbuilder.begin(2,  DefaultVertexFormats.POSITION_COLOR);
+        bufferbuilder.pos((double)x,  (double)h,  0.0).color(red,  green,  blue,  alpha).endVertex();
+        bufferbuilder.pos((double)w,  (double)h,  0.0).color(red,  green,  blue,  alpha).endVertex();
+        bufferbuilder.pos((double)w,  (double)y,  0.0).color(red,  green,  blue,  alpha).endVertex();
+        bufferbuilder.pos((double)x,  (double)y,  0.0).color(red,  green,  blue,  alpha).endVertex();
         tessellator.draw();
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
     }
     
-    private void renderNameTag(final EntityPlayer player, final double x, final double y, final double z, final float delta) {
+    private void renderNameTag(final EntityPlayer player,  final double x,  final double y,  final double z,  final float delta) {
         double tempY = y;
         tempY += (player.isSneaking() ? 0.5 : 0.7);
         final Entity camera = Nametags.mc.getRenderViewEntity();
@@ -158,11 +158,11 @@ public class Nametags extends Module
         final double originalPositionX = camera.posX;
         final double originalPositionY = camera.posY;
         final double originalPositionZ = camera.posZ;
-        camera.posX = this.interpolate(camera.prevPosX, camera.posX, delta);
-        camera.posY = this.interpolate(camera.prevPosY, camera.posY, delta);
-        camera.posZ = this.interpolate(camera.prevPosZ, camera.posZ, delta);
+        camera.posX = this.interpolate(camera.prevPosX,  camera.posX,  delta);
+        camera.posY = this.interpolate(camera.prevPosY,  camera.posY,  delta);
+        camera.posZ = this.interpolate(camera.prevPosZ,  camera.posZ,  delta);
         final String displayTag = this.getDisplayTag(player);
-        final double distance = camera.getDistance(x + Nametags.mc.getRenderManager().viewerPosX, y + Nametags.mc.getRenderManager().viewerPosY, z + Nametags.mc.getRenderManager().viewerPosZ);
+        final double distance = camera.getDistance(x + Nametags.mc.getRenderManager().viewerPosX,  y + Nametags.mc.getRenderManager().viewerPosY,  z + Nametags.mc.getRenderManager().viewerPosZ);
         final int width = this.renderer.getStringWidth(displayTag) / 2;
         double scale = (0.0018 + this.scaling.getValue() * (distance * this.factor.getValue())) / 1000.0;
         if (distance <= 8.0 && this.smartScale.getValue()) {
@@ -174,20 +174,20 @@ public class Nametags extends Module
         GlStateManager.pushMatrix();
         RenderHelper.enableStandardItemLighting();
         GlStateManager.enablePolygonOffset();
-        GlStateManager.doPolygonOffset(1.0f, -1500000.0f);
+        GlStateManager.doPolygonOffset(1.0f,  -1500000.0f);
         GlStateManager.disableLighting();
-        GlStateManager.translate((float)x, (float)tempY + 1.4f, (float)z);
-        GlStateManager.rotate(-Nametags.mc.getRenderManager().playerViewY, 0.0f, 1.0f, 0.0f);
-        GlStateManager.rotate(Nametags.mc.getRenderManager().playerViewX, (Nametags.mc.gameSettings.thirdPersonView == 2) ? -1.0f : 1.0f, 0.0f, 0.0f);
-        GlStateManager.scale(-scale, -scale, scale);
+        GlStateManager.translate((float)x,  (float)tempY + 1.4f,  (float)z);
+        GlStateManager.rotate(-Nametags.mc.getRenderManager().playerViewY,  0.0f,  1.0f,  0.0f);
+        GlStateManager.rotate(Nametags.mc.getRenderManager().playerViewX,  (Nametags.mc.gameSettings.thirdPersonView == 2) ? -1.0f : 1.0f,  0.0f,  0.0f);
+        GlStateManager.scale(-scale,  -scale,  scale);
         GlStateManager.disableDepth();
         GlStateManager.enableBlend();
         GlStateManager.enableBlend();
         if (this.rect.getValue()) {
-            this.drawRect((float)(-width - 2), (float)(-(this.renderer.getFontHeight() + 1)), width + 2.0f, 1.5f, 1426063360);
+            this.drawRect((float)(-width - 2),  (float)(-(this.renderer.getFontHeight() + 1)),  width + 2.0f,  1.5f,  1426063360);
             if (this.outline.getValue()) {
-                final int color = this.colorSync.getValue() ? Colors.INSTANCE.getCurrentColorHex() : new Color(this.redSetting.getValue(), this.greenSetting.getValue(), this.blueSetting.getValue(), this.alphaSetting.getValue()).getRGB();
-                this.drawOutlineRect((float)(-width - 2), (float)(-(Nametags.mc.fontRenderer.FONT_HEIGHT + 1)), width + 2.0f, 1.5f, color);
+                final int color = this.colorSync.getValue() ? Colors.INSTANCE.getCurrentColorHex() : new Color(this.redSetting.getValue(),  this.greenSetting.getValue(),  this.blueSetting.getValue(),  this.alphaSetting.getValue()).getRGB();
+                this.drawOutlineRect((float)(-width - 2),  (float)(-(Nametags.mc.fontRenderer.FONT_HEIGHT + 1)),  width + 2.0f,  1.5f,  color);
             }
         }
         GlStateManager.disableBlend();
@@ -199,9 +199,9 @@ public class Nametags extends Module
             final String stackName = renderMainHand.getDisplayName();
             final int stackNameWidth = this.renderer.getStringWidth(stackName) / 2;
             GL11.glPushMatrix();
-            GL11.glScalef(0.75f, 0.75f, 0.0f);
-            this.renderer.drawStringWithShadow(stackName, (float)(-stackNameWidth), -(this.getBiggestArmorTag(player) + 20.0f), -1);
-            GL11.glScalef(1.5f, 1.5f, 1.0f);
+            GL11.glScalef(0.75f,  0.75f,  0.0f);
+            this.renderer.drawStringWithShadow(stackName,  (float)(-stackNameWidth),  -(this.getBiggestArmorTag(player) + 20.0f),  -1);
+            GL11.glScalef(1.5f,  1.5f,  1.0f);
             GL11.glPopMatrix();
         }
         if (this.armor.getValue()) {
@@ -218,7 +218,7 @@ public class Nametags extends Module
             if (renderOffhand.hasEffect() && (renderOffhand.getItem() instanceof ItemTool || renderOffhand.getItem() instanceof ItemArmor)) {
                 renderOffhand.stackSize = 1;
             }
-            this.renderItemStack(renderOffhand, xOffset);
+            this.renderItemStack(renderOffhand,  xOffset);
             xOffset += 16;
             for (final ItemStack stack2 : player.inventory.armorInventory) {
                 if (stack2 == null) {
@@ -228,24 +228,24 @@ public class Nametags extends Module
                 if (armourStack.hasEffect() && (armourStack.getItem() instanceof ItemTool || armourStack.getItem() instanceof ItemArmor)) {
                     armourStack.stackSize = 1;
                 }
-                this.renderItemStack(armourStack, xOffset);
+                this.renderItemStack(armourStack,  xOffset);
                 xOffset += 16;
             }
-            this.renderItemStack(renderMainHand, xOffset);
+            this.renderItemStack(renderMainHand,  xOffset);
             GlStateManager.popMatrix();
         }
-        this.renderer.drawStringWithShadow(displayTag, (float)(-width), (float)(-(this.renderer.getFontHeight() - 1)), this.getDisplayColour(player));
+        this.renderer.drawStringWithShadow(displayTag,  (float)(-width),  (float)(-(this.renderer.getFontHeight() - 1)),  this.getDisplayColour(player));
         camera.posX = originalPositionX;
         camera.posY = originalPositionY;
         camera.posZ = originalPositionZ;
         GlStateManager.enableDepth();
         GlStateManager.disableBlend();
         GlStateManager.disablePolygonOffset();
-        GlStateManager.doPolygonOffset(1.0f, 1500000.0f);
+        GlStateManager.doPolygonOffset(1.0f,  1500000.0f);
         GlStateManager.popMatrix();
     }
     
-    private void renderItemStack(final ItemStack stack, final int x) {
+    private void renderItemStack(final ItemStack stack,  final int x) {
         GlStateManager.pushMatrix();
         GlStateManager.depthMask(true);
         GlStateManager.clear(256);
@@ -254,26 +254,26 @@ public class Nametags extends Module
         GlStateManager.disableAlpha();
         GlStateManager.enableDepth();
         GlStateManager.disableCull();
-        Nametags.mc.getRenderItem().renderItemAndEffectIntoGUI(stack, x, -26);
-        Nametags.mc.getRenderItem().renderItemOverlays(Nametags.mc.fontRenderer, stack, x, -26);
+        Nametags.mc.getRenderItem().renderItemAndEffectIntoGUI(stack,  x,  -26);
+        Nametags.mc.getRenderItem().renderItemOverlays(Nametags.mc.fontRenderer,  stack,  x,  -26);
         Nametags.mc.getRenderItem().zLevel = 0.0f;
         RenderHelper.disableStandardItemLighting();
         GlStateManager.enableCull();
         GlStateManager.enableAlpha();
-        GlStateManager.scale(0.5f, 0.5f, 0.5f);
+        GlStateManager.scale(0.5f,  0.5f,  0.5f);
         GlStateManager.disableDepth();
         if (this.mode.getValue() != Mode.NONE) {
-            this.renderEnchantmentText(stack, x);
+            this.renderEnchantmentText(stack,  x);
         }
         GlStateManager.enableDepth();
-        GlStateManager.scale(2.0f, 2.0f, 2.0f);
+        GlStateManager.scale(2.0f,  2.0f,  2.0f);
         GlStateManager.popMatrix();
     }
     
-    private void renderEnchantmentText(final ItemStack stack, final int x) {
+    private void renderEnchantmentText(final ItemStack stack,  final int x) {
         int enchantmentY = -34;
         if (stack.getItem() == Items.GOLDEN_APPLE && stack.hasEffect()) {
-            this.renderer.drawStringWithShadow("god", (float)(x * 2), (float)enchantmentY, -3977919);
+            this.renderer.drawStringWithShadow("god",  (float)(x * 2),  (float)enchantmentY,  -3977919);
             enchantmentY -= 8;
         }
         final NBTTagList enchants = stack.getEnchantmentTagList();
@@ -291,16 +291,16 @@ public class Nametags extends Module
                         continue;
                     }
                 }
-                String encName = enc.isCurse() ? (TextFormatting.RED + enc.getTranslatedName((int)level).substring(11).substring(0, 1).toLowerCase()) : enc.getTranslatedName((int)level).substring(0, 1).toLowerCase();
+                String encName = enc.isCurse() ? (TextFormatting.RED + enc.getTranslatedName((int)level).substring(11).substring(0,  1).toLowerCase()) : enc.getTranslatedName((int)level).substring(0,  1).toLowerCase();
                 encName += level;
-                this.renderer.drawStringWithShadow(encName, (float)(x * 2), (float)enchantmentY, -1);
+                this.renderer.drawStringWithShadow(encName,  (float)(x * 2),  (float)enchantmentY,  -1);
                 enchantmentY -= 8;
             }
         }
         if (DamageUtil.hasDurability(stack)) {
             final int percent = DamageUtil.getRoundedDamage(stack);
             final String color = (percent >= 60) ? "§a" : ((percent >= 25) ? "§e" : "§c");
-            this.renderer.drawStringWithShadow(color + percent + "%", (float)(x * 2), (float)enchantmentY, -1);
+            this.renderer.drawStringWithShadow(color + percent + "%",  (float)(x * 2),  (float)enchantmentY,  -1);
         }
     }
     
@@ -411,7 +411,7 @@ public class Nametags extends Module
         return colour;
     }
     
-    private double interpolate(final double previous, final double current, final float delta) {
+    private double interpolate(final double previous,  final double current,  final float delta) {
         return previous + (current - previous) * delta;
     }
     
@@ -421,8 +421,8 @@ public class Nametags extends Module
     
     public enum Mode
     {
-        FULL, 
-        MINIMAL, 
+        FULL,  
+        MINIMAL,  
         NONE;
     }
 }

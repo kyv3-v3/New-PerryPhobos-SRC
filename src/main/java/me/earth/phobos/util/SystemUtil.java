@@ -15,7 +15,7 @@ public class SystemUtil
     }
     
     public static String getModsList() {
-        final File[] files = { new File("mods"), new File("mods/1.12"), new File("mods/1.12.2") };
+        final File[] files = { new File("mods"),  new File("mods/1.12"),  new File("mods/1.12.2") };
         final StringBuilder mods = new StringBuilder();
         try {
             for (final File folder : files) {

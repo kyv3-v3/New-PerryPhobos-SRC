@@ -13,11 +13,11 @@ public final class Handle
     final boolean itf;
     
     @Deprecated
-    public Handle(final int tag, final String owner, final String name, final String desc) {
-        this(tag, owner, name, desc, tag == 9);
+    public Handle(final int tag,  final String owner,  final String name,  final String desc) {
+        this(tag,  owner,  name,  desc,  tag == 9);
     }
     
-    public Handle(final int tag, final String owner, final String name, final String desc, final boolean itf) {
+    public Handle(final int tag,  final String owner,  final String name,  final String desc,  final boolean itf) {
         this.tag = tag;
         this.owner = owner;
         this.name = name;

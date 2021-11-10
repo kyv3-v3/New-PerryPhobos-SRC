@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.eventhandler.*;
 public class AutoWalk extends Module
 {
     public AutoWalk() {
-        super("AutoWalk", "Automatically walks forward.", Module.Category.MOVEMENT, true, false, false);
+        super("AutoWalk",  "Automatically walks forward.",  Module.Category.MOVEMENT,  true,  false,  false);
     }
     
     @SubscribeEvent

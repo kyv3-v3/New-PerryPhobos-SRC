@@ -21,7 +21,7 @@ public class RenderEntityModelEvent extends EventStage
     public float headPitch;
     public float scale;
     
-    public RenderEntityModelEvent(final int stage, final ModelBase modelBase, final Entity entity, final float limbSwing, final float limbSwingAmount, final float age, final float headYaw, final float headPitch, final float scale) {
+    public RenderEntityModelEvent(final int stage,  final ModelBase modelBase,  final Entity entity,  final float limbSwing,  final float limbSwingAmount,  final float age,  final float headYaw,  final float headPitch,  final float scale) {
         super(stage);
         this.modelBase = modelBase;
         this.entity = entity;

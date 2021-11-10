@@ -9,7 +9,7 @@ import java.lang.reflect.*;
 
 public class ReflectionUtil
 {
-    public static <F, T extends F> void copyOf(final F from, final T to, final boolean ignoreFinal) throws NoSuchFieldException, IllegalAccessException {
+    public static <F,  T extends F> void copyOf(final F from,  final T to,  final boolean ignoreFinal) throws NoSuchFieldException,  IllegalAccessException {
         Objects.requireNonNull(from);
         Objects.requireNonNull(to);
         final Class<?> clazz = from.getClass();
@@ -18,14 +18,14 @@ public class ReflectionUtil
             if (!isStatic(field)) {
                 if (!ignoreFinal || !isFinal(field)) {
                     makeMutable(field);
-                    field.set(to, field.get(from));
+                    field.set(to,  field.get(from));
                 }
             }
         }
     }
     
-    public static <F, T extends F> void copyOf(final F from, final T to) throws NoSuchFieldException, IllegalAccessException {
-        copyOf(from, to, false);
+    public static <F,  T extends F> void copyOf(final F from,  final T to) throws NoSuchFieldException,  IllegalAccessException {
+        copyOf(from,  to,  false);
     }
     
     public static boolean isStatic(final Member instance) {
@@ -36,30 +36,30 @@ public class ReflectionUtil
         return (instance.getModifiers() & 0x10) != 0x0;
     }
     
-    public static void makeAccessible(final AccessibleObject instance, final boolean accessible) {
+    public static void makeAccessible(final AccessibleObject instance,  final boolean accessible) {
         Objects.requireNonNull(instance);
         instance.setAccessible(accessible);
     }
     
     public static void makePublic(final AccessibleObject instance) {
-        makeAccessible(instance, true);
+        makeAccessible(instance,  true);
     }
     
     public static void makePrivate(final AccessibleObject instance) {
-        makeAccessible(instance, false);
+        makeAccessible(instance,  false);
     }
     
-    public static void makeMutable(final Member instance) throws NoSuchFieldException, IllegalAccessException {
+    public static void makeMutable(final Member instance) throws NoSuchFieldException,  IllegalAccessException {
         Objects.requireNonNull(instance);
         final Field modifiers = Field.class.getDeclaredField("modifiers");
         makePublic(modifiers);
-        modifiers.setInt(instance, instance.getModifiers() & 0xFFFFFFEF);
+        modifiers.setInt(instance,  instance.getModifiers() & 0xFFFFFFEF);
     }
     
-    public static void makeImmutable(final Member instance) throws NoSuchFieldException, IllegalAccessException {
+    public static void makeImmutable(final Member instance) throws NoSuchFieldException,  IllegalAccessException {
         Objects.requireNonNull(instance);
         final Field modifiers = Field.class.getDeclaredField("modifiers");
         makePublic(modifiers);
-        modifiers.setInt(instance, instance.getModifiers() & 0x10);
+        modifiers.setInt(instance,  instance.getModifiers() & 0x10);
     }
 }

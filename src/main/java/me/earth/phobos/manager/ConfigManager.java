@@ -30,7 +30,7 @@ public class ConfigManager implements Util
         this.config = "phobos/config/";
     }
     
-    public static void setValueFromJson(final Feature feature, final Setting setting, final JsonElement element) {
+    public static void setValueFromJson(final Feature feature,  final Setting setting,  final JsonElement element) {
         final String type = setting.getType();
         switch (type) {
             case "Boolean": {
@@ -51,7 +51,7 @@ public class ConfigManager implements Util
             }
             case "String": {
                 final String str = element.getAsString();
-                setting.setValue((Object)str.replace("_", " "));
+                setting.setValue((Object)str.replace("_",  " "));
                 break;
             }
             case "Bind": {
@@ -74,13 +74,13 @@ public class ConfigManager implements Util
         }
     }
     
-    private static void loadFile(final JsonObject input, final Feature feature) {
-        for (final Map.Entry<String, JsonElement> entry : input.entrySet()) {
+    private static void loadFile(final JsonObject input,  final Feature feature) {
+        for (final Map.Entry<String,  JsonElement> entry : input.entrySet()) {
             final String settingName = entry.getKey();
             final JsonElement element = entry.getValue();
             if (feature instanceof FriendManager) {
                 try {
-                    Phobos.friendManager.addFriend(new FriendManager.Friend(element.getAsString(), UUID.fromString(settingName)));
+                    Phobos.friendManager.addFriend(new FriendManager.Friend(element.getAsString(),  UUID.fromString(settingName)));
                 }
                 catch (Exception e) {
                     e.printStackTrace();
@@ -93,7 +93,7 @@ public class ConfigManager implements Util
                         continue;
                     }
                     try {
-                        setValueFromJson(feature, setting, element);
+                        setValueFromJson(feature,  setting,  element);
                     }
                     catch (Exception e2) {
                         e2.printStackTrace();
@@ -105,7 +105,7 @@ public class ConfigManager implements Util
                 }
             }
             if (feature instanceof XRay) {
-                feature.register(new Setting(settingName, (Object)true, v -> (boolean)((XRay)feature).showBlocks.getValue()));
+                feature.register(new Setting(settingName,  (Object)true,  v -> (boolean)((XRay)feature).showBlocks.getValue()));
             }
             else {
                 if (!(feature instanceof AntiDDoS)) {
@@ -113,7 +113,7 @@ public class ConfigManager implements Util
                 }
                 final AntiDDoS antiDDoS = (AntiDDoS)feature;
                 final AntiDDoS antiDDoS2;
-                final Setting<?> setting2 = (Setting<?>)feature.register(new Setting(settingName, (Object)true, v -> (boolean)antiDDoS2.showServer.getValue() && !(boolean)antiDDoS2.full.getValue()));
+                final Setting<?> setting2 = (Setting<?>)feature.register(new Setting(settingName,  (Object)true,  v -> (boolean)antiDDoS2.showServer.getValue() && !(boolean)antiDDoS2.full.getValue()));
                 antiDDoS.registerServer((Setting)setting2);
             }
         }
@@ -121,7 +121,7 @@ public class ConfigManager implements Util
     
     public void loadConfig(final String name) {
         this.loadingConfig = true;
-        final List<File> files = Arrays.stream((Object[])Objects.requireNonNull((T[])new File("phobos").listFiles())).filter(File::isDirectory).collect((Collector<? super Object, ?, List<File>>)Collectors.toList());
+        final List<File> files = Arrays.stream((Object[])Objects.requireNonNull((T[])new File("phobos").listFiles())).filter(File::isDirectory).collect((Collector<? super Object,  ?,  List<File>>)Collectors.toList());
         this.config = (files.contains(new File("phobos/" + name + "/")) ? ("phobos/" + name + "/") : "phobos/config/");
         Phobos.friendManager.onLoad();
         for (final Feature feature : this.features) {
@@ -161,15 +161,15 @@ public class ConfigManager implements Util
         try {
             if (currentConfig.exists()) {
                 final FileWriter writer = new FileWriter(currentConfig);
-                final String tempConfig = this.config.replaceAll("/", "");
-                writer.write(tempConfig.replaceAll("phobos", ""));
+                final String tempConfig = this.config.replaceAll("/",  "");
+                writer.write(tempConfig.replaceAll("phobos",  ""));
                 writer.close();
             }
             else {
                 currentConfig.createNewFile();
                 final FileWriter writer = new FileWriter(currentConfig);
-                final String tempConfig = this.config.replaceAll("/", "");
-                writer.write(tempConfig.replaceAll("phobos", ""));
+                final String tempConfig = this.config.replaceAll("/",  "");
+                writer.write(tempConfig.replaceAll("phobos",  ""));
                 writer.close();
             }
         }
@@ -196,7 +196,7 @@ public class ConfigManager implements Util
         return name;
     }
     
-    public void resetConfig(final boolean saveConfig, final String name) {
+    public void resetConfig(final boolean saveConfig,  final String name) {
         for (final Feature feature : this.features) {
             feature.reset();
         }
@@ -212,12 +212,12 @@ public class ConfigManager implements Util
             directory.mkdir();
         }
         final Path outputFile;
-        if (!Files.exists(outputFile = Paths.get(this.config + this.getDirectory(feature) + feature.getName() + ".json", new String[0]), new LinkOption[0])) {
-            Files.createFile(outputFile, (FileAttribute<?>[])new FileAttribute[0]);
+        if (!Files.exists(outputFile = Paths.get(this.config + this.getDirectory(feature) + feature.getName() + ".json",  new String[0]),  new LinkOption[0])) {
+            Files.createFile(outputFile,  (FileAttribute<?>[])new FileAttribute[0]);
         }
         final Gson gson = new GsonBuilder().setPrettyPrinting().create();
         final String json = gson.toJson((JsonElement)this.writeSettings(feature));
-        final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(outputFile, new OpenOption[0])));
+        final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(outputFile,  new OpenOption[0])));
         writer.write(json);
         writer.close();
     }
@@ -232,21 +232,21 @@ public class ConfigManager implements Util
     
     private void loadSettings(final Feature feature) throws IOException {
         final String featureName = this.config + this.getDirectory(feature) + feature.getName() + ".json";
-        final Path featurePath = Paths.get(featureName, new String[0]);
-        if (!Files.exists(featurePath, new LinkOption[0])) {
+        final Path featurePath = Paths.get(featureName,  new String[0]);
+        if (!Files.exists(featurePath,  new LinkOption[0])) {
             return;
         }
-        this.loadPath(featurePath, feature);
+        this.loadPath(featurePath,  feature);
     }
     
-    private void loadPath(final Path path, final Feature feature) throws IOException {
-        final InputStream stream = Files.newInputStream(path, new OpenOption[0]);
+    private void loadPath(final Path path,  final Feature feature) throws IOException {
+        final InputStream stream = Files.newInputStream(path,  new OpenOption[0]);
         try {
-            loadFile(new JsonParser().parse((Reader)new InputStreamReader(stream)).getAsJsonObject(), feature);
+            loadFile(new JsonParser().parse((Reader)new InputStreamReader(stream)).getAsJsonObject(),  feature);
         }
         catch (IllegalStateException e) {
             Phobos.LOGGER.error("Bad Config File for: " + feature.getName() + ". Resetting...");
-            loadFile(new JsonObject(), feature);
+            loadFile(new JsonObject(),  feature);
         }
         stream.close();
     }
@@ -257,15 +257,15 @@ public class ConfigManager implements Util
         for (final Setting setting : feature.getSettings()) {
             if (setting.isEnumSetting()) {
                 final EnumConverter converter = new EnumConverter((Class)((Enum)setting.getValue()).getClass());
-                object.add(setting.getName(), converter.doForward((Enum)setting.getValue()));
+                object.add(setting.getName(),  converter.doForward((Enum)setting.getValue()));
             }
             else {
                 if (setting.isStringSetting()) {
                     final String str = (String)setting.getValue();
-                    setting.setValue((Object)str.replace(" ", "_"));
+                    setting.setValue((Object)str.replace(" ",  "_"));
                 }
                 try {
-                    object.add(setting.getName(), jp.parse(setting.getValueAsString()));
+                    object.add(setting.getName(),  jp.parse(setting.getValueAsString()));
                 }
                 catch (Exception e) {
                     e.printStackTrace();

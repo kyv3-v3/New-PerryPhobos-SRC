@@ -11,7 +11,7 @@ import org.spongepowered.asm.launch.*;
 
 public class EnvironmentStateTweaker implements ITweaker
 {
-    public void acceptOptions(final List<String> args, final File gameDir, final File assetsDir, final String profile) {
+    public void acceptOptions(final List<String> args,  final File gameDir,  final File assetsDir,  final String profile) {
     }
     
     public void injectIntoClassLoader(final LaunchClassLoader classLoader) {

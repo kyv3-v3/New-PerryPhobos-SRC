@@ -9,5 +9,5 @@ import org.spongepowered.asm.obfuscation.mapping.common.*;
 
 public interface IMappingWriter
 {
-    void write(final String p0, final ObfuscationType p1, final IMappingConsumer.MappingSet<MappingField> p2, final IMappingConsumer.MappingSet<MappingMethod> p3);
+    void write(final String p0,  final ObfuscationType p1,  final IMappingConsumer.MappingSet<MappingField> p2,  final IMappingConsumer.MappingSet<MappingMethod> p3);
 }

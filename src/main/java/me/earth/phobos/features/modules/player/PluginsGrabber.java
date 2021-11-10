@@ -18,13 +18,13 @@ import net.minecraftforge.fml.common.eventhandler.*;
 public class PluginsGrabber extends Module
 {
     public PluginsGrabber() {
-        super("PluginsGrabber", "Attempts to use TabComplete packets to get the plugins list.", Module.Category.PLAYER, true, false, false);
+        super("PluginsGrabber",  "Attempts to use TabComplete packets to get the plugins list.",  Module.Category.PLAYER,  true,  false,  false);
     }
     
     public void onEnable() {
         super.onEnable();
         Command.sendMessage("Attempting to obtain the plugins");
-        final CPacketTabComplete packet = new CPacketTabComplete("/", (BlockPos)null, false);
+        final CPacketTabComplete packet = new CPacketTabComplete("/",  (BlockPos)null,  false);
         PluginsGrabber.mc.player.connection.sendPacket((Packet)packet);
     }
     
@@ -38,7 +38,7 @@ public class PluginsGrabber extends Module
             for (final String s : getMatches) {
                 final String[] command = s.split(":");
                 if (command.length > 1) {
-                    final String pluginName = command[0].replace("/", "");
+                    final String pluginName = command[0].replace("/",  "");
                     if (!plugins.contains(pluginName)) {
                         plugins.add(pluginName);
                     }
@@ -46,7 +46,7 @@ public class PluginsGrabber extends Module
             }
             Collections.sort(plugins);
             if (!plugins.isEmpty()) {
-                Command.sendMessage("Plugins §7(§8" + plugins.size() + "§7): §9" + Strings.join((String[])plugins.toArray(new String[0]), "§7, §9"));
+                Command.sendMessage("Plugins §7(§8" + plugins.size() + "§7): §9" + Strings.join((String[])plugins.toArray(new String[0]),  "§7,  §9"));
             }
             else {
                 Command.sendMessage("No plugins found");

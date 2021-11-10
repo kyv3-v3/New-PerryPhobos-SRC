@@ -22,11 +22,11 @@ public class BeforeFinalReturn extends InjectionPoint
         this.context = data.getContext();
     }
     
-    public boolean checkPriority(final int targetPriority, final int ownerPriority) {
+    public boolean checkPriority(final int targetPriority,  final int ownerPriority) {
         return true;
     }
     
-    public boolean find(final String desc, final InsnList insns, final Collection<AbstractInsnNode> nodes) {
+    public boolean find(final String desc,  final InsnList insns,  final Collection<AbstractInsnNode> nodes) {
         AbstractInsnNode ret = null;
         final int returnOpcode = Type.getReturnType(desc).getOpcode(172);
         for (final AbstractInsnNode insn : insns) {
@@ -35,7 +35,7 @@ public class BeforeFinalReturn extends InjectionPoint
             }
         }
         if (ret == null) {
-            throw new InvalidInjectionException(this.context, "TAIL could not locate a valid RETURN in the target method!");
+            throw new InvalidInjectionException(this.context,  "TAIL could not locate a valid RETURN in the target method!");
         }
         nodes.add(ret);
         return true;

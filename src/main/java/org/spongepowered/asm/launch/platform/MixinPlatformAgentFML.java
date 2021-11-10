@@ -38,8 +38,8 @@ public class MixinPlatformAgentFML extends MixinPlatformAgentAbstract
     private Class<?> clCoreModManager;
     private boolean initInjectionState;
     
-    public MixinPlatformAgentFML(final MixinPlatformManager manager, final URI uri) {
-        super(manager, uri);
+    public MixinPlatformAgentFML(final MixinPlatformManager manager,  final URI uri) {
+        super(manager,  uri);
         this.fileName = this.container.getName();
         this.coreModWrapper = this.initFMLCoreMod();
     }
@@ -50,11 +50,11 @@ public class MixinPlatformAgentFML extends MixinPlatformAgentAbstract
                 this.clCoreModManager = getCoreModManagerClass();
             }
             catch (ClassNotFoundException ex) {
-                MixinPlatformAgentAbstract.logger.info("FML platform manager could not load class {}. Proceeding without FML support.", new Object[] { ex.getMessage() });
+                MixinPlatformAgentAbstract.logger.info("FML platform manager could not load class {}. Proceeding without FML support.",  new Object[] { ex.getMessage() });
                 return null;
             }
             if ("true".equalsIgnoreCase(this.attributes.get("ForceLoadAsMod"))) {
-                MixinPlatformAgentAbstract.logger.debug("ForceLoadAsMod was specified for {}, attempting force-load", new Object[] { this.fileName });
+                MixinPlatformAgentAbstract.logger.debug("ForceLoadAsMod was specified for {},  attempting force-load",  new Object[] { this.fileName });
                 this.loadAsMod();
             }
             return this.injectCorePlugin();
@@ -74,7 +74,7 @@ public class MixinPlatformAgentFML extends MixinPlatformAgentAbstract
         }
         if (this.attributes.get("FMLCorePluginContainsFMLMod") != null) {
             if (this.isIgnoredReparseable()) {
-                MixinPlatformAgentAbstract.logger.debug("Ignoring request to add {} to reparseable coremod collection - it is a deobfuscated dependency", new Object[] { this.fileName });
+                MixinPlatformAgentAbstract.logger.debug("Ignoring request to add {} to reparseable coremod collection - it is a deobfuscated dependency",  new Object[] { this.fileName });
                 return;
             }
             this.addReparseableJar();
@@ -87,10 +87,10 @@ public class MixinPlatformAgentFML extends MixinPlatformAgentAbstract
     
     private void addReparseableJar() {
         try {
-            final Method mdGetReparsedCoremods = this.clCoreModManager.getDeclaredMethod(GlobalProperties.getString("mixin.launch.fml.reparseablecoremodsmethod", "getReparseableCoremods"), (Class<?>[])new Class[0]);
-            final List<String> reparsedCoremods = (List<String>)mdGetReparsedCoremods.invoke(null, new Object[0]);
+            final Method mdGetReparsedCoremods = this.clCoreModManager.getDeclaredMethod(GlobalProperties.getString("mixin.launch.fml.reparseablecoremodsmethod",  "getReparseableCoremods"),  (Class<?>[])new Class[0]);
+            final List<String> reparsedCoremods = (List<String>)mdGetReparsedCoremods.invoke(null,  new Object[0]);
             if (!reparsedCoremods.contains(this.fileName)) {
-                MixinPlatformAgentAbstract.logger.debug("Adding {} to reparseable coremod collection", new Object[] { this.fileName });
+                MixinPlatformAgentAbstract.logger.debug("Adding {} to reparseable coremod collection",  new Object[] { this.fileName });
                 reparsedCoremods.add(this.fileName);
             }
         }
@@ -99,21 +99,21 @@ public class MixinPlatformAgentFML extends MixinPlatformAgentAbstract
         }
     }
     
-    private ITweaker injectCorePlugin() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    private ITweaker injectCorePlugin() throws NoSuchMethodException,  IllegalAccessException,  InvocationTargetException {
         final String coreModName = this.attributes.get("FMLCorePlugin");
         if (coreModName == null) {
             return null;
         }
         if (this.isAlreadyInjected(coreModName)) {
-            MixinPlatformAgentAbstract.logger.debug("{} has core plugin {}. Skipping because it was already injected.", new Object[] { this.fileName, coreModName });
+            MixinPlatformAgentAbstract.logger.debug("{} has core plugin {}. Skipping because it was already injected.",  new Object[] { this.fileName,  coreModName });
             return null;
         }
-        MixinPlatformAgentAbstract.logger.debug("{} has core plugin {}. Injecting it into FML for co-initialisation:", new Object[] { this.fileName, coreModName });
-        final Method mdLoadCoreMod = this.clCoreModManager.getDeclaredMethod(GlobalProperties.getString("mixin.launch.fml.loadcoremodmethod", "loadCoreMod"), LaunchClassLoader.class, String.class, File.class);
+        MixinPlatformAgentAbstract.logger.debug("{} has core plugin {}. Injecting it into FML for co-initialisation:",  new Object[] { this.fileName,  coreModName });
+        final Method mdLoadCoreMod = this.clCoreModManager.getDeclaredMethod(GlobalProperties.getString("mixin.launch.fml.loadcoremodmethod",  "loadCoreMod"),  LaunchClassLoader.class,  String.class,  File.class);
         mdLoadCoreMod.setAccessible(true);
-        final ITweaker wrapper = (ITweaker)mdLoadCoreMod.invoke(null, Launch.classLoader, coreModName, this.container);
+        final ITweaker wrapper = (ITweaker)mdLoadCoreMod.invoke(null,  Launch.classLoader,  coreModName,  this.container);
         if (wrapper == null) {
-            MixinPlatformAgentAbstract.logger.debug("Core plugin {} could not be loaded.", new Object[] { coreModName });
+            MixinPlatformAgentAbstract.logger.debug("Core plugin {} could not be loaded.",  new Object[] { coreModName });
             return null;
         }
         this.initInjectionState = isTweakerQueued("FMLInjectionAndSortingTweaker");
@@ -163,20 +163,20 @@ public class MixinPlatformAgentFML extends MixinPlatformAgentAbstract
     
     private void injectRemapper() {
         try {
-            MixinPlatformAgentAbstract.logger.debug("Creating FML remapper adapter: {}", new Object[] { "org.spongepowered.asm.bridge.RemapperAdapterFML" });
-            final Class<?> clFmlRemapperAdapter = Class.forName("org.spongepowered.asm.bridge.RemapperAdapterFML", true, (ClassLoader)Launch.classLoader);
-            final Method mdCreate = clFmlRemapperAdapter.getDeclaredMethod("create", (Class<?>[])new Class[0]);
-            final IRemapper remapper = (IRemapper)mdCreate.invoke(null, new Object[0]);
+            MixinPlatformAgentAbstract.logger.debug("Creating FML remapper adapter: {}",  new Object[] { "org.spongepowered.asm.bridge.RemapperAdapterFML" });
+            final Class<?> clFmlRemapperAdapter = Class.forName("org.spongepowered.asm.bridge.RemapperAdapterFML",  true,  (ClassLoader)Launch.classLoader);
+            final Method mdCreate = clFmlRemapperAdapter.getDeclaredMethod("create",  (Class<?>[])new Class[0]);
+            final IRemapper remapper = (IRemapper)mdCreate.invoke(null,  new Object[0]);
             MixinEnvironment.getDefaultEnvironment().getRemappers().add(remapper);
         }
         catch (Exception ex) {
-            MixinPlatformAgentAbstract.logger.debug("Failed instancing FML remapper adapter, things will probably go horribly for notch-obf'd mods!");
+            MixinPlatformAgentAbstract.logger.debug("Failed instancing FML remapper adapter,  things will probably go horribly for notch-obf'd mods!");
         }
     }
     
     public void inject() {
         if (this.coreModWrapper != null && this.checkForCoInitialisation()) {
-            MixinPlatformAgentAbstract.logger.debug("FML agent is co-initiralising coremod instance {} for {}", new Object[] { this.coreModWrapper, this.uri });
+            MixinPlatformAgentAbstract.logger.debug("FML agent is co-initiralising coremod instance {} for {}",  new Object[] { this.coreModWrapper,  this.uri });
             this.coreModWrapper.injectIntoClassLoader(Launch.classLoader);
         }
     }
@@ -189,7 +189,7 @@ public class MixinPlatformAgentFML extends MixinPlatformAgentAbstract
         final boolean injectionTweaker = isTweakerQueued("FMLInjectionAndSortingTweaker");
         final boolean terminalTweaker = isTweakerQueued("TerminalTweaker");
         if ((this.initInjectionState && terminalTweaker) || injectionTweaker) {
-            MixinPlatformAgentAbstract.logger.debug("FML agent is skipping co-init for {} because FML will inject it normally", new Object[] { this.coreModWrapper });
+            MixinPlatformAgentAbstract.logger.debug("FML agent is skipping co-init for {} because FML will inject it normally",  new Object[] { this.coreModWrapper });
             return false;
         }
         return !isTweakerQueued("FMLDeobfTweaker");
@@ -206,35 +206,35 @@ public class MixinPlatformAgentFML extends MixinPlatformAgentAbstract
     
     private static Class<?> getCoreModManagerClass() throws ClassNotFoundException {
         try {
-            return Class.forName(GlobalProperties.getString("mixin.launch.fml.coremodmanagerclass", "net.minecraftforge.fml.relauncher.CoreModManager"));
+            return Class.forName(GlobalProperties.getString("mixin.launch.fml.coremodmanagerclass",  "net.minecraftforge.fml.relauncher.CoreModManager"));
         }
         catch (ClassNotFoundException ex) {
             return Class.forName("cpw.mods.fml.relauncher.CoreModManager");
         }
     }
     
-    private static List<String> getIgnoredMods(final Class<?> clCoreModManager) throws IllegalAccessException, InvocationTargetException {
+    private static List<String> getIgnoredMods(final Class<?> clCoreModManager) throws IllegalAccessException,  InvocationTargetException {
         Method mdGetIgnoredMods = null;
         try {
-            mdGetIgnoredMods = clCoreModManager.getDeclaredMethod(GlobalProperties.getString("mixin.launch.fml.ignoredmodsmethod", "getIgnoredMods"), (Class<?>[])new Class[0]);
+            mdGetIgnoredMods = clCoreModManager.getDeclaredMethod(GlobalProperties.getString("mixin.launch.fml.ignoredmodsmethod",  "getIgnoredMods"),  (Class<?>[])new Class[0]);
         }
         catch (NoSuchMethodException ex3) {
             try {
-                mdGetIgnoredMods = clCoreModManager.getDeclaredMethod("getLoadedCoremods", (Class<?>[])new Class[0]);
+                mdGetIgnoredMods = clCoreModManager.getDeclaredMethod("getLoadedCoremods",  (Class<?>[])new Class[0]);
             }
             catch (NoSuchMethodException ex2) {
-                MixinPlatformAgentAbstract.logger.catching(Level.DEBUG, (Throwable)ex2);
+                MixinPlatformAgentAbstract.logger.catching(Level.DEBUG,  (Throwable)ex2);
                 return Collections.emptyList();
             }
         }
-        return (List<String>)mdGetIgnoredMods.invoke(null, new Object[0]);
+        return (List<String>)mdGetIgnoredMods.invoke(null,  new Object[0]);
     }
     
     static {
         loadedCoreMods = new HashSet<String>();
-        for (final String cmdLineCoreMod : System.getProperty("fml.coreMods.load", "").split(",")) {
+        for (final String cmdLineCoreMod : System.getProperty("fml.coreMods.load",  "").split(", ")) {
             if (!cmdLineCoreMod.isEmpty()) {
-                MixinPlatformAgentAbstract.logger.debug("FML platform agent will ignore coremod {} specified on the command line", new Object[] { cmdLineCoreMod });
+                MixinPlatformAgentAbstract.logger.debug("FML platform agent will ignore coremod {} specified on the command line",  new Object[] { cmdLineCoreMod });
                 MixinPlatformAgentFML.loadedCoreMods.add(cmdLineCoreMod);
             }
         }

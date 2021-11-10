@@ -32,15 +32,15 @@ public class FastPlace extends Module
     private BlockPos mousePos;
     
     public FastPlace() {
-        super("FastPlace", "Fast everything.", Module.Category.PLAYER, true, false, false);
-        this.all = (Setting<Boolean>)this.register(new Setting("All", (T)false));
-        this.obby = (Setting<Boolean>)this.register(new Setting("Obsidian", (T)false, v -> !this.all.getValue()));
-        this.enderChests = (Setting<Boolean>)this.register(new Setting("EnderChests", (T)false, v -> !this.all.getValue()));
-        this.crystals = (Setting<Boolean>)this.register(new Setting("Crystals", (T)false, v -> !this.all.getValue()));
-        this.exp = (Setting<Boolean>)this.register(new Setting("Experience", (T)false, v -> !this.all.getValue()));
-        this.Minecart = (Setting<Boolean>)this.register(new Setting("Minecarts", (T)false, v -> !this.all.getValue()));
-        this.feetExp = (Setting<Boolean>)this.register(new Setting("ExpFeet", (T)false));
-        this.fastCrystal = (Setting<Boolean>)this.register(new Setting("PacketCrystal", (T)false));
+        super("FastPlace",  "Fast everything.",  Module.Category.PLAYER,  true,  false,  false);
+        this.all = (Setting<Boolean>)this.register(new Setting("All", false));
+        this.obby = (Setting<Boolean>)this.register(new Setting("Obsidian", false,  v -> !this.all.getValue()));
+        this.enderChests = (Setting<Boolean>)this.register(new Setting("EnderChests", false,  v -> !this.all.getValue()));
+        this.crystals = (Setting<Boolean>)this.register(new Setting("Crystals", false,  v -> !this.all.getValue()));
+        this.exp = (Setting<Boolean>)this.register(new Setting("Experience", false,  v -> !this.all.getValue()));
+        this.Minecart = (Setting<Boolean>)this.register(new Setting("Minecarts", false,  v -> !this.all.getValue()));
+        this.feetExp = (Setting<Boolean>)this.register(new Setting("ExpFeet", false));
+        this.fastCrystal = (Setting<Boolean>)this.register(new Setting("PacketCrystal", false));
     }
     
     @SubscribeEvent
@@ -97,10 +97,10 @@ public class FastPlace extends Module
                         if (this.mousePos == null || (entity = result.entityHit) == null) {
                             break;
                         }
-                        if (!this.mousePos.equals((Object)new BlockPos(entity.posX, entity.posY - 1.0, entity.posZ))) {
+                        if (!this.mousePos.equals((Object)new BlockPos(entity.posX,  entity.posY - 1.0,  entity.posZ))) {
                             break;
                         }
-                        FastPlace.mc.player.connection.sendPacket((Packet)new CPacketPlayerTryUseItemOnBlock(this.mousePos, EnumFacing.DOWN, offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0.0f, 0.0f, 0.0f));
+                        FastPlace.mc.player.connection.sendPacket((Packet)new CPacketPlayerTryUseItemOnBlock(this.mousePos,  EnumFacing.DOWN,  offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND,  0.0f,  0.0f,  0.0f));
                         break;
                     }
                 }

@@ -21,16 +21,16 @@ public class HandColor extends Module
     public Setting<Integer> alpha;
     
     public HandColor() {
-        super("HandColor", "Changes the color of your hands.", Module.Category.RENDER, false, false, false);
-        this.colorSync = (Setting<Boolean>)this.register(new Setting("Sync", (T)false));
-        this.rainbow = (Setting<Boolean>)this.register(new Setting("Rainbow", (T)false));
-        this.saturation = (Setting<Integer>)this.register(new Setting("Saturation", (T)50, (T)0, (T)100, v -> this.rainbow.getValue()));
-        this.brightness = (Setting<Integer>)this.register(new Setting("Brightness", (T)100, (T)0, (T)100, v -> this.rainbow.getValue()));
-        this.speed = (Setting<Integer>)this.register(new Setting("Speed", (T)40, (T)1, (T)100, v -> this.rainbow.getValue()));
-        this.red = (Setting<Integer>)this.register(new Setting("Red", (T)0, (T)0, (T)255, v -> !this.rainbow.getValue()));
-        this.green = (Setting<Integer>)this.register(new Setting("Green", (T)255, (T)0, (T)255, v -> !this.rainbow.getValue()));
-        this.blue = (Setting<Integer>)this.register(new Setting("Blue", (T)0, (T)0, (T)255, v -> !this.rainbow.getValue()));
-        this.alpha = (Setting<Integer>)this.register(new Setting("Alpha", (T)255, (T)0, (T)255));
+        super("HandColor",  "Changes the color of your hands.",  Module.Category.RENDER,  false,  false,  false);
+        this.colorSync = (Setting<Boolean>)this.register(new Setting("Sync", false));
+        this.rainbow = (Setting<Boolean>)this.register(new Setting("Rainbow", false));
+        this.saturation = (Setting<Integer>)this.register(new Setting("Saturation", 50, 0, 100,  v -> this.rainbow.getValue()));
+        this.brightness = (Setting<Integer>)this.register(new Setting("Brightness", 100, 0, 100,  v -> this.rainbow.getValue()));
+        this.speed = (Setting<Integer>)this.register(new Setting("Speed", 40, 1, 100,  v -> this.rainbow.getValue()));
+        this.red = (Setting<Integer>)this.register(new Setting("Red", 0, 0, 255,  v -> !this.rainbow.getValue()));
+        this.green = (Setting<Integer>)this.register(new Setting("Green", 255, 0, 255,  v -> !this.rainbow.getValue()));
+        this.blue = (Setting<Integer>)this.register(new Setting("Blue", 0, 0, 255,  v -> !this.rainbow.getValue()));
+        this.alpha = (Setting<Integer>)this.register(new Setting("Alpha", 255, 0, 255));
         HandColor.INSTANCE = this;
     }
 }

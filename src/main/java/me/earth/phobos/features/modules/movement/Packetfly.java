@@ -23,7 +23,7 @@ public class Packetfly extends Module
 {
     private static Packetfly instance;
     private final Set<CPacketPlayer> packets;
-    private final Map<Integer, IDtime> teleportmap;
+    private final Map<Integer,  IDtime> teleportmap;
     public Setting<Boolean> flight;
     public Setting<Integer> flightMode;
     public Setting<Boolean> doAntiFactor;
@@ -46,27 +46,27 @@ public class Packetfly extends Module
     private int teleportID;
     
     public Packetfly() {
-        super("Packetfly", "Uses packets to fly!", Module.Category.MOVEMENT, true, false, false);
+        super("Packetfly",  "Uses packets to fly!",  Module.Category.MOVEMENT,  true,  false,  false);
         this.packets = (Set<CPacketPlayer>)new ConcurrentSet();
-        this.teleportmap = new ConcurrentHashMap<Integer, IDtime>();
-        this.flight = (Setting<Boolean>)this.register(new Setting("Flight", (T)true));
-        this.flightMode = (Setting<Integer>)this.register(new Setting("FMode", (T)0, (T)0, (T)1));
-        this.doAntiFactor = (Setting<Boolean>)this.register(new Setting("Factorize", (T)true));
-        this.antiFactor = (Setting<Double>)this.register(new Setting("AntiFactor", (T)2.5, (T)0.1, (T)3.0));
-        this.extraFactor = (Setting<Double>)this.register(new Setting("ExtraFactor", (T)1.0, (T)0.1, (T)3.0));
-        this.strafeFactor = (Setting<Boolean>)this.register(new Setting("StrafeFactor", (T)true));
-        this.loops = (Setting<Integer>)this.register(new Setting("Loops", (T)1, (T)1, (T)10));
-        this.clearTeleMap = (Setting<Boolean>)this.register(new Setting("ClearMap", (T)true));
-        this.mapTime = (Setting<Integer>)this.register(new Setting("ClearTime", (T)30, (T)1, (T)500));
-        this.clearIDs = (Setting<Boolean>)this.register(new Setting("ClearIDs", (T)true));
-        this.setYaw = (Setting<Boolean>)this.register(new Setting("SetYaw", (T)true));
-        this.setID = (Setting<Boolean>)this.register(new Setting("SetID", (T)true));
-        this.setMove = (Setting<Boolean>)this.register(new Setting("SetMove", (T)false));
-        this.nocliperino = (Setting<Boolean>)this.register(new Setting("NoClip", (T)false));
-        this.sendTeleport = (Setting<Boolean>)this.register(new Setting("Teleport", (T)true));
-        this.resetID = (Setting<Boolean>)this.register(new Setting("ResetID", (T)true));
-        this.setPos = (Setting<Boolean>)this.register(new Setting("SetPos", (T)false));
-        this.invalidPacket = (Setting<Boolean>)this.register(new Setting("InvalidPacket", (T)true));
+        this.teleportmap = new ConcurrentHashMap<Integer,  IDtime>();
+        this.flight = (Setting<Boolean>)this.register(new Setting("Flight", true));
+        this.flightMode = (Setting<Integer>)this.register(new Setting("FMode", 0, 0, 1));
+        this.doAntiFactor = (Setting<Boolean>)this.register(new Setting("Factorize", true));
+        this.antiFactor = (Setting<Double>)this.register(new Setting("AntiFactor", 2.5, 0.1, 3.0));
+        this.extraFactor = (Setting<Double>)this.register(new Setting("ExtraFactor", 1.0, 0.1, 3.0));
+        this.strafeFactor = (Setting<Boolean>)this.register(new Setting("StrafeFactor", true));
+        this.loops = (Setting<Integer>)this.register(new Setting("Loops", 1, 1, 10));
+        this.clearTeleMap = (Setting<Boolean>)this.register(new Setting("ClearMap", true));
+        this.mapTime = (Setting<Integer>)this.register(new Setting("ClearTime", 30, 1, 500));
+        this.clearIDs = (Setting<Boolean>)this.register(new Setting("ClearIDs", true));
+        this.setYaw = (Setting<Boolean>)this.register(new Setting("SetYaw", true));
+        this.setID = (Setting<Boolean>)this.register(new Setting("SetID", true));
+        this.setMove = (Setting<Boolean>)this.register(new Setting("SetMove", false));
+        this.nocliperino = (Setting<Boolean>)this.register(new Setting("NoClip", false));
+        this.sendTeleport = (Setting<Boolean>)this.register(new Setting("Teleport", true));
+        this.resetID = (Setting<Boolean>)this.register(new Setting("ResetID", true));
+        this.setPos = (Setting<Boolean>)this.register(new Setting("SetPos", false));
+        this.invalidPacket = (Setting<Boolean>)this.register(new Setting("InvalidPacket", true));
         Packetfly.instance = this;
     }
     
@@ -89,7 +89,7 @@ public class Packetfly extends Module
         if (event.getStage() == 1) {
             return;
         }
-        Packetfly.mc.player.setVelocity(0.0, 0.0, 0.0);
+        Packetfly.mc.player.setVelocity(0.0,  0.0,  0.0);
         final boolean checkCollisionBoxes = this.checkHitBoxes();
         double speed = (Packetfly.mc.player.movementInput.jump && (checkCollisionBoxes || !EntityUtil.isMoving())) ? ((this.flight.getValue() && !checkCollisionBoxes) ? ((this.flightMode.getValue() == 0) ? (this.resetCounter(10) ? -0.032 : 0.062) : (this.resetCounter(20) ? -0.032 : 0.062)) : 0.062) : (Packetfly.mc.player.movementInput.sneak ? -0.062 : (checkCollisionBoxes ? 0.0 : (this.resetCounter(4) ? (this.flight.getValue() ? -0.04 : 0.0) : 0.0)));
         if (this.doAntiFactor.getValue() && checkCollisionBoxes && EntityUtil.isMoving() && speed != 0.0) {
@@ -100,7 +100,7 @@ public class Packetfly extends Module
             Packetfly.mc.player.motionX = strafing[0] * i * this.extraFactor.getValue();
             Packetfly.mc.player.motionY = speed * i;
             Packetfly.mc.player.motionZ = strafing[1] * i * this.extraFactor.getValue();
-            this.sendPackets(Packetfly.mc.player.motionX, Packetfly.mc.player.motionY, Packetfly.mc.player.motionZ, this.sendTeleport.getValue());
+            this.sendPackets(Packetfly.mc.player.motionX,  Packetfly.mc.player.motionY,  Packetfly.mc.player.motionZ,  this.sendTeleport.getValue());
         }
     }
     
@@ -134,7 +134,7 @@ public class Packetfly extends Module
     public void onPacketReceive(final PacketEvent.Receive event) {
         if (event.getPacket() instanceof SPacketPlayerPosLook && !fullNullCheck()) {
             final SPacketPlayerPosLook packet = (SPacketPlayerPosLook)event.getPacket();
-            if (Packetfly.mc.player.isEntityAlive() && Packetfly.mc.world.isBlockLoaded(new BlockPos(Packetfly.mc.player.posX, Packetfly.mc.player.posY, Packetfly.mc.player.posZ), false) && !(Packetfly.mc.currentScreen instanceof GuiDownloadTerrain) && this.clearIDs.getValue()) {
+            if (Packetfly.mc.player.isEntityAlive() && Packetfly.mc.world.isBlockLoaded(new BlockPos(Packetfly.mc.player.posX,  Packetfly.mc.player.posY,  Packetfly.mc.player.posZ),  false) && !(Packetfly.mc.currentScreen instanceof GuiDownloadTerrain) && this.clearIDs.getValue()) {
                 this.teleportmap.remove(packet.getTeleportId());
             }
             if (this.setYaw.getValue()) {
@@ -148,7 +148,7 @@ public class Packetfly extends Module
     }
     
     private boolean checkHitBoxes() {
-        return !Packetfly.mc.world.getCollisionBoxes((Entity)Packetfly.mc.player, Packetfly.mc.player.getEntityBoundingBox().expand(-0.0625, -0.0625, -0.0625)).isEmpty();
+        return !Packetfly.mc.world.getCollisionBoxes((Entity)Packetfly.mc.player,  Packetfly.mc.player.getEntityBoundingBox().expand(-0.0625,  -0.0625,  -0.0625)).isEmpty();
     }
     
     private boolean resetCounter(final int counter) {
@@ -180,32 +180,32 @@ public class Packetfly extends Module
         }
         final double posX = moveForward * speed * -Math.sin(Math.toRadians(rotationYaw)) + moveStrafe * speed * Math.cos(Math.toRadians(rotationYaw));
         final double posZ = moveForward * speed * Math.cos(Math.toRadians(rotationYaw)) - moveStrafe * speed * -Math.sin(Math.toRadians(rotationYaw));
-        return new double[] { posX, posZ };
+        return new double[] { posX,  posZ };
     }
     
-    private void sendPackets(final double x, final double y, final double z, final boolean teleport) {
-        final Vec3d vec = new Vec3d(x, y, z);
+    private void sendPackets(final double x,  final double y,  final double z,  final boolean teleport) {
+        final Vec3d vec = new Vec3d(x,  y,  z);
         final Vec3d position = Packetfly.mc.player.getPositionVector().add(vec);
-        final Vec3d outOfBoundsVec = this.outOfBoundsVec(vec, position);
-        this.packetSender((CPacketPlayer)new CPacketPlayer.Position(position.x, position.y, position.z, Packetfly.mc.player.onGround));
+        final Vec3d outOfBoundsVec = this.outOfBoundsVec(vec,  position);
+        this.packetSender((CPacketPlayer)new CPacketPlayer.Position(position.x,  position.y,  position.z,  Packetfly.mc.player.onGround));
         if (this.invalidPacket.getValue()) {
-            this.packetSender((CPacketPlayer)new CPacketPlayer.Position(outOfBoundsVec.x, outOfBoundsVec.y, outOfBoundsVec.z, Packetfly.mc.player.onGround));
+            this.packetSender((CPacketPlayer)new CPacketPlayer.Position(outOfBoundsVec.x,  outOfBoundsVec.y,  outOfBoundsVec.z,  Packetfly.mc.player.onGround));
         }
         if (this.setPos.getValue()) {
-            Packetfly.mc.player.setPosition(position.x, position.y, position.z);
+            Packetfly.mc.player.setPosition(position.x,  position.y,  position.z);
         }
-        this.teleportPacket(position, teleport);
+        this.teleportPacket(position,  teleport);
     }
     
-    private void teleportPacket(final Vec3d pos, final boolean shouldTeleport) {
+    private void teleportPacket(final Vec3d pos,  final boolean shouldTeleport) {
         if (shouldTeleport) {
             Packetfly.mc.player.connection.sendPacket((Packet)new CPacketConfirmTeleport(++this.teleportID));
-            this.teleportmap.put(this.teleportID, new IDtime(pos, new TimerUtil()));
+            this.teleportmap.put(this.teleportID,  new IDtime(pos,  new TimerUtil()));
         }
     }
     
-    private Vec3d outOfBoundsVec(final Vec3d offset, final Vec3d position) {
-        return position.add(0.0, 1337.0, 0.0);
+    private Vec3d outOfBoundsVec(final Vec3d offset,  final Vec3d position) {
+        return position.add(0.0,  1337.0,  0.0);
     }
     
     private void packetSender(final CPacketPlayer packet) {
@@ -227,7 +227,7 @@ public class Packetfly extends Module
         private final Vec3d pos;
         private final TimerUtil timer;
         
-        public IDtime(final Vec3d pos, final TimerUtil timer) {
+        public IDtime(final Vec3d pos,  final TimerUtil timer) {
             this.pos = pos;
             (this.timer = timer).reset();
         }

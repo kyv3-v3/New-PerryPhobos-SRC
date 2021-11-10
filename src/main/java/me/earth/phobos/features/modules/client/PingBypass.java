@@ -39,19 +39,19 @@ public class PingBypass extends Module
     private String serverPrefix;
     
     public PingBypass() {
-        super("PingBypass", "Manages Phobos`s internal Server.", Category.CLIENT, false, false, true);
+        super("PingBypass",  "Manages Phobos`s internal Server.",  Category.CLIENT,  false,  false,  true);
         this.connected = new AtomicBoolean(false);
         this.pingTimer = new TimerUtil();
         this.pingList = new ArrayList<Long>();
-        this.ip = (Setting<String>)this.register(new Setting("PhobosIP", (T)"0.0.0.0.0"));
-        this.port = (Setting<String>)this.register((Setting)new Setting<String>("Port", "0").setRenderName(true));
-        this.serverIP = (Setting<String>)this.register(new Setting("ServerIP", (T)"AnarchyHvH.eu"));
-        this.noFML = (Setting<Boolean>)this.register(new Setting("RemoveFML", (T)false));
-        this.getName = (Setting<Boolean>)this.register(new Setting("GetName", (T)false));
-        this.average = (Setting<Boolean>)this.register(new Setting("Average", (T)false));
-        this.clear = (Setting<Boolean>)this.register(new Setting("ClearPings", (T)false));
-        this.oneWay = (Setting<Boolean>)this.register(new Setting("OneWay", (T)false));
-        this.delay = (Setting<Integer>)this.register(new Setting("KeepAlives", (T)10, (T)1, (T)50));
+        this.ip = (Setting<String>)this.register(new Setting("PhobosIP", "0.0.0.0.0"));
+        this.port = (Setting<String>)this.register((Setting)new Setting<String>("Port",  "0").setRenderName(true));
+        this.serverIP = (Setting<String>)this.register(new Setting("ServerIP", "AnarchyHvH.eu"));
+        this.noFML = (Setting<Boolean>)this.register(new Setting("RemoveFML", false));
+        this.getName = (Setting<Boolean>)this.register(new Setting("GetName", false));
+        this.average = (Setting<Boolean>)this.register(new Setting("Average", false));
+        this.clear = (Setting<Boolean>)this.register(new Setting("ClearPings", false));
+        this.oneWay = (Setting<Boolean>)this.register(new Setting("OneWay", false));
+        this.delay = (Setting<Integer>)this.register(new Setting("KeepAlives", 10, 1, 50));
         this.serverPrefix = "idk";
         PingBypass.instance = this;
     }
@@ -89,7 +89,7 @@ public class PingBypass extends Module
         if (event.getPacket() instanceof SPacketChat) {
             final SPacketChat packet = (SPacketChat)event.getPacket();
             if (packet.chatComponent.getUnformattedText().startsWith("@Clientprefix")) {
-                this.serverPrefix = packet.chatComponent.getFormattedText().replace("@Clientprefix", "");
+                this.serverPrefix = packet.chatComponent.getFormattedText().replace("@Clientprefix",  "");
             }
         }
     }
@@ -119,7 +119,7 @@ public class PingBypass extends Module
         if (event.getPacket() instanceof SPacketChat) {
             final SPacketChat packetChat = (SPacketChat)event.getPacket();
             if (packetChat.getChatComponent().getFormattedText().startsWith("@Client")) {
-                this.name = new StringBuffer(TextUtil.stripColor(packetChat.getChatComponent().getFormattedText().replace("@Client", "")));
+                this.name = new StringBuffer(TextUtil.stripColor(packetChat.getChatComponent().getFormattedText().replace("@Client",  "")));
                 event.setCanceled(true);
             }
         }

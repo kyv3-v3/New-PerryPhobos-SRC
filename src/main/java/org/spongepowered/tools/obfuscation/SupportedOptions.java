@@ -24,7 +24,7 @@ public final class SupportedOptions
     
     public static Set<String> getAllOptions() {
         final ImmutableSet.Builder<String> options = (ImmutableSet.Builder<String>)ImmutableSet.builder();
-        options.add((Object[])new String[] { "tokens", "outRefMapFile", "disableTargetValidator", "disableTargetExport", "disableOverwriteChecker", "overwriteErrorLevel", "defaultObfuscationEnv", "dependencyTargetsFile" });
+        options.add((Object[])new String[] { "tokens",  "outRefMapFile",  "disableTargetValidator",  "disableTargetExport",  "disableOverwriteChecker",  "overwriteErrorLevel",  "defaultObfuscationEnv",  "dependencyTargetsFile" });
         options.addAll((Iterable)ObfuscationServices.getInstance().getSupportedOptions());
         return (Set<String>)options.build();
     }

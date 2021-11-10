@@ -25,11 +25,11 @@ public class PingSpoof extends Module
     private boolean receive;
     
     public PingSpoof() {
-        super("PingSpoof", "Spoofs your ping!", Category.MISC, true, false, false);
-        this.seconds = (Setting<Boolean>)this.register(new Setting("Seconds", (T)false));
-        this.delay = (Setting<Integer>)this.register(new Setting("DelayMS", (T)20, (T)0, (T)1000, v -> !this.seconds.getValue()));
-        this.secondDelay = (Setting<Integer>)this.register(new Setting("DelayS", (T)5, (T)0, (T)30, v -> this.seconds.getValue()));
-        this.offOnLogout = (Setting<Boolean>)this.register(new Setting("Logout", (T)false));
+        super("PingSpoof",  "Spoofs your ping!",  Category.MISC,  true,  false,  false);
+        this.seconds = (Setting<Boolean>)this.register(new Setting("Seconds", false));
+        this.delay = (Setting<Integer>)this.register(new Setting("DelayMS", 20, 0, 1000,  v -> !this.seconds.getValue()));
+        this.secondDelay = (Setting<Integer>)this.register(new Setting("DelayS", 5, 0, 30,  v -> this.seconds.getValue()));
+        this.offOnLogout = (Setting<Boolean>)this.register(new Setting("Logout", false));
         this.packets = new ConcurrentLinkedQueue<Packet<?>>();
         this.timer = new TimerUtil();
         this.receive = true;
@@ -69,7 +69,7 @@ public class PingSpoof extends Module
     
     public void clearQueue() {
         if (PingSpoof.mc.player != null && !PingSpoof.mc.isSingleplayer() && PingSpoof.mc.player.isEntityAlive() && ((!this.seconds.getValue() && this.timer.passedMs(this.delay.getValue())) || (this.seconds.getValue() && this.timer.passedS(this.secondDelay.getValue())))) {
-            final double limit = MathUtil.getIncremental(Math.random() * 10.0, 1.0);
+            final double limit = MathUtil.getIncremental(Math.random() * 10.0,  1.0);
             this.receive = false;
             for (int i = 0; i < limit; ++i) {
                 final Packet<?> packet = this.packets.poll();

@@ -15,19 +15,19 @@ public class Frame<V extends Value>
     private int locals;
     private int top;
     
-    public Frame(final int nLocals, final int nStack) {
+    public Frame(final int nLocals,  final int nStack) {
         this.values = (V[])new Value[nLocals + nStack];
         this.locals = nLocals;
     }
     
     public Frame(final Frame<? extends V> src) {
-        this(src.locals, src.values.length - src.locals);
+        this(src.locals,  src.values.length - src.locals);
         this.init(src);
     }
     
     public Frame<V> init(final Frame<? extends V> src) {
         this.returnValue = (V)src.returnValue;
-        System.arraycopy(src.values, 0, this.values, 0, this.values.length);
+        System.arraycopy(src.values,  0,  this.values,  0,  this.values.length);
         this.top = src.top;
         return this;
     }
@@ -51,7 +51,7 @@ public class Frame<V extends Value>
         return this.values[i];
     }
     
-    public void setLocal(final int i, final V value) throws IndexOutOfBoundsException {
+    public void setLocal(final int i,  final V value) throws IndexOutOfBoundsException {
         if (i >= this.locals) {
             throw new IndexOutOfBoundsException("Trying to access an inexistant local variable " + i);
         }
@@ -87,7 +87,7 @@ public class Frame<V extends Value>
         this.values[this.top++ + this.locals] = value;
     }
     
-    public void execute(final AbstractInsnNode insn, final Interpreter<V> interpreter) throws AnalyzerException {
+    public void execute(final AbstractInsnNode insn,  final Interpreter<V> interpreter) throws AnalyzerException {
         switch (insn.getOpcode()) {
             case 0: {
                 break;
@@ -118,7 +118,7 @@ public class Frame<V extends Value>
             case 23:
             case 24:
             case 25: {
-                this.push(interpreter.copyOperation(insn, this.getLocal(((VarInsnNode)insn).var)));
+                this.push(interpreter.copyOperation(insn,  this.getLocal(((VarInsnNode)insn).var)));
                 break;
             }
             case 46:
@@ -131,7 +131,7 @@ public class Frame<V extends Value>
             case 53: {
                 final V value2 = this.pop();
                 final V value3 = this.pop();
-                this.push(interpreter.binaryOperation(insn, value3, value2));
+                this.push(interpreter.binaryOperation(insn,  value3,  value2));
                 break;
             }
             case 54:
@@ -139,16 +139,16 @@ public class Frame<V extends Value>
             case 56:
             case 57:
             case 58: {
-                final V value3 = interpreter.copyOperation(insn, this.pop());
+                final V value3 = interpreter.copyOperation(insn,  this.pop());
                 final int var = ((VarInsnNode)insn).var;
-                this.setLocal(var, value3);
+                this.setLocal(var,  value3);
                 if (value3.getSize() == 2) {
-                    this.setLocal(var + 1, interpreter.newValue(null));
+                    this.setLocal(var + 1,  interpreter.newValue(null));
                 }
                 if (var > 0) {
                     final Value local = this.getLocal(var - 1);
                     if (local != null && local.getSize() == 2) {
-                        this.setLocal(var - 1, interpreter.newValue(null));
+                        this.setLocal(var - 1,  interpreter.newValue(null));
                     }
                     break;
                 }
@@ -165,37 +165,37 @@ public class Frame<V extends Value>
                 final V value4 = this.pop();
                 final V value2 = this.pop();
                 final V value3 = this.pop();
-                interpreter.ternaryOperation(insn, value3, value2, value4);
+                interpreter.ternaryOperation(insn,  value3,  value2,  value4);
                 break;
             }
             case 87: {
                 if (this.pop().getSize() == 2) {
-                    throw new AnalyzerException(insn, "Illegal use of POP");
+                    throw new AnalyzerException(insn,  "Illegal use of POP");
                 }
                 break;
             }
             case 88: {
                 if (this.pop().getSize() == 1 && this.pop().getSize() != 1) {
-                    throw new AnalyzerException(insn, "Illegal use of POP2");
+                    throw new AnalyzerException(insn,  "Illegal use of POP2");
                 }
                 break;
             }
             case 89: {
                 final V value3 = this.pop();
                 if (value3.getSize() != 1) {
-                    throw new AnalyzerException(insn, "Illegal use of DUP");
+                    throw new AnalyzerException(insn,  "Illegal use of DUP");
                 }
                 this.push(value3);
-                this.push(interpreter.copyOperation(insn, value3));
+                this.push(interpreter.copyOperation(insn,  value3));
                 break;
             }
             case 90: {
                 final V value3 = this.pop();
                 final V value2 = this.pop();
                 if (value3.getSize() != 1 || value2.getSize() != 1) {
-                    throw new AnalyzerException(insn, "Illegal use of DUP_X1");
+                    throw new AnalyzerException(insn,  "Illegal use of DUP_X1");
                 }
-                this.push(interpreter.copyOperation(insn, value3));
+                this.push(interpreter.copyOperation(insn,  value3));
                 this.push(value2);
                 this.push(value3);
                 break;
@@ -205,38 +205,38 @@ public class Frame<V extends Value>
                 if (value3.getSize() == 1) {
                     final V value2 = this.pop();
                     if (value2.getSize() != 1) {
-                        this.push(interpreter.copyOperation(insn, value3));
+                        this.push(interpreter.copyOperation(insn,  value3));
                         this.push(value2);
                         this.push(value3);
                         break;
                     }
                     final V value4 = this.pop();
                     if (value4.getSize() == 1) {
-                        this.push(interpreter.copyOperation(insn, value3));
+                        this.push(interpreter.copyOperation(insn,  value3));
                         this.push(value4);
                         this.push(value2);
                         this.push(value3);
                         break;
                     }
                 }
-                throw new AnalyzerException(insn, "Illegal use of DUP_X2");
+                throw new AnalyzerException(insn,  "Illegal use of DUP_X2");
             }
             case 92: {
                 final V value3 = this.pop();
                 if (value3.getSize() != 1) {
                     this.push(value3);
-                    this.push(interpreter.copyOperation(insn, value3));
+                    this.push(interpreter.copyOperation(insn,  value3));
                     break;
                 }
                 final V value2 = this.pop();
                 if (value2.getSize() == 1) {
                     this.push(value2);
                     this.push(value3);
-                    this.push(interpreter.copyOperation(insn, value2));
-                    this.push(interpreter.copyOperation(insn, value3));
+                    this.push(interpreter.copyOperation(insn,  value2));
+                    this.push(interpreter.copyOperation(insn,  value3));
                     break;
                 }
-                throw new AnalyzerException(insn, "Illegal use of DUP2");
+                throw new AnalyzerException(insn,  "Illegal use of DUP2");
             }
             case 93: {
                 final V value3 = this.pop();
@@ -245,8 +245,8 @@ public class Frame<V extends Value>
                     if (value2.getSize() == 1) {
                         final V value4 = this.pop();
                         if (value4.getSize() == 1) {
-                            this.push(interpreter.copyOperation(insn, value2));
-                            this.push(interpreter.copyOperation(insn, value3));
+                            this.push(interpreter.copyOperation(insn,  value2));
+                            this.push(interpreter.copyOperation(insn,  value3));
                             this.push(value4);
                             this.push(value2);
                             this.push(value3);
@@ -257,13 +257,13 @@ public class Frame<V extends Value>
                 else {
                     final V value2 = this.pop();
                     if (value2.getSize() == 1) {
-                        this.push(interpreter.copyOperation(insn, value3));
+                        this.push(interpreter.copyOperation(insn,  value3));
                         this.push(value2);
                         this.push(value3);
                         break;
                     }
                 }
-                throw new AnalyzerException(insn, "Illegal use of DUP2_X1");
+                throw new AnalyzerException(insn,  "Illegal use of DUP2_X1");
             }
             case 94: {
                 final V value3 = this.pop();
@@ -272,8 +272,8 @@ public class Frame<V extends Value>
                     if (value2.getSize() == 1) {
                         final V value4 = this.pop();
                         if (value4.getSize() != 1) {
-                            this.push(interpreter.copyOperation(insn, value2));
-                            this.push(interpreter.copyOperation(insn, value3));
+                            this.push(interpreter.copyOperation(insn,  value2));
+                            this.push(interpreter.copyOperation(insn,  value3));
                             this.push(value4);
                             this.push(value2);
                             this.push(value3);
@@ -281,8 +281,8 @@ public class Frame<V extends Value>
                         }
                         final V value5 = this.pop();
                         if (value5.getSize() == 1) {
-                            this.push(interpreter.copyOperation(insn, value2));
-                            this.push(interpreter.copyOperation(insn, value3));
+                            this.push(interpreter.copyOperation(insn,  value2));
+                            this.push(interpreter.copyOperation(insn,  value3));
                             this.push(value5);
                             this.push(value4);
                             this.push(value2);
@@ -294,30 +294,30 @@ public class Frame<V extends Value>
                 else {
                     final V value2 = this.pop();
                     if (value2.getSize() != 1) {
-                        this.push(interpreter.copyOperation(insn, value3));
+                        this.push(interpreter.copyOperation(insn,  value3));
                         this.push(value2);
                         this.push(value3);
                         break;
                     }
                     final V value4 = this.pop();
                     if (value4.getSize() == 1) {
-                        this.push(interpreter.copyOperation(insn, value3));
+                        this.push(interpreter.copyOperation(insn,  value3));
                         this.push(value4);
                         this.push(value2);
                         this.push(value3);
                         break;
                     }
                 }
-                throw new AnalyzerException(insn, "Illegal use of DUP2_X2");
+                throw new AnalyzerException(insn,  "Illegal use of DUP2_X2");
             }
             case 95: {
                 final V value2 = this.pop();
                 final V value3 = this.pop();
                 if (value3.getSize() != 1 || value2.getSize() != 1) {
-                    throw new AnalyzerException(insn, "Illegal use of SWAP");
+                    throw new AnalyzerException(insn,  "Illegal use of SWAP");
                 }
-                this.push(interpreter.copyOperation(insn, value2));
-                this.push(interpreter.copyOperation(insn, value3));
+                this.push(interpreter.copyOperation(insn,  value2));
+                this.push(interpreter.copyOperation(insn,  value3));
                 break;
             }
             case 96:
@@ -342,14 +342,14 @@ public class Frame<V extends Value>
             case 115: {
                 final V value2 = this.pop();
                 final V value3 = this.pop();
-                this.push(interpreter.binaryOperation(insn, value3, value2));
+                this.push(interpreter.binaryOperation(insn,  value3,  value2));
                 break;
             }
             case 116:
             case 117:
             case 118:
             case 119: {
-                this.push(interpreter.unaryOperation(insn, this.pop()));
+                this.push(interpreter.unaryOperation(insn,  this.pop()));
                 break;
             }
             case 120:
@@ -366,12 +366,12 @@ public class Frame<V extends Value>
             case 131: {
                 final V value2 = this.pop();
                 final V value3 = this.pop();
-                this.push(interpreter.binaryOperation(insn, value3, value2));
+                this.push(interpreter.binaryOperation(insn,  value3,  value2));
                 break;
             }
             case 132: {
                 final int var = ((IincInsnNode)insn).var;
-                this.setLocal(var, interpreter.unaryOperation(insn, this.getLocal(var)));
+                this.setLocal(var,  interpreter.unaryOperation(insn,  this.getLocal(var)));
                 break;
             }
             case 133:
@@ -389,7 +389,7 @@ public class Frame<V extends Value>
             case 145:
             case 146:
             case 147: {
-                this.push(interpreter.unaryOperation(insn, this.pop()));
+                this.push(interpreter.unaryOperation(insn,  this.pop()));
                 break;
             }
             case 148:
@@ -399,7 +399,7 @@ public class Frame<V extends Value>
             case 152: {
                 final V value2 = this.pop();
                 final V value3 = this.pop();
-                this.push(interpreter.binaryOperation(insn, value3, value2));
+                this.push(interpreter.binaryOperation(insn,  value3,  value2));
                 break;
             }
             case 153:
@@ -408,7 +408,7 @@ public class Frame<V extends Value>
             case 156:
             case 157:
             case 158: {
-                interpreter.unaryOperation(insn, this.pop());
+                interpreter.unaryOperation(insn,  this.pop());
                 break;
             }
             case 159:
@@ -421,7 +421,7 @@ public class Frame<V extends Value>
             case 166: {
                 final V value2 = this.pop();
                 final V value3 = this.pop();
-                interpreter.binaryOperation(insn, value3, value2);
+                interpreter.binaryOperation(insn,  value3,  value2);
                 break;
             }
             case 167: {
@@ -436,7 +436,7 @@ public class Frame<V extends Value>
             }
             case 170:
             case 171: {
-                interpreter.unaryOperation(insn, this.pop());
+                interpreter.unaryOperation(insn,  this.pop());
                 break;
             }
             case 172:
@@ -445,13 +445,13 @@ public class Frame<V extends Value>
             case 175:
             case 176: {
                 final V value3 = this.pop();
-                interpreter.unaryOperation(insn, value3);
-                interpreter.returnOperation(insn, value3, this.returnValue);
+                interpreter.unaryOperation(insn,  value3);
+                interpreter.returnOperation(insn,  value3,  this.returnValue);
                 break;
             }
             case 177: {
                 if (this.returnValue != null) {
-                    throw new AnalyzerException(insn, "Incompatible return type");
+                    throw new AnalyzerException(insn,  "Incompatible return type");
                 }
                 break;
             }
@@ -460,17 +460,17 @@ public class Frame<V extends Value>
                 break;
             }
             case 179: {
-                interpreter.unaryOperation(insn, this.pop());
+                interpreter.unaryOperation(insn,  this.pop());
                 break;
             }
             case 180: {
-                this.push(interpreter.unaryOperation(insn, this.pop()));
+                this.push(interpreter.unaryOperation(insn,  this.pop()));
                 break;
             }
             case 181: {
                 final V value2 = this.pop();
                 final V value3 = this.pop();
-                interpreter.binaryOperation(insn, value3, value2);
+                interpreter.binaryOperation(insn,  value3,  value2);
                 break;
             }
             case 182:
@@ -480,29 +480,29 @@ public class Frame<V extends Value>
                 final List<V> values = new ArrayList<V>();
                 final String desc = ((MethodInsnNode)insn).desc;
                 for (int i = Type.getArgumentTypes(desc).length; i > 0; --i) {
-                    values.add(0, this.pop());
+                    values.add(0,  this.pop());
                 }
                 if (insn.getOpcode() != 184) {
-                    values.add(0, this.pop());
+                    values.add(0,  this.pop());
                 }
                 if (Type.getReturnType(desc) == Type.VOID_TYPE) {
-                    interpreter.naryOperation(insn, (List<? extends V>)values);
+                    interpreter.naryOperation(insn,  (List<? extends V>)values);
                     break;
                 }
-                this.push(interpreter.naryOperation(insn, (List<? extends V>)values));
+                this.push(interpreter.naryOperation(insn,  (List<? extends V>)values));
                 break;
             }
             case 186: {
                 final List<V> values = new ArrayList<V>();
                 final String desc = ((InvokeDynamicInsnNode)insn).desc;
                 for (int i = Type.getArgumentTypes(desc).length; i > 0; --i) {
-                    values.add(0, this.pop());
+                    values.add(0,  this.pop());
                 }
                 if (Type.getReturnType(desc) == Type.VOID_TYPE) {
-                    interpreter.naryOperation(insn, (List<? extends V>)values);
+                    interpreter.naryOperation(insn,  (List<? extends V>)values);
                     break;
                 }
-                this.push(interpreter.naryOperation(insn, (List<? extends V>)values));
+                this.push(interpreter.naryOperation(insn,  (List<? extends V>)values));
                 break;
             }
             case 187: {
@@ -512,34 +512,34 @@ public class Frame<V extends Value>
             case 188:
             case 189:
             case 190: {
-                this.push(interpreter.unaryOperation(insn, this.pop()));
+                this.push(interpreter.unaryOperation(insn,  this.pop()));
                 break;
             }
             case 191: {
-                interpreter.unaryOperation(insn, this.pop());
+                interpreter.unaryOperation(insn,  this.pop());
                 break;
             }
             case 192:
             case 193: {
-                this.push(interpreter.unaryOperation(insn, this.pop()));
+                this.push(interpreter.unaryOperation(insn,  this.pop()));
                 break;
             }
             case 194:
             case 195: {
-                interpreter.unaryOperation(insn, this.pop());
+                interpreter.unaryOperation(insn,  this.pop());
                 break;
             }
             case 197: {
                 final List<V> values = new ArrayList<V>();
                 for (int j = ((MultiANewArrayInsnNode)insn).dims; j > 0; --j) {
-                    values.add(0, this.pop());
+                    values.add(0,  this.pop());
                 }
-                this.push(interpreter.naryOperation(insn, (List<? extends V>)values));
+                this.push(interpreter.naryOperation(insn,  (List<? extends V>)values));
                 break;
             }
             case 198:
             case 199: {
-                interpreter.unaryOperation(insn, this.pop());
+                interpreter.unaryOperation(insn,  this.pop());
                 break;
             }
             default: {
@@ -548,13 +548,13 @@ public class Frame<V extends Value>
         }
     }
     
-    public boolean merge(final Frame<? extends V> frame, final Interpreter<V> interpreter) throws AnalyzerException {
+    public boolean merge(final Frame<? extends V> frame,  final Interpreter<V> interpreter) throws AnalyzerException {
         if (this.top != frame.top) {
-            throw new AnalyzerException((AbstractInsnNode)null, "Incompatible stack heights");
+            throw new AnalyzerException((AbstractInsnNode)null,  "Incompatible stack heights");
         }
         boolean changes = false;
         for (int i = 0; i < this.locals + this.top; ++i) {
-            final V v = interpreter.merge(this.values[i], (V)frame.values[i]);
+            final V v = interpreter.merge(this.values[i],  (V)frame.values[i]);
             if (!v.equals(this.values[i])) {
                 this.values[i] = v;
                 changes = true;
@@ -563,7 +563,7 @@ public class Frame<V extends Value>
         return changes;
     }
     
-    public boolean merge(final Frame<? extends V> frame, final boolean[] access) {
+    public boolean merge(final Frame<? extends V> frame,  final boolean[] access) {
         boolean changes = false;
         for (int i = 0; i < this.locals; ++i) {
             if (!access[i] && !this.values[i].equals(frame.values[i])) {

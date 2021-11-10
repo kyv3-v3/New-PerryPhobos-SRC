@@ -17,24 +17,24 @@ public class FrameNode extends AbstractInsnNode
         super(-1);
     }
     
-    public FrameNode(final int type, final int nLocal, final Object[] local, final int nStack, final Object[] stack) {
+    public FrameNode(final int type,  final int nLocal,  final Object[] local,  final int nStack,  final Object[] stack) {
         super(-1);
         switch (this.type = type) {
             case -1:
             case 0: {
-                this.local = asList(nLocal, local);
-                this.stack = asList(nStack, stack);
+                this.local = asList(nLocal,  local);
+                this.stack = asList(nStack,  stack);
                 break;
             }
             case 1: {
-                this.local = asList(nLocal, local);
+                this.local = asList(nLocal,  local);
                 break;
             }
             case 2: {
                 this.local = Arrays.asList(new Object[nLocal]);
             }
             case 4: {
-                this.stack = asList(1, stack);
+                this.stack = asList(1,  stack);
                 break;
             }
         }
@@ -48,29 +48,29 @@ public class FrameNode extends AbstractInsnNode
         switch (this.type) {
             case -1:
             case 0: {
-                mv.visitFrame(this.type, this.local.size(), asArray(this.local), this.stack.size(), asArray(this.stack));
+                mv.visitFrame(this.type,  this.local.size(),  asArray(this.local),  this.stack.size(),  asArray(this.stack));
                 break;
             }
             case 1: {
-                mv.visitFrame(this.type, this.local.size(), asArray(this.local), 0, (Object[])null);
+                mv.visitFrame(this.type,  this.local.size(),  asArray(this.local),  0,  (Object[])null);
                 break;
             }
             case 2: {
-                mv.visitFrame(this.type, this.local.size(), (Object[])null, 0, (Object[])null);
+                mv.visitFrame(this.type,  this.local.size(),  (Object[])null,  0,  (Object[])null);
                 break;
             }
             case 3: {
-                mv.visitFrame(this.type, 0, (Object[])null, 0, (Object[])null);
+                mv.visitFrame(this.type,  0,  (Object[])null,  0,  (Object[])null);
                 break;
             }
             case 4: {
-                mv.visitFrame(this.type, 0, (Object[])null, 1, asArray(this.stack));
+                mv.visitFrame(this.type,  0,  (Object[])null,  1,  asArray(this.stack));
                 break;
             }
         }
     }
     
-    public AbstractInsnNode clone(final Map<LabelNode, LabelNode> labels) {
+    public AbstractInsnNode clone(final Map<LabelNode,  LabelNode> labels) {
         final FrameNode clone = new FrameNode();
         clone.type = this.type;
         if (this.local != null) {
@@ -96,8 +96,8 @@ public class FrameNode extends AbstractInsnNode
         return clone;
     }
     
-    private static List<Object> asList(final int n, final Object[] o) {
-        return Arrays.asList(o).subList(0, n);
+    private static List<Object> asList(final int n,  final Object[] o) {
+        return Arrays.asList(o).subList(0,  n);
     }
     
     private static Object[] asArray(final List<Object> l) {

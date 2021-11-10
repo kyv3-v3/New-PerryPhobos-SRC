@@ -20,14 +20,14 @@ public class FieldNode extends FieldVisitor
     public List<TypeAnnotationNode> invisibleTypeAnnotations;
     public List<Attribute> attrs;
     
-    public FieldNode(final int access, final String name, final String desc, final String signature, final Object value) {
-        this(327680, access, name, desc, signature, value);
+    public FieldNode(final int access,  final String name,  final String desc,  final String signature,  final Object value) {
+        this(327680,  access,  name,  desc,  signature,  value);
         if (this.getClass() != FieldNode.class) {
             throw new IllegalStateException();
         }
     }
     
-    public FieldNode(final int api, final int access, final String name, final String desc, final String signature, final Object value) {
+    public FieldNode(final int api,  final int access,  final String name,  final String desc,  final String signature,  final Object value) {
         super(api);
         this.access = access;
         this.name = name;
@@ -36,7 +36,7 @@ public class FieldNode extends FieldVisitor
         this.value = value;
     }
     
-    public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
+    public AnnotationVisitor visitAnnotation(final String desc,  final boolean visible) {
         final AnnotationNode an = new AnnotationNode(desc);
         if (visible) {
             if (this.visibleAnnotations == null) {
@@ -53,8 +53,8 @@ public class FieldNode extends FieldVisitor
         return (AnnotationVisitor)an;
     }
     
-    public AnnotationVisitor visitTypeAnnotation(final int typeRef, final TypePath typePath, final String desc, final boolean visible) {
-        final TypeAnnotationNode an = new TypeAnnotationNode(typeRef, typePath, desc);
+    public AnnotationVisitor visitTypeAnnotation(final int typeRef,  final TypePath typePath,  final String desc,  final boolean visible) {
+        final TypeAnnotationNode an = new TypeAnnotationNode(typeRef,  typePath,  desc);
         if (visible) {
             if (this.visibleTypeAnnotations == null) {
                 this.visibleTypeAnnotations = new ArrayList<TypeAnnotationNode>(1);
@@ -92,27 +92,27 @@ public class FieldNode extends FieldVisitor
     }
     
     public void accept(final ClassVisitor cv) {
-        final FieldVisitor fv = cv.visitField(this.access, this.name, this.desc, this.signature, this.value);
+        final FieldVisitor fv = cv.visitField(this.access,  this.name,  this.desc,  this.signature,  this.value);
         if (fv == null) {
             return;
         }
-        for (int n = (this.visibleAnnotations == null) ? 0 : this.visibleAnnotations.size(), i = 0; i < n; ++i) {
+        for (int n = (this.visibleAnnotations == null) ? 0 : this.visibleAnnotations.size(),  i = 0; i < n; ++i) {
             final AnnotationNode an = this.visibleAnnotations.get(i);
-            an.accept(fv.visitAnnotation(an.desc, true));
+            an.accept(fv.visitAnnotation(an.desc,  true));
         }
-        for (int n = (this.invisibleAnnotations == null) ? 0 : this.invisibleAnnotations.size(), i = 0; i < n; ++i) {
+        for (int n = (this.invisibleAnnotations == null) ? 0 : this.invisibleAnnotations.size(),  i = 0; i < n; ++i) {
             final AnnotationNode an = this.invisibleAnnotations.get(i);
-            an.accept(fv.visitAnnotation(an.desc, false));
+            an.accept(fv.visitAnnotation(an.desc,  false));
         }
-        for (int n = (this.visibleTypeAnnotations == null) ? 0 : this.visibleTypeAnnotations.size(), i = 0; i < n; ++i) {
+        for (int n = (this.visibleTypeAnnotations == null) ? 0 : this.visibleTypeAnnotations.size(),  i = 0; i < n; ++i) {
             final TypeAnnotationNode an2 = this.visibleTypeAnnotations.get(i);
-            an2.accept(fv.visitTypeAnnotation(an2.typeRef, an2.typePath, an2.desc, true));
+            an2.accept(fv.visitTypeAnnotation(an2.typeRef,  an2.typePath,  an2.desc,  true));
         }
-        for (int n = (this.invisibleTypeAnnotations == null) ? 0 : this.invisibleTypeAnnotations.size(), i = 0; i < n; ++i) {
+        for (int n = (this.invisibleTypeAnnotations == null) ? 0 : this.invisibleTypeAnnotations.size(),  i = 0; i < n; ++i) {
             final TypeAnnotationNode an2 = this.invisibleTypeAnnotations.get(i);
-            an2.accept(fv.visitTypeAnnotation(an2.typeRef, an2.typePath, an2.desc, false));
+            an2.accept(fv.visitTypeAnnotation(an2.typeRef,  an2.typePath,  an2.desc,  false));
         }
-        for (int n = (this.attrs == null) ? 0 : this.attrs.size(), i = 0; i < n; ++i) {
+        for (int n = (this.attrs == null) ? 0 : this.attrs.size(),  i = 0; i < n; ++i) {
             fv.visitAttribute((Attribute)this.attrs.get(i));
         }
         fv.visitEnd();

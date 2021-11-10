@@ -4,12 +4,12 @@
 
 package me.earth.phobos.util;
 
-public class PairUtil<F, S>
+public class PairUtil<F,  S>
 {
     private F first;
     private S second;
     
-    public PairUtil(final F f, final S s) {
+    public PairUtil(final F f,  final S s) {
         this.first = f;
         this.second = s;
     }

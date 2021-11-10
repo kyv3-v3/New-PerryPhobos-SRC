@@ -17,7 +17,7 @@ public final class ConstraintParser
         if (expr == null || expr.length() == 0) {
             return Constraint.NONE;
         }
-        final String[] exprs = expr.replaceAll("\\s", "").toUpperCase().split(";");
+        final String[] exprs = expr.replaceAll("\\s",  "").toUpperCase().split(";");
         Constraint head = null;
         for (final String subExpr : exprs) {
             final Constraint next = new Constraint(subExpr);
@@ -32,7 +32,7 @@ public final class ConstraintParser
     }
     
     public static Constraint parse(final AnnotationNode annotation) {
-        final String constraints = (String)Annotations.getValue(annotation, "constraints", (Object)"");
+        final String constraints = (String)Annotations.getValue(annotation,  "constraints",  (Object)"");
         return parse(constraints);
     }
     
@@ -56,7 +56,7 @@ public final class ConstraintParser
                 throw new InvalidConstraintException("Constraint syntax was invalid parsing: " + this.expr);
             }
             this.token = matcher.group(1);
-            this.constraint = new String[] { matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5), matcher.group(6), matcher.group(7), matcher.group(8) };
+            this.constraint = new String[] { matcher.group(2),  matcher.group(3),  matcher.group(4),  matcher.group(5),  matcher.group(6),  matcher.group(7),  matcher.group(8) };
             this.parse();
         }
         
@@ -165,13 +165,13 @@ public final class ConstraintParser
             if (this != Constraint.NONE) {
                 final Integer value = environment.getToken(this.token);
                 if (value == null) {
-                    throw new ConstraintViolationException("The token '" + this.token + "' could not be resolved in " + environment, this);
+                    throw new ConstraintViolationException("The token '" + this.token + "' could not be resolved in " + environment,  this);
                 }
                 if (value < this.min) {
-                    throw new ConstraintViolationException("Token '" + this.token + "' has a value (" + value + ") which is less than the minimum value " + this.min + " in " + environment, this, value);
+                    throw new ConstraintViolationException("Token '" + this.token + "' has a value (" + value + ") which is less than the minimum value " + this.min + " in " + environment,  this,  value);
                 }
                 if (value > this.max) {
-                    throw new ConstraintViolationException("Token '" + this.token + "' has a value (" + value + ") which is greater than the maximum value " + this.max + " in " + environment, this, value);
+                    throw new ConstraintViolationException("Token '" + this.token + "' has a value (" + value + ") which is greater than the maximum value " + this.max + " in " + environment,  this,  value);
                 }
             }
             if (this.next != null) {
@@ -184,20 +184,20 @@ public final class ConstraintParser
                 return "ANY VALUE";
             }
             if (this.min == Integer.MIN_VALUE) {
-                return String.format("less than or equal to %d", this.max);
+                return String.format("less than or equal to %d",  this.max);
             }
             if (this.max == Integer.MAX_VALUE) {
-                return String.format("greater than or equal to %d", this.min);
+                return String.format("greater than or equal to %d",  this.min);
             }
             if (this.min == this.max) {
-                return String.format("%d", this.min);
+                return String.format("%d",  this.min);
             }
-            return String.format("between %d and %d", this.min, this.max);
+            return String.format("between %d and %d",  this.min,  this.max);
         }
         
         @Override
         public String toString() {
-            return String.format("Constraint(%s [%d-%d])", this.token, this.min, this.max);
+            return String.format("Constraint(%s [%d-%d])",  this.token,  this.min,  this.max);
         }
         
         static {

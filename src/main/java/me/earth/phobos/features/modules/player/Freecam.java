@@ -34,12 +34,12 @@ public class Freecam extends Module
     private float pitch;
     
     public Freecam() {
-        super("Freecam", "Look around freely.", Module.Category.PLAYER, true, false, false);
-        this.speed = (Setting<Double>)this.register(new Setting("Speed", (T)0.5, (T)0.1, (T)5.0));
-        this.view = (Setting<Boolean>)this.register(new Setting("3D", (T)false));
-        this.packet = (Setting<Boolean>)this.register(new Setting("Packet", (T)true));
-        this.disable = (Setting<Boolean>)this.register(new Setting("Logout/Off", (T)true));
-        this.legit = (Setting<Boolean>)this.register(new Setting("Legit", (T)false));
+        super("Freecam",  "Look around freely.",  Module.Category.PLAYER,  true,  false,  false);
+        this.speed = (Setting<Double>)this.register(new Setting("Speed", 0.5, 0.1, 5.0));
+        this.view = (Setting<Boolean>)this.register(new Setting("3D", false));
+        this.packet = (Setting<Boolean>)this.register(new Setting("Packet", true));
+        this.disable = (Setting<Boolean>)this.register(new Setting("Logout/Off", true));
+        this.legit = (Setting<Boolean>)this.register(new Setting("Legit", false));
         this.setInstance();
     }
     
@@ -57,16 +57,16 @@ public class Freecam extends Module
     public void onEnable() {
         if (!Feature.fullNullCheck()) {
             this.oldBoundingBox = Freecam.mc.player.getEntityBoundingBox();
-            Freecam.mc.player.setEntityBoundingBox(new AxisAlignedBB(Freecam.mc.player.posX, Freecam.mc.player.posY, Freecam.mc.player.posZ, Freecam.mc.player.posX, Freecam.mc.player.posY, Freecam.mc.player.posZ));
+            Freecam.mc.player.setEntityBoundingBox(new AxisAlignedBB(Freecam.mc.player.posX,  Freecam.mc.player.posY,  Freecam.mc.player.posZ,  Freecam.mc.player.posX,  Freecam.mc.player.posY,  Freecam.mc.player.posZ));
             if (Freecam.mc.player.getRidingEntity() != null) {
                 this.riding = Freecam.mc.player.getRidingEntity();
                 Freecam.mc.player.dismountRidingEntity();
             }
-            (this.entity = new EntityOtherPlayerMP((World)Freecam.mc.world, Freecam.mc.session.getProfile())).copyLocationAndAnglesFrom((Entity)Freecam.mc.player);
+            (this.entity = new EntityOtherPlayerMP((World)Freecam.mc.world,  Freecam.mc.session.getProfile())).copyLocationAndAnglesFrom((Entity)Freecam.mc.player);
             this.entity.rotationYaw = Freecam.mc.player.rotationYaw;
             this.entity.rotationYawHead = Freecam.mc.player.rotationYawHead;
             this.entity.inventory.copyInventory(Freecam.mc.player.inventory);
-            Freecam.mc.world.addEntityToWorld(69420, (Entity)this.entity);
+            Freecam.mc.world.addEntityToWorld(69420,  (Entity)this.entity);
             this.position = Freecam.mc.player.getPositionVector();
             this.yaw = Freecam.mc.player.rotationYaw;
             this.pitch = Freecam.mc.player.rotationPitch;
@@ -78,13 +78,13 @@ public class Freecam extends Module
         if (!Feature.fullNullCheck()) {
             Freecam.mc.player.setEntityBoundingBox(this.oldBoundingBox);
             if (this.riding != null) {
-                Freecam.mc.player.startRiding(this.riding, true);
+                Freecam.mc.player.startRiding(this.riding,  true);
             }
             if (this.entity != null) {
                 Freecam.mc.world.removeEntity((Entity)this.entity);
             }
             if (this.position != null) {
-                Freecam.mc.player.setPosition(this.position.x, this.position.y, this.position.z);
+                Freecam.mc.player.setPosition(this.position.x,  this.position.y,  this.position.z);
             }
             Freecam.mc.player.rotationYaw = this.yaw;
             Freecam.mc.player.rotationPitch = this.pitch;
@@ -94,7 +94,7 @@ public class Freecam extends Module
     
     public void onUpdate() {
         Freecam.mc.player.noClip = true;
-        Freecam.mc.player.setVelocity(0.0, 0.0, 0.0);
+        Freecam.mc.player.setVelocity(0.0,  0.0,  0.0);
         Freecam.mc.player.jumpMovementFactor = this.speed.getValue().floatValue();
         final double[] dir = MathUtil.directionSpeed(this.speed.getValue());
         if (Freecam.mc.player.movementInput.moveStrafe != 0.0f || Freecam.mc.player.movementInput.moveForward != 0.0f) {
@@ -159,9 +159,9 @@ public class Freecam extends Module
             final SPacketPlayerPosLook packet2 = (SPacketPlayerPosLook)event.getPacket();
             if (this.packet.getValue()) {
                 if (this.entity != null) {
-                    this.entity.setPositionAndRotation(packet2.getX(), packet2.getY(), packet2.getZ(), packet2.getYaw(), packet2.getPitch());
+                    this.entity.setPositionAndRotation(packet2.getX(),  packet2.getY(),  packet2.getZ(),  packet2.getYaw(),  packet2.getPitch());
                 }
-                this.position = new Vec3d(packet2.getX(), packet2.getY(), packet2.getZ());
+                this.position = new Vec3d(packet2.getX(),  packet2.getY(),  packet2.getZ());
                 Freecam.mc.player.connection.sendPacket((Packet)new CPacketConfirmTeleport(packet2.getTeleportId()));
                 event.setCanceled(true);
             }

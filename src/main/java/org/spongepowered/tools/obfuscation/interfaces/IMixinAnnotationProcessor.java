@@ -7,7 +7,7 @@ package org.spongepowered.tools.obfuscation.interfaces;
 import javax.annotation.processing.*;
 import org.spongepowered.asm.util.*;
 
-public interface IMixinAnnotationProcessor extends Messager, IOptionProvider
+public interface IMixinAnnotationProcessor extends Messager,  IOptionProvider
 {
     CompilerEnvironment getCompilerEnvironment();
     
@@ -23,7 +23,7 @@ public interface IMixinAnnotationProcessor extends Messager, IOptionProvider
     
     public enum CompilerEnvironment
     {
-        JAVAC, 
+        JAVAC,  
         JDT;
     }
 }

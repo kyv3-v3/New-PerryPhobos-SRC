@@ -15,10 +15,10 @@ public class Reach extends Module
     public Setting<Float> reach;
     
     public Reach() {
-        super("Reach", "Extends your block reach.", Module.Category.PLAYER, true, false, false);
-        this.override = (Setting<Boolean>)this.register(new Setting("Override", (T)false));
-        this.add = (Setting<Float>)this.register(new Setting("Add", (T)3.0f, v -> !this.override.getValue()));
-        this.reach = (Setting<Float>)this.register(new Setting("Reach", (T)6.0f, v -> this.override.getValue()));
+        super("Reach",  "Extends your block reach.",  Module.Category.PLAYER,  true,  false,  false);
+        this.override = (Setting<Boolean>)this.register(new Setting("Override", false));
+        this.add = (Setting<Float>)this.register(new Setting("Add", 3.0f,  v -> !this.override.getValue()));
+        this.reach = (Setting<Float>)this.register(new Setting("Reach", 6.0f,  v -> this.override.getValue()));
         this.setInstance();
     }
     

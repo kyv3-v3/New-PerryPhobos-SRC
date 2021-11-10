@@ -19,18 +19,18 @@ import me.earth.phobos.features.modules.movement.*;
 @Mixin({ EntityPlayer.class })
 public abstract class MixinEntityPlayer extends EntityLivingBase
 {
-    public MixinEntityPlayer(final World worldIn, final GameProfile gameProfileIn) {
+    public MixinEntityPlayer(final World worldIn,  final GameProfile gameProfileIn) {
         super(worldIn);
     }
     
-    @Inject(method = { "getCooldownPeriod" }, at = { @At("HEAD") }, cancellable = true)
+    @Inject(method = { "getCooldownPeriod" },  at = { @At("HEAD") },  cancellable = true)
     private void getCooldownPeriodHook(final CallbackInfoReturnable<Float> callbackInfoReturnable) {
         if (TpsSync.getInstance().isOn() && (boolean)TpsSync.getInstance().attack.getValue()) {
             callbackInfoReturnable.setReturnValue((Object)(float)(1.0 / this.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).getAttributeValue() * 20.0 * Phobos.serverManager.getTpsFactor()));
         }
     }
     
-    @ModifyConstant(method = { "getPortalCooldown" }, constant = { @Constant(intValue = 10) })
+    @ModifyConstant(method = { "getPortalCooldown" },  constant = { @Constant(intValue = 10) })
     private int getPortalCooldownHook(final int cooldown) {
         int time = cooldown;
         if (BetterPortals.getInstance().isOn() && (boolean)BetterPortals.getInstance().fastPortal.getValue()) {
@@ -39,7 +39,7 @@ public abstract class MixinEntityPlayer extends EntityLivingBase
         return time;
     }
     
-    @Inject(method = { "isEntityInsideOpaqueBlock" }, at = { @At("HEAD") }, cancellable = true)
+    @Inject(method = { "isEntityInsideOpaqueBlock" },  at = { @At("HEAD") },  cancellable = true)
     private void isEntityInsideOpaqueBlockHook(final CallbackInfoReturnable<Boolean> info) {
         if (Phase.getInstance().isOn() && Phase.getInstance().type.getValue() != Phase.PacketFlyMode.NONE) {
             info.setReturnValue((Object)false);

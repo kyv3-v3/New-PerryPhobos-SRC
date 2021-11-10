@@ -19,11 +19,11 @@ import org.spongepowered.asm.mixin.injection.*;
 public class MixinBlockSoulSand extends Block
 {
     public MixinBlockSoulSand() {
-        super(Material.SAND, MapColor.BROWN);
+        super(Material.SAND,  MapColor.BROWN);
     }
     
-    @Inject(method = { "onEntityCollision" }, at = { @At("HEAD") }, cancellable = true)
-    public void onEntityCollisionHook(final World worldIn, final BlockPos pos, final IBlockState state, final Entity entityIn, final CallbackInfo info) {
+    @Inject(method = { "onEntityCollision" },  at = { @At("HEAD") },  cancellable = true)
+    public void onEntityCollisionHook(final World worldIn,  final BlockPos pos,  final IBlockState state,  final Entity entityIn,  final CallbackInfo info) {
         if (NoSlowDown.getInstance().isOn() && (boolean)NoSlowDown.getInstance().soulSand.getValue()) {
             info.cancel();
         }

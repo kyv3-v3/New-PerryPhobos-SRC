@@ -40,17 +40,17 @@ public class GuiAccountSelector extends GuiScreen
     
     public void initGui() {
         Keyboard.enableRepeatEvents(true);
-        (this.accountsgui = new List(this.mc)).registerScrollButtons(5, 6);
-        this.query = I18n.format("ias.search", new Object[0]);
+        (this.accountsgui = new List(this.mc)).registerScrollButtons(5,  6);
+        this.query = I18n.format("ias.search",  new Object[0]);
         this.buttonList.clear();
-        this.buttonList.add(this.reloadskins = new GuiButton(8, this.width / 2 - 154 - 10, this.height - 76 - 8, 120, 20, I18n.format("ias.reloadskins", new Object[0])));
-        this.buttonList.add(new GuiButton(0, this.width / 2 + 4 + 40, this.height - 52, 120, 20, I18n.format("ias.addaccount", new Object[0])));
-        this.buttonList.add(this.login = new GuiButton(1, this.width / 2 - 154 - 10, this.height - 52, 120, 20, I18n.format("ias.login", new Object[0])));
-        this.buttonList.add(this.edit = new GuiButton(7, this.width / 2 - 40, this.height - 52, 80, 20, I18n.format("ias.edit", new Object[0])));
-        this.buttonList.add(this.loginoffline = new GuiButton(2, this.width / 2 - 154 - 10, this.height - 28, 110, 20, I18n.format("ias.login", new Object[0]) + " " + I18n.format("ias.offline", new Object[0])));
-        this.buttonList.add(new GuiButton(3, this.width / 2 + 4 + 50, this.height - 28, 110, 20, I18n.format("gui.cancel", new Object[0])));
-        this.buttonList.add(this.delete = new GuiButton(4, this.width / 2 - 50, this.height - 28, 100, 20, I18n.format("ias.delete", new Object[0])));
-        (this.search = new GuiTextField(8, this.fontRenderer, this.width / 2 - 80, 14, 160, 16)).setText(this.query);
+        this.buttonList.add(this.reloadskins = new GuiButton(8,  this.width / 2 - 154 - 10,  this.height - 76 - 8,  120,  20,  I18n.format("ias.reloadskins",  new Object[0])));
+        this.buttonList.add(new GuiButton(0,  this.width / 2 + 4 + 40,  this.height - 52,  120,  20,  I18n.format("ias.addaccount",  new Object[0])));
+        this.buttonList.add(this.login = new GuiButton(1,  this.width / 2 - 154 - 10,  this.height - 52,  120,  20,  I18n.format("ias.login",  new Object[0])));
+        this.buttonList.add(this.edit = new GuiButton(7,  this.width / 2 - 40,  this.height - 52,  80,  20,  I18n.format("ias.edit",  new Object[0])));
+        this.buttonList.add(this.loginoffline = new GuiButton(2,  this.width / 2 - 154 - 10,  this.height - 28,  110,  20,  I18n.format("ias.login",  new Object[0]) + " " + I18n.format("ias.offline",  new Object[0])));
+        this.buttonList.add(new GuiButton(3,  this.width / 2 + 4 + 50,  this.height - 28,  110,  20,  I18n.format("gui.cancel",  new Object[0])));
+        this.buttonList.add(this.delete = new GuiButton(4,  this.width / 2 - 50,  this.height - 28,  100,  20,  I18n.format("ias.delete",  new Object[0])));
+        (this.search = new GuiTextField(8,  this.fontRenderer,  this.width / 2 - 80,  14,  160,  16)).setText(this.query);
         this.updateButtons();
         if (!this.queriedaccounts.isEmpty()) {
             SkinTools.buildSkin(this.queriedaccounts.get(this.selectedAccountIndex).alias);
@@ -78,10 +78,10 @@ public class GuiAccountSelector extends GuiScreen
         }
     }
     
-    protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
+    protected void mouseClicked(final int mouseX,  final int mouseY,  final int mouseButton) throws IOException {
+        super.mouseClicked(mouseX,  mouseY,  mouseButton);
         final boolean flag = this.search.isFocused();
-        this.search.mouseClicked(mouseX, mouseY, mouseButton);
+        this.search.mouseClicked(mouseX,  mouseY,  mouseButton);
         if (!flag && this.search.isFocused()) {
             this.query = "";
             this.updateText();
@@ -98,28 +98,28 @@ public class GuiAccountSelector extends GuiScreen
         Config.save();
     }
     
-    public void drawScreen(final int par1, final int par2, final float par3) {
-        this.accountsgui.drawScreen(par1, par2, par3);
-        this.drawCenteredString(this.fontRenderer, I18n.format("ias.selectaccount", new Object[0]), this.width / 2, 4, -1);
+    public void drawScreen(final int par1,  final int par2,  final float par3) {
+        this.accountsgui.drawScreen(par1,  par2,  par3);
+        this.drawCenteredString(this.fontRenderer,  I18n.format("ias.selectaccount",  new Object[0]),  this.width / 2,  4,  -1);
         if (this.loginfailed != null) {
-            this.drawCenteredString(this.fontRenderer, this.loginfailed.getLocalizedMessage(), this.width / 2, this.height - 62, 16737380);
+            this.drawCenteredString(this.fontRenderer,  this.loginfailed.getLocalizedMessage(),  this.width / 2,  this.height - 62,  16737380);
         }
         this.search.drawTextBox();
-        super.drawScreen(par1, par2, par3);
+        super.drawScreen(par1,  par2,  par3);
         if (!this.queriedaccounts.isEmpty()) {
-            SkinTools.javDrawSkin(8, this.height / 2 - 64 - 16, 64, 128);
-            Tools.drawBorderedRect(this.width - 8 - 64, this.height / 2 - 64 - 16, this.width - 8, this.height / 2 + 64 - 16, 2, -5855578, -13421773);
+            SkinTools.javDrawSkin(8,  this.height / 2 - 64 - 16,  64,  128);
+            Tools.drawBorderedRect(this.width - 8 - 64,  this.height / 2 - 64 - 16,  this.width - 8,  this.height / 2 + 64 - 16,  2,  -5855578,  -13421773);
             if (this.queriedaccounts.get(this.selectedAccountIndex).premium == EnumBool.TRUE) {
-                this.drawString(this.fontRenderer, I18n.format("ias.premium", new Object[0]), this.width - 8 - 61, this.height / 2 - 64 - 13, 6618980);
+                this.drawString(this.fontRenderer,  I18n.format("ias.premium",  new Object[0]),  this.width - 8 - 61,  this.height / 2 - 64 - 13,  6618980);
             }
             else if (this.queriedaccounts.get(this.selectedAccountIndex).premium == EnumBool.FALSE) {
-                this.drawString(this.fontRenderer, I18n.format("ias.notpremium", new Object[0]), this.width - 8 - 61, this.height / 2 - 64 - 13, 16737380);
+                this.drawString(this.fontRenderer,  I18n.format("ias.notpremium",  new Object[0]),  this.width - 8 - 61,  this.height / 2 - 64 - 13,  16737380);
             }
-            this.drawString(this.fontRenderer, I18n.format("ias.timesused", new Object[0]), this.width - 8 - 61, this.height / 2 - 64 - 15 + 12, -1);
-            this.drawString(this.fontRenderer, String.valueOf(this.queriedaccounts.get(this.selectedAccountIndex).useCount), this.width - 8 - 61, this.height / 2 - 64 - 15 + 21, -1);
+            this.drawString(this.fontRenderer,  I18n.format("ias.timesused",  new Object[0]),  this.width - 8 - 61,  this.height / 2 - 64 - 15 + 12,  -1);
+            this.drawString(this.fontRenderer,  String.valueOf(this.queriedaccounts.get(this.selectedAccountIndex).useCount),  this.width - 8 - 61,  this.height / 2 - 64 - 15 + 21,  -1);
             if (this.queriedaccounts.get(this.selectedAccountIndex).useCount > 0) {
-                this.drawString(this.fontRenderer, I18n.format("ias.lastused", new Object[0]), this.width - 8 - 61, this.height / 2 - 64 - 15 + 30, -1);
-                this.drawString(this.fontRenderer, JavaTools.getJavaCompat().getFormattedDate(), this.width - 8 - 61, this.height / 2 - 64 - 15 + 39, -1);
+                this.drawString(this.fontRenderer,  I18n.format("ias.lastused",  new Object[0]),  this.width - 8 - 61,  this.height / 2 - 64 - 15 + 30,  -1);
+                this.drawString(this.fontRenderer,  JavaTools.getJavaCompat().getFormattedDate(),  this.width - 8 - 61,  this.height / 2 - 64 - 15 + 39,  -1);
             }
         }
     }
@@ -189,7 +189,7 @@ public class GuiAccountSelector extends GuiScreen
     
     private void login(final int selected) {
         final ExtendedAccountData data = this.queriedaccounts.get(selected);
-        this.loginfailed = AltManager.getInstance().setUser(data.user, data.pass);
+        this.loginfailed = AltManager.getInstance().setUser(data.user,  data.pass);
         if (this.loginfailed == null) {
             Minecraft.getMinecraft().displayGuiScreen((GuiScreen)null);
             final ExtendedAccountData current = this.getCurrentAsEditable();
@@ -212,7 +212,7 @@ public class GuiAccountSelector extends GuiScreen
     
     private void updateQueried() {
         this.queriedaccounts = this.convertData();
-        if (!this.query.equals(I18n.format("ias.search", new Object[0])) && !this.query.equals("")) {
+        if (!this.query.equals(I18n.format("ias.search",  new Object[0])) && !this.query.equals("")) {
             for (int i = 0; i < this.queriedaccounts.size(); ++i) {
                 if (!this.queriedaccounts.get(i).alias.contains(this.query) && ConfigValues.CASESENSITIVE) {
                     this.queriedaccounts.remove(i);
@@ -231,7 +231,7 @@ public class GuiAccountSelector extends GuiScreen
         }
     }
     
-    protected void keyTyped(final char character, final int keyIndex) {
+    protected void keyTyped(final char character,  final int keyIndex) {
         if (keyIndex == 200 && !this.queriedaccounts.isEmpty()) {
             if (this.selectedAccountIndex > 0) {
                 --this.selectedAccountIndex;
@@ -267,7 +267,7 @@ public class GuiAccountSelector extends GuiScreen
         }
         else if (keyIndex == 14) {
             if (this.search.isFocused() && this.query.length() > 0) {
-                this.query = this.query.substring(0, this.query.length() - 1);
+                this.query = this.query.substring(0,  this.query.length() - 1);
                 this.updateText();
                 this.updateQueried();
             }
@@ -297,8 +297,8 @@ public class GuiAccountSelector extends GuiScreen
                 converted.add((ExtendedAccountData)data);
             }
             else {
-                converted.add(new ExtendedAccountData(EncryptionTools.decode(data.user), EncryptionTools.decode(data.pass), data.alias));
-                AltDatabase.getInstance().getAlts().set(index, (AccountData)new ExtendedAccountData(EncryptionTools.decode(data.user), EncryptionTools.decode(data.pass), data.alias));
+                converted.add(new ExtendedAccountData(EncryptionTools.decode(data.user),  EncryptionTools.decode(data.pass),  data.alias));
+                AltDatabase.getInstance().getAlts().set(index,  (AccountData)new ExtendedAccountData(EncryptionTools.decode(data.user),  EncryptionTools.decode(data.pass),  data.alias));
             }
             ++index;
         }
@@ -329,14 +329,14 @@ public class GuiAccountSelector extends GuiScreen
     class List extends GuiSlot
     {
         public List(final Minecraft mcIn) {
-            super(mcIn, GuiAccountSelector.this.width, GuiAccountSelector.this.height, 32, GuiAccountSelector.this.height - 64, 14);
+            super(mcIn,  GuiAccountSelector.this.width,  GuiAccountSelector.this.height,  32,  GuiAccountSelector.this.height - 64,  14);
         }
         
         protected int getSize() {
             return GuiAccountSelector.this.queriedaccounts.size();
         }
         
-        protected void elementClicked(final int slotIndex, final boolean isDoubleClick, final int mouseX, final int mouseY) {
+        protected void elementClicked(final int slotIndex,  final boolean isDoubleClick,  final int mouseX,  final int mouseY) {
             GuiAccountSelector.this.selectedAccountIndex = slotIndex;
             GuiAccountSelector.this.updateButtons();
             if (isDoubleClick && GuiAccountSelector.this.login.enabled) {
@@ -356,17 +356,17 @@ public class GuiAccountSelector extends GuiScreen
             GuiAccountSelector.this.drawDefaultBackground();
         }
         
-        protected void drawSlot(final int slotIndex, final int xPos, final int yPos, final int heightIn, final int mouseXIn, final int mouseYIn, final float partialTicks) {
+        protected void drawSlot(final int slotIndex,  final int xPos,  final int yPos,  final int heightIn,  final int mouseXIn,  final int mouseYIn,  final float partialTicks) {
             final ExtendedAccountData data = GuiAccountSelector.this.queriedaccounts.get(slotIndex);
             String s = data.alias;
             if (StringUtils.isEmpty((CharSequence)s)) {
-                s = I18n.format("ias.alt", new Object[0]) + " " + (slotIndex + 1);
+                s = I18n.format("ias.alt",  new Object[0]) + " " + (slotIndex + 1);
             }
             int color = 16777215;
             if (Minecraft.getMinecraft().getSession().getUsername().equals(data.alias)) {
                 color = 65280;
             }
-            GuiAccountSelector.this.drawString(GuiAccountSelector.this.fontRenderer, s, xPos + 2, yPos + 1, color);
+            GuiAccountSelector.this.drawString(GuiAccountSelector.this.fontRenderer,  s,  xPos + 2,  yPos + 1,  color);
         }
     }
 }

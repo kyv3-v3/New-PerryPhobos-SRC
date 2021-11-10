@@ -20,15 +20,15 @@ public class SignatureReader
             pos = 2;
             char c;
             do {
-                final int end = signature.indexOf(58, pos);
-                v.visitFormalTypeParameter(signature.substring(pos - 1, end));
+                final int end = signature.indexOf(58,  pos);
+                v.visitFormalTypeParameter(signature.substring(pos - 1,  end));
                 pos = end + 1;
                 c = signature.charAt(pos);
                 if (c == 'L' || c == '[' || c == 'T') {
-                    pos = parseType(signature, pos, v.visitClassBound());
+                    pos = parseType(signature,  pos,  v.visitClassBound());
                 }
                 while ((c = signature.charAt(pos++)) == ':') {
-                    pos = parseType(signature, pos, v.visitInterfaceBound());
+                    pos = parseType(signature,  pos,  v.visitInterfaceBound());
                 }
             } while (c != '>');
         }
@@ -38,20 +38,20 @@ public class SignatureReader
         if (signature.charAt(pos) == '(') {
             ++pos;
             while (signature.charAt(pos) != ')') {
-                pos = parseType(signature, pos, v.visitParameterType());
+                pos = parseType(signature,  pos,  v.visitParameterType());
             }
-            for (pos = parseType(signature, pos + 1, v.visitReturnType()); pos < len; pos = parseType(signature, pos + 1, v.visitExceptionType())) {}
+            for (pos = parseType(signature,  pos + 1,  v.visitReturnType()); pos < len; pos = parseType(signature,  pos + 1,  v.visitExceptionType())) {}
         }
         else {
-            for (pos = parseType(signature, pos, v.visitSuperclass()); pos < len; pos = parseType(signature, pos, v.visitInterface())) {}
+            for (pos = parseType(signature,  pos,  v.visitSuperclass()); pos < len; pos = parseType(signature,  pos,  v.visitInterface())) {}
         }
     }
     
     public void acceptType(final SignatureVisitor v) {
-        parseType(this.signature, 0, v);
+        parseType(this.signature,  0,  v);
     }
     
-    private static int parseType(final String signature, int pos, final SignatureVisitor v) {
+    private static int parseType(final String signature,  int pos,  final SignatureVisitor v) {
         char c;
         switch (c = signature.charAt(pos++)) {
             case 'B':
@@ -67,11 +67,11 @@ public class SignatureReader
                 return pos;
             }
             case '[': {
-                return parseType(signature, pos, v.visitArrayType());
+                return parseType(signature,  pos,  v.visitArrayType());
             }
             case 'T': {
-                final int end = signature.indexOf(59, pos);
-                v.visitTypeVariable(signature.substring(pos, end));
+                final int end = signature.indexOf(59,  pos);
+                v.visitTypeVariable(signature.substring(pos,  end));
                 return end + 1;
             }
             default: {
@@ -84,7 +84,7 @@ public class SignatureReader
                         case '.':
                         case ';': {
                             if (!visited) {
-                                final String name = signature.substring(start, pos - 1);
+                                final String name = signature.substring(start,  pos - 1);
                                 if (inner) {
                                     v.visitInnerClassType(name);
                                 }
@@ -101,7 +101,7 @@ public class SignatureReader
                             continue;
                         }
                         case '<': {
-                            final String name = signature.substring(start, pos - 1);
+                            final String name = signature.substring(start,  pos - 1);
                             if (inner) {
                                 v.visitInnerClassType(name);
                             }
@@ -122,11 +122,11 @@ public class SignatureReader
                                     }
                                     case '+':
                                     case '-': {
-                                        pos = parseType(signature, pos + 1, v.visitTypeArgument(c));
+                                        pos = parseType(signature,  pos + 1,  v.visitTypeArgument(c));
                                         continue;
                                     }
                                     default: {
-                                        pos = parseType(signature, pos, v.visitTypeArgument('='));
+                                        pos = parseType(signature,  pos,  v.visitTypeArgument('='));
                                         continue;
                                     }
                                 }

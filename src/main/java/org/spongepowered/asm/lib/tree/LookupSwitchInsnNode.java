@@ -13,7 +13,7 @@ public class LookupSwitchInsnNode extends AbstractInsnNode
     public List<Integer> keys;
     public List<LabelNode> labels;
     
-    public LookupSwitchInsnNode(final LabelNode dflt, final int[] keys, final LabelNode[] labels) {
+    public LookupSwitchInsnNode(final LabelNode dflt,  final int[] keys,  final LabelNode[] labels) {
         super(171);
         this.dflt = dflt;
         this.keys = new ArrayList<Integer>((keys == null) ? 0 : keys.length);
@@ -41,12 +41,12 @@ public class LookupSwitchInsnNode extends AbstractInsnNode
         for (int j = 0; j < labels.length; ++j) {
             labels[j] = this.labels.get(j).getLabel();
         }
-        mv.visitLookupSwitchInsn(this.dflt.getLabel(), keys, labels);
+        mv.visitLookupSwitchInsn(this.dflt.getLabel(),  keys,  labels);
         this.acceptAnnotations(mv);
     }
     
-    public AbstractInsnNode clone(final Map<LabelNode, LabelNode> labels) {
-        final LookupSwitchInsnNode clone = new LookupSwitchInsnNode(clone(this.dflt, (Map)labels), null, clone((List)this.labels, (Map)labels));
+    public AbstractInsnNode clone(final Map<LabelNode,  LabelNode> labels) {
+        final LookupSwitchInsnNode clone = new LookupSwitchInsnNode(clone(this.dflt,  (Map)labels),  null,  clone((List)this.labels,  (Map)labels));
         clone.keys.addAll(this.keys);
         return clone.cloneAnnotations((AbstractInsnNode)this);
     }

@@ -17,7 +17,7 @@ public class Notifications
     private final float width;
     private final TimerUtil timer;
     
-    public Notifications(final String text, final long disableTime) {
+    public Notifications(final String text,  final long disableTime) {
         this.timer = new TimerUtil();
         this.text = text;
         this.disableTime = disableTime;
@@ -30,7 +30,7 @@ public class Notifications
         if (this.timer.passedMs(this.disableTime)) {
             Phobos.notificationManager.getNotifications().remove(this);
         }
-        RenderUtil.drawRect(scaledResolution.getScaledWidth() - 4 - this.width, (float)y, (float)(scaledResolution.getScaledWidth() - 2), (float)(y + Phobos.moduleManager.getModuleByClass(HUD.class).renderer.getFontHeight() + 3), 1962934272);
-        Phobos.moduleManager.getModuleByClass(HUD.class).renderer.drawString(this.text, scaledResolution.getScaledWidth() - this.width - 3.0f, (float)(y + 2), -1, true);
+        RenderUtil.drawRect(scaledResolution.getScaledWidth() - 4 - this.width,  (float)y,  (float)(scaledResolution.getScaledWidth() - 2),  (float)(y + Phobos.moduleManager.getModuleByClass(HUD.class).renderer.getFontHeight() + 3),  1962934272);
+        Phobos.moduleManager.getModuleByClass(HUD.class).renderer.drawString(this.text,  scaledResolution.getScaledWidth() - this.width - 3.0f,  (float)(y + 2),  -1,  true);
     }
 }

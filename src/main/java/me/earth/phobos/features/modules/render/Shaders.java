@@ -15,8 +15,8 @@ public class Shaders extends Module
     public Setting<Mode> shader;
     
     public Shaders() {
-        super("Shaders", "Adds back 1.8 shaders.", Module.Category.RENDER, false, false, false);
-        this.shader = (Setting<Mode>)this.register(new Setting("Mode", (T)Mode.green));
+        super("Shaders",  "Adds back 1.8 shaders.",  Module.Category.RENDER,  false,  false,  false);
+        this.shader = (Setting<Mode>)this.register(new Setting("Mode", Mode.green));
     }
     
     public void onUpdate() {
@@ -48,27 +48,27 @@ public class Shaders extends Module
     
     public enum Mode
     {
-        notch, 
-        antialias, 
-        art, 
-        bits, 
-        blobs, 
-        blobs2, 
-        blur, 
-        bumpy, 
-        color_convolve, 
-        creeper, 
-        deconverge, 
-        desaturate, 
-        flip, 
-        fxaa, 
-        green, 
-        invert, 
-        ntsc, 
-        pencil, 
-        phosphor, 
-        sobel, 
-        spider, 
+        notch,  
+        antialias,  
+        art,  
+        bits,  
+        blobs,  
+        blobs2,  
+        blur,  
+        bumpy,  
+        color_convolve,  
+        creeper,  
+        deconverge,  
+        desaturate,  
+        flip,  
+        fxaa,  
+        green,  
+        invert,  
+        ntsc,  
+        pencil,  
+        phosphor,  
+        sobel,  
+        spider,  
         wobble;
     }
 }

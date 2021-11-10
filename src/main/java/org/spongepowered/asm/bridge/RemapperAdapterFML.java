@@ -17,15 +17,15 @@ public final class RemapperAdapterFML extends RemapperAdapter
     private static final String UNMAP_METHOD = "unmap";
     private final Method mdUnmap;
     
-    private RemapperAdapterFML(final Remapper remapper, final Method mdUnmap) {
+    private RemapperAdapterFML(final Remapper remapper,  final Method mdUnmap) {
         super(remapper);
-        this.logger.info("Initialised Mixin FML Remapper Adapter with {}", new Object[] { remapper });
+        this.logger.info("Initialised Mixin FML Remapper Adapter with {}",  new Object[] { remapper });
         this.mdUnmap = mdUnmap;
     }
     
     public String unmap(final String typeName) {
         try {
-            return this.mdUnmap.invoke(this.remapper, typeName).toString();
+            return this.mdUnmap.invoke(this.remapper,  typeName).toString();
         }
         catch (Exception ex) {
             return typeName;
@@ -36,9 +36,9 @@ public final class RemapperAdapterFML extends RemapperAdapter
         try {
             final Class<?> clDeobfRemapper = getFMLDeobfuscatingRemapper();
             final Field singletonField = clDeobfRemapper.getDeclaredField("INSTANCE");
-            final Method mdUnmap = clDeobfRemapper.getDeclaredMethod("unmap", String.class);
+            final Method mdUnmap = clDeobfRemapper.getDeclaredMethod("unmap",  String.class);
             final Remapper remapper = (Remapper)singletonField.get(null);
-            return (IRemapper)new RemapperAdapterFML(remapper, mdUnmap);
+            return (IRemapper)new RemapperAdapterFML(remapper,  mdUnmap);
         }
         catch (Exception ex) {
             ex.printStackTrace();

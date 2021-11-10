@@ -11,7 +11,7 @@ public class MultiTask extends Module
     private static MultiTask INSTANCE;
     
     public MultiTask() {
-        super("MultiTask", "Allows you to eat while mining.", Module.Category.PLAYER, false, false, false);
+        super("MultiTask",  "Allows you to eat while mining.",  Module.Category.PLAYER,  false,  false,  false);
         this.setInstance();
     }
     

@@ -13,8 +13,8 @@ public class VanillaSpeed extends Module
     public Setting<Double> speed;
     
     public VanillaSpeed() {
-        super("VanillaSpeed", "Speed for vanilla ac's (old ec.me).", Module.Category.MOVEMENT, true, false, false);
-        this.speed = (Setting<Double>)this.register(new Setting("Speed", (T)1.0, (T)1.0, (T)20.0));
+        super("VanillaSpeed",  "Speed for vanilla ac's (old ec.me).",  Module.Category.MOVEMENT,  true,  false,  false);
+        this.speed = (Setting<Double>)this.register(new Setting("Speed", 1.0, 1.0, 20.0));
     }
     
     public void onUpdate() {

@@ -31,7 +31,7 @@ public class Component extends Feature
     private boolean open;
     private boolean hidden;
     
-    public Component(final String name, final int x, final int y, final boolean open) {
+    public Component(final String name,  final int x,  final int y,  final boolean open) {
         super(name);
         this.items = new ArrayList<Item>();
         this.x = x;
@@ -45,7 +45,7 @@ public class Component extends Feature
     public void setupItems() {
     }
     
-    private void drag(final int mouseX, final int mouseY) {
+    private void drag(final int mouseX,  final int mouseY) {
         if (!this.drag) {
             return;
         }
@@ -53,52 +53,52 @@ public class Component extends Feature
         this.y = this.y2 + mouseY;
     }
     
-    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
-        this.drag(mouseX, mouseY);
+    public void drawScreen(final int mouseX,  final int mouseY,  final float partialTicks) {
+        this.drag(mouseX,  mouseY);
         final float totalItemHeight = this.open ? (this.getTotalItemHeight() - 2.0f) : 0.0f;
         int color = -7829368;
         if (ClickGui.getInstance().devSettings.getValue()) {
-            color = (ClickGui.getInstance().colorSync.getValue() ? Colors.INSTANCE.getCurrentColorHex() : ColorUtil.toARGB(ClickGui.getInstance().topRed.getValue(), ClickGui.getInstance().topGreen.getValue(), ClickGui.getInstance().topBlue.getValue(), ClickGui.getInstance().topAlpha.getValue()));
+            color = (ClickGui.getInstance().colorSync.getValue() ? Colors.INSTANCE.getCurrentColorHex() : ColorUtil.toARGB(ClickGui.getInstance().topRed.getValue(),  ClickGui.getInstance().topGreen.getValue(),  ClickGui.getInstance().topBlue.getValue(),  ClickGui.getInstance().topAlpha.getValue()));
         }
         if (ClickGui.getInstance().rainbowRolling.getValue() && ClickGui.getInstance().colorSync.getValue() && Colors.INSTANCE.rainbow.getValue()) {
-            RenderUtil.drawGradientRect((float)this.x, this.y - 1.5f, (float)this.width, (float)(this.height - 4), HUD.getInstance().colorMap.get(MathUtil.clamp(this.y, 0, this.renderer.scaledHeight)), HUD.getInstance().colorMap.get(MathUtil.clamp(this.y + this.height - 4, 0, this.renderer.scaledHeight)));
+            RenderUtil.drawGradientRect((float)this.x,  this.y - 1.5f,  (float)this.width,  (float)(this.height - 4),  HUD.getInstance().colorMap.get(MathUtil.clamp(this.y,  0,  this.renderer.scaledHeight)),  HUD.getInstance().colorMap.get(MathUtil.clamp(this.y + this.height - 4,  0,  this.renderer.scaledHeight)));
         }
         else {
-            RenderUtil.drawRect((float)this.x, this.y - 1.5f, (float)(this.x + this.width), (float)(this.y + this.height - 6), color);
+            RenderUtil.drawRect((float)this.x,  this.y - 1.5f,  (float)(this.x + this.width),  (float)(this.y + this.height - 6),  color);
         }
         if (this.open) {
-            RenderUtil.drawRect((float)this.x, this.y + 12.5f, (float)(this.x + this.width), this.y + this.height + totalItemHeight, 1996488704);
+            RenderUtil.drawRect((float)this.x,  this.y + 12.5f,  (float)(this.x + this.width),  this.y + this.height + totalItemHeight,  1996488704);
             if (ClickGui.getInstance().outline.getValue()) {
                 if (ClickGui.getInstance().rainbowRolling.getValue()) {
                     GlStateManager.disableTexture2D();
                     GlStateManager.enableBlend();
                     GlStateManager.disableAlpha();
-                    GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+                    GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,  GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,  GlStateManager.SourceFactor.ONE,  GlStateManager.DestFactor.ZERO);
                     GlStateManager.shadeModel(7425);
                     GL11.glBegin(1);
-                    Color currentColor = new Color(HUD.getInstance().colorMap.get(MathUtil.clamp(this.y, 0, this.renderer.scaledHeight)));
-                    GL11.glColor4f(currentColor.getRed() / 255.0f, currentColor.getGreen() / 255.0f, currentColor.getBlue() / 255.0f, currentColor.getAlpha() / 255.0f);
-                    GL11.glVertex3f((float)(this.x + this.width), this.y - 1.5f, 0.0f);
-                    GL11.glVertex3f((float)this.x, this.y - 1.5f, 0.0f);
-                    GL11.glVertex3f((float)this.x, this.y - 1.5f, 0.0f);
+                    Color currentColor = new Color(HUD.getInstance().colorMap.get(MathUtil.clamp(this.y,  0,  this.renderer.scaledHeight)));
+                    GL11.glColor4f(currentColor.getRed() / 255.0f,  currentColor.getGreen() / 255.0f,  currentColor.getBlue() / 255.0f,  currentColor.getAlpha() / 255.0f);
+                    GL11.glVertex3f((float)(this.x + this.width),  this.y - 1.5f,  0.0f);
+                    GL11.glVertex3f((float)this.x,  this.y - 1.5f,  0.0f);
+                    GL11.glVertex3f((float)this.x,  this.y - 1.5f,  0.0f);
                     float currentHeight = this.getHeight() - 1.5f;
                     for (final Item item : this.getItems()) {
-                        currentColor = new Color(HUD.getInstance().colorMap.get(MathUtil.clamp((int)(this.y + (currentHeight += item.getHeight() + 1.5f)), 0, this.renderer.scaledHeight)));
-                        GL11.glColor4f(currentColor.getRed() / 255.0f, currentColor.getGreen() / 255.0f, currentColor.getBlue() / 255.0f, currentColor.getAlpha() / 255.0f);
-                        GL11.glVertex3f((float)this.x, this.y + currentHeight, 0.0f);
-                        GL11.glVertex3f((float)this.x, this.y + currentHeight, 0.0f);
+                        currentColor = new Color(HUD.getInstance().colorMap.get(MathUtil.clamp((int)(this.y + (currentHeight += item.getHeight() + 1.5f)),  0,  this.renderer.scaledHeight)));
+                        GL11.glColor4f(currentColor.getRed() / 255.0f,  currentColor.getGreen() / 255.0f,  currentColor.getBlue() / 255.0f,  currentColor.getAlpha() / 255.0f);
+                        GL11.glVertex3f((float)this.x,  this.y + currentHeight,  0.0f);
+                        GL11.glVertex3f((float)this.x,  this.y + currentHeight,  0.0f);
                     }
-                    currentColor = new Color(HUD.getInstance().colorMap.get(MathUtil.clamp((int)(this.y + this.height + totalItemHeight), 0, this.renderer.scaledHeight)));
-                    GL11.glColor4f(currentColor.getRed() / 255.0f, currentColor.getGreen() / 255.0f, currentColor.getBlue() / 255.0f, currentColor.getAlpha() / 255.0f);
-                    GL11.glVertex3f((float)(this.x + this.width), this.y + this.height + totalItemHeight, 0.0f);
-                    GL11.glVertex3f((float)(this.x + this.width), this.y + this.height + totalItemHeight, 0.0f);
+                    currentColor = new Color(HUD.getInstance().colorMap.get(MathUtil.clamp((int)(this.y + this.height + totalItemHeight),  0,  this.renderer.scaledHeight)));
+                    GL11.glColor4f(currentColor.getRed() / 255.0f,  currentColor.getGreen() / 255.0f,  currentColor.getBlue() / 255.0f,  currentColor.getAlpha() / 255.0f);
+                    GL11.glVertex3f((float)(this.x + this.width),  this.y + this.height + totalItemHeight,  0.0f);
+                    GL11.glVertex3f((float)(this.x + this.width),  this.y + this.height + totalItemHeight,  0.0f);
                     for (final Item item : this.getItems()) {
-                        currentColor = new Color(HUD.getInstance().colorMap.get(MathUtil.clamp((int)(this.y + (currentHeight -= item.getHeight() + 1.5f)), 0, this.renderer.scaledHeight)));
-                        GL11.glColor4f(currentColor.getRed() / 255.0f, currentColor.getGreen() / 255.0f, currentColor.getBlue() / 255.0f, currentColor.getAlpha() / 255.0f);
-                        GL11.glVertex3f((float)(this.x + this.width), this.y + currentHeight, 0.0f);
-                        GL11.glVertex3f((float)(this.x + this.width), this.y + currentHeight, 0.0f);
+                        currentColor = new Color(HUD.getInstance().colorMap.get(MathUtil.clamp((int)(this.y + (currentHeight -= item.getHeight() + 1.5f)),  0,  this.renderer.scaledHeight)));
+                        GL11.glColor4f(currentColor.getRed() / 255.0f,  currentColor.getGreen() / 255.0f,  currentColor.getBlue() / 255.0f,  currentColor.getAlpha() / 255.0f);
+                        GL11.glVertex3f((float)(this.x + this.width),  this.y + currentHeight,  0.0f);
+                        GL11.glVertex3f((float)(this.x + this.width),  this.y + currentHeight,  0.0f);
                     }
-                    GL11.glVertex3f((float)(this.x + this.width), (float)this.y, 0.0f);
+                    GL11.glVertex3f((float)(this.x + this.width),  (float)this.y,  0.0f);
                     GL11.glEnd();
                     GlStateManager.shadeModel(7424);
                     GlStateManager.disableBlend();
@@ -109,15 +109,15 @@ public class Component extends Feature
                     GlStateManager.disableTexture2D();
                     GlStateManager.enableBlend();
                     GlStateManager.disableAlpha();
-                    GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+                    GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,  GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,  GlStateManager.SourceFactor.ONE,  GlStateManager.DestFactor.ZERO);
                     GlStateManager.shadeModel(7425);
                     GL11.glBegin(2);
                     final Color outlineColor = ClickGui.getInstance().colorSync.getValue() ? new Color(Colors.INSTANCE.getCurrentColorHex()) : new Color(Phobos.colorManager.getColorAsIntFullAlpha());
-                    GL11.glColor4f((float)outlineColor.getRed(), (float)outlineColor.getGreen(), (float)outlineColor.getBlue(), (float)outlineColor.getAlpha());
-                    GL11.glVertex3f((float)this.x, this.y - 1.5f, 0.0f);
-                    GL11.glVertex3f((float)(this.x + this.width), this.y - 1.5f, 0.0f);
-                    GL11.glVertex3f((float)(this.x + this.width), this.y + this.height + totalItemHeight, 0.0f);
-                    GL11.glVertex3f((float)this.x, this.y + this.height + totalItemHeight, 0.0f);
+                    GL11.glColor4f((float)outlineColor.getRed(),  (float)outlineColor.getGreen(),  (float)outlineColor.getBlue(),  (float)outlineColor.getAlpha());
+                    GL11.glVertex3f((float)this.x,  this.y - 1.5f,  0.0f);
+                    GL11.glVertex3f((float)(this.x + this.width),  this.y - 1.5f,  0.0f);
+                    GL11.glVertex3f((float)(this.x + this.width),  this.y + this.height + totalItemHeight,  0.0f);
+                    GL11.glVertex3f((float)this.x,  this.y + this.height + totalItemHeight,  0.0f);
                     GL11.glEnd();
                     GlStateManager.shadeModel(7424);
                     GlStateManager.disableBlend();
@@ -126,23 +126,23 @@ public class Component extends Feature
                 }
             }
         }
-        Phobos.textManager.drawStringWithShadow(this.getName(), this.x + 3.0f, this.y - 4.0f - PhobosGui.getClickGui().getTextOffset(), -1);
+        Phobos.textManager.drawStringWithShadow(this.getName(),  this.x + 3.0f,  this.y - 4.0f - PhobosGui.getClickGui().getTextOffset(),  -1);
         if (this.open) {
             float y = this.getY() + this.getHeight() - 3.0f;
             for (final Item item2 : this.getItems()) {
                 if (item2.isHidden()) {
                     continue;
                 }
-                item2.setLocation(this.x + 2.0f, y);
+                item2.setLocation(this.x + 2.0f,  y);
                 item2.setWidth(this.getWidth() - 4);
-                item2.drawScreen(mouseX, mouseY, partialTicks);
+                item2.drawScreen(mouseX,  mouseY,  partialTicks);
                 y += item2.getHeight() + 1.5f;
             }
         }
     }
     
-    public void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) {
-        if (mouseButton == 0 && this.isHovering(mouseX, mouseY)) {
+    public void mouseClicked(final int mouseX,  final int mouseY,  final int mouseButton) {
+        if (mouseButton == 0 && this.isHovering(mouseX,  mouseY)) {
             this.x2 = this.x - mouseX;
             this.y2 = this.y - mouseY;
             PhobosGui.getClickGui().getComponents().forEach(component -> {
@@ -154,32 +154,32 @@ public class Component extends Feature
             this.drag = true;
             return;
         }
-        if (mouseButton == 1 && this.isHovering(mouseX, mouseY)) {
+        if (mouseButton == 1 && this.isHovering(mouseX,  mouseY)) {
             this.open = !this.open;
-            Component.mc.getSoundHandler().playSound((ISound)PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0f));
+            Component.mc.getSoundHandler().playSound((ISound)PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK,  1.0f));
             return;
         }
         if (!this.open) {
             return;
         }
-        this.getItems().forEach(item -> item.mouseClicked(mouseX, mouseY, mouseButton));
+        this.getItems().forEach(item -> item.mouseClicked(mouseX,  mouseY,  mouseButton));
     }
     
-    public void mouseReleased(final int mouseX, final int mouseY, final int releaseButton) {
+    public void mouseReleased(final int mouseX,  final int mouseY,  final int releaseButton) {
         if (releaseButton == 0) {
             this.drag = false;
         }
         if (!this.open) {
             return;
         }
-        this.getItems().forEach(item -> item.mouseReleased(mouseX, mouseY, releaseButton));
+        this.getItems().forEach(item -> item.mouseReleased(mouseX,  mouseY,  releaseButton));
     }
     
-    public void onKeyTyped(final char typedChar, final int keyCode) {
+    public void onKeyTyped(final char typedChar,  final int keyCode) {
         if (!this.open) {
             return;
         }
-        this.getItems().forEach(item -> item.onKeyTyped(typedChar, keyCode));
+        this.getItems().forEach(item -> item.onKeyTyped(typedChar,  keyCode));
     }
     
     public void addButton(final Button button) {
@@ -234,7 +234,7 @@ public class Component extends Feature
         return this.items;
     }
     
-    private boolean isHovering(final int mouseX, final int mouseY) {
+    private boolean isHovering(final int mouseX,  final int mouseY) {
         return mouseX >= this.getX() && mouseX <= this.getX() + this.getWidth() && mouseY >= this.getY() && mouseY <= this.getY() + this.getHeight() - (this.open ? 2 : 0);
     }
     

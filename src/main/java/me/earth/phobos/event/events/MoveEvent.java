@@ -16,7 +16,7 @@ public class MoveEvent extends EventStage
     private double y;
     private double z;
     
-    public MoveEvent(final int stage, final MoverType type, final double x, final double y, final double z) {
+    public MoveEvent(final int stage,  final MoverType type,  final double x,  final double y,  final double z) {
         super(stage);
         this.type = type;
         this.x = x;

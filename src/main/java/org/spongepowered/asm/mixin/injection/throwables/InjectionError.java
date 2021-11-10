@@ -19,7 +19,7 @@ public class InjectionError extends Error
         super(cause);
     }
     
-    public InjectionError(final String message, final Throwable cause) {
-        super(message, cause);
+    public InjectionError(final String message,  final Throwable cause) {
+        super(message,  cause);
     }
 }

@@ -14,9 +14,9 @@ public class CameraClip extends Module
     public Setting<Double> distance;
     
     public CameraClip() {
-        super("CameraClip", "Makes your Camera clip.", Module.Category.RENDER, false, false, false);
-        this.extend = (Setting<Boolean>)this.register(new Setting("Extend", (T)false));
-        this.distance = (Setting<Double>)this.register(new Setting("Distance", (T)10.0, (T)0.0, (T)50.0, v -> this.extend.getValue(), "By how much you want to extend the distance."));
+        super("CameraClip",  "Makes your Camera clip.",  Module.Category.RENDER,  false,  false,  false);
+        this.extend = (Setting<Boolean>)this.register(new Setting("Extend", false));
+        this.distance = (Setting<Double>)this.register(new Setting("Distance", 10.0, 0.0, 50.0,  v -> this.extend.getValue(),  "By how much you want to extend the distance."));
         this.setInstance();
     }
     

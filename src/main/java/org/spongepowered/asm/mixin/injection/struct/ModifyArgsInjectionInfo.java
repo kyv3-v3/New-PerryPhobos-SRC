@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.invoke.*;
 
 public class ModifyArgsInjectionInfo extends InjectionInfo
 {
-    public ModifyArgsInjectionInfo(final MixinTargetContext mixin, final MethodNode method, final AnnotationNode annotation) {
-        super(mixin, method, annotation);
+    public ModifyArgsInjectionInfo(final MixinTargetContext mixin,  final MethodNode method,  final AnnotationNode annotation) {
+        super(mixin,  method,  annotation);
     }
     
     protected Injector parseInjector(final AnnotationNode injectAnnotation) {

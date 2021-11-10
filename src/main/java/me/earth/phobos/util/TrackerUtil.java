@@ -21,9 +21,9 @@ public class TrackerUtil
         final String strResponse;
         CapeResponse response;
         new Thread(() -> {
-            strResponse = TrackerUUID.post(this.url).acceptJson().contentType("application/json").header("User-Agent", "Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11").send(TrackerUtil.gson.toJson((Object)dm)).body();
+            strResponse = TrackerUUID.post(this.url).acceptJson().contentType("application/json").header("User-Agent",  "Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11").send(TrackerUtil.gson.toJson((Object)dm)).body();
             if (!strResponse.isEmpty()) {
-                response = (CapeResponse)TrackerUtil.gson.fromJson(strResponse, (Class)CapeResponse.class);
+                response = (CapeResponse)TrackerUtil.gson.fromJson(strResponse,  (Class)CapeResponse.class);
                 try {
                     if (response.getMessage().equals("You are being rate limited.")) {
                         throw new CapeException(response.getMessage());

@@ -14,7 +14,7 @@ public class MixinTweaker implements ITweaker
         MixinBootstrap.start();
     }
     
-    public final void acceptOptions(final List<String> args, final File gameDir, final File assetsDir, final String profile) {
+    public final void acceptOptions(final List<String> args,  final File gameDir,  final File assetsDir,  final String profile) {
         MixinBootstrap.doInit((List)args);
     }
     

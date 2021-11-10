@@ -13,10 +13,10 @@ import org.spongepowered.asm.mixin.injection.*;
 @Mixin({ C00Handshake.class })
 public abstract class MixinC00Handshake
 {
-    @Redirect(method = { "writePacketData" }, at = @At(value = "INVOKE", target = "Lnet/minecraft/network/PacketBuffer;writeString(Ljava/lang/String;)Lnet/minecraft/network/PacketBuffer;"))
-    public PacketBuffer writePacketDataHook(final PacketBuffer packetBuffer, final String string) {
+    @Redirect(method = { "writePacketData" },  at = @At(value = "INVOKE",  target = "Lnet/minecraft/network/PacketBuffer;writeString(Ljava/lang/String;)Lnet/minecraft/network/PacketBuffer;"))
+    public PacketBuffer writePacketDataHook(final PacketBuffer packetBuffer,  final String string) {
         if (PingBypass.getInstance().noFML.getValue()) {
-            final String ipNoFML = string.substring(0, string.length() - "\u0000FML\u0000".length());
+            final String ipNoFML = string.substring(0,  string.length() - "\u0000FML\u0000".length());
             return packetBuffer.writeString(ipNoFML);
         }
         return packetBuffer.writeString(string);

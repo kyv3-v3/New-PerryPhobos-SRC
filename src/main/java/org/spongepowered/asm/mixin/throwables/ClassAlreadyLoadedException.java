@@ -16,7 +16,7 @@ public class ClassAlreadyLoadedException extends MixinException
         super(cause);
     }
     
-    public ClassAlreadyLoadedException(final String message, final Throwable cause) {
-        super(message, cause);
+    public ClassAlreadyLoadedException(final String message,  final Throwable cause) {
+        super(message,  cause);
     }
 }

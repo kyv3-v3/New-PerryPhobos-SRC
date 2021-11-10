@@ -11,7 +11,7 @@ public class LiquidInteract extends Module
     private static LiquidInteract INSTANCE;
     
     public LiquidInteract() {
-        super("LiquidInteract", "Interact with liquids.", Module.Category.PLAYER, false, false, false);
+        super("LiquidInteract",  "Interact with liquids.",  Module.Category.PLAYER,  false,  false,  false);
         this.setInstance();
     }
     

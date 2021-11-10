@@ -16,11 +16,11 @@ public class MethodHead extends InjectionPoint
         super(data);
     }
     
-    public boolean checkPriority(final int targetPriority, final int ownerPriority) {
+    public boolean checkPriority(final int targetPriority,  final int ownerPriority) {
         return true;
     }
     
-    public boolean find(final String desc, final InsnList insns, final Collection<AbstractInsnNode> nodes) {
+    public boolean find(final String desc,  final InsnList insns,  final Collection<AbstractInsnNode> nodes) {
         nodes.add(insns.getFirst());
         return true;
     }

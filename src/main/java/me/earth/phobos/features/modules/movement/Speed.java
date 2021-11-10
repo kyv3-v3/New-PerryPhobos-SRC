@@ -42,17 +42,17 @@ public class Speed extends Module
     private int vanillaCounter;
     
     public Speed() {
-        super("Speed", "Makes you faster.", Module.Category.MOVEMENT, true, false, false);
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", (T)Mode.INSTANT));
-        this.strafeJump = (Setting<Boolean>)this.register(new Setting("Jump", (T)false, v -> this.mode.getValue() == Mode.INSTANT));
-        this.noShake = (Setting<Boolean>)this.register(new Setting("NoShake", (T)true, v -> this.mode.getValue() != Mode.INSTANT));
-        this.useTimer = (Setting<Boolean>)this.register(new Setting("UseTimer", (T)false, v -> this.mode.getValue() != Mode.INSTANT));
-        this.zeroSpeed = (Setting<Double>)this.register(new Setting("0-Speed", (T)0.0, (T)0.0, (T)100.0, v -> this.mode.getValue() == Mode.VANILLA));
-        this.speed = (Setting<Double>)this.register(new Setting("Speed", (T)10.0, (T)0.1, (T)100.0, v -> this.mode.getValue() == Mode.VANILLA));
-        this.blocked = (Setting<Double>)this.register(new Setting("Blocked", (T)10.0, (T)0.0, (T)100.0, v -> this.mode.getValue() == Mode.VANILLA));
-        this.unblocked = (Setting<Double>)this.register(new Setting("Unblocked", (T)10.0, (T)0.0, (T)100.0, v -> this.mode.getValue() == Mode.VANILLA));
-        this.motionyonoff = (Setting<Boolean>)this.register(new Setting("MotionYOnOff", (T)false, v -> this.mode.getValue() == Mode.Yport));
-        this.yspeed = (Setting<Double>)this.register(new Setting("YSpeed", (T)1.0, (T)0.1, (T)10.0, v -> this.mode.getValue() == Mode.Yport));
+        super("Speed",  "Makes you faster.",  Module.Category.MOVEMENT,  true,  false,  false);
+        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.INSTANT));
+        this.strafeJump = (Setting<Boolean>)this.register(new Setting("Jump", false,  v -> this.mode.getValue() == Mode.INSTANT));
+        this.noShake = (Setting<Boolean>)this.register(new Setting("NoShake", true,  v -> this.mode.getValue() != Mode.INSTANT));
+        this.useTimer = (Setting<Boolean>)this.register(new Setting("UseTimer", false,  v -> this.mode.getValue() != Mode.INSTANT));
+        this.zeroSpeed = (Setting<Double>)this.register(new Setting("0-Speed", 0.0, 0.0, 100.0,  v -> this.mode.getValue() == Mode.VANILLA));
+        this.speed = (Setting<Double>)this.register(new Setting("Speed", 10.0, 0.1, 100.0,  v -> this.mode.getValue() == Mode.VANILLA));
+        this.blocked = (Setting<Double>)this.register(new Setting("Blocked", 10.0, 0.0, 100.0,  v -> this.mode.getValue() == Mode.VANILLA));
+        this.unblocked = (Setting<Double>)this.register(new Setting("Unblocked", 10.0, 0.0, 100.0,  v -> this.mode.getValue() == Mode.VANILLA));
+        this.motionyonoff = (Setting<Boolean>)this.register(new Setting("MotionYOnOff", false,  v -> this.mode.getValue() == Mode.Yport));
+        this.yspeed = (Setting<Double>)this.register(new Setting("YSpeed", 1.0, 0.1, 10.0,  v -> this.mode.getValue() == Mode.Yport));
         this.bounceHeight = 0.4;
         this.move = 0.26f;
         this.setInstance();
@@ -151,7 +151,7 @@ public class Speed extends Module
         }
         if (Speed.mc.player.onGround) {
             Speed.mc.player.jump();
-            MovementUtil.setSpeed((EntityLivingBase)Speed.mc.player, MovementUtil.getBaseMoveSpeed() + this.yspeed.getValue());
+            MovementUtil.setSpeed((EntityLivingBase)Speed.mc.player,  MovementUtil.getBaseMoveSpeed() + this.yspeed.getValue());
         }
         else {
             Speed.mc.player.motionY = -1.0;
@@ -231,7 +231,7 @@ public class Speed extends Module
                     }
                 }
             }
-            EntityUtil.moveEntityStrafe(this.move, (Entity)Speed.mc.player);
+            EntityUtil.moveEntityStrafe(this.move,  (Entity)Speed.mc.player);
         }
         else {
             if (this.oneTime) {
@@ -381,7 +381,7 @@ public class Speed extends Module
                     }
                 }
             }
-            EntityUtil.moveEntityStrafe(this.move, (Entity)Speed.mc.player);
+            EntityUtil.moveEntityStrafe(this.move,  (Entity)Speed.mc.player);
         }
         else {
             if (this.oneTime) {
@@ -531,7 +531,7 @@ public class Speed extends Module
                     }
                 }
             }
-            EntityUtil.moveEntityStrafe(this.move, (Entity)Speed.mc.player);
+            EntityUtil.moveEntityStrafe(this.move,  (Entity)Speed.mc.player);
         }
         else {
             if (this.oneTime) {
@@ -641,11 +641,11 @@ public class Speed extends Module
     
     public enum Mode
     {
-        INSTANT, 
-        ONGROUND, 
-        ACCEL, 
-        BOOST, 
-        VANILLA, 
+        INSTANT,  
+        ONGROUND,  
+        ACCEL,  
+        BOOST,  
+        VANILLA,  
         Yport;
     }
 }

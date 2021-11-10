@@ -34,7 +34,7 @@ public class Type
     private final int off;
     private final int len;
     
-    private Type(final int sort, final char[] buf, final int off, final int len) {
+    private Type(final int sort,  final char[] buf,  final int off,  final int len) {
         this.sort = sort;
         this.buf = buf;
         this.off = off;
@@ -42,20 +42,20 @@ public class Type
     }
     
     public static Type getType(final String typeDescriptor) {
-        return getType(typeDescriptor.toCharArray(), 0);
+        return getType(typeDescriptor.toCharArray(),  0);
     }
     
     public static Type getObjectType(final String internalName) {
         final char[] buf = internalName.toCharArray();
-        return new Type((buf[0] == '[') ? 9 : 10, buf, 0, buf.length);
+        return new Type((buf[0] == '[') ? 9 : 10,  buf,  0,  buf.length);
     }
     
     public static Type getMethodType(final String methodDescriptor) {
-        return getType(methodDescriptor.toCharArray(), 0);
+        return getType(methodDescriptor.toCharArray(),  0);
     }
     
-    public static Type getMethodType(final Type returnType, final Type... argumentTypes) {
-        return getType(getMethodDescriptor(returnType, argumentTypes));
+    public static Type getMethodType(final Type returnType,  final Type... argumentTypes) {
+        return getType(getMethodDescriptor(returnType,  argumentTypes));
     }
     
     public static Type getType(final Class<?> c) {
@@ -118,8 +118,8 @@ public class Type
             }
         }
         Type[] args;
-        for (args = new Type[size], off = 1, size = 0; buf[off] != ')'; off += args[size].len + ((args[size].sort == 10) ? 2 : 0), ++size) {
-            args[size] = getType(buf, off);
+        for (args = new Type[size],  off = 1,  size = 0; buf[off] != ')'; off += args[size].len + ((args[size].sort == 10) ? 2 : 0),  ++size) {
+            args[size] = getType(buf,  off);
         }
         return args;
     }
@@ -146,7 +146,7 @@ public class Type
             }
             while (buf[off++] != ';') {}
         }
-        return getType(buf, off);
+        return getType(buf,  off);
     }
     
     public static Type getReturnType(final Method method) {
@@ -185,7 +185,7 @@ public class Type
         return n << 2 | ((car == 'V') ? 0 : ((car == 'D' || car == 'J') ? 2 : 1));
     }
     
-    private static Type getType(final char[] buf, final int off) {
+    private static Type getType(final char[] buf,  final int off) {
         switch (buf[off]) {
             case 'V': {
                 return Type.VOID_TYPE;
@@ -223,15 +223,15 @@ public class Type
                         ++len;
                     }
                 }
-                return new Type(9, buf, off, len + 1);
+                return new Type(9,  buf,  off,  len + 1);
             }
             case 'L': {
                 int len;
                 for (len = 1; buf[off + len] != ';'; ++len) {}
-                return new Type(10, buf, off + 1, len - 1);
+                return new Type(10,  buf,  off + 1,  len - 1);
             }
             default: {
-                return new Type(11, buf, off, buf.length - off);
+                return new Type(11,  buf,  off,  buf.length - off);
             }
         }
     }
@@ -247,7 +247,7 @@ public class Type
     }
     
     public Type getElementType() {
-        return getType(this.buf, this.off + this.getDimensions());
+        return getType(this.buf,  this.off + this.getDimensions());
     }
     
     public String getClassName() {
@@ -287,7 +287,7 @@ public class Type
                 return sb.toString();
             }
             case 10: {
-                return new String(this.buf, this.off, this.len).replace('/', '.');
+                return new String(this.buf,  this.off,  this.len).replace('/',  '.');
             }
             default: {
                 return null;
@@ -296,7 +296,7 @@ public class Type
     }
     
     public String getInternalName() {
-        return new String(this.buf, this.off, this.len);
+        return new String(this.buf,  this.off,  this.len);
     }
     
     public Type[] getArgumentTypes() {
@@ -317,7 +317,7 @@ public class Type
         return buf.toString();
     }
     
-    public static String getMethodDescriptor(final Type returnType, final Type... argumentTypes) {
+    public static String getMethodDescriptor(final Type returnType,  final Type... argumentTypes) {
         final StringBuilder buf = new StringBuilder();
         buf.append('(');
         for (int i = 0; i < argumentTypes.length; ++i) {
@@ -334,21 +334,21 @@ public class Type
         }
         else if (this.sort == 10) {
             buf.append('L');
-            buf.append(this.buf, this.off, this.len);
+            buf.append(this.buf,  this.off,  this.len);
             buf.append(';');
         }
         else {
-            buf.append(this.buf, this.off, this.len);
+            buf.append(this.buf,  this.off,  this.len);
         }
     }
     
     public static String getInternalName(final Class<?> c) {
-        return c.getName().replace('.', '/');
+        return c.getName().replace('.',  '/');
     }
     
     public static String getDescriptor(final Class<?> c) {
         final StringBuilder buf = new StringBuilder();
-        getDescriptor(buf, c);
+        getDescriptor(buf,  c);
         return buf.toString();
     }
     
@@ -357,7 +357,7 @@ public class Type
         final StringBuilder buf = new StringBuilder();
         buf.append('(');
         for (int i = 0; i < parameters.length; ++i) {
-            getDescriptor(buf, parameters[i]);
+            getDescriptor(buf,  parameters[i]);
         }
         return buf.append(")V").toString();
     }
@@ -367,20 +367,20 @@ public class Type
         final StringBuilder buf = new StringBuilder();
         buf.append('(');
         for (int i = 0; i < parameters.length; ++i) {
-            getDescriptor(buf, parameters[i]);
+            getDescriptor(buf,  parameters[i]);
         }
         buf.append(')');
-        getDescriptor(buf, m.getReturnType());
+        getDescriptor(buf,  m.getReturnType());
         return buf.toString();
     }
     
-    private static void getDescriptor(final StringBuilder buf, final Class<?> c) {
+    private static void getDescriptor(final StringBuilder buf,  final Class<?> c) {
         Class<?> d;
         for (d = c; !d.isPrimitive(); d = d.getComponentType()) {
             if (!d.isArray()) {
                 buf.append('L');
                 final String name = d.getName();
-                for (int len = name.length(), i = 0; i < len; ++i) {
+                for (int len = name.length(),  i = 0; i < len; ++i) {
                     final char car = name.charAt(i);
                     buf.append((car == '.') ? '/' : car);
                 }
@@ -447,7 +447,7 @@ public class Type
             if (this.len != t.len) {
                 return false;
             }
-            for (int i = this.off, j = t.off, end = i + this.len; i < end; ++i, ++j) {
+            for (int i = this.off,  j = t.off,  end = i + this.len; i < end; ++i,  ++j) {
                 if (this.buf[i] != t.buf[j]) {
                     return false;
                 }
@@ -460,7 +460,7 @@ public class Type
     public int hashCode() {
         int hc = 13 * this.sort;
         if (this.sort >= 9) {
-            for (int i = this.off, end = i + this.len; i < end; ++i) {
+            for (int i = this.off,  end = i + this.len; i < end; ++i) {
                 hc = 17 * (hc + this.buf[i]);
             }
         }
@@ -473,14 +473,14 @@ public class Type
     }
     
     static {
-        VOID_TYPE = new Type(0, null, 1443168256, 1);
-        BOOLEAN_TYPE = new Type(1, null, 1509950721, 1);
-        CHAR_TYPE = new Type(2, null, 1124075009, 1);
-        BYTE_TYPE = new Type(3, null, 1107297537, 1);
-        SHORT_TYPE = new Type(4, null, 1392510721, 1);
-        INT_TYPE = new Type(5, null, 1224736769, 1);
-        FLOAT_TYPE = new Type(6, null, 1174536705, 1);
-        LONG_TYPE = new Type(7, null, 1241579778, 1);
-        DOUBLE_TYPE = new Type(8, null, 1141048066, 1);
+        VOID_TYPE = new Type(0,  null,  1443168256,  1);
+        BOOLEAN_TYPE = new Type(1,  null,  1509950721,  1);
+        CHAR_TYPE = new Type(2,  null,  1124075009,  1);
+        BYTE_TYPE = new Type(3,  null,  1107297537,  1);
+        SHORT_TYPE = new Type(4,  null,  1392510721,  1);
+        INT_TYPE = new Type(5,  null,  1224736769,  1);
+        FLOAT_TYPE = new Type(6,  null,  1174536705,  1);
+        LONG_TYPE = new Type(7,  null,  1241579778,  1);
+        DOUBLE_TYPE = new Type(8,  null,  1141048066,  1);
     }
 }

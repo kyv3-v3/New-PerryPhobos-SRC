@@ -70,7 +70,7 @@ class MethodWriter extends MethodVisitor
     private int stackSize;
     private int maxStackSize;
     
-    MethodWriter(final ClassWriter cw, final int access, final String name, final String desc, final String signature, final String[] exceptions, final int compute) {
+    MethodWriter(final ClassWriter cw,  final int access,  final String name,  final String desc,  final String signature,  final String[] exceptions,  final int compute) {
         super(327680);
         this.code = new ByteVector();
         if (cw.firstMethod == null) {
@@ -110,7 +110,7 @@ class MethodWriter extends MethodVisitor
         }
     }
     
-    public void visitParameter(final String name, final int access) {
+    public void visitParameter(final String name,  final int access) {
         if (this.methodParameters == null) {
             this.methodParameters = new ByteVector();
         }
@@ -120,13 +120,13 @@ class MethodWriter extends MethodVisitor
     
     public AnnotationVisitor visitAnnotationDefault() {
         this.annd = new ByteVector();
-        return (AnnotationVisitor)new AnnotationWriter(this.cw, false, this.annd, (ByteVector)null, 0);
+        return (AnnotationVisitor)new AnnotationWriter(this.cw,  false,  this.annd,  (ByteVector)null,  0);
     }
     
-    public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
+    public AnnotationVisitor visitAnnotation(final String desc,  final boolean visible) {
         final ByteVector bv = new ByteVector();
         bv.putShort(this.cw.newUTF8(desc)).putShort(0);
-        final AnnotationWriter aw = new AnnotationWriter(this.cw, true, bv, bv, 2);
+        final AnnotationWriter aw = new AnnotationWriter(this.cw,  true,  bv,  bv,  2);
         if (visible) {
             aw.next = this.anns;
             this.anns = aw;
@@ -138,11 +138,11 @@ class MethodWriter extends MethodVisitor
         return (AnnotationVisitor)aw;
     }
     
-    public AnnotationVisitor visitTypeAnnotation(final int typeRef, final TypePath typePath, final String desc, final boolean visible) {
+    public AnnotationVisitor visitTypeAnnotation(final int typeRef,  final TypePath typePath,  final String desc,  final boolean visible) {
         final ByteVector bv = new ByteVector();
-        AnnotationWriter.putTarget(typeRef, typePath, bv);
+        AnnotationWriter.putTarget(typeRef,  typePath,  bv);
         bv.putShort(this.cw.newUTF8(desc)).putShort(0);
-        final AnnotationWriter aw = new AnnotationWriter(this.cw, true, bv, bv, bv.length - 2);
+        final AnnotationWriter aw = new AnnotationWriter(this.cw,  true,  bv,  bv,  bv.length - 2);
         if (visible) {
             aw.next = this.tanns;
             this.tanns = aw;
@@ -154,14 +154,14 @@ class MethodWriter extends MethodVisitor
         return (AnnotationVisitor)aw;
     }
     
-    public AnnotationVisitor visitParameterAnnotation(final int parameter, final String desc, final boolean visible) {
+    public AnnotationVisitor visitParameterAnnotation(final int parameter,  final String desc,  final boolean visible) {
         final ByteVector bv = new ByteVector();
         if ("Ljava/lang/Synthetic;".equals(desc)) {
-            this.synthetics = Math.max(this.synthetics, parameter + 1);
-            return (AnnotationVisitor)new AnnotationWriter(this.cw, false, bv, (ByteVector)null, 0);
+            this.synthetics = Math.max(this.synthetics,  parameter + 1);
+            return (AnnotationVisitor)new AnnotationWriter(this.cw,  false,  bv,  (ByteVector)null,  0);
         }
         bv.putShort(this.cw.newUTF8(desc)).putShort(0);
-        final AnnotationWriter aw = new AnnotationWriter(this.cw, true, bv, bv, 2);
+        final AnnotationWriter aw = new AnnotationWriter(this.cw,  true,  bv,  bv,  2);
         if (visible) {
             if (this.panns == null) {
                 this.panns = new AnnotationWriter[Type.getArgumentTypes(this.descriptor).length];
@@ -193,7 +193,7 @@ class MethodWriter extends MethodVisitor
     public void visitCode() {
     }
     
-    public void visitFrame(final int type, final int nLocal, final Object[] local, final int nStack, final Object[] stack) {
+    public void visitFrame(final int type,  final int nLocal,  final Object[] local,  final int nStack,  final Object[] stack) {
         if (this.compute == 0) {
             return;
         }
@@ -201,12 +201,12 @@ class MethodWriter extends MethodVisitor
             if (this.currentBlock.frame == null) {
                 this.currentBlock.frame = (Frame)new CurrentFrame();
                 this.currentBlock.frame.owner = this.currentBlock;
-                this.currentBlock.frame.initInputFrame(this.cw, this.access, Type.getArgumentTypes(this.descriptor), nLocal);
+                this.currentBlock.frame.initInputFrame(this.cw,  this.access,  Type.getArgumentTypes(this.descriptor),  nLocal);
                 this.visitImplicitFirstFrame();
             }
             else {
                 if (type == -1) {
-                    this.currentBlock.frame.set(this.cw, nLocal, local, nStack, stack);
+                    this.currentBlock.frame.set(this.cw,  nLocal,  local,  nStack,  stack);
                 }
                 this.visitFrame(this.currentBlock.frame);
             }
@@ -216,7 +216,7 @@ class MethodWriter extends MethodVisitor
                 this.visitImplicitFirstFrame();
             }
             this.currentLocals = nLocal;
-            int frameIndex = this.startFrame(this.code.length, nLocal, nStack);
+            int frameIndex = this.startFrame(this.code.length,  nLocal,  nStack);
             for (int i = 0; i < nLocal; ++i) {
                 if (local[i] instanceof String) {
                     this.frame[frameIndex++] = (0x1700000 | this.cw.addType((String)local[i]));
@@ -225,7 +225,7 @@ class MethodWriter extends MethodVisitor
                     this.frame[frameIndex++] = (int)local[i];
                 }
                 else {
-                    this.frame[frameIndex++] = (0x1800000 | this.cw.addUninitializedType("", ((Label)local[i]).position));
+                    this.frame[frameIndex++] = (0x1800000 | this.cw.addUninitializedType("",  ((Label)local[i]).position));
                 }
             }
             for (int i = 0; i < nStack; ++i) {
@@ -236,7 +236,7 @@ class MethodWriter extends MethodVisitor
                     this.frame[frameIndex++] = (int)stack[i];
                 }
                 else {
-                    this.frame[frameIndex++] = (0x1800000 | this.cw.addUninitializedType("", ((Label)stack[i]).position));
+                    this.frame[frameIndex++] = (0x1800000 | this.cw.addUninitializedType("",  ((Label)stack[i]).position));
                 }
             }
             this.endFrame();
@@ -304,8 +304,8 @@ class MethodWriter extends MethodVisitor
             this.previousFrameOffset = this.code.length;
             ++this.frameCount;
         }
-        this.maxStack = Math.max(this.maxStack, nStack);
-        this.maxLocals = Math.max(this.maxLocals, this.currentLocals);
+        this.maxStack = Math.max(this.maxStack,  nStack);
+        this.maxLocals = Math.max(this.maxLocals,  this.currentLocals);
     }
     
     public void visitInsn(final int opcode) {
@@ -313,7 +313,7 @@ class MethodWriter extends MethodVisitor
         this.code.putByte(opcode);
         if (this.currentBlock != null) {
             if (this.compute == 0 || this.compute == 1) {
-                this.currentBlock.frame.execute(opcode, 0, (ClassWriter)null, (Item)null);
+                this.currentBlock.frame.execute(opcode,  0,  (ClassWriter)null,  (Item)null);
             }
             else {
                 final int size = this.stackSize + Frame.SIZE[opcode];
@@ -328,11 +328,11 @@ class MethodWriter extends MethodVisitor
         }
     }
     
-    public void visitIntInsn(final int opcode, final int operand) {
+    public void visitIntInsn(final int opcode,  final int operand) {
         this.lastCodeOffset = this.code.length;
         if (this.currentBlock != null) {
             if (this.compute == 0 || this.compute == 1) {
-                this.currentBlock.frame.execute(opcode, operand, (ClassWriter)null, (Item)null);
+                this.currentBlock.frame.execute(opcode,  operand,  (ClassWriter)null,  (Item)null);
             }
             else if (opcode != 188) {
                 final int size = this.stackSize + 1;
@@ -343,18 +343,18 @@ class MethodWriter extends MethodVisitor
             }
         }
         if (opcode == 17) {
-            this.code.put12(opcode, operand);
+            this.code.put12(opcode,  operand);
         }
         else {
-            this.code.put11(opcode, operand);
+            this.code.put11(opcode,  operand);
         }
     }
     
-    public void visitVarInsn(final int opcode, final int var) {
+    public void visitVarInsn(final int opcode,  final int var) {
         this.lastCodeOffset = this.code.length;
         if (this.currentBlock != null) {
             if (this.compute == 0 || this.compute == 1) {
-                this.currentBlock.frame.execute(opcode, var, (ClassWriter)null, (Item)null);
+                this.currentBlock.frame.execute(opcode,  var,  (ClassWriter)null,  (Item)null);
             }
             else if (opcode == 169) {
                 final Label currentBlock = this.currentBlock;
@@ -393,22 +393,22 @@ class MethodWriter extends MethodVisitor
             this.code.putByte(opt);
         }
         else if (var >= 256) {
-            this.code.putByte(196).put12(opcode, var);
+            this.code.putByte(196).put12(opcode,  var);
         }
         else {
-            this.code.put11(opcode, var);
+            this.code.put11(opcode,  var);
         }
         if (opcode >= 54 && this.compute == 0 && this.handlerCount > 0) {
             this.visitLabel(new Label());
         }
     }
     
-    public void visitTypeInsn(final int opcode, final String type) {
+    public void visitTypeInsn(final int opcode,  final String type) {
         this.lastCodeOffset = this.code.length;
         final Item i = this.cw.newClassItem(type);
         if (this.currentBlock != null) {
             if (this.compute == 0 || this.compute == 1) {
-                this.currentBlock.frame.execute(opcode, this.code.length, this.cw, i);
+                this.currentBlock.frame.execute(opcode,  this.code.length,  this.cw,  i);
             }
             else if (opcode == 187) {
                 final int size = this.stackSize + 1;
@@ -418,15 +418,15 @@ class MethodWriter extends MethodVisitor
                 this.stackSize = size;
             }
         }
-        this.code.put12(opcode, i.index);
+        this.code.put12(opcode,  i.index);
     }
     
-    public void visitFieldInsn(final int opcode, final String owner, final String name, final String desc) {
+    public void visitFieldInsn(final int opcode,  final String owner,  final String name,  final String desc) {
         this.lastCodeOffset = this.code.length;
-        final Item i = this.cw.newFieldItem(owner, name, desc);
+        final Item i = this.cw.newFieldItem(owner,  name,  desc);
         if (this.currentBlock != null) {
             if (this.compute == 0 || this.compute == 1) {
-                this.currentBlock.frame.execute(opcode, 0, this.cw, i);
+                this.currentBlock.frame.execute(opcode,  0,  this.cw,  i);
             }
             else {
                 final char c = desc.charAt(0);
@@ -455,16 +455,16 @@ class MethodWriter extends MethodVisitor
                 this.stackSize = size;
             }
         }
-        this.code.put12(opcode, i.index);
+        this.code.put12(opcode,  i.index);
     }
     
-    public void visitMethodInsn(final int opcode, final String owner, final String name, final String desc, final boolean itf) {
+    public void visitMethodInsn(final int opcode,  final String owner,  final String name,  final String desc,  final boolean itf) {
         this.lastCodeOffset = this.code.length;
-        final Item i = this.cw.newMethodItem(owner, name, desc, itf);
+        final Item i = this.cw.newMethodItem(owner,  name,  desc,  itf);
         int argSize = i.intVal;
         if (this.currentBlock != null) {
             if (this.compute == 0 || this.compute == 1) {
-                this.currentBlock.frame.execute(opcode, 0, this.cw, i);
+                this.currentBlock.frame.execute(opcode,  0,  this.cw,  i);
             }
             else {
                 if (argSize == 0) {
@@ -489,20 +489,20 @@ class MethodWriter extends MethodVisitor
                 argSize = Type.getArgumentsAndReturnSizes(desc);
                 i.intVal = argSize;
             }
-            this.code.put12(185, i.index).put11(argSize >> 2, 0);
+            this.code.put12(185,  i.index).put11(argSize >> 2,  0);
         }
         else {
-            this.code.put12(opcode, i.index);
+            this.code.put12(opcode,  i.index);
         }
     }
     
-    public void visitInvokeDynamicInsn(final String name, final String desc, final Handle bsm, final Object... bsmArgs) {
+    public void visitInvokeDynamicInsn(final String name,  final String desc,  final Handle bsm,  final Object... bsmArgs) {
         this.lastCodeOffset = this.code.length;
-        final Item i = this.cw.newInvokeDynamicItem(name, desc, bsm, bsmArgs);
+        final Item i = this.cw.newInvokeDynamicItem(name,  desc,  bsm,  bsmArgs);
         int argSize = i.intVal;
         if (this.currentBlock != null) {
             if (this.compute == 0 || this.compute == 1) {
-                this.currentBlock.frame.execute(186, 0, this.cw, i);
+                this.currentBlock.frame.execute(186,  0,  this.cw,  i);
             }
             else {
                 if (argSize == 0) {
@@ -516,27 +516,27 @@ class MethodWriter extends MethodVisitor
                 this.stackSize = size;
             }
         }
-        this.code.put12(186, i.index);
+        this.code.put12(186,  i.index);
         this.code.putShort(0);
     }
     
-    public void visitJumpInsn(int opcode, final Label label) {
+    public void visitJumpInsn(int opcode,  final Label label) {
         final boolean isWide = opcode >= 200;
         opcode = (isWide ? (opcode - 33) : opcode);
         this.lastCodeOffset = this.code.length;
         Label nextInsn = null;
         if (this.currentBlock != null) {
             if (this.compute == 0) {
-                this.currentBlock.frame.execute(opcode, 0, (ClassWriter)null, (Item)null);
+                this.currentBlock.frame.execute(opcode,  0,  (ClassWriter)null,  (Item)null);
                 final Label first = label.getFirst();
                 first.status |= 0x10;
-                this.addSuccessor(0, label);
+                this.addSuccessor(0,  label);
                 if (opcode != 167) {
                     nextInsn = new Label();
                 }
             }
             else if (this.compute == 1) {
-                this.currentBlock.frame.execute(opcode, 0, (ClassWriter)null, (Item)null);
+                this.currentBlock.frame.execute(opcode,  0,  (ClassWriter)null,  (Item)null);
             }
             else if (opcode == 168) {
                 if ((label.status & 0x200) == 0x0) {
@@ -545,11 +545,11 @@ class MethodWriter extends MethodVisitor
                 }
                 final Label currentBlock = this.currentBlock;
                 currentBlock.status |= 0x80;
-                this.addSuccessor(this.stackSize + 1, label);
+                this.addSuccessor(this.stackSize + 1,  label);
                 nextInsn = new Label();
             }
             else {
-                this.addSuccessor(this.stackSize += Frame.SIZE[opcode], label);
+                this.addSuccessor(this.stackSize += Frame.SIZE[opcode],  label);
             }
         }
         if ((label.status & 0x2) != 0x0 && label.position - this.code.length < -32768) {
@@ -568,15 +568,15 @@ class MethodWriter extends MethodVisitor
                 this.code.putShort(8);
                 this.code.putByte(200);
             }
-            label.put(this, this.code, this.code.length - 1, true);
+            label.put(this,  this.code,  this.code.length - 1,  true);
         }
         else if (isWide) {
             this.code.putByte(opcode + 33);
-            label.put(this, this.code, this.code.length - 1, true);
+            label.put(this,  this.code,  this.code.length - 1,  true);
         }
         else {
             this.code.putByte(opcode);
-            label.put(this, this.code, this.code.length - 1, false);
+            label.put(this,  this.code,  this.code.length - 1,  false);
         }
         if (this.currentBlock != null) {
             if (nextInsn != null) {
@@ -590,7 +590,7 @@ class MethodWriter extends MethodVisitor
     
     public void visitLabel(final Label label) {
         final ClassWriter cw = this.cw;
-        cw.hasAsmInsns |= label.resolve(this, this.code.length, this.code.data);
+        cw.hasAsmInsns |= label.resolve(this,  this.code.length,  this.code.data);
         if ((label.status & 0x1) != 0x0) {
             return;
         }
@@ -602,7 +602,7 @@ class MethodWriter extends MethodVisitor
                     label.frame = this.currentBlock.frame;
                     return;
                 }
-                this.addSuccessor(0, label);
+                this.addSuccessor(0,  label);
             }
             this.currentBlock = label;
             if (label.frame == null) {
@@ -632,7 +632,7 @@ class MethodWriter extends MethodVisitor
         else if (this.compute == 2) {
             if (this.currentBlock != null) {
                 this.currentBlock.outputStackMax = this.maxStackSize;
-                this.addSuccessor(this.stackSize, label);
+                this.addSuccessor(this.stackSize,  label);
             }
             this.currentBlock = label;
             this.stackSize = 0;
@@ -649,7 +649,7 @@ class MethodWriter extends MethodVisitor
         final Item i = this.cw.newConstItem(cst);
         if (this.currentBlock != null) {
             if (this.compute == 0 || this.compute == 1) {
-                this.currentBlock.frame.execute(18, 0, this.cw, i);
+                this.currentBlock.frame.execute(18,  0,  this.cw,  i);
             }
             else {
                 int size;
@@ -667,20 +667,20 @@ class MethodWriter extends MethodVisitor
         }
         final int index = i.index;
         if (i.type == 5 || i.type == 6) {
-            this.code.put12(20, index);
+            this.code.put12(20,  index);
         }
         else if (index >= 256) {
-            this.code.put12(19, index);
+            this.code.put12(19,  index);
         }
         else {
-            this.code.put11(18, index);
+            this.code.put11(18,  index);
         }
     }
     
-    public void visitIincInsn(final int var, final int increment) {
+    public void visitIincInsn(final int var,  final int increment) {
         this.lastCodeOffset = this.code.length;
         if (this.currentBlock != null && (this.compute == 0 || this.compute == 1)) {
-            this.currentBlock.frame.execute(132, var, (ClassWriter)null, (Item)null);
+            this.currentBlock.frame.execute(132,  var,  (ClassWriter)null,  (Item)null);
         }
         if (this.compute != 3) {
             final int n = var + 1;
@@ -689,83 +689,83 @@ class MethodWriter extends MethodVisitor
             }
         }
         if (var > 255 || increment > 127 || increment < -128) {
-            this.code.putByte(196).put12(132, var).putShort(increment);
+            this.code.putByte(196).put12(132,  var).putShort(increment);
         }
         else {
-            this.code.putByte(132).put11(var, increment);
+            this.code.putByte(132).put11(var,  increment);
         }
     }
     
-    public void visitTableSwitchInsn(final int min, final int max, final Label dflt, final Label... labels) {
+    public void visitTableSwitchInsn(final int min,  final int max,  final Label dflt,  final Label... labels) {
         this.lastCodeOffset = this.code.length;
         final int source = this.code.length;
         this.code.putByte(170);
-        this.code.putByteArray((byte[])null, 0, (4 - this.code.length % 4) % 4);
-        dflt.put(this, this.code, source, true);
+        this.code.putByteArray((byte[])null,  0,  (4 - this.code.length % 4) % 4);
+        dflt.put(this,  this.code,  source,  true);
         this.code.putInt(min).putInt(max);
         for (int i = 0; i < labels.length; ++i) {
-            labels[i].put(this, this.code, source, true);
+            labels[i].put(this,  this.code,  source,  true);
         }
-        this.visitSwitchInsn(dflt, labels);
+        this.visitSwitchInsn(dflt,  labels);
     }
     
-    public void visitLookupSwitchInsn(final Label dflt, final int[] keys, final Label[] labels) {
+    public void visitLookupSwitchInsn(final Label dflt,  final int[] keys,  final Label[] labels) {
         this.lastCodeOffset = this.code.length;
         final int source = this.code.length;
         this.code.putByte(171);
-        this.code.putByteArray((byte[])null, 0, (4 - this.code.length % 4) % 4);
-        dflt.put(this, this.code, source, true);
+        this.code.putByteArray((byte[])null,  0,  (4 - this.code.length % 4) % 4);
+        dflt.put(this,  this.code,  source,  true);
         this.code.putInt(labels.length);
         for (int i = 0; i < labels.length; ++i) {
             this.code.putInt(keys[i]);
-            labels[i].put(this, this.code, source, true);
+            labels[i].put(this,  this.code,  source,  true);
         }
-        this.visitSwitchInsn(dflt, labels);
+        this.visitSwitchInsn(dflt,  labels);
     }
     
-    private void visitSwitchInsn(final Label dflt, final Label[] labels) {
+    private void visitSwitchInsn(final Label dflt,  final Label[] labels) {
         if (this.currentBlock != null) {
             if (this.compute == 0) {
-                this.currentBlock.frame.execute(171, 0, (ClassWriter)null, (Item)null);
-                this.addSuccessor(0, dflt);
+                this.currentBlock.frame.execute(171,  0,  (ClassWriter)null,  (Item)null);
+                this.addSuccessor(0,  dflt);
                 final Label first = dflt.getFirst();
                 first.status |= 0x10;
                 for (int i = 0; i < labels.length; ++i) {
-                    this.addSuccessor(0, labels[i]);
+                    this.addSuccessor(0,  labels[i]);
                     final Label first2 = labels[i].getFirst();
                     first2.status |= 0x10;
                 }
             }
             else {
-                this.addSuccessor(--this.stackSize, dflt);
+                this.addSuccessor(--this.stackSize,  dflt);
                 for (int i = 0; i < labels.length; ++i) {
-                    this.addSuccessor(this.stackSize, labels[i]);
+                    this.addSuccessor(this.stackSize,  labels[i]);
                 }
             }
             this.noSuccessor();
         }
     }
     
-    public void visitMultiANewArrayInsn(final String desc, final int dims) {
+    public void visitMultiANewArrayInsn(final String desc,  final int dims) {
         this.lastCodeOffset = this.code.length;
         final Item i = this.cw.newClassItem(desc);
         if (this.currentBlock != null) {
             if (this.compute == 0 || this.compute == 1) {
-                this.currentBlock.frame.execute(197, dims, this.cw, i);
+                this.currentBlock.frame.execute(197,  dims,  this.cw,  i);
             }
             else {
                 this.stackSize += 1 - dims;
             }
         }
-        this.code.put12(197, i.index).putByte(dims);
+        this.code.put12(197,  i.index).putByte(dims);
     }
     
-    public AnnotationVisitor visitInsnAnnotation(int typeRef, final TypePath typePath, final String desc, final boolean visible) {
+    public AnnotationVisitor visitInsnAnnotation(int typeRef,  final TypePath typePath,  final String desc,  final boolean visible) {
         final ByteVector bv = new ByteVector();
         typeRef = ((typeRef & 0xFF0000FF) | this.lastCodeOffset << 8);
-        AnnotationWriter.putTarget(typeRef, typePath, bv);
+        AnnotationWriter.putTarget(typeRef,  typePath,  bv);
         bv.putShort(this.cw.newUTF8(desc)).putShort(0);
-        final AnnotationWriter aw = new AnnotationWriter(this.cw, true, bv, bv, bv.length - 2);
+        final AnnotationWriter aw = new AnnotationWriter(this.cw,  true,  bv,  bv,  bv.length - 2);
         if (visible) {
             aw.next = this.ctanns;
             this.ctanns = aw;
@@ -777,7 +777,7 @@ class MethodWriter extends MethodVisitor
         return (AnnotationVisitor)aw;
     }
     
-    public void visitTryCatchBlock(final Label start, final Label end, final Label handler, final String type) {
+    public void visitTryCatchBlock(final Label start,  final Label end,  final Label handler,  final String type) {
         ++this.handlerCount;
         final Handler h = new Handler();
         h.start = start;
@@ -794,11 +794,11 @@ class MethodWriter extends MethodVisitor
         this.lastHandler = h;
     }
     
-    public AnnotationVisitor visitTryCatchAnnotation(final int typeRef, final TypePath typePath, final String desc, final boolean visible) {
+    public AnnotationVisitor visitTryCatchAnnotation(final int typeRef,  final TypePath typePath,  final String desc,  final boolean visible) {
         final ByteVector bv = new ByteVector();
-        AnnotationWriter.putTarget(typeRef, typePath, bv);
+        AnnotationWriter.putTarget(typeRef,  typePath,  bv);
         bv.putShort(this.cw.newUTF8(desc)).putShort(0);
-        final AnnotationWriter aw = new AnnotationWriter(this.cw, true, bv, bv, bv.length - 2);
+        final AnnotationWriter aw = new AnnotationWriter(this.cw,  true,  bv,  bv,  bv.length - 2);
         if (visible) {
             aw.next = this.ctanns;
             this.ctanns = aw;
@@ -810,7 +810,7 @@ class MethodWriter extends MethodVisitor
         return (AnnotationVisitor)aw;
     }
     
-    public void visitLocalVariable(final String name, final String desc, final String signature, final Label start, final Label end, final int index) {
+    public void visitLocalVariable(final String name,  final String desc,  final String signature,  final Label start,  final Label end,  final int index) {
         if (signature != null) {
             if (this.localVarType == null) {
                 this.localVarType = new ByteVector();
@@ -832,7 +832,7 @@ class MethodWriter extends MethodVisitor
         }
     }
     
-    public AnnotationVisitor visitLocalVariableAnnotation(final int typeRef, final TypePath typePath, final Label[] start, final Label[] end, final int[] index, final String desc, final boolean visible) {
+    public AnnotationVisitor visitLocalVariableAnnotation(final int typeRef,  final TypePath typePath,  final Label[] start,  final Label[] end,  final int[] index,  final String desc,  final boolean visible) {
         final ByteVector bv = new ByteVector();
         bv.putByte(typeRef >>> 24).putShort(start.length);
         for (int i = 0; i < start.length; ++i) {
@@ -843,10 +843,10 @@ class MethodWriter extends MethodVisitor
         }
         else {
             final int length = typePath.b[typePath.offset] * 2 + 1;
-            bv.putByteArray(typePath.b, typePath.offset, length);
+            bv.putByteArray(typePath.b,  typePath.offset,  length);
         }
         bv.putShort(this.cw.newUTF8(desc)).putShort(0);
-        final AnnotationWriter aw = new AnnotationWriter(this.cw, true, bv, bv, bv.length - 2);
+        final AnnotationWriter aw = new AnnotationWriter(this.cw,  true,  bv,  bv,  bv.length - 2);
         if (visible) {
             aw.next = this.ctanns;
             this.ctanns = aw;
@@ -858,7 +858,7 @@ class MethodWriter extends MethodVisitor
         return (AnnotationVisitor)aw;
     }
     
-    public void visitLineNumber(final int line, final Label start) {
+    public void visitLineNumber(final int line,  final Label start) {
         if (this.lineNumber == null) {
             this.lineNumber = new ByteVector();
         }
@@ -867,7 +867,7 @@ class MethodWriter extends MethodVisitor
         this.lineNumber.putShort(line);
     }
     
-    public void visitMaxs(final int maxStack, final int maxLocals) {
+    public void visitMaxs(final int maxStack,  final int maxLocals) {
         if (this.compute == 0) {
             for (Handler handler = this.firstHandler; handler != null; handler = handler.next) {
                 Label l = handler.start.getFirst();
@@ -887,7 +887,7 @@ class MethodWriter extends MethodVisitor
                 }
             }
             Frame f = this.labels.frame;
-            f.initInputFrame(this.cw, this.access, Type.getArgumentTypes(this.descriptor), this.maxLocals);
+            f.initInputFrame(this.cw,  this.access,  Type.getArgumentTypes(this.descriptor),  this.maxLocals);
             this.visitFrame(f);
             int max = 0;
             Label changed = this.labels;
@@ -908,7 +908,7 @@ class MethodWriter extends MethodVisitor
                 }
                 for (Edge e2 = i.successors; e2 != null; e2 = e2.next) {
                     final Label n = e2.successor.getFirst();
-                    final boolean change = f.merge(this.cw, n.frame, e2.info);
+                    final boolean change = f.merge(this.cw,  n.frame,  e2.info);
                     if (change && n.next == null) {
                         n.next = changed;
                         changed = n;
@@ -925,15 +925,15 @@ class MethodWriter extends MethodVisitor
                     final int start = i.position;
                     final int end = ((k == null) ? this.code.length : k.position) - 1;
                     if (end >= start) {
-                        max = Math.max(max, 1);
+                        max = Math.max(max,  1);
                         for (int j = start; j < end; ++j) {
                             this.code.data[j] = 0;
                         }
                         this.code.data[end] = -65;
-                        final int frameIndex = this.startFrame(start, 0, 1);
+                        final int frameIndex = this.startFrame(start,  0,  1);
                         this.frame[frameIndex] = (0x1700000 | this.cw.addType("java/lang/Throwable"));
                         this.endFrame();
-                        this.firstHandler = Handler.remove(this.firstHandler, i, k);
+                        this.firstHandler = Handler.remove(this.firstHandler,  i,  k);
                     }
                 }
             }
@@ -965,13 +965,13 @@ class MethodWriter extends MethodVisitor
             }
             if (this.subroutines > 0) {
                 int id = 0;
-                this.labels.visitSubroutine((Label)null, 1L, this.subroutines);
+                this.labels.visitSubroutine((Label)null,  1L,  this.subroutines);
                 for (Label m = this.labels; m != null; m = m.successor) {
                     if ((m.status & 0x80) != 0x0) {
                         final Label subroutine = m.successors.next.successor;
                         if ((subroutine.status & 0x400) == 0x0) {
                             ++id;
-                            subroutine.visitSubroutine((Label)null, id / 32L << 32 | 1L << id % 32, this.subroutines);
+                            subroutine.visitSubroutine((Label)null,  id / 32L << 32 | 1L << id % 32,  this.subroutines);
                         }
                     }
                 }
@@ -982,7 +982,7 @@ class MethodWriter extends MethodVisitor
                             label4.status &= 0xFFFFF7FF;
                         }
                         final Label subroutine2 = m.successors.next.successor;
-                        subroutine2.visitSubroutine(m, 0L, this.subroutines);
+                        subroutine2.visitSubroutine(m,  0L,  this.subroutines);
                     }
                 }
             }
@@ -1012,7 +1012,7 @@ class MethodWriter extends MethodVisitor
                     b = b.next;
                 }
             }
-            this.maxStack = Math.max(maxStack, max2);
+            this.maxStack = Math.max(maxStack,  max2);
         }
         else {
             this.maxStack = maxStack;
@@ -1023,7 +1023,7 @@ class MethodWriter extends MethodVisitor
     public void visitEnd() {
     }
     
-    private void addSuccessor(final int info, final Label successor) {
+    private void addSuccessor(final int info,  final Label successor) {
         final Edge b = new Edge();
         b.info = info;
         b.successor = successor;
@@ -1035,7 +1035,7 @@ class MethodWriter extends MethodVisitor
         if (this.compute == 0) {
             final Label l = new Label();
             l.frame = new Frame();
-            (l.frame.owner = l).resolve(this, this.code.length, this.code.data);
+            (l.frame.owner = l).resolve(this,  this.code.length,  this.code.data);
             this.previousBlock.successor = l;
             this.previousBlock = l;
         }
@@ -1073,7 +1073,7 @@ class MethodWriter extends MethodVisitor
                 ++i;
             }
         }
-        int frameIndex = this.startFrame(f.owner.position, nLocal, nStack);
+        int frameIndex = this.startFrame(f.owner.position,  nLocal,  nStack);
         int i = 0;
         while (nLocal > 0) {
             final int t = locals[i];
@@ -1095,7 +1095,7 @@ class MethodWriter extends MethodVisitor
     }
     
     private void visitImplicitFirstFrame() {
-        int frameIndex = this.startFrame(0, this.descriptor.length() + 1, 0);
+        int frameIndex = this.startFrame(0,  this.descriptor.length() + 1,  0);
         if ((this.access & 0x8) == 0x0) {
             if ((this.access & 0x80000) == 0x0) {
                 this.frame[frameIndex++] = (0x1700000 | this.cw.addType(this.cw.thisName));
@@ -1138,14 +1138,14 @@ class MethodWriter extends MethodVisitor
                             ++i;
                         }
                     }
-                    this.frame[frameIndex++] = (0x1700000 | this.cw.addType(this.descriptor.substring(j, ++i)));
+                    this.frame[frameIndex++] = (0x1700000 | this.cw.addType(this.descriptor.substring(j,  ++i)));
                     continue;
                 }
                 case 'L': {
                     while (this.descriptor.charAt(i) != ';') {
                         ++i;
                     }
-                    this.frame[frameIndex++] = (0x1700000 | this.cw.addType(this.descriptor.substring(j + 1, i++)));
+                    this.frame[frameIndex++] = (0x1700000 | this.cw.addType(this.descriptor.substring(j + 1,  i++)));
                     continue;
                 }
                 default: {
@@ -1156,7 +1156,7 @@ class MethodWriter extends MethodVisitor
         }
     }
     
-    private int startFrame(final int offset, final int nLocal, final int nStack) {
+    private int startFrame(final int offset,  final int nLocal,  final int nStack) {
         final int n = 3 + nLocal + nStack;
         if (this.frame == null || this.frame.length < n) {
             this.frame = new int[n];
@@ -1184,9 +1184,9 @@ class MethodWriter extends MethodVisitor
         final int cstackSize = this.frame[2];
         if ((this.cw.version & 0xFFFF) < 50) {
             this.stackMap.putShort(this.frame[0]).putShort(clocalsSize);
-            this.writeFrameTypes(3, 3 + clocalsSize);
+            this.writeFrameTypes(3,  3 + clocalsSize);
             this.stackMap.putShort(cstackSize);
-            this.writeFrameTypes(3 + clocalsSize, 3 + clocalsSize + cstackSize);
+            this.writeFrameTypes(3 + clocalsSize,  3 + clocalsSize + cstackSize);
             return;
         }
         int localsSize = this.previousFrame[1];
@@ -1241,12 +1241,12 @@ class MethodWriter extends MethodVisitor
             }
             case 64: {
                 this.stackMap.putByte(64 + delta);
-                this.writeFrameTypes(3 + clocalsSize, 4 + clocalsSize);
+                this.writeFrameTypes(3 + clocalsSize,  4 + clocalsSize);
                 break;
             }
             case 247: {
                 this.stackMap.putByte(247).putShort(delta);
-                this.writeFrameTypes(3 + clocalsSize, 4 + clocalsSize);
+                this.writeFrameTypes(3 + clocalsSize,  4 + clocalsSize);
                 break;
             }
             case 251: {
@@ -1259,20 +1259,20 @@ class MethodWriter extends MethodVisitor
             }
             case 252: {
                 this.stackMap.putByte(251 + k).putShort(delta);
-                this.writeFrameTypes(3 + localsSize, 3 + clocalsSize);
+                this.writeFrameTypes(3 + localsSize,  3 + clocalsSize);
                 break;
             }
             default: {
                 this.stackMap.putByte(255).putShort(delta).putShort(clocalsSize);
-                this.writeFrameTypes(3, 3 + clocalsSize);
+                this.writeFrameTypes(3,  3 + clocalsSize);
                 this.stackMap.putShort(cstackSize);
-                this.writeFrameTypes(3 + clocalsSize, 3 + clocalsSize + cstackSize);
+                this.writeFrameTypes(3 + clocalsSize,  3 + clocalsSize + cstackSize);
                 break;
             }
         }
     }
     
-    private void writeFrameTypes(final int start, final int end) {
+    private void writeFrameTypes(final int start,  final int end) {
         for (int i = start; i < end; ++i) {
             final int t = this.frame[i];
             int d = t & 0xF0000000;
@@ -1394,7 +1394,7 @@ class MethodWriter extends MethodVisitor
                 size += 8 + this.ictanns.getSize();
             }
             if (this.cattrs != null) {
-                size += this.cattrs.getSize(this.cw, this.code.data, this.code.length, this.maxStack, this.maxLocals);
+                size += this.cattrs.getSize(this.cw,  this.code.data,  this.code.length,  this.maxStack,  this.maxLocals);
             }
         }
         if (this.exceptionCount > 0) {
@@ -1453,7 +1453,7 @@ class MethodWriter extends MethodVisitor
             }
         }
         if (this.attrs != null) {
-            size += this.attrs.getSize(this.cw, (byte[])null, 0, -1, -1);
+            size += this.attrs.getSize(this.cw,  (byte[])null,  0,  -1,  -1);
         }
         return size;
     }
@@ -1463,7 +1463,7 @@ class MethodWriter extends MethodVisitor
         final int mask = 0xE0000 | (this.access & 0x40000) / 64;
         out.putShort(this.access & ~mask).putShort(this.name).putShort(this.desc);
         if (this.classReaderOffset != 0) {
-            out.putByteArray(this.cw.cr.b, this.classReaderOffset, this.classReaderLength);
+            out.putByteArray(this.cw.cr.b,  this.classReaderOffset,  this.classReaderLength);
             return;
         }
         int attributeCount = 0;
@@ -1531,11 +1531,11 @@ class MethodWriter extends MethodVisitor
                 size += 8 + this.ictanns.getSize();
             }
             if (this.cattrs != null) {
-                size += this.cattrs.getSize(this.cw, this.code.data, this.code.length, this.maxStack, this.maxLocals);
+                size += this.cattrs.getSize(this.cw,  this.code.data,  this.code.length,  this.maxStack,  this.maxLocals);
             }
             out.putShort(this.cw.newUTF8("Code")).putInt(size);
             out.putShort(this.maxStack).putShort(this.maxLocals);
-            out.putInt(this.code.length).putByteArray(this.code.data, 0, this.code.length);
+            out.putInt(this.code.length).putByteArray(this.code.data,  0,  this.code.length);
             out.putShort(this.handlerCount);
             if (this.handlerCount > 0) {
                 for (Handler h = this.firstHandler; h != null; h = h.next) {
@@ -1568,23 +1568,23 @@ class MethodWriter extends MethodVisitor
             if (this.localVar != null) {
                 out.putShort(this.cw.newUTF8("LocalVariableTable"));
                 out.putInt(this.localVar.length + 2).putShort(this.localVarCount);
-                out.putByteArray(this.localVar.data, 0, this.localVar.length);
+                out.putByteArray(this.localVar.data,  0,  this.localVar.length);
             }
             if (this.localVarType != null) {
                 out.putShort(this.cw.newUTF8("LocalVariableTypeTable"));
                 out.putInt(this.localVarType.length + 2).putShort(this.localVarTypeCount);
-                out.putByteArray(this.localVarType.data, 0, this.localVarType.length);
+                out.putByteArray(this.localVarType.data,  0,  this.localVarType.length);
             }
             if (this.lineNumber != null) {
                 out.putShort(this.cw.newUTF8("LineNumberTable"));
                 out.putInt(this.lineNumber.length + 2).putShort(this.lineNumberCount);
-                out.putByteArray(this.lineNumber.data, 0, this.lineNumber.length);
+                out.putByteArray(this.lineNumber.data,  0,  this.lineNumber.length);
             }
             if (this.stackMap != null) {
                 final boolean zip = (this.cw.version & 0xFFFF) >= 50;
                 out.putShort(this.cw.newUTF8(zip ? "StackMapTable" : "StackMap"));
                 out.putInt(this.stackMap.length + 2).putShort(this.frameCount);
-                out.putByteArray(this.stackMap.data, 0, this.stackMap.length);
+                out.putByteArray(this.stackMap.data,  0,  this.stackMap.length);
             }
             if (this.ctanns != null) {
                 out.putShort(this.cw.newUTF8("RuntimeVisibleTypeAnnotations"));
@@ -1595,7 +1595,7 @@ class MethodWriter extends MethodVisitor
                 this.ictanns.put(out);
             }
             if (this.cattrs != null) {
-                this.cattrs.put(this.cw, this.code.data, this.code.length, this.maxLocals, this.maxStack, out);
+                this.cattrs.put(this.cw,  this.code.data,  this.code.length,  this.maxLocals,  this.maxStack,  out);
             }
         }
         if (this.exceptionCount > 0) {
@@ -1617,12 +1617,12 @@ class MethodWriter extends MethodVisitor
         if (this.methodParameters != null) {
             out.putShort(this.cw.newUTF8("MethodParameters"));
             out.putInt(this.methodParameters.length + 1).putByte(this.methodParametersCount);
-            out.putByteArray(this.methodParameters.data, 0, this.methodParameters.length);
+            out.putByteArray(this.methodParameters.data,  0,  this.methodParameters.length);
         }
         if (this.annd != null) {
             out.putShort(this.cw.newUTF8("AnnotationDefault"));
             out.putInt(this.annd.length);
-            out.putByteArray(this.annd.data, 0, this.annd.length);
+            out.putByteArray(this.annd.data,  0,  this.annd.length);
         }
         if (this.anns != null) {
             out.putShort(this.cw.newUTF8("RuntimeVisibleAnnotations"));
@@ -1642,14 +1642,14 @@ class MethodWriter extends MethodVisitor
         }
         if (this.panns != null) {
             out.putShort(this.cw.newUTF8("RuntimeVisibleParameterAnnotations"));
-            AnnotationWriter.put(this.panns, this.synthetics, out);
+            AnnotationWriter.put(this.panns,  this.synthetics,  out);
         }
         if (this.ipanns != null) {
             out.putShort(this.cw.newUTF8("RuntimeInvisibleParameterAnnotations"));
-            AnnotationWriter.put(this.ipanns, this.synthetics, out);
+            AnnotationWriter.put(this.ipanns,  this.synthetics,  out);
         }
         if (this.attrs != null) {
-            this.attrs.put(this.cw, (byte[])null, 0, -1, -1, out);
+            this.attrs.put(this.cw,  (byte[])null,  0,  -1,  -1,  out);
         }
     }
 }

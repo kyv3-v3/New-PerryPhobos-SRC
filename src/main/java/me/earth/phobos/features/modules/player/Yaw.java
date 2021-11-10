@@ -21,13 +21,13 @@ public class Yaw extends Module
     public Setting<Integer> pitch;
     
     public Yaw() {
-        super("Yaw", "Locks your yaw.", Module.Category.PLAYER, true, false, false);
-        this.lockYaw = (Setting<Boolean>)this.register(new Setting("LockYaw", (T)false));
-        this.byDirection = (Setting<Boolean>)this.register(new Setting("ByDirection", (T)false));
-        this.direction = (Setting<Direction>)this.register(new Setting("Direction", (T)Direction.NORTH, v -> this.byDirection.getValue()));
-        this.yaw = (Setting<Integer>)this.register(new Setting("Yaw", (T)0, (T)(-180), (T)180, v -> !this.byDirection.getValue()));
-        this.lockPitch = (Setting<Boolean>)this.register(new Setting("LockPitch", (T)false));
-        this.pitch = (Setting<Integer>)this.register(new Setting("Pitch", (T)0, (T)(-180), (T)180));
+        super("Yaw",  "Locks your yaw.",  Module.Category.PLAYER,  true,  false,  false);
+        this.lockYaw = (Setting<Boolean>)this.register(new Setting("LockYaw", false));
+        this.byDirection = (Setting<Boolean>)this.register(new Setting("ByDirection", false));
+        this.direction = (Setting<Direction>)this.register(new Setting("Direction", Direction.NORTH,  v -> this.byDirection.getValue()));
+        this.yaw = (Setting<Integer>)this.register(new Setting("Yaw", 0, (-180), 180,  v -> !this.byDirection.getValue()));
+        this.lockPitch = (Setting<Boolean>)this.register(new Setting("LockPitch", false));
+        this.pitch = (Setting<Integer>)this.register(new Setting("Pitch", 0, (-180), 180));
     }
     
     @SubscribeEvent
@@ -90,13 +90,13 @@ public class Yaw extends Module
     
     public enum Direction
     {
-        NORTH, 
-        NE, 
-        EAST, 
-        SE, 
-        SOUTH, 
-        SW, 
-        WEST, 
+        NORTH,  
+        NE,  
+        EAST,  
+        SE,  
+        SOUTH,  
+        SW,  
+        WEST,  
         NW;
     }
 }

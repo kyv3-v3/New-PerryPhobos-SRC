@@ -11,7 +11,7 @@ public class VarInsnNode extends AbstractInsnNode
 {
     public int var;
     
-    public VarInsnNode(final int opcode, final int var) {
+    public VarInsnNode(final int opcode,  final int var) {
         super(opcode);
         this.var = var;
     }
@@ -25,11 +25,11 @@ public class VarInsnNode extends AbstractInsnNode
     }
     
     public void accept(final MethodVisitor mv) {
-        mv.visitVarInsn(this.opcode, this.var);
+        mv.visitVarInsn(this.opcode,  this.var);
         this.acceptAnnotations(mv);
     }
     
-    public AbstractInsnNode clone(final Map<LabelNode, LabelNode> labels) {
-        return new VarInsnNode(this.opcode, this.var).cloneAnnotations((AbstractInsnNode)this);
+    public AbstractInsnNode clone(final Map<LabelNode,  LabelNode> labels) {
+        return new VarInsnNode(this.opcode,  this.var).cloneAnnotations((AbstractInsnNode)this);
     }
 }

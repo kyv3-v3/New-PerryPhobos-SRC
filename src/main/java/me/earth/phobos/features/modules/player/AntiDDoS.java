@@ -17,16 +17,16 @@ public class AntiDDoS extends Module
 {
     private static AntiDDoS instance;
     public final Setting<Boolean> full;
-    private final Map<String, Setting> servers;
+    private final Map<String,  Setting> servers;
     public Setting<String> newIP;
     public Setting<Boolean> showServer;
     
     public AntiDDoS() {
-        super("AntiDDoS", "Prevents DDoS attacks via multiplayer list.", Module.Category.PLAYER, false, false, true);
-        this.full = (Setting<Boolean>)this.register(new Setting("Full", (T)false));
-        this.servers = new ConcurrentHashMap<String, Setting>();
-        this.newIP = (Setting<String>)this.register(new Setting("NewServer", (T)"Add Server...", v -> !this.full.getValue()));
-        this.showServer = (Setting<Boolean>)this.register(new Setting("ShowServers", (T)false, v -> !this.full.getValue()));
+        super("AntiDDoS",  "Prevents DDoS attacks via multiplayer list.",  Module.Category.PLAYER,  false,  false,  true);
+        this.full = (Setting<Boolean>)this.register(new Setting("Full", false));
+        this.servers = new ConcurrentHashMap<String,  Setting>();
+        this.newIP = (Setting<String>)this.register(new Setting("NewServer", "Add Server...",  v -> !this.full.getValue()));
+        this.showServer = (Setting<Boolean>)this.register(new Setting("ShowServers", false,  v -> !this.full.getValue()));
         AntiDDoS.instance = this;
     }
     
@@ -44,7 +44,7 @@ public class AntiDDoS extends Module
         }
         if (event.getStage() == 2 && event.getSetting() != null && event.getSetting().getFeature() != null && event.getSetting().getFeature().equals(this)) {
             if (event.getSetting().equals(this.newIP) && !this.shouldntPing(this.newIP.getPlannedValue()) && !event.getSetting().getPlannedValue().equals(event.getSetting().getDefaultValue())) {
-                final Setting setting = this.register(new Setting(this.newIP.getPlannedValue(), (T)true, v -> this.showServer.getValue() && !this.full.getValue()));
+                final Setting setting = this.register(new Setting(this.newIP.getPlannedValue(), true,  v -> this.showServer.getValue() && !this.full.getValue()));
                 this.registerServer(setting);
                 Command.sendMessage("<AntiDDoS> Added new Server: " + this.newIP.getPlannedValue());
                 event.setCanceled(true);
@@ -64,7 +64,7 @@ public class AntiDDoS extends Module
     }
     
     public void registerServer(final Setting setting) {
-        this.servers.put(setting.getName().toLowerCase(), setting);
+        this.servers.put(setting.getName().toLowerCase(),  setting);
     }
     
     public boolean shouldntPing(final String ip) {

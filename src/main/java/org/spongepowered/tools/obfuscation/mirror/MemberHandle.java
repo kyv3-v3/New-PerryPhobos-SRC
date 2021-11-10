@@ -12,7 +12,7 @@ public abstract class MemberHandle<T extends IMapping<T>>
     private final String name;
     private final String desc;
     
-    protected MemberHandle(final String owner, final String name, final String desc) {
+    protected MemberHandle(final String owner,  final String name,  final String desc) {
         this.owner = owner;
         this.name = name;
         this.desc = desc;

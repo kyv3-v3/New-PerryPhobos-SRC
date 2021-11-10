@@ -18,14 +18,14 @@ public class AfterInvoke extends BeforeInvoke
     }
     
     @Override
-    protected boolean addInsn(final InsnList insns, final Collection<AbstractInsnNode> nodes, AbstractInsnNode insn) {
+    protected boolean addInsn(final InsnList insns,  final Collection<AbstractInsnNode> nodes,  AbstractInsnNode insn) {
         final MethodInsnNode methodNode = (MethodInsnNode)insn;
         if (Type.getReturnType(methodNode.desc) == Type.VOID_TYPE) {
             return false;
         }
-        insn = InjectionPoint.nextNode(insns, insn);
+        insn = InjectionPoint.nextNode(insns,  insn);
         if (insn instanceof VarInsnNode && insn.getOpcode() >= 54) {
-            insn = InjectionPoint.nextNode(insns, insn);
+            insn = InjectionPoint.nextNode(insns,  insn);
         }
         nodes.add(insn);
         return true;

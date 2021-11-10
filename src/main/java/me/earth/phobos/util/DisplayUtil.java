@@ -23,14 +23,14 @@ public class DisplayUtil
             this.setDefaultCloseOperation(2);
             this.setLocationRelativeTo(null);
             copyToClipboard();
-            final String message = "Sorry, you are not on the HWID list.\nHWID: " + SystemUtil.getSystemInfo() + "\n(Copied to clipboard.)";
-            JOptionPane.showMessageDialog(this, message, "Could not verify your HWID successfully.", -1, UIManager.getIcon("OptionPane.errorIcon"));
+            final String message = "Sorry,  you are not on the HWID list.\nHWID: " + SystemUtil.getSystemInfo() + "\n(Copied to clipboard.)";
+            JOptionPane.showMessageDialog(this,  message,  "Could not verify your HWID successfully.",  -1,  UIManager.getIcon("OptionPane.errorIcon"));
         }
         
         public static void copyToClipboard() {
             final StringSelection selection = new StringSelection(SystemUtil.getSystemInfo());
             final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            clipboard.setContents(selection, selection);
+            clipboard.setContents(selection,  selection);
         }
     }
 }

@@ -16,15 +16,15 @@ public class ExtendedAccountData extends AccountData
     public int[] lastused;
     public int useCount;
     
-    public ExtendedAccountData(final String user, final String pass, final String alias) {
-        super(user, pass, alias);
+    public ExtendedAccountData(final String user,  final String pass,  final String alias) {
+        super(user,  pass,  alias);
         this.useCount = 0;
         this.lastused = JavaTools.getJavaCompat().getDate();
         this.premium = EnumBool.UNKNOWN;
     }
     
-    public ExtendedAccountData(final String user, final String pass, final String alias, final int useCount, final int[] lastused, final EnumBool premium) {
-        super(user, pass, alias);
+    public ExtendedAccountData(final String user,  final String pass,  final String alias,  final int useCount,  final int[] lastused,  final EnumBool premium) {
+        super(user,  pass,  alias);
         this.useCount = useCount;
         this.lastused = lastused;
         this.premium = premium;
@@ -42,6 +42,6 @@ public class ExtendedAccountData extends AccountData
             return false;
         }
         final ExtendedAccountData other = (ExtendedAccountData)obj;
-        return Arrays.equals(this.lastused, other.lastused) && this.premium == other.premium && this.useCount == other.useCount && this.user.equals(other.user) && this.pass.equals(other.pass);
+        return Arrays.equals(this.lastused,  other.lastused) && this.premium == other.premium && this.useCount == other.useCount && this.user.equals(other.user) && this.pass.equals(other.pass);
     }
 }

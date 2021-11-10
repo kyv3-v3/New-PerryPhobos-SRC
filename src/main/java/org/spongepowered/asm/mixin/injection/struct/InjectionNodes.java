@@ -34,7 +34,7 @@ public class InjectionNodes extends ArrayList<InjectionNode>
         return this.get(node) != null;
     }
     
-    public void replace(final AbstractInsnNode oldNode, final AbstractInsnNode newNode) {
+    public void replace(final AbstractInsnNode oldNode,  final AbstractInsnNode newNode) {
         final InjectionNode injectionNode = this.get(oldNode);
         if (injectionNode != null) {
             injectionNode.replace(newNode);
@@ -54,7 +54,7 @@ public class InjectionNodes extends ArrayList<InjectionNode>
         private final int id;
         private final AbstractInsnNode originalTarget;
         private AbstractInsnNode currentTarget;
-        private Map<String, Object> decorations;
+        private Map<String,  Object> decorations;
         
         public InjectionNode(final AbstractInsnNode node) {
             this.originalTarget = node;
@@ -96,11 +96,11 @@ public class InjectionNodes extends ArrayList<InjectionNode>
             return this.currentTarget == null;
         }
         
-        public <V> InjectionNode decorate(final String key, final V value) {
+        public <V> InjectionNode decorate(final String key,  final V value) {
             if (this.decorations == null) {
-                this.decorations = new HashMap<String, Object>();
+                this.decorations = new HashMap<String,  Object>();
             }
-            this.decorations.put(key, value);
+            this.decorations.put(key,  value);
             return this;
         }
         
@@ -119,7 +119,7 @@ public class InjectionNodes extends ArrayList<InjectionNode>
         
         @Override
         public String toString() {
-            return String.format("InjectionNode[%s]", Bytecode.describeNode(this.currentTarget).replaceAll("\\s+", " "));
+            return String.format("InjectionNode[%s]",  Bytecode.describeNode(this.currentTarget).replaceAll("\\s+",  " "));
         }
         
         static {

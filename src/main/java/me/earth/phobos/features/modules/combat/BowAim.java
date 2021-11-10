@@ -17,7 +17,7 @@ import net.minecraft.util.math.*;
 public class BowAim extends Module
 {
     public BowAim() {
-        super("BowAim", "Automatically aims ur bow at enemies.", Category.COMBAT, true, false, false);
+        super("BowAim",  "Automatically aims ur bow at enemies.",  Category.COMBAT,  true,  false,  false);
     }
     
     @Override
@@ -39,8 +39,8 @@ public class BowAim extends Module
                 }
             }
             if (player != null) {
-                final Vec3d pos = EntityUtil.getInterpolatedPos((Entity)player, BowAim.mc.getRenderPartialTicks());
-                final float[] angels = MathUtil.calcAngle(EntityUtil.getInterpolatedPos((Entity)BowAim.mc.player, BowAim.mc.getRenderPartialTicks()), pos);
+                final Vec3d pos = EntityUtil.getInterpolatedPos((Entity)player,  BowAim.mc.getRenderPartialTicks());
+                final float[] angels = MathUtil.calcAngle(EntityUtil.getInterpolatedPos((Entity)BowAim.mc.player,  BowAim.mc.getRenderPartialTicks()),  pos);
                 BowAim.mc.player.rotationYaw = angels[0];
                 BowAim.mc.player.rotationPitch = angels[1];
             }

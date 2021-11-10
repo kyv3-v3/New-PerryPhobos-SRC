@@ -13,7 +13,7 @@ import java.util.*;
 public class ConfigCommand extends Command
 {
     public ConfigCommand() {
-        super("config", new String[] { "<save/load>" });
+        super("config",  new String[] { "<save/load>" });
     }
     
     public void execute(final String[] commands) {
@@ -25,10 +25,10 @@ public class ConfigCommand extends Command
             if ("list".equals(commands[0])) {
                 String configs = "Configs: ";
                 final File file = new File("phobos/");
-                final List<File> directories = Arrays.stream((Object[])Objects.requireNonNull((T[])file.listFiles())).filter(File::isDirectory).filter(f -> !f.getName().equals("util")).collect((Collector<? super Object, ?, List<File>>)Collectors.toList());
+                final List<File> directories = Arrays.stream((Object[])Objects.requireNonNull((T[])file.listFiles())).filter(File::isDirectory).filter(f -> !f.getName().equals("util")).collect((Collector<? super Object,  ?,  List<File>>)Collectors.toList());
                 final StringBuilder builder = new StringBuilder(configs);
                 for (final File file2 : directories) {
-                    builder.append(file2.getName()).append(", ");
+                    builder.append(file2.getName()).append(",  ");
                 }
                 configs = builder.toString();
                 sendMessage("§a" + configs);

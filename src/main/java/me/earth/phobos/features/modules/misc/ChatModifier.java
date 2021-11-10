@@ -39,22 +39,22 @@ public class ChatModifier extends Module
     public Setting<Boolean> disability;
     
     public ChatModifier() {
-        super("Chat", "Modifies your chat.", Category.MISC, true, false, false);
+        super("Chat",  "Modifies your chat.",  Category.MISC,  true,  false,  false);
         this.timer = new TimerUtil();
-        this.suffix = (Setting<Suffix>)this.register(new Setting("Suffix", (T)Suffix.NONE, "Your Suffix."));
-        this.customSuffix = (Setting<String>)this.register(new Setting("", (T)" | Perrys Phobos", v -> this.suffix.getValue() == Suffix.CUSTOM));
-        this.clean = (Setting<Boolean>)this.register(new Setting("CleanChat", (T)false, "Cleans your chat"));
-        this.infinite = (Setting<Boolean>)this.register(new Setting("Infinite", (T)false, "Makes your chat infinite."));
-        this.autoQMain = (Setting<Boolean>)this.register(new Setting("AutoQMain", (T)false, "Spams AutoQMain"));
-        this.qNotification = (Setting<Boolean>)this.register(new Setting("QNotification", (T)false, v -> this.autoQMain.getValue()));
-        this.qDelay = (Setting<Integer>)this.register(new Setting("QDelay", (T)9, (T)1, (T)90, v -> this.autoQMain.getValue()));
-        this.timeStamps = (Setting<TextUtil.Color>)this.register(new Setting("Time", (T)TextUtil.Color.NONE));
-        this.rainbowTimeStamps = (Setting<Boolean>)this.register(new Setting("RainbowTimeStamps", (T)false, v -> this.timeStamps.getValue() != TextUtil.Color.NONE));
-        this.bracket = (Setting<TextUtil.Color>)this.register(new Setting("Bracket", (T)TextUtil.Color.WHITE, v -> this.timeStamps.getValue() != TextUtil.Color.NONE));
-        this.space = (Setting<Boolean>)this.register(new Setting("Space", (T)true, v -> this.timeStamps.getValue() != TextUtil.Color.NONE));
-        this.all = (Setting<Boolean>)this.register(new Setting("All", (T)false, v -> this.timeStamps.getValue() != TextUtil.Color.NONE));
-        this.shrug = (Setting<Boolean>)this.register(new Setting("Shrug", (T)false));
-        this.disability = (Setting<Boolean>)this.register(new Setting("Disability", (T)false));
+        this.suffix = (Setting<Suffix>)this.register(new Setting("Suffix", Suffix.NONE,  "Your Suffix."));
+        this.customSuffix = (Setting<String>)this.register(new Setting("", " | Perrys Phobos",  v -> this.suffix.getValue() == Suffix.CUSTOM));
+        this.clean = (Setting<Boolean>)this.register(new Setting("CleanChat", false,  "Cleans your chat"));
+        this.infinite = (Setting<Boolean>)this.register(new Setting("Infinite", false,  "Makes your chat infinite."));
+        this.autoQMain = (Setting<Boolean>)this.register(new Setting("AutoQMain", false,  "Spams AutoQMain"));
+        this.qNotification = (Setting<Boolean>)this.register(new Setting("QNotification", false,  v -> this.autoQMain.getValue()));
+        this.qDelay = (Setting<Integer>)this.register(new Setting("QDelay", 9, 1, 90,  v -> this.autoQMain.getValue()));
+        this.timeStamps = (Setting<TextUtil.Color>)this.register(new Setting("Time", TextUtil.Color.NONE));
+        this.rainbowTimeStamps = (Setting<Boolean>)this.register(new Setting("RainbowTimeStamps", false,  v -> this.timeStamps.getValue() != TextUtil.Color.NONE));
+        this.bracket = (Setting<TextUtil.Color>)this.register(new Setting("Bracket", TextUtil.Color.WHITE,  v -> this.timeStamps.getValue() != TextUtil.Color.NONE));
+        this.space = (Setting<Boolean>)this.register(new Setting("Space", true,  v -> this.timeStamps.getValue() != TextUtil.Color.NONE));
+        this.all = (Setting<Boolean>)this.register(new Setting("All", false,  v -> this.timeStamps.getValue() != TextUtil.Color.NONE));
+        this.shrug = (Setting<Boolean>)this.register(new Setting("Shrug", false));
+        this.disability = (Setting<Boolean>)this.register(new Setting("Disability", false));
         this.setInstance();
     }
     
@@ -122,7 +122,7 @@ public class ChatModifier extends Module
                 }
             }
             if (s.length() >= 256) {
-                s = s.substring(0, 256);
+                s = s.substring(0,  256);
             }
             packet.message = s;
         }
@@ -152,17 +152,17 @@ public class ChatModifier extends Module
         if (this.rainbowTimeStamps.getValue()) {
             final String timeString = "<" + date + ">" + (this.space.getValue() ? " " : "");
             final StringBuilder builder = new StringBuilder(timeString);
-            builder.insert(0, "§+");
+            builder.insert(0,  "§+");
             if (!message.contains(Management.getInstance().getRainbowCommandMessage())) {
                 builder.append("§r");
             }
             return builder.toString();
         }
-        return ((this.bracket.getValue() == TextUtil.Color.NONE) ? "" : TextUtil.coloredString("<", this.bracket.getValue())) + TextUtil.coloredString(date, this.timeStamps.getValue()) + ((this.bracket.getValue() == TextUtil.Color.NONE) ? "" : TextUtil.coloredString(">", this.bracket.getValue())) + (this.space.getValue() ? " " : "") + "§r";
+        return ((this.bracket.getValue() == TextUtil.Color.NONE) ? "" : TextUtil.coloredString("<",  this.bracket.getValue())) + TextUtil.coloredString(date,  this.timeStamps.getValue()) + ((this.bracket.getValue() == TextUtil.Color.NONE) ? "" : TextUtil.coloredString(">",  this.bracket.getValue())) + (this.space.getValue() ? " " : "") + "§r";
     }
     
     private boolean shouldSendMessage(final EntityPlayer player) {
-        return player.dimension == 1 && this.timer.passedS(this.qDelay.getValue()) && player.getPosition().equals((Object)new Vec3i(0, 240, 0));
+        return player.dimension == 1 && this.timer.passedS(this.qDelay.getValue()) && player.getPosition().equals((Object)new Vec3i(0,  240,  0));
     }
     
     static {
@@ -171,11 +171,11 @@ public class ChatModifier extends Module
     
     public enum Suffix
     {
-        NONE, 
-        PHOBOS, 
-        EARTH, 
-        PERRYPHOBOS, 
-        CUSTOM, 
+        NONE,  
+        PHOBOS,  
+        EARTH,  
+        PERRYPHOBOS,  
+        CUSTOM,  
         INSANE;
     }
 }

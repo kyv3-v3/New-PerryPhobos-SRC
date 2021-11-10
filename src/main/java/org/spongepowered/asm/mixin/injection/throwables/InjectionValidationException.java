@@ -11,7 +11,7 @@ public class InjectionValidationException extends Exception
     private static final long serialVersionUID = 1L;
     private final InjectorGroupInfo group;
     
-    public InjectionValidationException(final InjectorGroupInfo group, final String message) {
+    public InjectionValidationException(final InjectorGroupInfo group,  final String message) {
         super(message);
         this.group = group;
     }

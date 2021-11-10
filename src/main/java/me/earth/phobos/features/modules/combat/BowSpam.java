@@ -41,20 +41,20 @@ public class BowSpam extends Module
     private int lastHotbarSlot;
     
     public BowSpam() {
-        super("BowSpam", "Spams your bow.", Category.COMBAT, true, false, false);
+        super("BowSpam",  "Spams your bow.",  Category.COMBAT,  true,  false,  false);
         this.timer = new TimerUtil();
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", (T)Mode.FAST));
-        this.bowbomb = (Setting<Boolean>)this.register(new Setting("BowBomb", (T)false, v -> this.mode.getValue() != Mode.BOWBOMB));
-        this.allowOffhand = (Setting<Boolean>)this.register(new Setting("Offhand", (T)true, v -> this.mode.getValue() != Mode.AUTORELEASE));
-        this.ticks = (Setting<Integer>)this.register(new Setting("Ticks", (T)3, (T)0, (T)20, v -> this.mode.getValue() == Mode.BOWBOMB || this.mode.getValue() == Mode.FAST, "Speed"));
-        this.delay = (Setting<Integer>)this.register(new Setting("Delay", (T)50, (T)0, (T)500, v -> this.mode.getValue() == Mode.AUTORELEASE, "Speed"));
-        this.tpsSync = (Setting<Boolean>)this.register(new Setting("TpsSync", (T)true));
-        this.autoSwitch = (Setting<Boolean>)this.register(new Setting("AutoSwitch", (T)false));
-        this.onlyWhenSave = (Setting<Boolean>)this.register(new Setting("OnlyWhenSave", (T)true, v -> this.autoSwitch.getValue()));
-        this.targetMode = (Setting<Target>)this.register(new Setting("Target", (T)Target.LOWEST, v -> this.autoSwitch.getValue()));
-        this.range = (Setting<Float>)this.register(new Setting("Range", (T)3.0f, (T)0.0f, (T)6.0f, v -> this.autoSwitch.getValue(), "Range of the target"));
-        this.health = (Setting<Float>)this.register(new Setting("Lethal", (T)6.0f, (T)0.1f, (T)36.0f, v -> this.autoSwitch.getValue(), "When should it switch?"));
-        this.ownHealth = (Setting<Float>)this.register(new Setting("OwnHealth", (T)20.0f, (T)0.1f, (T)36.0f, v -> this.autoSwitch.getValue(), "Own Health."));
+        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.FAST));
+        this.bowbomb = (Setting<Boolean>)this.register(new Setting("BowBomb", false,  v -> this.mode.getValue() != Mode.BOWBOMB));
+        this.allowOffhand = (Setting<Boolean>)this.register(new Setting("Offhand", true,  v -> this.mode.getValue() != Mode.AUTORELEASE));
+        this.ticks = (Setting<Integer>)this.register(new Setting("Ticks", 3, 0, 20,  v -> this.mode.getValue() == Mode.BOWBOMB || this.mode.getValue() == Mode.FAST,  "Speed"));
+        this.delay = (Setting<Integer>)this.register(new Setting("Delay", 50, 0, 500,  v -> this.mode.getValue() == Mode.AUTORELEASE,  "Speed"));
+        this.tpsSync = (Setting<Boolean>)this.register(new Setting("TpsSync", true));
+        this.autoSwitch = (Setting<Boolean>)this.register(new Setting("AutoSwitch", false));
+        this.onlyWhenSave = (Setting<Boolean>)this.register(new Setting("OnlyWhenSave", true,  v -> this.autoSwitch.getValue()));
+        this.targetMode = (Setting<Target>)this.register(new Setting("Target", Target.LOWEST,  v -> this.autoSwitch.getValue()));
+        this.range = (Setting<Float>)this.register(new Setting("Range", 3.0f, 0.0f, 6.0f,  v -> this.autoSwitch.getValue(),  "Range of the target"));
+        this.health = (Setting<Float>)this.register(new Setting("Lethal", 6.0f, 0.1f, 36.0f,  v -> this.autoSwitch.getValue(),  "When should it switch?"));
+        this.ownHealth = (Setting<Float>)this.register(new Setting("OwnHealth", 20.0f, 0.1f, 36.0f,  v -> this.autoSwitch.getValue(),  "Own Health."));
         this.lastHotbarSlot = -1;
     }
     
@@ -86,18 +86,18 @@ public class BowSpam extends Module
                 }
                 if (!(BowSpam.mc.player.getHeldItemMainhand().getItem() instanceof ItemBow)) {
                     this.lastHotbarSlot = BowSpam.mc.player.inventory.currentItem;
-                    InventoryUtil.switchToHotbarSlot(ItemBow.class, false);
+                    InventoryUtil.switchToHotbarSlot(ItemBow.class,  false);
                     BowSpam.mc.gameSettings.keyBindUseItem.pressed = true;
                     this.switched = true;
                 }
-                Phobos.rotationManager.lookAtVec3d(xPos, yPos, zPos);
+                Phobos.rotationManager.lookAtVec3d(xPos,  yPos,  zPos);
                 if (BowSpam.mc.player.getHeldItemMainhand().getItem() instanceof ItemBow) {
                     this.switched = true;
                 }
             }
         }
         else if (event.getStage() == 0 && this.switched && this.lastHotbarSlot != -1) {
-            InventoryUtil.switchToHotbarSlot(this.lastHotbarSlot, false);
+            InventoryUtil.switchToHotbarSlot(this.lastHotbarSlot,  false);
             BowSpam.mc.gameSettings.keyBindUseItem.pressed = Mouse.isButtonDown(1);
             this.switched = false;
         }
@@ -109,7 +109,7 @@ public class BowSpam extends Module
             final float f2 = this.ticks.getValue();
             final float f3 = this.tpsSync.getValue() ? Phobos.serverManager.getTpsFactor() : 1.0f;
             if (f >= f2 * f3) {
-                BowSpam.mc.player.connection.sendPacket((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, BowSpam.mc.player.getHorizontalFacing()));
+                BowSpam.mc.player.connection.sendPacket((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM,  BlockPos.ORIGIN,  BowSpam.mc.player.getHorizontalFacing()));
                 BowSpam.mc.player.connection.sendPacket((Packet)new CPacketPlayerTryUseItem(this.offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND));
                 BowSpam.mc.player.stopActiveHand();
             }
@@ -144,9 +144,9 @@ public class BowSpam extends Module
                 if (f < f2 * f3) {
                     break;
                 }
-                BowSpam.mc.player.connection.sendPacket((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, BowSpam.mc.player.getHorizontalFacing()));
-                BowSpam.mc.player.connection.sendPacket((Packet)new CPacketPlayer.PositionRotation(BowSpam.mc.player.posX, BowSpam.mc.player.posY - 0.0624, BowSpam.mc.player.posZ, BowSpam.mc.player.rotationYaw, BowSpam.mc.player.rotationPitch, false));
-                BowSpam.mc.player.connection.sendPacket((Packet)new CPacketPlayer.PositionRotation(BowSpam.mc.player.posX, BowSpam.mc.player.posY - 999.0, BowSpam.mc.player.posZ, BowSpam.mc.player.rotationYaw, BowSpam.mc.player.rotationPitch, true));
+                BowSpam.mc.player.connection.sendPacket((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM,  BlockPos.ORIGIN,  BowSpam.mc.player.getHorizontalFacing()));
+                BowSpam.mc.player.connection.sendPacket((Packet)new CPacketPlayer.PositionRotation(BowSpam.mc.player.posX,  BowSpam.mc.player.posY - 0.0624,  BowSpam.mc.player.posZ,  BowSpam.mc.player.rotationYaw,  BowSpam.mc.player.rotationPitch,  false));
+                BowSpam.mc.player.connection.sendPacket((Packet)new CPacketPlayer.PositionRotation(BowSpam.mc.player.posX,  BowSpam.mc.player.posY - 999.0,  BowSpam.mc.player.posZ,  BowSpam.mc.player.rotationYaw,  BowSpam.mc.player.rotationPitch,  true));
                 BowSpam.mc.player.connection.sendPacket((Packet)new CPacketPlayerTryUseItem(this.offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND));
                 BowSpam.mc.player.stopActiveHand();
                 break;
@@ -157,8 +157,8 @@ public class BowSpam extends Module
     @SubscribeEvent
     public void onPacketSend(final PacketEvent.Send event) {
         if (event.getStage() == 0 && this.bowbomb.getValue() && this.mode.getValue() != Mode.BOWBOMB && event.getPacket() instanceof CPacketPlayerDigging && ((CPacketPlayerDigging)event.getPacket()).getAction() == CPacketPlayerDigging.Action.RELEASE_USE_ITEM && (this.offhand || BowSpam.mc.player.inventory.getCurrentItem().getItem() instanceof ItemBow) && BowSpam.mc.player.getItemInUseMaxCount() >= 20 && !BowSpam.mc.player.onGround) {
-            BowSpam.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(BowSpam.mc.player.posX, BowSpam.mc.player.posY - 0.10000000149011612, BowSpam.mc.player.posZ, false));
-            BowSpam.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(BowSpam.mc.player.posX, BowSpam.mc.player.posY - 10000.0, BowSpam.mc.player.posZ, true));
+            BowSpam.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(BowSpam.mc.player.posX,  BowSpam.mc.player.posY - 0.10000000149011612,  BowSpam.mc.player.posZ,  false));
+            BowSpam.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(BowSpam.mc.player.posX,  BowSpam.mc.player.posY - 10000.0,  BowSpam.mc.player.posZ,  true));
         }
     }
     
@@ -193,14 +193,14 @@ public class BowSpam extends Module
     
     public enum Mode
     {
-        FAST, 
-        AUTORELEASE, 
+        FAST,  
+        AUTORELEASE,  
         BOWBOMB;
     }
     
     public enum Target
     {
-        CLOSEST, 
+        CLOSEST,  
         LOWEST;
     }
 }

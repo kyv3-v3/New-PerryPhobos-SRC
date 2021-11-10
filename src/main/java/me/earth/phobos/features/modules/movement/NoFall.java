@@ -37,12 +37,12 @@ public class NoFall extends Module
     private State currentState;
     
     public NoFall() {
-        super("NoFall", "Prevents fall damage.", Module.Category.MOVEMENT, true, false, false);
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", (T)Mode.PACKET));
-        this.distance = (Setting<Integer>)this.register(new Setting("Distance", (T)15, (T)0, (T)50, v -> this.mode.getValue() == Mode.BUCKET));
-        this.glide = (Setting<Boolean>)this.register(new Setting("Glide", (T)false, v -> this.mode.getValue() == Mode.ELYTRA));
-        this.silent = (Setting<Boolean>)this.register(new Setting("Silent", (T)true, v -> this.mode.getValue() == Mode.ELYTRA));
-        this.bypass = (Setting<Boolean>)this.register(new Setting("Bypass", (T)false, v -> this.mode.getValue() == Mode.ELYTRA));
+        super("NoFall",  "Prevents fall damage.",  Module.Category.MOVEMENT,  true,  false,  false);
+        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.PACKET));
+        this.distance = (Setting<Integer>)this.register(new Setting("Distance", 15, 0, 50,  v -> this.mode.getValue() == Mode.BUCKET));
+        this.glide = (Setting<Boolean>)this.register(new Setting("Glide", false,  v -> this.mode.getValue() == Mode.ELYTRA));
+        this.silent = (Setting<Boolean>)this.register(new Setting("Silent", true,  v -> this.mode.getValue() == Mode.ELYTRA));
+        this.bypass = (Setting<Boolean>)this.register(new Setting("Bypass", false,  v -> this.mode.getValue() == Mode.ELYTRA));
         this.timer = new TimerUtil();
         this.currentState = State.FALL_CHECK;
     }
@@ -64,17 +64,17 @@ public class NoFall extends Module
             else if (!this.equipped && event.getPacket() instanceof CPacketPlayer && NoFall.mc.player.fallDistance >= 3.0f) {
                 RayTraceResult result = null;
                 if (!this.glide.getValue()) {
-                    result = NoFall.mc.world.rayTraceBlocks(NoFall.mc.player.getPositionVector(), NoFall.mc.player.getPositionVector().add(0.0, -3.0, 0.0), true, true, false);
+                    result = NoFall.mc.world.rayTraceBlocks(NoFall.mc.player.getPositionVector(),  NoFall.mc.player.getPositionVector().add(0.0,  -3.0,  0.0),  true,  true,  false);
                 }
                 if (this.glide.getValue() || (result != null && result.typeOfHit == RayTraceResult.Type.BLOCK)) {
                     if (NoFall.mc.player.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem().equals(Items.ELYTRA)) {
-                        NoFall.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)NoFall.mc.player, CPacketEntityAction.Action.START_FALL_FLYING));
+                        NoFall.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)NoFall.mc.player,  CPacketEntityAction.Action.START_FALL_FLYING));
                     }
                     else if (this.silent.getValue()) {
                         final int slot = InventoryUtil.getItemHotbar(Items.ELYTRA);
                         if (slot != -1) {
-                            NoFall.mc.playerController.windowClick(NoFall.mc.player.inventoryContainer.windowId, 6, slot, ClickType.SWAP, (EntityPlayer)NoFall.mc.player);
-                            NoFall.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)NoFall.mc.player, CPacketEntityAction.Action.START_FALL_FLYING));
+                            NoFall.mc.playerController.windowClick(NoFall.mc.player.inventoryContainer.windowId,  6,  slot,  ClickType.SWAP,  (EntityPlayer)NoFall.mc.player);
+                            NoFall.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)NoFall.mc.player,  CPacketEntityAction.Action.START_FALL_FLYING));
                         }
                         NoFall.ogslot = slot;
                         this.equipped = true;
@@ -115,7 +115,7 @@ public class NoFall extends Module
                 this.currentState = this.currentState.onUpdate();
             }
             else if (this.silent.getValue() && this.equipped && this.gotElytra) {
-                NoFall.mc.playerController.windowClick(NoFall.mc.player.inventoryContainer.windowId, 6, NoFall.ogslot, ClickType.SWAP, (EntityPlayer)NoFall.mc.player);
+                NoFall.mc.playerController.windowClick(NoFall.mc.player.inventoryContainer.windowId,  6,  NoFall.ogslot,  ClickType.SWAP,  (EntityPlayer)NoFall.mc.player);
                 NoFall.mc.playerController.updateController();
                 this.equipped = false;
                 this.gotElytra = false;
@@ -123,8 +123,8 @@ public class NoFall extends Module
             else {
                 final int slot;
                 if (this.silent.getValue() && InventoryUtil.getItemHotbar(Items.ELYTRA) == -1 && (slot = InventoryUtil.findStackInventory(Items.ELYTRA)) != -1 && NoFall.ogslot != -1) {
-                    System.out.printf("Moving %d to hotbar %d%n", slot, NoFall.ogslot);
-                    NoFall.mc.playerController.windowClick(NoFall.mc.player.inventoryContainer.windowId, slot, NoFall.ogslot, ClickType.SWAP, (EntityPlayer)NoFall.mc.player);
+                    System.out.printf("Moving %d to hotbar %d%n",  slot,  NoFall.ogslot);
+                    NoFall.mc.playerController.windowClick(NoFall.mc.player.inventoryContainer.windowId,  slot,  NoFall.ogslot,  ClickType.SWAP,  (EntityPlayer)NoFall.mc.player);
                     NoFall.mc.playerController.updateController();
                 }
             }
@@ -137,7 +137,7 @@ public class NoFall extends Module
         }
         final Vec3d posVec;
         final RayTraceResult result;
-        if (this.mode.getValue() == Mode.BUCKET && NoFall.mc.player.fallDistance >= this.distance.getValue() && !EntityUtil.isAboveWater((Entity)NoFall.mc.player) && this.timer.passedMs(100L) && (result = NoFall.mc.world.rayTraceBlocks(posVec = NoFall.mc.player.getPositionVector(), posVec.add(0.0, -5.329999923706055, 0.0), true, true, false)) != null && result.typeOfHit == RayTraceResult.Type.BLOCK) {
+        if (this.mode.getValue() == Mode.BUCKET && NoFall.mc.player.fallDistance >= this.distance.getValue() && !EntityUtil.isAboveWater((Entity)NoFall.mc.player) && this.timer.passedMs(100L) && (result = NoFall.mc.world.rayTraceBlocks(posVec = NoFall.mc.player.getPositionVector(),  posVec.add(0.0,  -5.329999923706055,  0.0),  true,  true,  false)) != null && result.typeOfHit == RayTraceResult.Type.BLOCK) {
             EnumHand hand = EnumHand.MAIN_HAND;
             if (NoFall.mc.player.getHeldItemOffhand().getItem() == Items.WATER_BUCKET) {
                 hand = EnumHand.OFF_HAND;
@@ -154,7 +154,7 @@ public class NoFall extends Module
                 return;
             }
             NoFall.mc.player.rotationPitch = 90.0f;
-            NoFall.mc.playerController.processRightClick((EntityPlayer)NoFall.mc.player, (World)NoFall.mc.world, hand);
+            NoFall.mc.playerController.processRightClick((EntityPlayer)NoFall.mc.player,  (World)NoFall.mc.world,  hand);
             this.timer.reset();
         }
     }
@@ -173,20 +173,20 @@ public class NoFall extends Module
         FALL_CHECK {
             @Override
             public State onSend(final PacketEvent.Send event) {
-                final RayTraceResult result = Util.mc.world.rayTraceBlocks(Util.mc.player.getPositionVector(), Util.mc.player.getPositionVector().add(0.0, -3.0, 0.0), true, true, false);
+                final RayTraceResult result = Util.mc.world.rayTraceBlocks(Util.mc.player.getPositionVector(),  Util.mc.player.getPositionVector().add(0.0,  -3.0,  0.0),  true,  true,  false);
                 if (!(event.getPacket() instanceof CPacketPlayer) || Util.mc.player.fallDistance < 3.0f || result == null || result.typeOfHit != RayTraceResult.Type.BLOCK) {
                     return this;
                 }
                 final int slot = InventoryUtil.getItemHotbar(Items.ELYTRA);
                 if (slot != -1) {
-                    Util.mc.playerController.windowClick(Util.mc.player.inventoryContainer.windowId, 6, slot, ClickType.SWAP, (EntityPlayer)Util.mc.player);
+                    Util.mc.playerController.windowClick(Util.mc.player.inventoryContainer.windowId,  6,  slot,  ClickType.SWAP,  (EntityPlayer)Util.mc.player);
                     NoFall.ogslot = slot;
-                    Util.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)Util.mc.player, CPacketEntityAction.Action.START_FALL_FLYING));
+                    Util.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)Util.mc.player,  CPacketEntityAction.Action.START_FALL_FLYING));
                     return NoFall$State$1.WAIT_FOR_ELYTRA_DEQUIP;
                 }
                 return this;
             }
-        }, 
+        },  
         WAIT_FOR_ELYTRA_DEQUIP {
             @Override
             public State onReceive(final PacketEvent.Receive event) {
@@ -195,23 +195,23 @@ public class NoFall extends Module
                 }
                 return this;
             }
-        }, 
+        },  
         REEQUIP_ELYTRA {
             @Override
             public State onUpdate() {
-                Util.mc.playerController.windowClick(Util.mc.player.inventoryContainer.windowId, 6, NoFall.ogslot, ClickType.SWAP, (EntityPlayer)Util.mc.player);
+                Util.mc.playerController.windowClick(Util.mc.player.inventoryContainer.windowId,  6,  NoFall.ogslot,  ClickType.SWAP,  (EntityPlayer)Util.mc.player);
                 Util.mc.playerController.updateController();
-                final int slot = InventoryUtil.findStackInventory(Items.ELYTRA, true);
+                final int slot = InventoryUtil.findStackInventory(Items.ELYTRA,  true);
                 if (slot == -1) {
                     Command.sendMessage("§cElytra not found after regain?");
                     return NoFall$State$3.WAIT_FOR_NEXT_REQUIP;
                 }
-                Util.mc.playerController.windowClick(Util.mc.player.inventoryContainer.windowId, slot, NoFall.ogslot, ClickType.SWAP, (EntityPlayer)Util.mc.player);
+                Util.mc.playerController.windowClick(Util.mc.player.inventoryContainer.windowId,  slot,  NoFall.ogslot,  ClickType.SWAP,  (EntityPlayer)Util.mc.player);
                 Util.mc.playerController.updateController();
                 NoFall.bypassTimer.reset();
                 return NoFall$State$3.RESET_TIME;
             }
-        }, 
+        },  
         WAIT_FOR_NEXT_REQUIP {
             @Override
             public State onUpdate() {
@@ -220,12 +220,12 @@ public class NoFall extends Module
                 }
                 return this;
             }
-        }, 
+        },  
         RESET_TIME {
             @Override
             public State onUpdate() {
                 if (Util.mc.player.onGround || NoFall.bypassTimer.passedMs(250L)) {
-                    Util.mc.player.connection.sendPacket((Packet)new CPacketClickWindow(0, 0, 0, ClickType.PICKUP, new ItemStack(Blocks.BEDROCK), (short)1337));
+                    Util.mc.player.connection.sendPacket((Packet)new CPacketClickWindow(0,  0,  0,  ClickType.PICKUP,  new ItemStack(Blocks.BEDROCK),  (short)1337));
                     return NoFall$State$5.FALL_CHECK;
                 }
                 return this;
@@ -247,8 +247,8 @@ public class NoFall extends Module
     
     public enum Mode
     {
-        PACKET, 
-        BUCKET, 
+        PACKET,  
+        BUCKET,  
         ELYTRA;
     }
 }

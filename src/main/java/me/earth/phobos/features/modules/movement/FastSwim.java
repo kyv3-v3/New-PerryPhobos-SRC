@@ -17,11 +17,11 @@ public class FastSwim extends Module
     public Setting<Double> lavaVertical;
     
     public FastSwim() {
-        super("FastSwim", "Swim faster.", Module.Category.MOVEMENT, true, false, false);
-        this.waterHorizontal = (Setting<Double>)this.register(new Setting("WaterHorizontal", (T)3.0, (T)1.0, (T)20.0));
-        this.waterVertical = (Setting<Double>)this.register(new Setting("WaterVertical", (T)3.0, (T)1.0, (T)20.0));
-        this.lavaHorizontal = (Setting<Double>)this.register(new Setting("LavaHorizontal", (T)4.0, (T)1.0, (T)20.0));
-        this.lavaVertical = (Setting<Double>)this.register(new Setting("LavaVertical", (T)4.0, (T)1.0, (T)20.0));
+        super("FastSwim",  "Swim faster.",  Module.Category.MOVEMENT,  true,  false,  false);
+        this.waterHorizontal = (Setting<Double>)this.register(new Setting("WaterHorizontal", 3.0, 1.0, 20.0));
+        this.waterVertical = (Setting<Double>)this.register(new Setting("WaterVertical", 3.0, 1.0, 20.0));
+        this.lavaHorizontal = (Setting<Double>)this.register(new Setting("LavaHorizontal", 4.0, 1.0, 20.0));
+        this.lavaVertical = (Setting<Double>)this.register(new Setting("LavaVertical", 4.0, 1.0, 20.0));
     }
     
     @SubscribeEvent

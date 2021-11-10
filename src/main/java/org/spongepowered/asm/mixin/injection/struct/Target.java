@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.transformer.*;
 import org.spongepowered.asm.lib.*;
 import org.spongepowered.asm.lib.tree.*;
 
-public class Target implements Comparable<Target>, Iterable<AbstractInsnNode>
+public class Target implements Comparable<Target>,  Iterable<AbstractInsnNode>
 {
     public final ClassNode classNode;
     public final MethodNode method;
@@ -30,7 +30,7 @@ public class Target implements Comparable<Target>, Iterable<AbstractInsnNode>
     private LabelNode start;
     private LabelNode end;
     
-    public Target(final ClassNode classNode, final MethodNode method) {
+    public Target(final ClassNode classNode,  final MethodNode method) {
         this.injectionNodes = new InjectionNodes();
         this.classNode = classNode;
         this.method = method;
@@ -98,7 +98,7 @@ public class Target implements Comparable<Target>, Iterable<AbstractInsnNode>
         }
     }
     
-    public int[] generateArgMap(final Type[] args, final int start) {
+    public int[] generateArgMap(final Type[] args,  final int start) {
         if (this.argMapVars == null) {
             this.argMapVars = new ArrayList<Integer>();
         }
@@ -107,14 +107,14 @@ public class Target implements Comparable<Target>, Iterable<AbstractInsnNode>
         int index = 0;
         while (arg < args.length) {
             final int size = args[arg].getSize();
-            argMap[arg] = this.allocateArgMapLocal(index, size);
+            argMap[arg] = this.allocateArgMapLocal(index,  size);
             index += size;
             ++arg;
         }
         return argMap;
     }
     
-    private int allocateArgMapLocal(final int index, final int size) {
+    private int allocateArgMapLocal(final int index,  final int size) {
         if (index >= this.argMapVars.size()) {
             final int base = this.allocateLocals(size);
             for (int offset = 0; offset < size; ++offset) {
@@ -131,7 +131,7 @@ public class Target implements Comparable<Target>, Iterable<AbstractInsnNode>
             this.argMapVars.add(nextLocal);
             return local;
         }
-        this.argMapVars.set(index, nextLocal);
+        this.argMapVars.set(index,  nextLocal);
         this.argMapVars.add(this.allocateLocals(1));
         return nextLocal;
     }
@@ -160,21 +160,21 @@ public class Target implements Comparable<Target>, Iterable<AbstractInsnNode>
     }
     
     public String getSimpleCallbackDescriptor() {
-        return String.format("(L%s;)V", this.getCallbackInfoClass());
+        return String.format("(L%s;)V",  this.getCallbackInfoClass());
     }
     
-    public String getCallbackDescriptor(final Type[] locals, final Type[] argumentTypes) {
-        return this.getCallbackDescriptor(false, locals, argumentTypes, 0, 32767);
+    public String getCallbackDescriptor(final Type[] locals,  final Type[] argumentTypes) {
+        return this.getCallbackDescriptor(false,  locals,  argumentTypes,  0,  32767);
     }
     
-    public String getCallbackDescriptor(final boolean captureLocals, final Type[] locals, final Type[] argumentTypes, final int startIndex, int extra) {
+    public String getCallbackDescriptor(final boolean captureLocals,  final Type[] locals,  final Type[] argumentTypes,  final int startIndex,  int extra) {
         if (this.callbackDescriptor == null) {
-            this.callbackDescriptor = String.format("(%sL%s;)V", this.method.desc.substring(1, this.method.desc.indexOf(41)), this.getCallbackInfoClass());
+            this.callbackDescriptor = String.format("(%sL%s;)V",  this.method.desc.substring(1,  this.method.desc.indexOf(41)),  this.getCallbackInfoClass());
         }
         if (!captureLocals || locals == null) {
             return this.callbackDescriptor;
         }
-        final StringBuilder descriptor = new StringBuilder(this.callbackDescriptor.substring(0, this.callbackDescriptor.indexOf(41)));
+        final StringBuilder descriptor = new StringBuilder(this.callbackDescriptor.substring(0,  this.callbackDescriptor.indexOf(41)));
         for (int l = startIndex; l < locals.length && extra > 0; ++l) {
             if (locals[l] != null) {
                 descriptor.append(locals[l].getDescriptor());
@@ -186,7 +186,7 @@ public class Target implements Comparable<Target>, Iterable<AbstractInsnNode>
     
     @Override
     public String toString() {
-        return String.format("%s::%s%s", this.classNode.name, this.method.name, this.method.desc);
+        return String.format("%s::%s%s",  this.classNode.name,  this.method.name,  this.method.desc);
     }
     
     @Override
@@ -234,37 +234,37 @@ public class Target implements Comparable<Target>, Iterable<AbstractInsnNode>
         if (!this.isCtor) {
             return null;
         }
-        return Bytecode.findSuperInit(this.method, ClassInfo.forName(this.classNode.name).getSuperName());
+        return Bytecode.findSuperInit(this.method,  ClassInfo.forName(this.classNode.name).getSuperName());
     }
     
-    public void insertBefore(final InjectionNodes.InjectionNode location, final InsnList insns) {
-        this.insns.insertBefore(location.getCurrentTarget(), insns);
+    public void insertBefore(final InjectionNodes.InjectionNode location,  final InsnList insns) {
+        this.insns.insertBefore(location.getCurrentTarget(),  insns);
     }
     
-    public void insertBefore(final AbstractInsnNode location, final InsnList insns) {
-        this.insns.insertBefore(location, insns);
+    public void insertBefore(final AbstractInsnNode location,  final InsnList insns) {
+        this.insns.insertBefore(location,  insns);
     }
     
-    public void replaceNode(final AbstractInsnNode location, final AbstractInsnNode insn) {
-        this.insns.insertBefore(location, insn);
+    public void replaceNode(final AbstractInsnNode location,  final AbstractInsnNode insn) {
+        this.insns.insertBefore(location,  insn);
         this.insns.remove(location);
-        this.injectionNodes.replace(location, insn);
+        this.injectionNodes.replace(location,  insn);
     }
     
-    public void replaceNode(final AbstractInsnNode location, final AbstractInsnNode champion, final InsnList insns) {
-        this.insns.insertBefore(location, insns);
+    public void replaceNode(final AbstractInsnNode location,  final AbstractInsnNode champion,  final InsnList insns) {
+        this.insns.insertBefore(location,  insns);
         this.insns.remove(location);
-        this.injectionNodes.replace(location, champion);
+        this.injectionNodes.replace(location,  champion);
     }
     
-    public void wrapNode(final AbstractInsnNode location, final AbstractInsnNode champion, final InsnList before, final InsnList after) {
-        this.insns.insertBefore(location, before);
-        this.insns.insert(location, after);
-        this.injectionNodes.replace(location, champion);
+    public void wrapNode(final AbstractInsnNode location,  final AbstractInsnNode champion,  final InsnList before,  final InsnList after) {
+        this.insns.insertBefore(location,  before);
+        this.insns.insert(location,  after);
+        this.injectionNodes.replace(location,  champion);
     }
     
-    public void replaceNode(final AbstractInsnNode location, final InsnList insns) {
-        this.insns.insertBefore(location, insns);
+    public void replaceNode(final AbstractInsnNode location,  final InsnList insns) {
+        this.insns.insertBefore(location,  insns);
         this.removeNode(location);
     }
     
@@ -273,20 +273,20 @@ public class Target implements Comparable<Target>, Iterable<AbstractInsnNode>
         this.injectionNodes.remove(insn);
     }
     
-    public void addLocalVariable(final int index, final String name, final String desc) {
+    public void addLocalVariable(final int index,  final String name,  final String desc) {
         if (this.start == null) {
             this.start = new LabelNode(new Label());
             this.end = new LabelNode(new Label());
             this.insns.insert((AbstractInsnNode)this.start);
             this.insns.add((AbstractInsnNode)this.end);
         }
-        this.addLocalVariable(index, name, desc, this.start, this.end);
+        this.addLocalVariable(index,  name,  desc,  this.start,  this.end);
     }
     
-    private void addLocalVariable(final int index, final String name, final String desc, final LabelNode start, final LabelNode end) {
+    private void addLocalVariable(final int index,  final String name,  final String desc,  final LabelNode start,  final LabelNode end) {
         if (this.method.localVariables == null) {
             this.method.localVariables = new ArrayList();
         }
-        this.method.localVariables.add(new LocalVariableNode(name, desc, (String)null, start, end, index));
+        this.method.localVariables.add(new LocalVariableNode(name,  desc,  (String)null,  start,  end,  index));
     }
 }

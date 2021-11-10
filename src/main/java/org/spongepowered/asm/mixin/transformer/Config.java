@@ -53,11 +53,11 @@ public class Config
     }
     
     @Deprecated
-    public static Config create(final String configFile, final MixinEnvironment outer) {
-        return MixinConfig.create(configFile, outer);
+    public static Config create(final String configFile,  final MixinEnvironment outer) {
+        return MixinConfig.create(configFile,  outer);
     }
     
     public static Config create(final String configFile) {
-        return MixinConfig.create(configFile, MixinEnvironment.getDefaultEnvironment());
+        return MixinConfig.create(configFile,  MixinEnvironment.getDefaultEnvironment());
     }
 }

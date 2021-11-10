@@ -20,16 +20,16 @@ public abstract class Command extends Feature
         this.commands = new String[] { "" };
     }
     
-    public Command(final String name, final String[] commands) {
+    public Command(final String name,  final String[] commands) {
         super(name);
         this.name = name;
         this.commands = commands;
     }
     
-    public static void sendMessage(final String message, final boolean notification) {
+    public static void sendMessage(final String message,  final boolean notification) {
         sendSilentMessage(Phobos.commandManager.getClientMessage() + " §r" + message);
         if (notification) {
-            Phobos.notificationManager.addNotification(message, 3000L);
+            Phobos.notificationManager.addNotification(message,  3000L);
         }
     }
     
@@ -44,17 +44,17 @@ public abstract class Command extends Feature
         Command.mc.player.sendMessage((ITextComponent)new ChatMessage(message));
     }
     
-    public static void sendOverwriteMessage(final String message, final int id, final boolean notification) {
+    public static void sendOverwriteMessage(final String message,  final int id,  final boolean notification) {
         final TextComponentString component = new TextComponentString(message);
-        Command.mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion((ITextComponent)component, id);
+        Command.mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion((ITextComponent)component,  id);
         if (notification) {
-            Phobos.notificationManager.addNotification(message, 3000L);
+            Phobos.notificationManager.addNotification(message,  3000L);
         }
     }
     
     public static void sendRainbowMessage(final String message) {
         final StringBuilder stringBuilder = new StringBuilder(message);
-        stringBuilder.insert(0, "§+");
+        stringBuilder.insert(0,  "§+");
         Command.mc.player.sendMessage((ITextComponent)new ChatMessage(stringBuilder.toString()));
     }
     
@@ -83,7 +83,7 @@ public abstract class Command extends Feature
             final StringBuffer stringBuffer = new StringBuffer();
             while (matcher.find()) {
                 final String replacement = "§" + matcher.group().substring(1);
-                matcher.appendReplacement(stringBuffer, replacement);
+                matcher.appendReplacement(stringBuffer,  replacement);
             }
             matcher.appendTail(stringBuffer);
             this.text = stringBuffer.toString();

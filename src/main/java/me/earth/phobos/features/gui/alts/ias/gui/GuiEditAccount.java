@@ -23,7 +23,7 @@ class GuiEditAccount extends AbstractAccountGui
             this.data = (ExtendedAccountData)data;
         }
         else {
-            this.data = new ExtendedAccountData(data.user, data.pass, data.alias, 0, JavaTools.getJavaCompat().getDate(), EnumBool.UNKNOWN);
+            this.data = new ExtendedAccountData(data.user,  data.pass,  data.alias,  0,  JavaTools.getJavaCompat().getDate(),  EnumBool.UNKNOWN);
         }
     }
     
@@ -34,6 +34,6 @@ class GuiEditAccount extends AbstractAccountGui
     }
     
     public void complete() {
-        AltDatabase.getInstance().getAlts().set(this.selectedIndex, (AccountData)new ExtendedAccountData(this.getUsername(), this.getPassword(), this.hasUserChanged ? this.getUsername() : this.data.alias, this.data.useCount, this.data.lastused, this.data.premium));
+        AltDatabase.getInstance().getAlts().set(this.selectedIndex,  (AccountData)new ExtendedAccountData(this.getUsername(),  this.getPassword(),  this.hasUserChanged ? this.getUsername() : this.data.alias,  this.data.useCount,  this.data.lastused,  this.data.premium));
     }
 }

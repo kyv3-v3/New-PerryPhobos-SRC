@@ -34,7 +34,7 @@ public final class TraceSignatureVisitor extends SignatureVisitor
     }
     
     public void visitFormalTypeParameter(final String name) {
-        this.declaration.append(this.seenFormalParameter ? ", " : "<").append(name);
+        this.declaration.append(this.seenFormalParameter ? ",  " : "<").append(name);
         this.seenFormalParameter = true;
         this.seenInterfaceBound = false;
     }
@@ -46,7 +46,7 @@ public final class TraceSignatureVisitor extends SignatureVisitor
     }
     
     public SignatureVisitor visitInterfaceBound() {
-        this.separator = (this.seenInterfaceBound ? ", " : " extends ");
+        this.separator = (this.seenInterfaceBound ? ",  " : " extends ");
         this.seenInterfaceBound = true;
         this.startType();
         return this;
@@ -60,7 +60,7 @@ public final class TraceSignatureVisitor extends SignatureVisitor
     }
     
     public SignatureVisitor visitInterface() {
-        this.separator = (this.seenInterface ? ", " : (this.isInterface ? " extends " : " implements "));
+        this.separator = (this.seenInterface ? ",  " : (this.isInterface ? " extends " : " implements "));
         this.seenInterface = true;
         this.startType();
         return this;
@@ -69,7 +69,7 @@ public final class TraceSignatureVisitor extends SignatureVisitor
     public SignatureVisitor visitParameterType() {
         this.endFormals();
         if (this.seenParameter) {
-            this.declaration.append(", ");
+            this.declaration.append(",  ");
         }
         else {
             this.seenParameter = true;
@@ -97,7 +97,7 @@ public final class TraceSignatureVisitor extends SignatureVisitor
             this.exceptions = new StringBuilder();
         }
         else {
-            this.exceptions.append(", ");
+            this.exceptions.append(",  ");
         }
         return new TraceSignatureVisitor(this.exceptions);
     }
@@ -159,11 +159,11 @@ public final class TraceSignatureVisitor extends SignatureVisitor
         if ("java/lang/Object".equals(name)) {
             final boolean needObjectClass = this.argumentStack % 2 != 0 || this.seenParameter;
             if (needObjectClass) {
-                this.declaration.append(this.separator).append(name.replace('/', '.'));
+                this.declaration.append(this.separator).append(name.replace('/',  '.'));
             }
         }
         else {
-            this.declaration.append(this.separator).append(name.replace('/', '.'));
+            this.declaration.append(this.separator).append(name.replace('/',  '.'));
         }
         this.separator = "";
         this.argumentStack *= 2;
@@ -175,7 +175,7 @@ public final class TraceSignatureVisitor extends SignatureVisitor
         }
         this.argumentStack /= 2;
         this.declaration.append('.');
-        this.declaration.append(this.separator).append(name.replace('/', '.'));
+        this.declaration.append(this.separator).append(name.replace('/',  '.'));
         this.separator = "";
         this.argumentStack *= 2;
     }
@@ -186,7 +186,7 @@ public final class TraceSignatureVisitor extends SignatureVisitor
             this.declaration.append('<');
         }
         else {
-            this.declaration.append(", ");
+            this.declaration.append(",  ");
         }
         this.declaration.append('?');
     }
@@ -197,7 +197,7 @@ public final class TraceSignatureVisitor extends SignatureVisitor
             this.declaration.append('<');
         }
         else {
-            this.declaration.append(", ");
+            this.declaration.append(",  ");
         }
         if (tag == '+') {
             this.declaration.append("? extends ");

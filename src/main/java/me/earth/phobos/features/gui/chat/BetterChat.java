@@ -14,7 +14,7 @@ import net.minecraftforge.client.*;
 import me.earth.phobos.features.gui.chat.command.*;
 import net.minecraft.command.*;
 
-@Mod(modid = "betterchat", name = "Better Chat", version = "1.5")
+@Mod(modid = "betterchat",  name = "Better Chat",  version = "1.5")
 @SideOnly(Side.CLIENT)
 public class BetterChat
 {

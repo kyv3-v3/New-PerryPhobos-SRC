@@ -13,15 +13,15 @@ public class SourceValue implements Value
     public final Set<AbstractInsnNode> insns;
     
     public SourceValue(final int size) {
-        this(size, SmallSet.emptySet());
+        this(size,  SmallSet.emptySet());
     }
     
-    public SourceValue(final int size, final AbstractInsnNode insn) {
+    public SourceValue(final int size,  final AbstractInsnNode insn) {
         this.size = size;
-        this.insns = (Set<AbstractInsnNode>)new SmallSet((Object)insn, (Object)null);
+        this.insns = (Set<AbstractInsnNode>)new SmallSet((Object)insn,  (Object)null);
     }
     
-    public SourceValue(final int size, final Set<AbstractInsnNode> insns) {
+    public SourceValue(final int size,  final Set<AbstractInsnNode> insns) {
         this.size = size;
         this.insns = insns;
     }

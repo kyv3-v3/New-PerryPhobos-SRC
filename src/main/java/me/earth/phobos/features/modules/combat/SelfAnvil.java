@@ -32,19 +32,19 @@ public class SelfAnvil extends Module
     private int blocksThisTick;
     
     public SelfAnvil() {
-        super("SelfAnvil", "Self Anvil (on some servers bypasses burrow patches).", Category.COMBAT, true, false, false);
-        this.rotate = (Setting<Boolean>)this.register(new Setting("Rotate", (T)true));
-        this.onlyHole = (Setting<Boolean>)this.register(new Setting("HoleOnly", (T)false));
-        this.helpingBlocks = (Setting<Boolean>)this.register(new Setting("HelpingBlocks", (T)true));
-        this.chat = (Setting<Boolean>)this.register(new Setting("Chat Msgs", (T)true));
-        this.packet = (Setting<Boolean>)this.register(new Setting("Packet", (T)false));
-        this.blocksPerTick = (Setting<Integer>)this.register(new Setting("Blocks/Tick", (T)2, (T)1, (T)8));
+        super("SelfAnvil",  "Self Anvil (on some servers bypasses burrow patches).",  Category.COMBAT,  true,  false,  false);
+        this.rotate = (Setting<Boolean>)this.register(new Setting("Rotate", true));
+        this.onlyHole = (Setting<Boolean>)this.register(new Setting("HoleOnly", false));
+        this.helpingBlocks = (Setting<Boolean>)this.register(new Setting("HelpingBlocks", true));
+        this.chat = (Setting<Boolean>)this.register(new Setting("Chat Msgs", true));
+        this.packet = (Setting<Boolean>)this.register(new Setting("Packet", false));
+        this.blocksPerTick = (Setting<Integer>)this.register(new Setting("Blocks/Tick", 2, 1, 8));
     }
     
     @Override
     public void onEnable() {
-        this.playerPos = new BlockPos(SelfAnvil.mc.player.posX, SelfAnvil.mc.player.posY, SelfAnvil.mc.player.posZ);
-        this.placePos = this.playerPos.offset(EnumFacing.UP, 2);
+        this.playerPos = new BlockPos(SelfAnvil.mc.player.posX,  SelfAnvil.mc.player.posY,  SelfAnvil.mc.player.posZ);
+        this.placePos = this.playerPos.offset(EnumFacing.UP,  2);
         this.blockSlot = this.findBlockSlot();
         this.obbySlot = InventoryUtil.findHotbarBlock(BlockObsidian.class);
         this.lastBlock = SelfAnvil.mc.player.inventory.currentItem;
@@ -60,15 +60,15 @@ public class SelfAnvil extends Module
     }
     
     private void doSelfAnvil() {
-        if (this.helpingBlocks.getValue() && BlockUtil.isPositionPlaceable(this.placePos, false, true) == 2) {
-            InventoryUtil.switchToHotbarSlot(this.obbySlot, false);
+        if (this.helpingBlocks.getValue() && BlockUtil.isPositionPlaceable(this.placePos,  false,  true) == 2) {
+            InventoryUtil.switchToHotbarSlot(this.obbySlot,  false);
             this.doHelpBlocks();
         }
-        if (this.blocksThisTick < this.blocksPerTick.getValue() && BlockUtil.isPositionPlaceable(this.placePos, false, true) == 3) {
-            InventoryUtil.switchToHotbarSlot(this.blockSlot, false);
-            BlockUtil.placeBlock(this.placePos, EnumHand.MAIN_HAND, this.rotate.getValue(), this.packet.getValue(), false);
-            InventoryUtil.switchToHotbarSlot(this.lastBlock, false);
-            SelfAnvil.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)SelfAnvil.mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
+        if (this.blocksThisTick < this.blocksPerTick.getValue() && BlockUtil.isPositionPlaceable(this.placePos,  false,  true) == 3) {
+            InventoryUtil.switchToHotbarSlot(this.blockSlot,  false);
+            BlockUtil.placeBlock(this.placePos,  EnumHand.MAIN_HAND,  this.rotate.getValue(),  this.packet.getValue(),  false);
+            InventoryUtil.switchToHotbarSlot(this.lastBlock,  false);
+            SelfAnvil.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)SelfAnvil.mc.player,  CPacketEntityAction.Action.STOP_SNEAKING));
             this.disable();
         }
     }
@@ -79,8 +79,8 @@ public class SelfAnvil extends Module
         }
         for (final EnumFacing side1 : EnumFacing.values()) {
             if (side1 != EnumFacing.DOWN) {
-                if (BlockUtil.isPositionPlaceable(this.placePos.offset(side1), false, true) == 3) {
-                    BlockUtil.placeBlock(this.placePos.offset(side1), EnumHand.MAIN_HAND, this.rotate.getValue(), this.packet.getValue(), false);
+                if (BlockUtil.isPositionPlaceable(this.placePos.offset(side1),  false,  true) == 3) {
+                    BlockUtil.placeBlock(this.placePos.offset(side1),  EnumHand.MAIN_HAND,  this.rotate.getValue(),  this.packet.getValue(),  false);
                     ++this.blocksThisTick;
                     return;
                 }
@@ -89,8 +89,8 @@ public class SelfAnvil extends Module
         for (final EnumFacing side1 : EnumFacing.values()) {
             if (side1 != EnumFacing.DOWN) {
                 for (final EnumFacing side2 : EnumFacing.values()) {
-                    if (BlockUtil.isPositionPlaceable(this.placePos.offset(side1).offset(side2), false, true) == 3) {
-                        BlockUtil.placeBlock(this.placePos.offset(side1).offset(side2), EnumHand.MAIN_HAND, this.rotate.getValue(), this.packet.getValue(), false);
+                    if (BlockUtil.isPositionPlaceable(this.placePos.offset(side1).offset(side2),  false,  true) == 3) {
+                        BlockUtil.placeBlock(this.placePos.offset(side1).offset(side2),  EnumHand.MAIN_HAND,  this.rotate.getValue(),  this.packet.getValue(),  false);
                         ++this.blocksThisTick;
                         return;
                     }
@@ -100,8 +100,8 @@ public class SelfAnvil extends Module
         for (final EnumFacing side1 : EnumFacing.values()) {
             for (final EnumFacing side2 : EnumFacing.values()) {
                 for (final EnumFacing side3 : EnumFacing.values()) {
-                    if (BlockUtil.isPositionPlaceable(this.placePos.offset(side1).offset(side2).offset(side3), false, true) == 3) {
-                        BlockUtil.placeBlock(this.placePos.offset(side1).offset(side2).offset(side3), EnumHand.MAIN_HAND, this.rotate.getValue(), this.packet.getValue(), false);
+                    if (BlockUtil.isPositionPlaceable(this.placePos.offset(side1).offset(side2).offset(side3),  false,  true) == 3) {
+                        BlockUtil.placeBlock(this.placePos.offset(side1).offset(side2).offset(side3),  EnumHand.MAIN_HAND,  this.rotate.getValue(),  this.packet.getValue(),  false);
                         ++this.blocksThisTick;
                         return;
                     }
@@ -124,7 +124,7 @@ public class SelfAnvil extends Module
     }
     
     private boolean doFirstChecks() {
-        final int canPlace = BlockUtil.isPositionPlaceable(this.placePos, false, true);
+        final int canPlace = BlockUtil.isPositionPlaceable(this.placePos,  false,  true);
         if (fullNullCheck() || !SelfAnvil.mc.world.isAirBlock(this.playerPos)) {
             return false;
         }

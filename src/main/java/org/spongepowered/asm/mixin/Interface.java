@@ -19,9 +19,9 @@ public @interface Interface {
     
     public enum Remap
     {
-        ALL, 
-        FORCE(true), 
-        ONLY_PREFIXED, 
+        ALL,  
+        FORCE(true),  
+        ONLY_PREFIXED,  
         NONE;
         
         private final boolean forceRemap;

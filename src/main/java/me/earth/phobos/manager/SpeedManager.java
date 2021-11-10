@@ -25,11 +25,11 @@ public class SpeedManager extends Feature
     public long jumpInfoStartTime;
     public boolean wasFirstJump;
     public double speedometerCurrentSpeed;
-    public HashMap<EntityPlayer, Double> playerSpeeds;
+    public HashMap<EntityPlayer,  Double> playerSpeeds;
     
     public SpeedManager() {
         this.wasFirstJump = true;
-        this.playerSpeeds = new HashMap<EntityPlayer, Double>();
+        this.playerSpeeds = new HashMap<EntityPlayer,  Double>();
     }
     
     public static void setDidJumpThisTick(final boolean val) {
@@ -77,7 +77,7 @@ public class SpeedManager extends Feature
             final double distTraveledLastTickX = player.posX - player.prevPosX;
             final double distTraveledLastTickZ = player.posZ - player.prevPosZ;
             final double playerSpeed = distTraveledLastTickX * distTraveledLastTickX + distTraveledLastTickZ * distTraveledLastTickZ;
-            this.playerSpeeds.put(player, playerSpeed);
+            this.playerSpeeds.put(player,  playerSpeed);
         }
     }
     

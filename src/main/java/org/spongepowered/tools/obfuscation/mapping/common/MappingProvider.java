@@ -13,16 +13,16 @@ public abstract class MappingProvider implements IMappingProvider
 {
     protected final Messager messager;
     protected final Filer filer;
-    protected final BiMap<String, String> packageMap;
-    protected final BiMap<String, String> classMap;
-    protected final BiMap<MappingField, MappingField> fieldMap;
-    protected final BiMap<MappingMethod, MappingMethod> methodMap;
+    protected final BiMap<String,  String> packageMap;
+    protected final BiMap<String,  String> classMap;
+    protected final BiMap<MappingField,  MappingField> fieldMap;
+    protected final BiMap<MappingMethod,  MappingMethod> methodMap;
     
-    public MappingProvider(final Messager messager, final Filer filer) {
-        this.packageMap = (BiMap<String, String>)HashBiMap.create();
-        this.classMap = (BiMap<String, String>)HashBiMap.create();
-        this.fieldMap = (BiMap<MappingField, MappingField>)HashBiMap.create();
-        this.methodMap = (BiMap<MappingMethod, MappingMethod>)HashBiMap.create();
+    public MappingProvider(final Messager messager,  final Filer filer) {
+        this.packageMap = (BiMap<String,  String>)HashBiMap.create();
+        this.classMap = (BiMap<String,  String>)HashBiMap.create();
+        this.fieldMap = (BiMap<MappingField,  MappingField>)HashBiMap.create();
+        this.methodMap = (BiMap<MappingMethod,  MappingMethod>)HashBiMap.create();
         this.messager = messager;
         this.filer = filer;
     }

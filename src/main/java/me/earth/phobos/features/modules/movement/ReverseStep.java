@@ -15,8 +15,8 @@ public class ReverseStep extends Module
     int delay;
     
     public ReverseStep() {
-        super("ReverseStep", "Makes u fall faster.", Module.Category.MOVEMENT, true, false, false);
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", (T)Mode.NEW));
+        super("ReverseStep",  "Makes u fall faster.",  Module.Category.MOVEMENT,  true,  false,  false);
+        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.NEW));
     }
     
     public void onUpdate() {
@@ -39,7 +39,7 @@ public class ReverseStep extends Module
     
     private enum Mode
     {
-        OLD, 
+        OLD,  
         NEW;
     }
 }

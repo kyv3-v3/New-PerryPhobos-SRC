@@ -34,7 +34,7 @@ public final class AnnotationHandle
         return "@" + (Object)this.annotation.getAnnotationType().asElement().getSimpleName();
     }
     
-    public <T> T getValue(final String key, final T defaultValue) {
+    public <T> T getValue(final String key,  final T defaultValue) {
         if (this.annotation == null) {
             return defaultValue;
         }
@@ -46,19 +46,19 @@ public final class AnnotationHandle
         if (varValue == null) {
             return defaultValue;
         }
-        return Enum.valueOf(defaultValue.getClass(), varValue.getSimpleName().toString());
+        return Enum.valueOf(defaultValue.getClass(),  varValue.getSimpleName().toString());
     }
     
     public <T> T getValue() {
-        return this.getValue("value", (T)null);
+        return this.getValue("value", null);
     }
     
     public <T> T getValue(final String key) {
-        return this.getValue(key, (T)null);
+        return this.getValue(key, null);
     }
     
-    public boolean getBoolean(final String key, final boolean defaultValue) {
-        return this.getValue(key, defaultValue);
+    public boolean getBoolean(final String key,  final boolean defaultValue) {
+        return this.getValue(key,  defaultValue);
     }
     
     public AnnotationHandle getAnnotation(final String key) {
@@ -80,12 +80,12 @@ public final class AnnotationHandle
     }
     
     public <T> List<T> getList(final String key) {
-        final List<AnnotationValue> list = this.getValue(key, Collections.emptyList());
+        final List<AnnotationValue> list = this.getValue(key,  Collections.emptyList());
         return unwrapAnnotationValueList(list);
     }
     
     public List<AnnotationHandle> getAnnotationList(final String key) {
-        final Object val = this.getValue(key, (Object)null);
+        final Object val = this.getValue(key,  (Object)null);
         if (val == null) {
             return Collections.emptyList();
         }
@@ -120,7 +120,7 @@ public final class AnnotationHandle
         return unfolded;
     }
     
-    protected static AnnotationMirror getAnnotation(final Element elem, final Class<? extends Annotation> annotationClass) {
+    protected static AnnotationMirror getAnnotation(final Element elem,  final Class<? extends Annotation> annotationClass) {
         if (elem == null) {
             return null;
         }
@@ -145,8 +145,8 @@ public final class AnnotationHandle
         return new AnnotationHandle(annotation);
     }
     
-    public static AnnotationHandle of(final Element elem, final Class<? extends Annotation> annotationClass) {
-        return new AnnotationHandle(getAnnotation(elem, annotationClass));
+    public static AnnotationHandle of(final Element elem,  final Class<? extends Annotation> annotationClass) {
+        return new AnnotationHandle(getAnnotation(elem,  annotationClass));
     }
     
     static {

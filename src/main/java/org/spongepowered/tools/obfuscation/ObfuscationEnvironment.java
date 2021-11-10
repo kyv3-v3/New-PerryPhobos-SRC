@@ -34,8 +34,8 @@ public abstract class ObfuscationEnvironment implements IObfuscationEnvironment
         this.ap = type.getAnnotationProcessor();
         this.inFileNames = type.getInputFileNames();
         this.outFileName = type.getOutputFileName();
-        this.mappingProvider = this.getMappingProvider((Messager)this.ap, this.ap.getProcessingEnvironment().getFiler());
-        this.mappingWriter = this.getMappingWriter((Messager)this.ap, this.ap.getProcessingEnvironment().getFiler());
+        this.mappingProvider = this.getMappingProvider((Messager)this.ap,  this.ap.getProcessingEnvironment().getFiler());
+        this.mappingWriter = this.getMappingWriter((Messager)this.ap,  this.ap.getProcessingEnvironment().getFiler());
     }
     
     @Override
@@ -43,15 +43,15 @@ public abstract class ObfuscationEnvironment implements IObfuscationEnvironment
         return this.type.toString();
     }
     
-    protected abstract IMappingProvider getMappingProvider(final Messager p0, final Filer p1);
+    protected abstract IMappingProvider getMappingProvider(final Messager p0,  final Filer p1);
     
-    protected abstract IMappingWriter getMappingWriter(final Messager p0, final Filer p1);
+    protected abstract IMappingWriter getMappingWriter(final Messager p0,  final Filer p1);
     
     private boolean initMappings() {
         if (!this.initDone) {
             this.initDone = true;
             if (this.inFileNames == null) {
-                this.ap.printMessage(Diagnostic.Kind.ERROR, (CharSequence)("The " + this.type.getConfig().getInputFileOption() + " argument was not supplied, obfuscation processing will not occur"));
+                this.ap.printMessage(Diagnostic.Kind.ERROR,  (CharSequence)("The " + this.type.getConfig().getInputFileOption() + " argument was not supplied,  obfuscation processing will not occur"));
                 return false;
             }
             int successCount = 0;
@@ -61,7 +61,7 @@ public abstract class ObfuscationEnvironment implements IObfuscationEnvironment
                     if (!inputFile.isFile()) {
                         continue;
                     }
-                    this.ap.printMessage(Diagnostic.Kind.NOTE, (CharSequence)("Loading " + this.type + " mappings from " + inputFile.getAbsolutePath()));
+                    this.ap.printMessage(Diagnostic.Kind.NOTE,  (CharSequence)("Loading " + this.type + " mappings from " + inputFile.getAbsolutePath()));
                     this.mappingProvider.read(inputFile);
                     ++successCount;
                 }
@@ -70,7 +70,7 @@ public abstract class ObfuscationEnvironment implements IObfuscationEnvironment
                 }
             }
             if (successCount < 1) {
-                this.ap.printMessage(Diagnostic.Kind.ERROR, (CharSequence)("No valid input files for " + this.type + " could be read, processing may not be sucessful."));
+                this.ap.printMessage(Diagnostic.Kind.ERROR,  (CharSequence)("No valid input files for " + this.type + " could be read,  processing may not be sucessful."));
                 this.mappingProvider.clear();
             }
         }
@@ -95,20 +95,20 @@ public abstract class ObfuscationEnvironment implements IObfuscationEnvironment
             return null;
         }
         final String superClassName = ((TypeElement)((DeclaredType)superClass).asElement()).getQualifiedName().toString();
-        return this.getObfMethod(new MemberInfo(method.name, superClassName.replace('.', '/'), method.desc, method.matchAll));
+        return this.getObfMethod(new MemberInfo(method.name,  superClassName.replace('.',  '/'),  method.desc,  method.matchAll));
     }
     
     public MappingMethod getObfMethod(final MappingMethod method) {
-        return this.getObfMethod(method, true);
+        return this.getObfMethod(method,  true);
     }
     
-    public MappingMethod getObfMethod(final MappingMethod method, final boolean lazyRemap) {
+    public MappingMethod getObfMethod(final MappingMethod method,  final boolean lazyRemap) {
         if (!this.initMappings()) {
             return null;
         }
         boolean remapped = true;
         MappingMethod mapping = null;
-        for (MappingMethod md = method; md != null && mapping == null; mapping = this.mappingProvider.getMethodMapping(md), md = md.getSuper()) {}
+        for (MappingMethod md = method; md != null && mapping == null; mapping = this.mappingProvider.getMethodMapping(md),  md = md.getSuper()) {}
         if (mapping == null) {
             if (lazyRemap) {
                 return null;
@@ -123,8 +123,8 @@ public abstract class ObfuscationEnvironment implements IObfuscationEnvironment
         if (remapped) {
             return mapping.move(remappedOwner);
         }
-        final String desc = ObfuscationUtil.mapDescriptor(mapping.getDesc(), (ObfuscationUtil.IClassRemapper)this.remapper);
-        return new MappingMethod(remappedOwner, mapping.getSimpleName(), desc);
+        final String desc = ObfuscationUtil.mapDescriptor(mapping.getDesc(),  (ObfuscationUtil.IClassRemapper)this.remapper);
+        return new MappingMethod(remappedOwner,  mapping.getSimpleName(),  desc);
     }
     
     public MemberInfo remapDescriptor(final MemberInfo method) {
@@ -139,28 +139,28 @@ public abstract class ObfuscationEnvironment implements IObfuscationEnvironment
         }
         String desc = method.desc;
         if (desc != null) {
-            final String newDesc = ObfuscationUtil.mapDescriptor(method.desc, (ObfuscationUtil.IClassRemapper)this.remapper);
+            final String newDesc = ObfuscationUtil.mapDescriptor(method.desc,  (ObfuscationUtil.IClassRemapper)this.remapper);
             if (!newDesc.equals(method.desc)) {
                 desc = newDesc;
                 transformed = true;
             }
         }
-        return transformed ? new MemberInfo(method.name, owner, desc, method.matchAll) : null;
+        return transformed ? new MemberInfo(method.name,  owner,  desc,  method.matchAll) : null;
     }
     
     public String remapDescriptor(final String desc) {
-        return ObfuscationUtil.mapDescriptor(desc, (ObfuscationUtil.IClassRemapper)this.remapper);
+        return ObfuscationUtil.mapDescriptor(desc,  (ObfuscationUtil.IClassRemapper)this.remapper);
     }
     
     public MappingField getObfField(final MemberInfo field) {
-        return this.getObfField(field.asFieldMapping(), true);
+        return this.getObfField(field.asFieldMapping(),  true);
     }
     
     public MappingField getObfField(final MappingField field) {
-        return this.getObfField(field, true);
+        return this.getObfField(field,  true);
     }
     
-    public MappingField getObfField(final MappingField field, final boolean lazyRemap) {
+    public MappingField getObfField(final MappingField field,  final boolean lazyRemap) {
         if (!this.initMappings()) {
             return null;
         }
@@ -192,7 +192,7 @@ public abstract class ObfuscationEnvironment implements IObfuscationEnvironment
             fields.addAll((Collection)mappings.getFieldMappings(this.type));
             methods.addAll((Collection)mappings.getMethodMappings(this.type));
         }
-        this.mappingWriter.write(this.outFileName, this.type, (IMappingConsumer.MappingSet)fields, (IMappingConsumer.MappingSet)methods);
+        this.mappingWriter.write(this.outFileName,  this.type,  (IMappingConsumer.MappingSet)fields,  (IMappingConsumer.MappingSet)methods);
     }
     
     final class RemapperProxy implements ObfuscationUtil.IClassRemapper

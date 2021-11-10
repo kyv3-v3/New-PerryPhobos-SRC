@@ -27,15 +27,15 @@ class TargetClassContext extends ClassContext implements ITargetClassContext
     private final SourceMap sourceMap;
     private final ClassSignature signature;
     private final SortedSet<MixinInfo> mixins;
-    private final Map<String, Target> targetMethods;
+    private final Map<String,  Target> targetMethods;
     private final Set<MethodNode> mixinMethods;
     private int nextUniqueMethodIndex;
     private int nextUniqueFieldIndex;
     private boolean applied;
     private boolean forceExport;
     
-    TargetClassContext(final MixinEnvironment env, final Extensions extensions, final String sessionId, final String name, final ClassNode classNode, final SortedSet<MixinInfo> mixins) {
-        this.targetMethods = new HashMap<String, Target>();
+    TargetClassContext(final MixinEnvironment env,  final Extensions extensions,  final String sessionId,  final String name,  final ClassNode classNode,  final SortedSet<MixinInfo> mixins) {
+        this.targetMethods = new HashMap<String,  Target>();
         this.mixinMethods = new HashSet<MethodNode>();
         this.env = env;
         this.extensions = extensions;
@@ -110,19 +110,19 @@ class TargetClassContext extends ClassContext implements ITargetClassContext
     
     void methodMerged(final MethodNode method) {
         if (!this.mixinMethods.remove(method)) {
-            TargetClassContext.logger.debug("Unexpected: Merged unregistered method {}{} in {}", new Object[] { method.name, method.desc, this });
+            TargetClassContext.logger.debug("Unexpected: Merged unregistered method {}{} in {}",  new Object[] { method.name,  method.desc,  this });
         }
     }
     
-    MethodNode findMethod(final Deque<String> aliases, final String desc) {
-        return this.findAliasedMethod(aliases, desc, true);
+    MethodNode findMethod(final Deque<String> aliases,  final String desc) {
+        return this.findAliasedMethod(aliases,  desc,  true);
     }
     
-    MethodNode findAliasedMethod(final Deque<String> aliases, final String desc) {
-        return this.findAliasedMethod(aliases, desc, false);
+    MethodNode findAliasedMethod(final Deque<String> aliases,  final String desc) {
+        return this.findAliasedMethod(aliases,  desc,  false);
     }
     
-    private MethodNode findAliasedMethod(final Deque<String> aliases, final String desc, final boolean includeMixinMethods) {
+    private MethodNode findAliasedMethod(final Deque<String> aliases,  final String desc,  final boolean includeMixinMethods) {
         final String alias = aliases.poll();
         if (alias == null) {
             return null;
@@ -139,10 +139,10 @@ class TargetClassContext extends ClassContext implements ITargetClassContext
                 }
             }
         }
-        return this.findAliasedMethod(aliases, desc);
+        return this.findAliasedMethod(aliases,  desc);
     }
     
-    FieldNode findAliasedField(final Deque<String> aliases, final String desc) {
+    FieldNode findAliasedField(final Deque<String> aliases,  final String desc) {
         final String alias = aliases.poll();
         if (alias == null) {
             return null;
@@ -152,7 +152,7 @@ class TargetClassContext extends ClassContext implements ITargetClassContext
                 return target;
             }
         }
-        return this.findAliasedField(aliases, desc);
+        return this.findAliasedField(aliases,  desc);
     }
     
     Target getTargetMethod(final MethodNode method) {
@@ -162,21 +162,21 @@ class TargetClassContext extends ClassContext implements ITargetClassContext
         final String targetName = method.name + method.desc;
         Target target = this.targetMethods.get(targetName);
         if (target == null) {
-            target = new Target(this.classNode, method);
-            this.targetMethods.put(targetName, target);
+            target = new Target(this.classNode,  method);
+            this.targetMethods.put(targetName,  target);
         }
         return target;
     }
     
-    String getUniqueName(final MethodNode method, final boolean preservePrefix) {
+    String getUniqueName(final MethodNode method,  final boolean preservePrefix) {
         final String uniqueIndex = Integer.toHexString(this.nextUniqueMethodIndex++);
         final String pattern = preservePrefix ? "%2$s_$md$%1$s$%3$s" : "md%s$%s$%s";
-        return String.format(pattern, this.sessionId.substring(30), method.name, uniqueIndex);
+        return String.format(pattern,  this.sessionId.substring(30),  method.name,  uniqueIndex);
     }
     
     String getUniqueName(final FieldNode field) {
         final String uniqueIndex = Integer.toHexString(this.nextUniqueFieldIndex++);
-        return String.format("fd%s$%s$%s", this.sessionId.substring(30), field.name, uniqueIndex);
+        return String.format("fd%s$%s$%s",  this.sessionId.substring(30),  field.name,  uniqueIndex);
     }
     
     void applyMixins() {
@@ -205,7 +205,7 @@ class TargetClassContext extends ClassContext implements ITargetClassContext
     private void checkMerges() {
         for (final MethodNode method : this.mixinMethods) {
             if (!method.name.startsWith("<")) {
-                TargetClassContext.logger.debug("Unexpected: Registered method {}{} in {} was not merged", new Object[] { method.name, method.desc, this });
+                TargetClassContext.logger.debug("Unexpected: Registered method {}{} in {} was not merged",  new Object[] { method.name,  method.desc,  this });
             }
         }
     }
@@ -214,17 +214,17 @@ class TargetClassContext extends ClassContext implements ITargetClassContext
         if (!this.env.getOption(MixinEnvironment.Option.DEBUG_VERBOSE)) {
             return;
         }
-        final AnnotationNode classDebugAnnotation = Annotations.getVisible(this.classNode, (Class<? extends Annotation>)Debug.class);
+        final AnnotationNode classDebugAnnotation = Annotations.getVisible(this.classNode,  (Class<? extends Annotation>)Debug.class);
         if (classDebugAnnotation != null) {
-            this.forceExport = Boolean.TRUE.equals(Annotations.getValue(classDebugAnnotation, "export"));
-            if (Boolean.TRUE.equals(Annotations.getValue(classDebugAnnotation, "print"))) {
-                Bytecode.textify(this.classNode, System.err);
+            this.forceExport = Boolean.TRUE.equals(Annotations.getValue(classDebugAnnotation,  "export"));
+            if (Boolean.TRUE.equals(Annotations.getValue(classDebugAnnotation,  "print"))) {
+                Bytecode.textify(this.classNode,  System.err);
             }
         }
         for (final MethodNode method : this.classNode.methods) {
-            final AnnotationNode methodDebugAnnotation = Annotations.getVisible(method, (Class<? extends Annotation>)Debug.class);
-            if (methodDebugAnnotation != null && Boolean.TRUE.equals(Annotations.getValue(methodDebugAnnotation, "print"))) {
-                Bytecode.textify(method, System.err);
+            final AnnotationNode methodDebugAnnotation = Annotations.getVisible(method,  (Class<? extends Annotation>)Debug.class);
+            if (methodDebugAnnotation != null && Boolean.TRUE.equals(Annotations.getValue(methodDebugAnnotation,  "print"))) {
+                Bytecode.textify(method,  System.err);
             }
         }
     }

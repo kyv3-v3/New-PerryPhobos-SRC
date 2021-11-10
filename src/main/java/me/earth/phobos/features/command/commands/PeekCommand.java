@@ -13,7 +13,7 @@ import java.util.*;
 public class PeekCommand extends Command
 {
     public PeekCommand() {
-        super("peek", new String[] { "<player>" });
+        super("peek",  new String[] { "<player>" });
     }
     
     public void execute(final String[] commands) {
@@ -23,16 +23,16 @@ public class PeekCommand extends Command
                 Command.sendMessage("§cYou need to hold a Shulker in your mainhand.");
                 return;
             }
-            ToolTips.displayInv(stack, null);
+            ToolTips.displayInv(stack,  null);
         }
         if (commands.length > 1) {
             if (ToolTips.getInstance().isOn() && ToolTips.getInstance().shulkerSpy.getValue()) {
-                for (final Map.Entry<EntityPlayer, ItemStack> entry : ToolTips.getInstance().spiedPlayers.entrySet()) {
+                for (final Map.Entry<EntityPlayer,  ItemStack> entry : ToolTips.getInstance().spiedPlayers.entrySet()) {
                     if (!entry.getKey().getName().equalsIgnoreCase(commands[0])) {
                         continue;
                     }
                     final ItemStack stack2 = entry.getValue();
-                    ToolTips.displayInv(stack2, entry.getKey().getName());
+                    ToolTips.displayInv(stack2,  entry.getKey().getName());
                     break;
                 }
             }

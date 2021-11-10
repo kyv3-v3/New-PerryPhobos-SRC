@@ -43,19 +43,19 @@ public class BlockLag extends Module
     private int blockSlot;
     
     public BlockLag() {
-        super("BlockLag", "Places a block where ur standing.", Module.Category.MOVEMENT, true, false, false);
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", (T)Mode.OBSIDIAN));
-        this.smartTp = (Setting<Boolean>)this.register(new Setting("SmartTP", (T)true));
-        this.tpMin = (Setting<Integer>)this.register(new Setting("TPMin", (T)2, (T)2, (T)10, v -> this.smartTp.getValue()));
-        this.tpMax = (Setting<Integer>)this.register(new Setting("TPMax", (T)3, (T)3, (T)40, v -> this.smartTp.getValue()));
-        this.noVoid = (Setting<Boolean>)this.register(new Setting("NoVoid", (T)false, v -> this.smartTp.getValue()));
-        this.tpHeight = (Setting<Integer>)this.register(new Setting("TPHeight", (T)2, (T)(-100), (T)100, v -> !this.smartTp.getValue()));
-        this.keepInside = (Setting<Boolean>)this.register(new Setting("Center", (T)true));
-        this.rotate = (Setting<Boolean>)this.register(new Setting("Rotate", (T)false));
-        this.sneaking = (Setting<Boolean>)this.register(new Setting("Sneak", (T)false));
-        this.offground = (Setting<Boolean>)this.register(new Setting("Offground", (T)false));
-        this.chat = (Setting<Boolean>)this.register(new Setting("Chat Msgs", (T)true));
-        this.tpdebug = (Setting<Boolean>)this.register(new Setting("Debug", (T)false, v -> this.chat.getValue() && this.smartTp.getValue()));
+        super("BlockLag",  "Places a block where ur standing.",  Module.Category.MOVEMENT,  true,  false,  false);
+        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.OBSIDIAN));
+        this.smartTp = (Setting<Boolean>)this.register(new Setting("SmartTP", true));
+        this.tpMin = (Setting<Integer>)this.register(new Setting("TPMin", 2, 2, 10,  v -> this.smartTp.getValue()));
+        this.tpMax = (Setting<Integer>)this.register(new Setting("TPMax", 3, 3, 40,  v -> this.smartTp.getValue()));
+        this.noVoid = (Setting<Boolean>)this.register(new Setting("NoVoid", false,  v -> this.smartTp.getValue()));
+        this.tpHeight = (Setting<Integer>)this.register(new Setting("TPHeight", 2, (-100), 100,  v -> !this.smartTp.getValue()));
+        this.keepInside = (Setting<Boolean>)this.register(new Setting("Center", true));
+        this.rotate = (Setting<Boolean>)this.register(new Setting("Rotate", false));
+        this.sneaking = (Setting<Boolean>)this.register(new Setting("Sneak", false));
+        this.offground = (Setting<Boolean>)this.register(new Setting("Offground", false));
+        this.chat = (Setting<Boolean>)this.register(new Setting("Chat Msgs", true));
+        this.tpdebug = (Setting<Boolean>)this.register(new Setting("Debug", false,  v -> this.chat.getValue() && this.smartTp.getValue()));
         BlockLag.INSTANCE = this;
     }
     
@@ -67,7 +67,7 @@ public class BlockLag extends Module
     }
     
     public void onEnable() {
-        this.burrowPos = new BlockPos(BlockLag.mc.player.posX, Math.ceil(BlockLag.mc.player.posY), BlockLag.mc.player.posZ);
+        this.burrowPos = new BlockPos(BlockLag.mc.player.posX,  Math.ceil(BlockLag.mc.player.posY),  BlockLag.mc.player.posZ);
         this.blockSlot = this.findBlockSlot();
         this.lastBlock = BlockLag.mc.player.inventory.currentItem;
         if (!this.doChecks() || this.blockSlot == -1) {
@@ -83,13 +83,13 @@ public class BlockLag extends Module
             if (z < 0.3 || z > 0.7) {
                 z = ((z > 0.5) ? 0.69 : 0.31);
             }
-            BlockLag.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Math.floor(BlockLag.mc.player.posX) + x, BlockLag.mc.player.posY, Math.floor(BlockLag.mc.player.posZ) + z, BlockLag.mc.player.onGround));
-            BlockLag.mc.player.setPosition(Math.floor(BlockLag.mc.player.posX) + x, BlockLag.mc.player.posY, Math.floor(BlockLag.mc.player.posZ) + z);
+            BlockLag.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Math.floor(BlockLag.mc.player.posX) + x,  BlockLag.mc.player.posY,  Math.floor(BlockLag.mc.player.posZ) + z,  BlockLag.mc.player.onGround));
+            BlockLag.mc.player.setPosition(Math.floor(BlockLag.mc.player.posX) + x,  BlockLag.mc.player.posY,  Math.floor(BlockLag.mc.player.posZ) + z);
         }
-        BlockLag.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(BlockLag.mc.player.posX, BlockLag.mc.player.posY + 0.41999998688698, BlockLag.mc.player.posZ, !this.offground.getValue()));
-        BlockLag.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(BlockLag.mc.player.posX, BlockLag.mc.player.posY + 0.7531999805211997, BlockLag.mc.player.posZ, !this.offground.getValue()));
-        BlockLag.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(BlockLag.mc.player.posX, BlockLag.mc.player.posY + 1.00133597911214, BlockLag.mc.player.posZ, !this.offground.getValue()));
-        BlockLag.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(BlockLag.mc.player.posX, BlockLag.mc.player.posY + 1.16610926093821, BlockLag.mc.player.posZ, !this.offground.getValue()));
+        BlockLag.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(BlockLag.mc.player.posX,  BlockLag.mc.player.posY + 0.41999998688698,  BlockLag.mc.player.posZ,  !this.offground.getValue()));
+        BlockLag.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(BlockLag.mc.player.posX,  BlockLag.mc.player.posY + 0.7531999805211997,  BlockLag.mc.player.posZ,  !this.offground.getValue()));
+        BlockLag.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(BlockLag.mc.player.posX,  BlockLag.mc.player.posY + 1.00133597911214,  BlockLag.mc.player.posZ,  !this.offground.getValue()));
+        BlockLag.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(BlockLag.mc.player.posX,  BlockLag.mc.player.posY + 1.16610926093821,  BlockLag.mc.player.posZ,  !this.offground.getValue()));
     }
     
     @SubscribeEvent
@@ -98,17 +98,17 @@ public class BlockLag extends Module
             return;
         }
         if (this.sneaking.getValue() && !BlockLag.mc.player.isSneaking()) {
-            BlockLag.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)BlockLag.mc.player, CPacketEntityAction.Action.START_SNEAKING));
+            BlockLag.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)BlockLag.mc.player,  CPacketEntityAction.Action.START_SNEAKING));
         }
         if (this.rotate.getValue()) {
-            final float[] angle = MathUtil.calcAngle(BlockLag.mc.player.getPositionEyes(BlockLag.mc.getRenderPartialTicks()), new Vec3d((double)(this.burrowPos.getX() + 0.5f), (double)(this.burrowPos.getY() + 0.5f), (double)(this.burrowPos.getZ() + 0.5f)));
-            Phobos.rotationManager.setPlayerRotations(angle[0], angle[1]);
+            final float[] angle = MathUtil.calcAngle(BlockLag.mc.player.getPositionEyes(BlockLag.mc.getRenderPartialTicks()),  new Vec3d((double)(this.burrowPos.getX() + 0.5f),  (double)(this.burrowPos.getY() + 0.5f),  (double)(this.burrowPos.getZ() + 0.5f)));
+            Phobos.rotationManager.setPlayerRotations(angle[0],  angle[1]);
         }
-        InventoryUtil.switchToHotbarSlot(this.blockSlot, false);
-        BlockUtil.placeBlock(this.burrowPos, (this.blockSlot == -2) ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, false, true, this.sneaking.getValue());
-        InventoryUtil.switchToHotbarSlot(this.lastBlock, false);
-        BlockLag.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(BlockLag.mc.player.posX, ((boolean)this.smartTp.getValue()) ? ((double)this.adaptiveTpHeight(false)) : (this.tpHeight.getValue() + BlockLag.mc.player.posY), BlockLag.mc.player.posZ, !this.offground.getValue()));
-        BlockLag.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)BlockLag.mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
+        InventoryUtil.switchToHotbarSlot(this.blockSlot,  false);
+        BlockUtil.placeBlock(this.burrowPos,  (this.blockSlot == -2) ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND,  false,  true,  this.sneaking.getValue());
+        InventoryUtil.switchToHotbarSlot(this.lastBlock,  false);
+        BlockLag.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(BlockLag.mc.player.posX,  ((boolean)this.smartTp.getValue()) ? ((double)this.adaptiveTpHeight(false)) : (this.tpHeight.getValue() + BlockLag.mc.player.posY),  BlockLag.mc.player.posZ,  !this.offground.getValue()));
+        BlockLag.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)BlockLag.mc.player,  CPacketEntityAction.Action.STOP_SNEAKING));
         this.disable();
     }
     
@@ -130,7 +130,7 @@ public class BlockLag extends Module
                 if (slot != -1) {
                     return slot;
                 }
-                if (InventoryUtil.isBlock(BlockLag.mc.player.getHeldItemOffhand().getItem(), block)) {
+                if (InventoryUtil.isBlock(BlockLag.mc.player.getHeldItemOffhand().getItem(),  block)) {
                     return -2;
                 }
                 continue;
@@ -154,8 +154,8 @@ public class BlockLag extends Module
     }
     
     private int adaptiveTpHeight(final boolean first) {
-        for (int max = (BlockLag.mc.player.dimension == -1 && this.noVoid.getValue() && this.tpMax.getValue() + this.burrowPos.getY() > 127) ? Math.abs(this.burrowPos.getY() - 127) : this.tpMax.getValue(), airblock = (this.noVoid.getValue() && this.tpMax.getValue() * -1 + this.burrowPos.getY() < 0) ? (this.burrowPos.getY() * -1) : (this.tpMax.getValue() * -1); airblock < max; ++airblock) {
-            if (Math.abs(airblock) >= this.tpMin.getValue() && BlockLag.mc.world.isAirBlock(this.burrowPos.offset(EnumFacing.UP, airblock)) && BlockLag.mc.world.isAirBlock(this.burrowPos.offset(EnumFacing.UP, airblock + 1))) {
+        for (int max = (BlockLag.mc.player.dimension == -1 && this.noVoid.getValue() && this.tpMax.getValue() + this.burrowPos.getY() > 127) ? Math.abs(this.burrowPos.getY() - 127) : this.tpMax.getValue(),  airblock = (this.noVoid.getValue() && this.tpMax.getValue() * -1 + this.burrowPos.getY() < 0) ? (this.burrowPos.getY() * -1) : (this.tpMax.getValue() * -1); airblock < max; ++airblock) {
+            if (Math.abs(airblock) >= this.tpMin.getValue() && BlockLag.mc.world.isAirBlock(this.burrowPos.offset(EnumFacing.UP,  airblock)) && BlockLag.mc.world.isAirBlock(this.burrowPos.offset(EnumFacing.UP,  airblock + 1))) {
                 if (this.tpdebug.getValue() && this.chat.getValue() && !first) {
                     Command.sendMessage(Integer.toString(airblock));
                 }
@@ -169,7 +169,7 @@ public class BlockLag extends Module
         if (fullNullCheck()) {
             return false;
         }
-        if (BlockUtil.isPositionPlaceable(this.burrowPos, false, false) < 1) {
+        if (BlockUtil.isPositionPlaceable(this.burrowPos,  false,  false) < 1) {
             return false;
         }
         if (this.smartTp.getValue() && this.adaptiveTpHeight(true) == 69420) {
@@ -178,13 +178,13 @@ public class BlockLag extends Module
             }
             return false;
         }
-        if (!BlockLag.mc.world.isAirBlock(this.burrowPos.offset(EnumFacing.UP, 2))) {
+        if (!BlockLag.mc.world.isAirBlock(this.burrowPos.offset(EnumFacing.UP,  2))) {
             if (this.chat.getValue()) {
                 Command.sendMessage("<" + this.getDisplayName() + "> §cNot enough room to jump.");
             }
             return false;
         }
-        for (final Entity entity : BlockUtil.mc.world.getEntitiesWithinAABB((Class)Entity.class, new AxisAlignedBB(this.burrowPos))) {
+        for (final Entity entity : BlockUtil.mc.world.getEntitiesWithinAABB((Class)Entity.class,  new AxisAlignedBB(this.burrowPos))) {
             if (!(entity instanceof EntityItem) && !(entity instanceof EntityXPOrb) && !(entity instanceof EntityArrow) && !(entity instanceof EntityPlayer)) {
                 if (entity instanceof EntityExpBottle) {
                     continue;
@@ -197,9 +197,9 @@ public class BlockLag extends Module
     
     private enum Mode
     {
-        OBSIDIAN((Class)BlockObsidian.class), 
-        ECHEST((Class)BlockEnderChest.class), 
-        FALLING((Class)BlockFalling.class), 
+        OBSIDIAN((Class)BlockObsidian.class),  
+        ECHEST((Class)BlockEnderChest.class),  
+        FALLING((Class)BlockFalling.class),  
         ENDROD((Class)BlockEndRod.class);
         
         private final Class priorityBlock;

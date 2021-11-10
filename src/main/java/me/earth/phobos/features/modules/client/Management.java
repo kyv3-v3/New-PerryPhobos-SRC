@@ -41,32 +41,32 @@ public class Management extends Module
     public Setting<Boolean> oneChunk;
     
     public Management() {
-        super("Management", "Client Management.", Category.CLIENT, false, false, true);
-        this.betterFrames = (Setting<Boolean>)this.register(new Setting("BetterMaxFPS", (T)false));
-        this.commandBracket = (Setting<String>)this.register(new Setting("Bracket", (T)"<"));
-        this.commandBracket2 = (Setting<String>)this.register(new Setting("Bracket2", (T)">"));
-        this.command = (Setting<String>)this.register(new Setting("Command", (T)"Phobos.eu"));
-        this.rainbowPrefix = (Setting<Boolean>)this.register(new Setting("RainbowPrefix", (T)false));
-        this.bracketColor = (Setting<TextUtil.Color>)this.register(new Setting("BColor", (T)TextUtil.Color.BLUE));
-        this.commandColor = (Setting<TextUtil.Color>)this.register(new Setting("CColor", (T)TextUtil.Color.BLUE));
-        this.betterFPS = (Setting<Integer>)this.register(new Setting("MaxFPS", (T)300, (T)30, (T)1000, v -> this.betterFrames.getValue()));
-        this.potions = (Setting<Boolean>)this.register(new Setting("Potions", (T)true));
-        this.textRadarUpdates = (Setting<Integer>)this.register(new Setting("TRUpdates", (T)500, (T)0, (T)1000));
-        this.respondTime = (Setting<Integer>)this.register(new Setting("SeverTime", (T)500, (T)0, (T)1000));
-        this.moduleListUpdates = (Setting<Integer>)this.register(new Setting("ALUpdates", (T)1000, (T)0, (T)1000));
-        this.holeRange = (Setting<Float>)this.register(new Setting("HoleRange", (T)6.0f, (T)1.0f, (T)256.0f));
-        this.holeUpdates = (Setting<Integer>)this.register(new Setting("HoleUpdates", (T)100, (T)0, (T)1000));
-        this.holeSync = (Setting<Integer>)this.register(new Setting("HoleSync", (T)10000, (T)1, (T)10000));
-        this.safety = (Setting<Boolean>)this.register(new Setting("SafetyPlayer", (T)false));
-        this.safetyCheck = (Setting<Integer>)this.register(new Setting("SafetyCheck", (T)50, (T)1, (T)150));
-        this.holeThread = (Setting<ThreadMode>)this.register(new Setting("HoleThread", (T)ThreadMode.WHILE));
-        this.speed = (Setting<Boolean>)this.register(new Setting("Speed", (T)true));
-        this.oneDot15 = (Setting<Boolean>)this.register(new Setting("1.15", (T)false));
-        this.tRadarInv = (Setting<Boolean>)this.register(new Setting("TRadarInv", (T)true));
-        this.unfocusedCpu = (Setting<Boolean>)this.register(new Setting("UnfocusedCPU", (T)false));
-        this.cpuFPS = (Setting<Integer>)this.register(new Setting("UnfocusedFPS", (T)60, (T)1, (T)60, v -> this.unfocusedCpu.getValue()));
-        this.baritoneTimeOut = (Setting<Integer>)this.register(new Setting("Baritone", (T)5, (T)1, (T)20));
-        this.oneChunk = (Setting<Boolean>)this.register(new Setting("OneChunk", (T)false));
+        super("Management",  "Client Management.",  Category.CLIENT,  false,  false,  true);
+        this.betterFrames = (Setting<Boolean>)this.register(new Setting("BetterMaxFPS", false));
+        this.commandBracket = (Setting<String>)this.register(new Setting("Bracket", "<"));
+        this.commandBracket2 = (Setting<String>)this.register(new Setting("Bracket2", ">"));
+        this.command = (Setting<String>)this.register(new Setting("Command", "Phobos.eu"));
+        this.rainbowPrefix = (Setting<Boolean>)this.register(new Setting("RainbowPrefix", false));
+        this.bracketColor = (Setting<TextUtil.Color>)this.register(new Setting("BColor", TextUtil.Color.BLUE));
+        this.commandColor = (Setting<TextUtil.Color>)this.register(new Setting("CColor", TextUtil.Color.BLUE));
+        this.betterFPS = (Setting<Integer>)this.register(new Setting("MaxFPS", 300, 30, 1000,  v -> this.betterFrames.getValue()));
+        this.potions = (Setting<Boolean>)this.register(new Setting("Potions", true));
+        this.textRadarUpdates = (Setting<Integer>)this.register(new Setting("TRUpdates", 500, 0, 1000));
+        this.respondTime = (Setting<Integer>)this.register(new Setting("SeverTime", 500, 0, 1000));
+        this.moduleListUpdates = (Setting<Integer>)this.register(new Setting("ALUpdates", 1000, 0, 1000));
+        this.holeRange = (Setting<Float>)this.register(new Setting("HoleRange", 6.0f, 1.0f, 256.0f));
+        this.holeUpdates = (Setting<Integer>)this.register(new Setting("HoleUpdates", 100, 0, 1000));
+        this.holeSync = (Setting<Integer>)this.register(new Setting("HoleSync", 10000, 1, 10000));
+        this.safety = (Setting<Boolean>)this.register(new Setting("SafetyPlayer", false));
+        this.safetyCheck = (Setting<Integer>)this.register(new Setting("SafetyCheck", 50, 1, 150));
+        this.holeThread = (Setting<ThreadMode>)this.register(new Setting("HoleThread", ThreadMode.WHILE));
+        this.speed = (Setting<Boolean>)this.register(new Setting("Speed", true));
+        this.oneDot15 = (Setting<Boolean>)this.register(new Setting("1.15", false));
+        this.tRadarInv = (Setting<Boolean>)this.register(new Setting("TRadarInv", true));
+        this.unfocusedCpu = (Setting<Boolean>)this.register(new Setting("UnfocusedCPU", false));
+        this.cpuFPS = (Setting<Integer>)this.register(new Setting("UnfocusedFPS", 60, 1, 60,  v -> this.unfocusedCpu.getValue()));
+        this.baritoneTimeOut = (Setting<Integer>)this.register(new Setting("Baritone", 5, 1, 20));
+        this.oneChunk = (Setting<Boolean>)this.register(new Setting("OneChunk", false));
         this.setInstance();
     }
     
@@ -104,16 +104,16 @@ public class Management extends Module
     public String getCommandMessage() {
         if (this.rainbowPrefix.getPlannedValue()) {
             final StringBuilder stringBuilder = new StringBuilder(this.getRawCommandMessage());
-            stringBuilder.insert(0, "§+");
+            stringBuilder.insert(0,  "§+");
             stringBuilder.append("§r");
             return stringBuilder.toString();
         }
-        return TextUtil.coloredString(this.commandBracket.getPlannedValue(), this.bracketColor.getPlannedValue()) + TextUtil.coloredString(this.command.getPlannedValue(), this.commandColor.getPlannedValue()) + TextUtil.coloredString(this.commandBracket2.getPlannedValue(), this.bracketColor.getPlannedValue());
+        return TextUtil.coloredString(this.commandBracket.getPlannedValue(),  this.bracketColor.getPlannedValue()) + TextUtil.coloredString(this.command.getPlannedValue(),  this.commandColor.getPlannedValue()) + TextUtil.coloredString(this.commandBracket2.getPlannedValue(),  this.bracketColor.getPlannedValue());
     }
     
     public String getRainbowCommandMessage() {
         final StringBuilder stringBuilder = new StringBuilder(this.getRawCommandMessage());
-        stringBuilder.insert(0, "§+");
+        stringBuilder.insert(0,  "§+");
         stringBuilder.append("§r");
         return stringBuilder.toString();
     }
@@ -128,8 +128,8 @@ public class Management extends Module
     
     public enum ThreadMode
     {
-        POOL, 
-        WHILE, 
+        POOL,  
+        WHILE,  
         NONE;
     }
 }

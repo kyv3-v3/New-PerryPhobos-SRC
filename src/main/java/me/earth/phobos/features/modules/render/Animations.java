@@ -20,10 +20,10 @@ public class Animations extends Module
     private final Setting<Boolean> slow;
     
     public Animations() {
-        super("Animations", "Change animations.", Module.Category.RENDER, true, false, false);
-        this.mode = (Setting<Mode>)this.register(new Setting("OldAnimations", (T)Mode.OneDotEight));
-        this.swing = (Setting<Swing>)this.register(new Setting("Swing", (T)Swing.Mainhand));
-        this.slow = (Setting<Boolean>)this.register(new Setting("Slow", (T)false));
+        super("Animations",  "Change animations.",  Module.Category.RENDER,  true,  false,  false);
+        this.mode = (Setting<Mode>)this.register(new Setting("OldAnimations", Mode.OneDotEight));
+        this.swing = (Setting<Swing>)this.register(new Setting("Swing", Swing.Mainhand));
+        this.slow = (Setting<Boolean>)this.register(new Setting("Slow", false));
     }
     
     public void onUpdate() {
@@ -41,7 +41,7 @@ public class Animations extends Module
     
     public void onEnable() {
         if (this.slow.getValue()) {
-            Animations.mc.player.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 255000));
+            Animations.mc.player.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE,  255000));
         }
     }
     
@@ -61,14 +61,14 @@ public class Animations extends Module
     
     private enum Mode
     {
-        Normal, 
+        Normal,  
         OneDotEight;
     }
     
     private enum Swing
     {
-        Mainhand, 
-        Offhand, 
+        Mainhand,  
+        Offhand,  
         Disable;
     }
 }

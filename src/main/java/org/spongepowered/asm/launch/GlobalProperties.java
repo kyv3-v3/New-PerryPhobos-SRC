@@ -16,7 +16,7 @@ public final class GlobalProperties
     
     private static IGlobalPropertyService getService() {
         if (GlobalProperties.service == null) {
-            final ServiceLoader<IGlobalPropertyService> serviceLoader = ServiceLoader.load(IGlobalPropertyService.class, GlobalProperties.class.getClassLoader());
+            final ServiceLoader<IGlobalPropertyService> serviceLoader = ServiceLoader.load(IGlobalPropertyService.class,  GlobalProperties.class.getClassLoader());
             GlobalProperties.service = serviceLoader.iterator().next();
         }
         return GlobalProperties.service;
@@ -26,16 +26,16 @@ public final class GlobalProperties
         return getService().getProperty(key);
     }
     
-    public static void put(final String key, final Object value) {
-        getService().setProperty(key, value);
+    public static void put(final String key,  final Object value) {
+        getService().setProperty(key,  value);
     }
     
-    public static <T> T get(final String key, final T defaultValue) {
-        return getService().getProperty(key, defaultValue);
+    public static <T> T get(final String key,  final T defaultValue) {
+        return getService().getProperty(key,  defaultValue);
     }
     
-    public static String getString(final String key, final String defaultValue) {
-        return getService().getPropertyString(key, defaultValue);
+    public static String getString(final String key,  final String defaultValue) {
+        return getService().getPropertyString(key,  defaultValue);
     }
     
     public static final class Keys

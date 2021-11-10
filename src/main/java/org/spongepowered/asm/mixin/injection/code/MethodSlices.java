@@ -13,19 +13,19 @@ import java.util.*;
 public final class MethodSlices
 {
     private final InjectionInfo info;
-    private final Map<String, MethodSlice> slices;
+    private final Map<String,  MethodSlice> slices;
     
     private MethodSlices(final InjectionInfo info) {
-        this.slices = new HashMap<String, MethodSlice>(4);
+        this.slices = new HashMap<String,  MethodSlice>(4);
         this.info = info;
     }
     
     private void add(final MethodSlice slice) {
         final String id = this.info.getSliceId(slice.getId());
         if (this.slices.containsKey(id)) {
-            throw new InvalidSliceException((ISliceContext)this.info, slice + " has a duplicate id, '" + id + "' was already defined");
+            throw new InvalidSliceException((ISliceContext)this.info,  slice + " has a duplicate id,  '" + id + "' was already defined");
         }
-        this.slices.put(id, slice);
+        this.slices.put(id,  slice);
     }
     
     public MethodSlice get(final String id) {
@@ -34,15 +34,15 @@ public final class MethodSlices
     
     @Override
     public String toString() {
-        return String.format("MethodSlices%s", this.slices.keySet());
+        return String.format("MethodSlices%s",  this.slices.keySet());
     }
     
     public static MethodSlices parse(final InjectionInfo info) {
         final MethodSlices slices = new MethodSlices(info);
         final AnnotationNode annotation = info.getAnnotation();
         if (annotation != null) {
-            for (final AnnotationNode node : Annotations.getValue(annotation, "slice", true)) {
-                final MethodSlice slice = MethodSlice.parse((ISliceContext)info, node);
+            for (final AnnotationNode node : Annotations.getValue(annotation,  "slice",  true)) {
+                final MethodSlice slice = MethodSlice.parse((ISliceContext)info,  node);
                 slices.add(slice);
             }
         }

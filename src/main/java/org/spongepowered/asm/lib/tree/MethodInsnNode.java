@@ -15,11 +15,11 @@ public class MethodInsnNode extends AbstractInsnNode
     public boolean itf;
     
     @Deprecated
-    public MethodInsnNode(final int opcode, final String owner, final String name, final String desc) {
-        this(opcode, owner, name, desc, opcode == 185);
+    public MethodInsnNode(final int opcode,  final String owner,  final String name,  final String desc) {
+        this(opcode,  owner,  name,  desc,  opcode == 185);
     }
     
-    public MethodInsnNode(final int opcode, final String owner, final String name, final String desc, final boolean itf) {
+    public MethodInsnNode(final int opcode,  final String owner,  final String name,  final String desc,  final boolean itf) {
         super(opcode);
         this.owner = owner;
         this.name = name;
@@ -36,11 +36,11 @@ public class MethodInsnNode extends AbstractInsnNode
     }
     
     public void accept(final MethodVisitor mv) {
-        mv.visitMethodInsn(this.opcode, this.owner, this.name, this.desc, this.itf);
+        mv.visitMethodInsn(this.opcode,  this.owner,  this.name,  this.desc,  this.itf);
         this.acceptAnnotations(mv);
     }
     
-    public AbstractInsnNode clone(final Map<LabelNode, LabelNode> labels) {
-        return new MethodInsnNode(this.opcode, this.owner, this.name, this.desc, this.itf);
+    public AbstractInsnNode clone(final Map<LabelNode,  LabelNode> labels) {
+        return new MethodInsnNode(this.opcode,  this.owner,  this.name,  this.desc,  this.itf);
     }
 }

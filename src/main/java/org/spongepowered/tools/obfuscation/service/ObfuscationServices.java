@@ -17,7 +17,7 @@ public final class ObfuscationServices
     
     private ObfuscationServices() {
         this.services = new HashSet<IObfuscationService>();
-        this.serviceLoader = ServiceLoader.load(IObfuscationService.class, this.getClass().getClassLoader());
+        this.serviceLoader = ServiceLoader.load(IObfuscationService.class,  this.getClass().getClassLoader());
     }
     
     public static ObfuscationServices getInstance() {
@@ -39,8 +39,8 @@ public final class ObfuscationServices
                     }
                     for (final ObfuscationTypeDescriptor obfType : obfTypes) {
                         try {
-                            final ObfuscationType type = ObfuscationType.create(obfType, ap);
-                            ap.printMessage(Diagnostic.Kind.NOTE, (CharSequence)(serviceName + " supports type: \"" + type + "\""));
+                            final ObfuscationType type = ObfuscationType.create(obfType,  ap);
+                            ap.printMessage(Diagnostic.Kind.NOTE,  (CharSequence)(serviceName + " supports type: \"" + type + "\""));
                         }
                         catch (Exception ex) {
                             ex.printStackTrace();
@@ -50,7 +50,7 @@ public final class ObfuscationServices
             }
         }
         catch (ServiceConfigurationError serviceError) {
-            ap.printMessage(Diagnostic.Kind.ERROR, (CharSequence)(serviceError.getClass().getSimpleName() + ": " + serviceError.getMessage()));
+            ap.printMessage(Diagnostic.Kind.ERROR,  (CharSequence)(serviceError.getClass().getSimpleName() + ": " + serviceError.getMessage()));
             serviceError.printStackTrace();
         }
     }

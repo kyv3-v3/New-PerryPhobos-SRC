@@ -14,7 +14,7 @@ public class InvokeDynamicInsnNode extends AbstractInsnNode
     public Handle bsm;
     public Object[] bsmArgs;
     
-    public InvokeDynamicInsnNode(final String name, final String desc, final Handle bsm, final Object... bsmArgs) {
+    public InvokeDynamicInsnNode(final String name,  final String desc,  final Handle bsm,  final Object... bsmArgs) {
         super(186);
         this.name = name;
         this.desc = desc;
@@ -27,11 +27,11 @@ public class InvokeDynamicInsnNode extends AbstractInsnNode
     }
     
     public void accept(final MethodVisitor mv) {
-        mv.visitInvokeDynamicInsn(this.name, this.desc, this.bsm, this.bsmArgs);
+        mv.visitInvokeDynamicInsn(this.name,  this.desc,  this.bsm,  this.bsmArgs);
         this.acceptAnnotations(mv);
     }
     
-    public AbstractInsnNode clone(final Map<LabelNode, LabelNode> labels) {
-        return new InvokeDynamicInsnNode(this.name, this.desc, this.bsm, this.bsmArgs).cloneAnnotations((AbstractInsnNode)this);
+    public AbstractInsnNode clone(final Map<LabelNode,  LabelNode> labels) {
+        return new InvokeDynamicInsnNode(this.name,  this.desc,  this.bsm,  this.bsmArgs).cloneAnnotations((AbstractInsnNode)this);
     }
 }

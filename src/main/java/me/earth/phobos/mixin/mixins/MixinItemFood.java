@@ -15,8 +15,8 @@ import org.spongepowered.asm.mixin.injection.*;
 @Mixin({ ItemFood.class })
 public class MixinItemFood
 {
-    @Inject(method = { "onItemUseFinish" }, at = { @At("RETURN") }, cancellable = true)
-    public void onItemUseFinishHook(final ItemStack stack, final World worldIn, final EntityLivingBase entityLiving, final CallbackInfoReturnable<ItemStack> info) {
-        Offhand.getInstance().onItemFinish(stack, entityLiving);
+    @Inject(method = { "onItemUseFinish" },  at = { @At("RETURN") },  cancellable = true)
+    public void onItemUseFinishHook(final ItemStack stack,  final World worldIn,  final EntityLivingBase entityLiving,  final CallbackInfoReturnable<ItemStack> info) {
+        Offhand.getInstance().onItemFinish(stack,  entityLiving);
     }
 }

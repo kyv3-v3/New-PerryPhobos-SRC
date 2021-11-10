@@ -21,8 +21,8 @@ public class CustomFont extends CFont
     protected DynamicTexture texItalic;
     protected DynamicTexture texItalicBold;
     
-    public CustomFont(final Font font, final boolean antiAlias, final boolean fractionalMetrics) {
-        super(font, antiAlias, fractionalMetrics);
+    public CustomFont(final Font font,  final boolean antiAlias,  final boolean fractionalMetrics) {
+        super(font,  antiAlias,  fractionalMetrics);
         this.colorCode = new int[32];
         this.boldChars = new CFont.CharData[256];
         this.italicChars = new CFont.CharData[256];
@@ -31,26 +31,26 @@ public class CustomFont extends CFont
         this.setupBoldItalicIDs();
     }
     
-    public float drawStringWithShadow(final String text, final double x, final double y, final int color) {
-        final float shadowWidth = this.drawString(text, x + 1.0, y + 1.0, color, true);
-        return Math.max(shadowWidth, this.drawString(text, x, y, color, false));
+    public float drawStringWithShadow(final String text,  final double x,  final double y,  final int color) {
+        final float shadowWidth = this.drawString(text,  x + 1.0,  y + 1.0,  color,  true);
+        return Math.max(shadowWidth,  this.drawString(text,  x,  y,  color,  false));
     }
     
-    public float drawString(final String text, final float x, final float y, final int color) {
-        return this.drawString(text, x, y, color, false);
+    public float drawString(final String text,  final float x,  final float y,  final int color) {
+        return this.drawString(text,  x,  y,  color,  false);
     }
     
-    public float drawCenteredString(final String text, final float x, final float y, final int color) {
-        return this.drawString(text, x - this.getStringWidth(text) / 2, y, color);
+    public float drawCenteredString(final String text,  final float x,  final float y,  final int color) {
+        return this.drawString(text,  x - this.getStringWidth(text) / 2,  y,  color);
     }
     
-    public float drawCenteredStringWithShadow(final String text, final float x, final float y, final int color) {
-        this.drawString(text, x - this.getStringWidth(text) / 2 + 1.0, y + 1.0, color, true);
-        return this.drawString(text, x - this.getStringWidth(text) / 2, y, color);
+    public float drawCenteredStringWithShadow(final String text,  final float x,  final float y,  final int color) {
+        this.drawString(text,  x - this.getStringWidth(text) / 2 + 1.0,  y + 1.0,  color,  true);
+        return this.drawString(text,  x - this.getStringWidth(text) / 2,  y,  color);
     }
     
-    public float drawString(final String textIn, final double xI, final double yI, int color, final boolean shadow) {
-        final String text = (Media.getInstance().isOn() && Media.getInstance().changeOwn.getValue()) ? textIn.replace(Media.getPlayerName(), Media.getInstance().ownName.getValue()) : textIn;
+    public float drawString(final String textIn,  final double xI,  final double yI,  int color,  final boolean shadow) {
+        final String text = (Media.getInstance().isOn() && Media.getInstance().changeOwn.getValue()) ? textIn.replace(Media.getPlayerName(),  Media.getInstance().ownName.getValue()) : textIn;
         double x = xI;
         double y = yI;
         if (me.earth.phobos.features.modules.client.CustomFont.getInstance().isOn() && !me.earth.phobos.features.modules.client.CustomFont.getInstance().shadow.getValue() && shadow) {
@@ -79,14 +79,14 @@ public class CustomFont extends CFont
         x *= 2.0;
         y = (y - 3.0) * 2.0;
         GL11.glPushMatrix();
-        GlStateManager.scale(0.5, 0.5, 0.5);
+        GlStateManager.scale(0.5,  0.5,  0.5);
         GlStateManager.enableBlend();
-        GlStateManager.blendFunc(770, 771);
-        GlStateManager.color((color >> 16 & 0xFF) / 255.0f, (color >> 8 & 0xFF) / 255.0f, (color & 0xFF) / 255.0f, alpha);
+        GlStateManager.blendFunc(770,  771);
+        GlStateManager.color((color >> 16 & 0xFF) / 255.0f,  (color >> 8 & 0xFF) / 255.0f,  (color & 0xFF) / 255.0f,  alpha);
         final int size = text.length();
         GlStateManager.enableTexture2D();
         GlStateManager.bindTexture(this.tex.getGlTextureId());
-        GL11.glBindTexture(3553, this.tex.getGlTextureId());
+        GL11.glBindTexture(3553,  this.tex.getGlTextureId());
         for (int i = 0; i < size; ++i) {
             final char character = text.charAt(i);
             if (character == '§') {
@@ -111,7 +111,7 @@ public class CustomFont extends CFont
                         colorIndex += 16;
                     }
                     final int colorcode = this.colorCode[colorIndex];
-                    GlStateManager.color((colorcode >> 16 & 0xFF) / 255.0f, (colorcode >> 8 & 0xFF) / 255.0f, (colorcode & 0xFF) / 255.0f, alpha);
+                    GlStateManager.color((colorcode >> 16 & 0xFF) / 255.0f,  (colorcode >> 8 & 0xFF) / 255.0f,  (colorcode & 0xFF) / 255.0f,  alpha);
                 }
                 else if (colorIndex == 17) {
                     bold = true;
@@ -146,7 +146,7 @@ public class CustomFont extends CFont
                     italic = false;
                     underline = false;
                     strikethrough = false;
-                    GlStateManager.color((color >> 16 & 0xFF) / 255.0f, (color >> 8 & 0xFF) / 255.0f, (color & 0xFF) / 255.0f, alpha);
+                    GlStateManager.color((color >> 16 & 0xFF) / 255.0f,  (color >> 8 & 0xFF) / 255.0f,  (color & 0xFF) / 255.0f,  alpha);
                     GlStateManager.bindTexture(this.tex.getGlTextureId());
                     currentData = this.charData;
                 }
@@ -154,18 +154,18 @@ public class CustomFont extends CFont
             }
             else if (character < currentData.length) {
                 GL11.glBegin(4);
-                this.drawChar(currentData, character, (float)x, (float)y);
+                this.drawChar(currentData,  character,  (float)x,  (float)y);
                 GL11.glEnd();
                 if (strikethrough) {
-                    this.drawLine(x, y + currentData[character].height / 2, x + currentData[character].width - 8.0, y + currentData[character].height / 2);
+                    this.drawLine(x,  y + currentData[character].height / 2,  x + currentData[character].width - 8.0,  y + currentData[character].height / 2);
                 }
                 if (underline) {
-                    this.drawLine(x, y + currentData[character].height - 2.0, x + currentData[character].width - 8.0, y + currentData[character].height - 2.0);
+                    this.drawLine(x,  y + currentData[character].height - 2.0,  x + currentData[character].width - 8.0,  y + currentData[character].height - 2.0);
                 }
                 x += currentData[character].width - 8 + this.charOffset;
             }
         }
-        GL11.glHint(3155, 4352);
+        GL11.glHint(3155,  4352);
         GL11.glPopMatrix();
         return (float)x / 2.0f;
     }
@@ -176,7 +176,7 @@ public class CustomFont extends CFont
         }
         int width = 0;
         final CFont.CharData[] currentData = this.charData;
-        for (int size = text.length(), i = 0; i < size; ++i) {
+        for (int size = text.length(),  i = 0; i < size; ++i) {
             final char character = text.charAt(i);
             if (character == '§') {
                 ++i;
@@ -204,22 +204,22 @@ public class CustomFont extends CFont
     }
     
     private void setupBoldItalicIDs() {
-        this.texBold = this.setupTexture(this.font.deriveFont(1), this.antiAlias, this.fractionalMetrics, this.boldChars);
-        this.texItalic = this.setupTexture(this.font.deriveFont(2), this.antiAlias, this.fractionalMetrics, this.italicChars);
-        this.texItalicBold = this.setupTexture(this.font.deriveFont(3), this.antiAlias, this.fractionalMetrics, this.boldItalicChars);
+        this.texBold = this.setupTexture(this.font.deriveFont(1),  this.antiAlias,  this.fractionalMetrics,  this.boldChars);
+        this.texItalic = this.setupTexture(this.font.deriveFont(2),  this.antiAlias,  this.fractionalMetrics,  this.italicChars);
+        this.texItalicBold = this.setupTexture(this.font.deriveFont(3),  this.antiAlias,  this.fractionalMetrics,  this.boldItalicChars);
     }
     
-    private void drawLine(final double x, final double y, final double x1, final double y1) {
+    private void drawLine(final double x,  final double y,  final double x1,  final double y1) {
         GL11.glDisable(3553);
         GL11.glLineWidth(1.0f);
         GL11.glBegin(1);
-        GL11.glVertex2d(x, y);
-        GL11.glVertex2d(x1, y1);
+        GL11.glVertex2d(x,  y);
+        GL11.glVertex2d(x1,  y1);
         GL11.glEnd();
         GL11.glEnable(3553);
     }
     
-    public List<String> wrapWords(final String text, final double width) {
+    public List<String> wrapWords(final String text,  final double width) {
         final ArrayList<String> finalWords = new ArrayList<String>();
         if (this.getStringWidth(text) > width) {
             final String[] words = text.split(" ");
@@ -248,7 +248,7 @@ public class CustomFont extends CFont
                     finalWords.add("§" + lastColorCode + currentWord + " ");
                 }
                 else {
-                    finalWords.addAll(this.formatString(currentWord, width));
+                    finalWords.addAll(this.formatString(currentWord,  width));
                 }
             }
         }
@@ -258,7 +258,7 @@ public class CustomFont extends CFont
         return finalWords;
     }
     
-    public List<String> formatString(final String string, final double width) {
+    public List<String> formatString(final String string,  final double width) {
         final ArrayList<String> finalWords = new ArrayList<String>();
         String currentWord = "";
         char lastColorCode = '\uffff';

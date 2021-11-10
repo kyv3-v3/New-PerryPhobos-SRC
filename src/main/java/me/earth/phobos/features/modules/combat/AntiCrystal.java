@@ -48,26 +48,26 @@ public class AntiCrystal extends Module
     private Entity breakTarget;
     
     public AntiCrystal() {
-        super("AntiCrystal", "Depending on you and ur opponents ping if urs is lower u can out place their ca to have essentially a godmode.", Category.COMBAT, true, false, false);
+        super("AntiCrystal",  "Depending on you and ur opponents ping if urs is lower u can out place their ca to have essentially a godmode.",  Category.COMBAT,  true,  false,  false);
         this.targets = new ArrayList<BlockPos>();
         this.timer = new TimerUtil();
         this.breakTimer = new TimerUtil();
         this.checkTimer = new TimerUtil();
-        this.range = (Setting<Float>)this.register(new Setting("Range", (T)6.0f, (T)0.0f, (T)10.0f));
-        this.wallsRange = (Setting<Float>)this.register(new Setting("WallsRange", (T)3.5f, (T)0.0f, (T)10.0f));
-        this.minDmg = (Setting<Float>)this.register(new Setting("MinDmg", (T)6.0f, (T)0.0f, (T)40.0f));
-        this.selfDmg = (Setting<Float>)this.register(new Setting("SelfDmg", (T)2.0f, (T)0.0f, (T)10.0f));
-        this.placeDelay = (Setting<Integer>)this.register(new Setting("PlaceDelay", (T)0, (T)0, (T)500));
-        this.breakDelay = (Setting<Integer>)this.register(new Setting("BreakDelay", (T)0, (T)0, (T)500));
-        this.checkDelay = (Setting<Integer>)this.register(new Setting("CheckDelay", (T)0, (T)0, (T)500));
-        this.wasteAmount = (Setting<Integer>)this.register(new Setting("WasteAmount", (T)1, (T)1, (T)5));
-        this.switcher = (Setting<Switch>)this.register(new Setting("Switch", (T)Switch.NONE));
-        this.mode = (Setting<Updates>)this.register(new Setting("Updates", (T)Updates.TICK));
-        this.rotate = (Setting<Boolean>)this.register(new Setting("Rotate", (T)true));
-        this.packet = (Setting<Boolean>)this.register(new Setting("Packet", (T)true));
-        this.instant = (Setting<Boolean>)this.register(new Setting("Predict", (T)false));
-        this.resetBreakTimer = (Setting<Boolean>)this.register(new Setting("ResetBreak", (T)true));
-        this.rotations = (Setting<Integer>)this.register(new Setting("Spoofs", (T)1, (T)1, (T)20));
+        this.range = (Setting<Float>)this.register(new Setting("Range", 6.0f, 0.0f, 10.0f));
+        this.wallsRange = (Setting<Float>)this.register(new Setting("WallsRange", 3.5f, 0.0f, 10.0f));
+        this.minDmg = (Setting<Float>)this.register(new Setting("MinDmg", 6.0f, 0.0f, 40.0f));
+        this.selfDmg = (Setting<Float>)this.register(new Setting("SelfDmg", 2.0f, 0.0f, 10.0f));
+        this.placeDelay = (Setting<Integer>)this.register(new Setting("PlaceDelay", 0, 0, 500));
+        this.breakDelay = (Setting<Integer>)this.register(new Setting("BreakDelay", 0, 0, 500));
+        this.checkDelay = (Setting<Integer>)this.register(new Setting("CheckDelay", 0, 0, 500));
+        this.wasteAmount = (Setting<Integer>)this.register(new Setting("WasteAmount", 1, 1, 5));
+        this.switcher = (Setting<Switch>)this.register(new Setting("Switch", Switch.NONE));
+        this.mode = (Setting<Updates>)this.register(new Setting("Updates", Updates.TICK));
+        this.rotate = (Setting<Boolean>)this.register(new Setting("Rotate", true));
+        this.packet = (Setting<Boolean>)this.register(new Setting("Packet", true));
+        this.instant = (Setting<Boolean>)this.register(new Setting("Predict", false));
+        this.resetBreakTimer = (Setting<Boolean>)this.register(new Setting("ResetBreak", true));
+        this.rotations = (Setting<Integer>)this.register(new Setting("Spoofs", 1, 1, 20));
     }
     
     @Override
@@ -81,7 +81,7 @@ public class AntiCrystal extends Module
         for (final Entity crystal : AntiCrystal.mc.world.loadedEntityList) {
             if (crystal instanceof EntityEnderCrystal && AntiCrystal.mc.player.getDistanceSq(crystal) <= 169.0) {
                 final float damage;
-                if ((damage = DamageUtil.calculateDamage(crystal, (Entity)AntiCrystal.mc.player)) < this.minDmg.getValue()) {
+                if ((damage = DamageUtil.calculateDamage(crystal,  (Entity)AntiCrystal.mc.player)) < this.minDmg.getValue()) {
                     continue;
                 }
                 if (bestcrystal == null) {
@@ -103,7 +103,7 @@ public class AntiCrystal extends Module
     private int getSafetyCrystals(final Entity deadlyCrystal) {
         int count = 0;
         for (final Entity entity : AntiCrystal.mc.world.loadedEntityList) {
-            if (!(entity instanceof EntityEnderCrystal) && DamageUtil.calculateDamage(entity, (Entity)AntiCrystal.mc.player) <= 2.0f) {
+            if (!(entity instanceof EntityEnderCrystal) && DamageUtil.calculateDamage(entity,  (Entity)AntiCrystal.mc.player) <= 2.0f) {
                 if (deadlyCrystal.getDistanceSq(entity) > 144.0) {
                     continue;
                 }
@@ -117,9 +117,9 @@ public class AntiCrystal extends Module
         BlockPos closestPos = null;
         float smallestDamage = 10.0f;
         for (final BlockPos pos : BlockUtil.possiblePlacePositions(this.range.getValue())) {
-            final float damage = DamageUtil.calculateDamage(pos, (Entity)AntiCrystal.mc.player);
+            final float damage = DamageUtil.calculateDamage(pos,  (Entity)AntiCrystal.mc.player);
             if (damage <= 2.0f && deadlyCrystal.getDistanceSq(pos) <= 144.0) {
-                if (AntiCrystal.mc.player.getDistanceSq(pos) >= MathUtil.square(this.wallsRange.getValue()) && BlockUtil.rayTracePlaceCheck(pos, true, 1.0f)) {
+                if (AntiCrystal.mc.player.getDistanceSq(pos) >= MathUtil.square(this.wallsRange.getValue()) && BlockUtil.rayTracePlaceCheck(pos,  true,  1.0f)) {
                     continue;
                 }
                 if (closestPos == null) {
@@ -159,16 +159,16 @@ public class AntiCrystal extends Module
         }
     }
     
-    @SubscribeEvent(priority = EventPriority.HIGH, receiveCanceled = true)
+    @SubscribeEvent(priority = EventPriority.HIGH,  receiveCanceled = true)
     public void onPacketReceive(final PacketEvent.Receive event) {
         if (fullNullCheck()) {
             return;
         }
         if (event.getPacket() instanceof SPacketSpawnObject && this.instant.getValue()) {
             final SPacketSpawnObject packet2 = (SPacketSpawnObject)event.getPacket();
-            final BlockPos pos = new BlockPos(packet2.getX(), packet2.getY(), packet2.getZ());
+            final BlockPos pos = new BlockPos(packet2.getX(),  packet2.getY(),  packet2.getZ());
             if (packet2.getType() == 51 && this.targets.contains(pos.down()) && AutoCrystal.mc.player.getDistanceSq(pos) <= MathUtil.square(this.range.getValue())) {
-                this.attackCrystalPredict(packet2.getEntityID(), pos);
+                this.attackCrystalPredict(packet2.getEntityID(),  pos);
                 this.targets.clear();
             }
         }
@@ -218,8 +218,8 @@ public class AntiCrystal extends Module
         float smallestDamage = 10.0f;
         for (final Entity entity : AntiCrystal.mc.world.loadedEntityList) {
             final float damage;
-            if (entity instanceof EntityEnderCrystal && (damage = DamageUtil.calculateDamage(entity, (Entity)AntiCrystal.mc.player)) <= this.selfDmg.getValue() && entity.getDistanceSq(deadlyCrystal) <= 144.0) {
-                if (AntiCrystal.mc.player.getDistanceSq(entity) > MathUtil.square(this.wallsRange.getValue()) && EntityUtil.rayTraceHitCheck(entity, true)) {
+            if (entity instanceof EntityEnderCrystal && (damage = DamageUtil.calculateDamage(entity,  (Entity)AntiCrystal.mc.player)) <= this.selfDmg.getValue() && entity.getDistanceSq(deadlyCrystal) <= 144.0) {
+                if (AntiCrystal.mc.player.getDistanceSq(entity) > MathUtil.square(this.wallsRange.getValue()) && EntityUtil.rayTraceHitCheck(entity,  true)) {
                     continue;
                 }
                 if (smallestCrystal == null) {
@@ -251,7 +251,7 @@ public class AntiCrystal extends Module
             }
             if (!this.targets.isEmpty()) {
                 this.rotateToPos(this.targets.get(this.targets.size() - 1));
-                BlockUtil.placeCrystalOnBlock(this.targets.get(this.targets.size() - 1), offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, true, true, this.switcher.getValue() == Switch.SILENT);
+                BlockUtil.placeCrystalOnBlock(this.targets.get(this.targets.size() - 1),  offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND,  true,  true,  this.switcher.getValue() == Switch.SILENT);
             }
             this.timer.reset();
         }
@@ -275,13 +275,13 @@ public class AntiCrystal extends Module
     private void breakCrystal() {
         if (this.breakTimer.passedMs(this.breakDelay.getValue()) && this.breakTarget != null && DamageUtil.canBreakWeakness((EntityPlayer)AntiCrystal.mc.player)) {
             this.rotateTo(this.breakTarget);
-            EntityUtil.attackEntity(this.breakTarget, this.packet.getValue(), true);
+            EntityUtil.attackEntity(this.breakTarget,  this.packet.getValue(),  true);
             this.breakTimer.reset();
             this.targets.clear();
         }
     }
     
-    private void attackCrystalPredict(final int entityID, final BlockPos pos) {
+    private void attackCrystalPredict(final int entityID,  final BlockPos pos) {
         final CPacketUseEntity attackPacket = new CPacketUseEntity();
         attackPacket.entityId = entityID;
         attackPacket.action = CPacketUseEntity.Action.ATTACK;
@@ -294,7 +294,7 @@ public class AntiCrystal extends Module
     
     private void rotateTo(final Entity entity) {
         if (this.rotate.getValue()) {
-            final float[] angle = MathUtil.calcAngle(AntiCrystal.mc.player.getPositionEyes(AntiCrystal.mc.getRenderPartialTicks()), entity.getPositionVector());
+            final float[] angle = MathUtil.calcAngle(AntiCrystal.mc.player.getPositionEyes(AntiCrystal.mc.getRenderPartialTicks()),  entity.getPositionVector());
             this.yaw = angle[0];
             this.pitch = angle[1];
             this.rotating = true;
@@ -303,7 +303,7 @@ public class AntiCrystal extends Module
     
     private void rotateToPos(final BlockPos pos) {
         if (this.rotate.getValue()) {
-            final float[] angle = MathUtil.calcAngle(AntiCrystal.mc.player.getPositionEyes(AntiCrystal.mc.getRenderPartialTicks()), new Vec3d((double)(pos.getX() + 0.5f), (double)(pos.getY() - 0.5f), (double)(pos.getZ() + 0.5f)));
+            final float[] angle = MathUtil.calcAngle(AntiCrystal.mc.player.getPositionEyes(AntiCrystal.mc.getRenderPartialTicks()),  new Vec3d((double)(pos.getX() + 0.5f),  (double)(pos.getY() - 0.5f),  (double)(pos.getZ() + 0.5f)));
             this.yaw = angle[0];
             this.pitch = angle[1];
             this.rotating = true;
@@ -312,15 +312,15 @@ public class AntiCrystal extends Module
     
     public enum Switch
     {
-        NONE, 
-        SILENT, 
+        NONE,  
+        SILENT,  
         NORMAL;
     }
     
     public enum Updates
     {
-        TICK, 
-        UPDATE, 
+        TICK,  
+        UPDATE,  
         WALKING;
     }
 }

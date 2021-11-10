@@ -16,18 +16,18 @@ public class SimpleVerifier extends BasicVerifier
     private ClassLoader loader;
     
     public SimpleVerifier() {
-        this(null, null, false);
+        this(null,  null,  false);
     }
     
-    public SimpleVerifier(final Type currentClass, final Type currentSuperClass, final boolean isInterface) {
-        this(currentClass, currentSuperClass, null, isInterface);
+    public SimpleVerifier(final Type currentClass,  final Type currentSuperClass,  final boolean isInterface) {
+        this(currentClass,  currentSuperClass,  null,  isInterface);
     }
     
-    public SimpleVerifier(final Type currentClass, final Type currentSuperClass, final List<Type> currentClassInterfaces, final boolean isInterface) {
-        this(327680, currentClass, currentSuperClass, currentClassInterfaces, isInterface);
+    public SimpleVerifier(final Type currentClass,  final Type currentSuperClass,  final List<Type> currentClassInterfaces,  final boolean isInterface) {
+        this(327680,  currentClass,  currentSuperClass,  currentClassInterfaces,  isInterface);
     }
     
-    protected SimpleVerifier(final int api, final Type currentClass, final Type currentSuperClass, final List<Type> currentClassInterfaces, final boolean isInterface) {
+    protected SimpleVerifier(final int api,  final Type currentClass,  final Type currentSuperClass,  final List<Type> currentClassInterfaces,  final boolean isInterface) {
         super(api);
         this.loader = this.getClass().getClassLoader();
         this.currentClass = currentClass;
@@ -90,7 +90,7 @@ public class SimpleVerifier extends BasicVerifier
         throw new Error("Internal error");
     }
     
-    protected boolean isSubTypeOf(final BasicValue value, final BasicValue expected) {
+    protected boolean isSubTypeOf(final BasicValue value,  final BasicValue expected) {
         final Type expectedType = expected.getType();
         final Type type = value.getType();
         switch (expectedType.getSort()) {
@@ -102,7 +102,7 @@ public class SimpleVerifier extends BasicVerifier
             }
             case 9:
             case 10: {
-                return "Lnull;".equals(type.getDescriptor()) || ((type.getSort() == 10 || type.getSort() == 9) && this.isAssignableFrom(expectedType, type));
+                return "Lnull;".equals(type.getDescriptor()) || ((type.getSort() == 10 || type.getSort() == 9) && this.isAssignableFrom(expectedType,  type));
             }
             default: {
                 throw new Error("Internal error");
@@ -110,7 +110,7 @@ public class SimpleVerifier extends BasicVerifier
         }
     }
     
-    public BasicValue merge(final BasicValue v, final BasicValue w) {
+    public BasicValue merge(final BasicValue v,  final BasicValue w) {
         if (v.equals((Object)w)) {
             return v;
         }
@@ -125,15 +125,15 @@ public class SimpleVerifier extends BasicVerifier
         if ("Lnull;".equals(u.getDescriptor())) {
             return v;
         }
-        if (this.isAssignableFrom(t, u)) {
+        if (this.isAssignableFrom(t,  u)) {
             return v;
         }
-        if (this.isAssignableFrom(u, t)) {
+        if (this.isAssignableFrom(u,  t)) {
             return w;
         }
         while (t != null && !this.isInterface(t)) {
             t = this.getSuperClass(t);
-            if (this.isAssignableFrom(t, u)) {
+            if (this.isAssignableFrom(t,  u)) {
                 return this.newValue(t);
             }
         }
@@ -155,7 +155,7 @@ public class SimpleVerifier extends BasicVerifier
         return (c == null) ? null : Type.getType(c);
     }
     
-    protected boolean isAssignableFrom(final Type t, final Type u) {
+    protected boolean isAssignableFrom(final Type t,  final Type u) {
         if (t.equals(u)) {
             return true;
         }
@@ -166,7 +166,7 @@ public class SimpleVerifier extends BasicVerifier
             if (this.isInterface) {
                 return u.getSort() == 10 || u.getSort() == 9;
             }
-            return this.isAssignableFrom(t, this.getSuperClass(u));
+            return this.isAssignableFrom(t,  this.getSuperClass(u));
         }
         else {
             if (this.currentClass == null || !u.equals(this.currentClass)) {
@@ -176,13 +176,13 @@ public class SimpleVerifier extends BasicVerifier
                 }
                 return tc.isAssignableFrom(this.getClass(u));
             }
-            if (this.isAssignableFrom(t, this.currentSuperClass)) {
+            if (this.isAssignableFrom(t,  this.currentSuperClass)) {
                 return true;
             }
             if (this.currentClassInterfaces != null) {
                 for (int i = 0; i < this.currentClassInterfaces.size(); ++i) {
                     final Type v = this.currentClassInterfaces.get(i);
-                    if (this.isAssignableFrom(t, v)) {
+                    if (this.isAssignableFrom(t,  v)) {
                         return true;
                     }
                 }
@@ -194,9 +194,9 @@ public class SimpleVerifier extends BasicVerifier
     protected Class<?> getClass(final Type t) {
         try {
             if (t.getSort() == 9) {
-                return Class.forName(t.getDescriptor().replace('/', '.'), false, this.loader);
+                return Class.forName(t.getDescriptor().replace('/',  '.'),  false,  this.loader);
             }
-            return Class.forName(t.getClassName(), false, this.loader);
+            return Class.forName(t.getClassName(),  false,  this.loader);
         }
         catch (ClassNotFoundException e) {
             throw new RuntimeException(e.toString());

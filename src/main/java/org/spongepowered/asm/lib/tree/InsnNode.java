@@ -22,7 +22,7 @@ public class InsnNode extends AbstractInsnNode
         this.acceptAnnotations(mv);
     }
     
-    public AbstractInsnNode clone(final Map<LabelNode, LabelNode> labels) {
+    public AbstractInsnNode clone(final Map<LabelNode,  LabelNode> labels) {
         return new InsnNode(this.opcode).cloneAnnotations((AbstractInsnNode)this);
     }
 }

@@ -16,11 +16,11 @@ public class JumpInsnPoint extends InjectionPoint
     private final int ordinal;
     
     public JumpInsnPoint(final InjectionPointData data) {
-        this.opCode = data.getOpcode(-1, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 198, 199, -1);
+        this.opCode = data.getOpcode(-1,  153,  154,  155,  156,  157,  158,  159,  160,  161,  162,  163,  164,  165,  166,  167,  168,  198,  199,  -1);
         this.ordinal = data.getOrdinal();
     }
     
-    public boolean find(final String desc, final InsnList insns, final Collection<AbstractInsnNode> nodes) {
+    public boolean find(final String desc,  final InsnList insns,  final Collection<AbstractInsnNode> nodes) {
         boolean found = false;
         int ordinal = 0;
         for (final AbstractInsnNode insn : insns) {

@@ -34,11 +34,11 @@ public class Quiver extends Module
     private int oldSlot;
     
     public Quiver() {
-        super("Quiver", "Automatically shoots yourself with good effects.", Category.COMBAT, true, false, false);
-        this.delay = (Setting<Integer>)this.register(new Setting("Delay", (T)200, (T)0, (T)500));
-        this.holdLength = (Setting<Integer>)this.register(new Setting("Hold Length", (T)350, (T)100, (T)1000));
-        this.main = (Setting<mainEnum>)this.register(new Setting("Main", (T)mainEnum.SPEED));
-        this.secondary = (Setting<mainEnum>)this.register(new Setting("Secondary", (T)mainEnum.STRENGTH));
+        super("Quiver",  "Automatically shoots yourself with good effects.",  Category.COMBAT,  true,  false,  false);
+        this.delay = (Setting<Integer>)this.register(new Setting("Delay", 200, 0, 500));
+        this.holdLength = (Setting<Integer>)this.register(new Setting("Hold Length", 350, 100, 1000));
+        this.main = (Setting<mainEnum>)this.register(new Setting("Main", mainEnum.SPEED));
+        this.secondary = (Setting<mainEnum>)this.register(new Setting("Secondary", mainEnum.STRENGTH));
         this.delayTimer = new TimerUtil();
         this.holdTimer = new TimerUtil();
         this.strSlot = -1;
@@ -51,7 +51,7 @@ public class Quiver extends Module
         if (nullCheck()) {
             return;
         }
-        InventoryUtil.switchToHotbarSlot(ItemBow.class, false);
+        InventoryUtil.switchToHotbarSlot(ItemBow.class,  false);
         this.clean();
         this.oldSlot = Quiver.mc.player.inventory.currentItem;
         Quiver.mc.gameSettings.keyBindUseItem.pressed = false;
@@ -62,7 +62,7 @@ public class Quiver extends Module
         if (nullCheck()) {
             return;
         }
-        InventoryUtil.switchToHotbarSlot(this.oldSlot, false);
+        InventoryUtil.switchToHotbarSlot(this.oldSlot,  false);
         Quiver.mc.gameSettings.keyBindUseItem.pressed = false;
         this.clean();
     }
@@ -75,11 +75,11 @@ public class Quiver extends Module
         if (Quiver.mc.currentScreen != null) {
             return;
         }
-        if (InventoryUtil.findItemInventorySlot((Item)Items.BOW, true) == -1) {
+        if (InventoryUtil.findItemInventorySlot((Item)Items.BOW,  true) == -1) {
             Command.sendMessage("Couldn't find bow in inventory! Toggling!");
             this.toggle();
         }
-        RotationUtil.faceVector(EntityUtil.getInterpolatedPos((Entity)Quiver.mc.player, Quiver.mc.timer.elapsedPartialTicks).add(0.0, 3.0, 0.0), false);
+        RotationUtil.faceVector(EntityUtil.getInterpolatedPos((Entity)Quiver.mc.player,  Quiver.mc.timer.elapsedPartialTicks).add(0.0,  3.0,  0.0),  false);
         if (this.stage == 0) {
             this.map = this.mapArrows();
             for (final int a : this.map) {
@@ -124,7 +124,7 @@ public class Quiver extends Module
             ++this.stage;
         }
         else if (this.stage == 6) {
-            Quiver.mc.player.connection.sendPacket((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, Quiver.mc.player.getHorizontalFacing()));
+            Quiver.mc.player.connection.sendPacket((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM,  BlockPos.ORIGIN,  Quiver.mc.player.getHorizontalFacing()));
             Quiver.mc.player.resetActiveHand();
             Quiver.mc.gameSettings.keyBindUseItem.pressed = false;
             ++this.stage;
@@ -174,7 +174,7 @@ public class Quiver extends Module
             ++this.stage;
         }
         else if (this.stage == 13) {
-            Quiver.mc.player.connection.sendPacket((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, Quiver.mc.player.getHorizontalFacing()));
+            Quiver.mc.player.connection.sendPacket((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM,  BlockPos.ORIGIN,  Quiver.mc.player.getHorizontalFacing()));
             Quiver.mc.player.resetActiveHand();
             Quiver.mc.gameSettings.keyBindUseItem.pressed = false;
             ++this.stage;
@@ -183,7 +183,7 @@ public class Quiver extends Module
             final ArrayList<Integer> map = this.mapEmpty();
             if (!map.isEmpty()) {
                 final int a = map.get(0);
-                Quiver.mc.playerController.windowClick(Quiver.mc.player.inventoryContainer.windowId, a, 0, ClickType.PICKUP, (EntityPlayer)Quiver.mc.player);
+                Quiver.mc.playerController.windowClick(Quiver.mc.player.inventoryContainer.windowId,  a,  0,  ClickType.PICKUP,  (EntityPlayer)Quiver.mc.player);
             }
             ++this.stage;
         }
@@ -231,9 +231,9 @@ public class Quiver extends Module
         if (from == 9) {
             return;
         }
-        Quiver.mc.playerController.windowClick(Quiver.mc.player.inventoryContainer.windowId, from, 0, ClickType.PICKUP, (EntityPlayer)Quiver.mc.player);
-        Quiver.mc.playerController.windowClick(Quiver.mc.player.inventoryContainer.windowId, 9, 0, ClickType.PICKUP, (EntityPlayer)Quiver.mc.player);
-        Quiver.mc.playerController.windowClick(Quiver.mc.player.inventoryContainer.windowId, from, 0, ClickType.PICKUP, (EntityPlayer)Quiver.mc.player);
+        Quiver.mc.playerController.windowClick(Quiver.mc.player.inventoryContainer.windowId,  from,  0,  ClickType.PICKUP,  (EntityPlayer)Quiver.mc.player);
+        Quiver.mc.playerController.windowClick(Quiver.mc.player.inventoryContainer.windowId,  9,  0,  ClickType.PICKUP,  (EntityPlayer)Quiver.mc.player);
+        Quiver.mc.playerController.windowClick(Quiver.mc.player.inventoryContainer.windowId,  from,  0,  ClickType.PICKUP,  (EntityPlayer)Quiver.mc.player);
         Quiver.mc.playerController.updateController();
     }
     
@@ -248,7 +248,7 @@ public class Quiver extends Module
     
     private enum mainEnum
     {
-        STRENGTH, 
+        STRENGTH,  
         SPEED;
     }
 }

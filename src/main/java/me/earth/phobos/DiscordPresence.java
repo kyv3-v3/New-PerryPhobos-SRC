@@ -18,7 +18,7 @@ public class DiscordPresence
     
     public static void start() {
         final DiscordEventHandlers handlers = new DiscordEventHandlers();
-        DiscordPresence.rpc.Discord_Initialize("737779695134834695", handlers, true, "");
+        DiscordPresence.rpc.Discord_Initialize("737779695134834695",  handlers,  true,  "");
         DiscordPresence.presence.startTimestamp = System.currentTimeMillis() / 1000L;
         DiscordPresence.presence.details = ((Minecraft.getMinecraft().currentScreen instanceof GuiMainMenu) ? "In the main menu." : ("Playing " + ((Minecraft.getMinecraft().currentServerData != null) ? (RPC.INSTANCE.showIP.getValue() ? ("on " + Minecraft.getMinecraft().currentServerData.serverIP + ".") : " multiplayer.") : " singleplayer.")));
         DiscordPresence.presence.state = RPC.INSTANCE.state.getValue();
@@ -66,7 +66,7 @@ public class DiscordPresence
                 }
                 catch (InterruptedException ex) {}
             }
-        }, "RPC-Callback-Handler")).start();
+        },  "RPC-Callback-Handler")).start();
     }
     
     public static void stop() {

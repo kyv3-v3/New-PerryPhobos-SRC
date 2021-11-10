@@ -20,11 +20,11 @@ public class BeforeReturn extends InjectionPoint
         this.ordinal = data.getOrdinal();
     }
     
-    public boolean checkPriority(final int targetPriority, final int ownerPriority) {
+    public boolean checkPriority(final int targetPriority,  final int ownerPriority) {
         return true;
     }
     
-    public boolean find(final String desc, final InsnList insns, final Collection<AbstractInsnNode> nodes) {
+    public boolean find(final String desc,  final InsnList insns,  final Collection<AbstractInsnNode> nodes) {
         boolean found = false;
         final int returnOpcode = Type.getReturnType(desc).getOpcode(172);
         int ordinal = 0;

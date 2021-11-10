@@ -32,7 +32,7 @@ public class PhobosMixinLoader implements IFMLLoadingPlugin
         return null;
     }
     
-    public void injectData(final Map<String, Object> data) {
+    public void injectData(final Map<String,  Object> data) {
         data.get("runtimeDeobfuscationEnabled");
     }
     

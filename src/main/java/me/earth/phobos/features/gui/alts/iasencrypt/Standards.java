@@ -20,7 +20,7 @@ public final class Standards
     public static File IASFOLDER;
     
     public static String getPassword() {
-        final File passwordFile = new File(Standards.IASFOLDER, ".iasp");
+        final File passwordFile = new File(Standards.IASFOLDER,  ".iasp");
         Exception e = null;
         if (passwordFile.exists()) {
             String pass;
@@ -47,8 +47,8 @@ public final class Standards
         }
         try {
             final Path file = passwordFile.toPath();
-            final DosFileAttributes attr = Files.readAttributes(file, DosFileAttributes.class, new LinkOption[0]);
-            final DosFileAttributeView view = Files.getFileAttributeView(file, DosFileAttributeView.class, new LinkOption[0]);
+            final DosFileAttributes attr = Files.readAttributes(file,  DosFileAttributes.class,  new LinkOption[0]);
+            final DosFileAttributeView view = Files.getFileAttributeView(file,  DosFileAttributeView.class,  new LinkOption[0]);
             if (!attr.isHidden()) {
                 view.setHidden(true);
             }
@@ -77,7 +77,7 @@ public final class Standards
     public static void importAccounts() {
         processData(getConfigV3());
         processData(getConfigV2());
-        processData(getConfigV1(), false);
+        processData(getConfigV1(),  false);
     }
     
     private static boolean hasData(final AccountData data) {
@@ -90,13 +90,13 @@ public final class Standards
     }
     
     private static void processData(final Config olddata) {
-        processData(olddata, true);
+        processData(olddata,  true);
     }
     
-    private static void processData(final Config olddata, final boolean decrypt) {
+    private static void processData(final Config olddata,  final boolean decrypt) {
         if (olddata != null) {
             for (final AccountData data : ((AltDatabase)olddata.getKey("altaccounts")).getAlts()) {
-                final AccountData data2 = (AccountData)convertData(data, decrypt);
+                final AccountData data2 = (AccountData)convertData(data,  decrypt);
                 if (!hasData(data2)) {
                     AltDatabase.getInstance().getAlts().add(data2);
                 }
@@ -104,23 +104,23 @@ public final class Standards
         }
     }
     
-    private static ExtendedAccountData convertData(final AccountData oldData, final boolean decrypt) {
+    private static ExtendedAccountData convertData(final AccountData oldData,  final boolean decrypt) {
         if (decrypt) {
             if (oldData instanceof ExtendedAccountData) {
-                return new ExtendedAccountData(EncryptionTools.decodeOld(oldData.user), EncryptionTools.decodeOld(oldData.pass), oldData.alias, ((ExtendedAccountData)oldData).useCount, ((ExtendedAccountData)oldData).lastused, ((ExtendedAccountData)oldData).premium);
+                return new ExtendedAccountData(EncryptionTools.decodeOld(oldData.user),  EncryptionTools.decodeOld(oldData.pass),  oldData.alias,  ((ExtendedAccountData)oldData).useCount,  ((ExtendedAccountData)oldData).lastused,  ((ExtendedAccountData)oldData).premium);
             }
-            return new ExtendedAccountData(EncryptionTools.decodeOld(oldData.user), EncryptionTools.decodeOld(oldData.pass), oldData.alias);
+            return new ExtendedAccountData(EncryptionTools.decodeOld(oldData.user),  EncryptionTools.decodeOld(oldData.pass),  oldData.alias);
         }
         else {
             if (oldData instanceof ExtendedAccountData) {
-                return new ExtendedAccountData(oldData.user, oldData.pass, oldData.alias, ((ExtendedAccountData)oldData).useCount, ((ExtendedAccountData)oldData).lastused, ((ExtendedAccountData)oldData).premium);
+                return new ExtendedAccountData(oldData.user,  oldData.pass,  oldData.alias,  ((ExtendedAccountData)oldData).useCount,  ((ExtendedAccountData)oldData).lastused,  ((ExtendedAccountData)oldData).premium);
             }
-            return new ExtendedAccountData(oldData.user, oldData.pass, oldData.alias);
+            return new ExtendedAccountData(oldData.user,  oldData.pass,  oldData.alias);
         }
     }
     
     private static Config getConfigV3() {
-        final File f = new File(Standards.IASFOLDER, ".ias");
+        final File f = new File(Standards.IASFOLDER,  ".ias");
         Config cfg = null;
         if (f.exists()) {
             try {
@@ -139,7 +139,7 @@ public final class Standards
     }
     
     private static Config getConfigV2() {
-        final File f = new File(Minecraft.getMinecraft().gameDir, ".ias");
+        final File f = new File(Minecraft.getMinecraft().gameDir,  ".ias");
         Config cfg = null;
         if (f.exists()) {
             try {
@@ -158,7 +158,7 @@ public final class Standards
     }
     
     private static Config getConfigV1() {
-        final File f = new File(Minecraft.getMinecraft().gameDir, "user.cfg");
+        final File f = new File(Minecraft.getMinecraft().gameDir,  "user.cfg");
         Config cfg = null;
         if (f.exists()) {
             try {

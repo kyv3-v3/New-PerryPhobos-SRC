@@ -10,7 +10,7 @@ import me.earth.phobos.*;
 public class ReloadCommand extends Command
 {
     public ReloadCommand() {
-        super("reload", new String[0]);
+        super("reload",  new String[0]);
     }
     
     public void execute(final String[] commands) {

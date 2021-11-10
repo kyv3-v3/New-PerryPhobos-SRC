@@ -31,11 +31,11 @@ public class PacketFlyNew extends Module
     private float rotationPitch;
     
     public PacketFlyNew() {
-        super("PacketFlyNew", "Uses packets to allow you to fly and move.", Module.Category.MOVEMENT, true, false, false);
-        this.type = (Setting<types>)this.register(new Setting("Type", (T)types.DOWN));
-        this.mode = (Setting<modes>)this.register(new Setting("Mode", (T)modes.FAST));
-        this.factorAmount = (Setting<Integer>)this.register(new Setting("Factor", (T)1.0f, (T)0.1f, (T)10.0f));
-        this.limit = (Setting<Boolean>)this.register(new Setting("Limit", (T)true));
+        super("PacketFlyNew",  "Uses packets to allow you to fly and move.",  Module.Category.MOVEMENT,  true,  false,  false);
+        this.type = (Setting<types>)this.register(new Setting("Type", types.DOWN));
+        this.mode = (Setting<modes>)this.register(new Setting("Mode", modes.FAST));
+        this.factorAmount = (Setting<Integer>)this.register(new Setting("Factor", 1.0f, 0.1f, 10.0f));
+        this.limit = (Setting<Boolean>)this.register(new Setting("Limit", true));
         this.teleportID = -1;
         this.frequency = 1;
         this.frequencyUp = true;
@@ -44,31 +44,31 @@ public class PacketFlyNew extends Module
         this.packets = new ArrayList<Packet<INetHandlerPlayServer>>();
     }
     
-    public void sendOffsets(final double x, final double y, final double z) {
+    public void sendOffsets(final double x,  final double y,  final double z) {
         CPacketPlayer.PositionRotation spoofPos = null;
         switch (this.type.getValue()) {
             case UP: {
-                spoofPos = new CPacketPlayer.PositionRotation(x, y + 1337.0, z, this.rotationYaw, this.rotationPitch, PacketFlyNew.mc.player.onGround);
+                spoofPos = new CPacketPlayer.PositionRotation(x,  y + 1337.0,  z,  this.rotationYaw,  this.rotationPitch,  PacketFlyNew.mc.player.onGround);
                 break;
             }
             case DOWN: {
-                spoofPos = new CPacketPlayer.PositionRotation(x, y - 1337.0, z, this.rotationYaw, this.rotationPitch, PacketFlyNew.mc.player.onGround);
+                spoofPos = new CPacketPlayer.PositionRotation(x,  y - 1337.0,  z,  this.rotationYaw,  this.rotationPitch,  PacketFlyNew.mc.player.onGround);
                 break;
             }
             case BOUNDED: {
-                spoofPos = new CPacketPlayer.PositionRotation(x, 256.0, z, this.rotationYaw, this.rotationPitch, PacketFlyNew.mc.player.onGround);
+                spoofPos = new CPacketPlayer.PositionRotation(x,  256.0,  z,  this.rotationYaw,  this.rotationPitch,  PacketFlyNew.mc.player.onGround);
                 break;
             }
             case CONCEAL: {
-                spoofPos = new CPacketPlayer.PositionRotation(x + new Random().nextInt(2000000) - 1000000.0, y + new Random().nextInt(2000000) - 1000000.0, z + new Random().nextInt(2000000) - 1000000.0, this.rotationYaw, this.rotationPitch, PacketFlyNew.mc.player.onGround);
+                spoofPos = new CPacketPlayer.PositionRotation(x + new Random().nextInt(2000000) - 1000000.0,  y + new Random().nextInt(2000000) - 1000000.0,  z + new Random().nextInt(2000000) - 1000000.0,  this.rotationYaw,  this.rotationPitch,  PacketFlyNew.mc.player.onGround);
                 break;
             }
             case LIMITJITTER: {
-                spoofPos = new CPacketPlayer.PositionRotation(x, y + new Random().nextInt(512) - 256.0, z, this.rotationYaw, this.rotationPitch, PacketFlyNew.mc.player.onGround);
+                spoofPos = new CPacketPlayer.PositionRotation(x,  y + new Random().nextInt(512) - 256.0,  z,  this.rotationYaw,  this.rotationPitch,  PacketFlyNew.mc.player.onGround);
                 break;
             }
             case PRESERVE: {
-                spoofPos = new CPacketPlayer.PositionRotation(x + new Random().nextInt(2000000) - 1000000.0, y, z + new Random().nextInt(2000000) - 1000000.0, this.rotationYaw, this.rotationPitch, PacketFlyNew.mc.player.onGround);
+                spoofPos = new CPacketPlayer.PositionRotation(x + new Random().nextInt(2000000) - 1000000.0,  y,  z + new Random().nextInt(2000000) - 1000000.0,  this.rotationYaw,  this.rotationPitch,  PacketFlyNew.mc.player.onGround);
                 break;
             }
         }
@@ -83,11 +83,11 @@ public class PacketFlyNew extends Module
         this.packets.clear();
         this.rotationYaw = PacketFlyNew.mc.player.rotationYaw;
         this.rotationPitch = PacketFlyNew.mc.player.rotationPitch;
-        this.sendOffsets(PacketFlyNew.mc.player.posX, PacketFlyNew.mc.player.posY, PacketFlyNew.mc.player.posZ);
+        this.sendOffsets(PacketFlyNew.mc.player.posX,  PacketFlyNew.mc.player.posY,  PacketFlyNew.mc.player.posZ);
     }
     
     private boolean isInsideBlock() {
-        return !PacketFlyNew.mc.world.getCollisionBoxes((Entity)PacketFlyNew.mc.player, PacketFlyNew.mc.player.getEntityBoundingBox().expand(-0.0625, -0.0625, -0.0625)).isEmpty();
+        return !PacketFlyNew.mc.world.getCollisionBoxes((Entity)PacketFlyNew.mc.player,  PacketFlyNew.mc.player.getEntityBoundingBox().expand(-0.0625,  -0.0625,  -0.0625)).isEmpty();
     }
     
     @SubscribeEvent
@@ -150,7 +150,7 @@ public class PacketFlyNew extends Module
                 event.setX(motionX);
                 event.setY(motionY);
                 event.setZ(motionZ);
-                this.doMovement(motionX, motionY, motionZ);
+                this.doMovement(motionX,  motionY,  motionZ);
                 ++currentFactor;
                 if (motionX == 0.0 && motionY == 0.0 && motionZ == 0.0) {
                     return;
@@ -181,7 +181,7 @@ public class PacketFlyNew extends Module
         PacketFlyNew.mc.player.motionX = 0.0;
         PacketFlyNew.mc.player.motionY = 0.0;
         PacketFlyNew.mc.player.motionZ = 0.0;
-        PacketFlyNew.mc.player.setVelocity(0.0, 0.0, 0.0);
+        PacketFlyNew.mc.player.setVelocity(0.0,  0.0,  0.0);
     }
     
     @SubscribeEvent
@@ -191,12 +191,12 @@ public class PacketFlyNew extends Module
         }
     }
     
-    private void doMovement(final double x, final double y, final double z) {
-        final CPacketPlayer.PositionRotation newPos = new CPacketPlayer.PositionRotation(PacketFlyNew.mc.player.posX + x, PacketFlyNew.mc.player.posY + y, PacketFlyNew.mc.player.posZ + z, this.rotationYaw, this.rotationPitch, PacketFlyNew.mc.player.onGround);
+    private void doMovement(final double x,  final double y,  final double z) {
+        final CPacketPlayer.PositionRotation newPos = new CPacketPlayer.PositionRotation(PacketFlyNew.mc.player.posX + x,  PacketFlyNew.mc.player.posY + y,  PacketFlyNew.mc.player.posZ + z,  this.rotationYaw,  this.rotationPitch,  PacketFlyNew.mc.player.onGround);
         this.packets.add((Packet<INetHandlerPlayServer>)newPos);
         Objects.requireNonNull(PacketFlyNew.mc.getConnection()).sendPacket((Packet)newPos);
         for (int i = 0; i < this.frequency; ++i) {
-            this.sendOffsets(PacketFlyNew.mc.player.posX, PacketFlyNew.mc.player.posY, PacketFlyNew.mc.player.posZ);
+            this.sendOffsets(PacketFlyNew.mc.player.posX,  PacketFlyNew.mc.player.posY,  PacketFlyNew.mc.player.posZ);
         }
     }
     
@@ -224,7 +224,7 @@ public class PacketFlyNew extends Module
         if (event.getPacket() instanceof SPacketPlayerPosLook) {
             final SPacketPlayerPosLook flag = (SPacketPlayerPosLook)event.getPacket();
             this.teleportID = flag.getTeleportId();
-            PacketFlyNew.mc.player.setPosition(flag.getX(), flag.getY(), flag.getZ());
+            PacketFlyNew.mc.player.setPosition(flag.getX(),  flag.getY(),  flag.getZ());
             PacketFlyNew.mc.player.connection.sendPacket((Packet)new CPacketConfirmTeleport(this.teleportID++));
             event.setCanceled(true);
         }
@@ -240,17 +240,17 @@ public class PacketFlyNew extends Module
     
     private enum modes
     {
-        FAST, 
+        FAST,  
         FACTOR;
     }
     
     private enum types
     {
-        UP, 
-        DOWN, 
-        PRESERVE, 
-        LIMITJITTER, 
-        BOUNDED, 
+        UP,  
+        DOWN,  
+        PRESERVE,  
+        LIMITJITTER,  
+        BOUNDED,  
         CONCEAL;
     }
 }

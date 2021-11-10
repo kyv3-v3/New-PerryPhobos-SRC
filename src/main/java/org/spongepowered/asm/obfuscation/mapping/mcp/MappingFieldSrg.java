@@ -11,12 +11,12 @@ public class MappingFieldSrg extends MappingField
     private final String srg;
     
     public MappingFieldSrg(final String srg) {
-        super(getOwnerFromSrg(srg), getNameFromSrg(srg), (String)null);
+        super(getOwnerFromSrg(srg),  getNameFromSrg(srg),  (String)null);
         this.srg = srg;
     }
     
     public MappingFieldSrg(final MappingField field) {
-        super(field.getOwner(), field.getName(), (String)null);
+        super(field.getOwner(),  field.getName(),  (String)null);
         this.srg = field.getOwner() + "/" + field.getName();
     }
     
@@ -37,6 +37,6 @@ public class MappingFieldSrg extends MappingField
             return null;
         }
         final int pos = srg.lastIndexOf(47);
-        return (pos > -1) ? srg.substring(0, pos) : null;
+        return (pos > -1) ? srg.substring(0,  pos) : null;
     }
 }

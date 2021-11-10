@@ -13,6 +13,6 @@ public class OldJava implements ILegacyCompat
     }
     
     public String getFormattedDate() {
-        return I18n.format("ias.updatejava", new Object[0]);
+        return I18n.format("ias.updatejava",  new Object[0]);
     }
 }

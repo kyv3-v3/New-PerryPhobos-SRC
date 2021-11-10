@@ -23,11 +23,11 @@ public class CommandConfig extends CommandBase
         return "/betterchat";
     }
     
-    public boolean checkPermission(final MinecraftServer server, final ICommandSender sender) {
+    public boolean checkPermission(final MinecraftServer server,  final ICommandSender sender) {
         return true;
     }
     
-    public void execute(final MinecraftServer server, final ICommandSender sender, final String[] args) throws CommandException {
+    public void execute(final MinecraftServer server,  final ICommandSender sender,  final String[] args) throws CommandException {
         MinecraftForge.EVENT_BUS.register((Object)this);
     }
     

@@ -10,7 +10,7 @@ import net.minecraft.entity.player.*;
 public class SelfCrystal extends Module
 {
     public SelfCrystal() {
-        super("SelfCrystal", "Makes CA target urself.", Category.COMBAT, true, false, false);
+        super("SelfCrystal",  "Makes CA target urself.",  Category.COMBAT,  true,  false,  false);
     }
     
     @Override

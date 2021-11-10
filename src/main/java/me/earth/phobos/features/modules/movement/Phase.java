@@ -46,28 +46,28 @@ public class Phase extends Module
     private int posLookPackets;
     
     public Phase() {
-        super("Phase", "Makes you able to phase through blocks.", Module.Category.MOVEMENT, true, false, false);
+        super("Phase",  "Makes you able to phase through blocks.",  Module.Category.MOVEMENT,  true,  false,  false);
         this.packets = (Set<CPacketPlayer>)new ConcurrentSet();
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", (T)Mode.PACKETFLY));
-        this.type = (Setting<PacketFlyMode>)this.register(new Setting("Type", (T)PacketFlyMode.SETBACK, v -> this.mode.getValue() == Mode.PACKETFLY));
-        this.yMove = (Setting<Integer>)this.register(new Setting("YMove", (T)625, (T)1, (T)1000, v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK, "YMovement speed."));
-        this.extra = (Setting<Boolean>)this.register(new Setting("ExtraPacket", (T)true, v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK));
-        this.offset = (Setting<Integer>)this.register(new Setting("Offset", (T)1337, (T)(-1337), (T)1337, v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK && this.extra.getValue(), "Up speed."));
-        this.fallPacket = (Setting<Boolean>)this.register(new Setting("FallPacket", (T)true, v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK));
-        this.teleporter = (Setting<Boolean>)this.register(new Setting("Teleport", (T)true, v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK));
-        this.boundingBox = (Setting<Boolean>)this.register(new Setting("BoundingBox", (T)true, v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK));
-        this.teleportConfirm = (Setting<Integer>)this.register(new Setting("Confirm", (T)2, (T)0, (T)4, v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK));
-        this.ultraPacket = (Setting<Boolean>)this.register(new Setting("DoublePacket", (T)false, v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK));
-        this.updates = (Setting<Boolean>)this.register(new Setting("Update", (T)false, v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK));
-        this.setOnMove = (Setting<Boolean>)this.register(new Setting("SetMove", (T)false, v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK));
-        this.cliperino = (Setting<Boolean>)this.register(new Setting("NoClip", (T)false, v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK && this.setOnMove.getValue()));
-        this.scanPackets = (Setting<Boolean>)this.register(new Setting("ScanPackets", (T)false, v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK));
-        this.resetConfirm = (Setting<Boolean>)this.register(new Setting("Reset", (T)false, v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK));
-        this.posLook = (Setting<Boolean>)this.register(new Setting("PosLook", (T)false, v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK));
-        this.cancel = (Setting<Boolean>)this.register(new Setting("Cancel", (T)false, v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK && this.posLook.getValue()));
-        this.cancelType = (Setting<Boolean>)this.register(new Setting("SetYaw", (T)false, v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK && this.posLook.getValue() && this.cancel.getValue()));
-        this.onlyY = (Setting<Boolean>)this.register(new Setting("OnlyY", (T)false, v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK && this.posLook.getValue()));
-        this.cancelPacket = (Setting<Integer>)this.register(new Setting("Packets", (T)20, (T)0, (T)20, v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK && this.posLook.getValue()));
+        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.PACKETFLY));
+        this.type = (Setting<PacketFlyMode>)this.register(new Setting("Type", PacketFlyMode.SETBACK,  v -> this.mode.getValue() == Mode.PACKETFLY));
+        this.yMove = (Setting<Integer>)this.register(new Setting("YMove", 625, 1, 1000,  v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK,  "YMovement speed."));
+        this.extra = (Setting<Boolean>)this.register(new Setting("ExtraPacket", true,  v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK));
+        this.offset = (Setting<Integer>)this.register(new Setting("Offset", 1337, (-1337), 1337,  v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK && this.extra.getValue(),  "Up speed."));
+        this.fallPacket = (Setting<Boolean>)this.register(new Setting("FallPacket", true,  v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK));
+        this.teleporter = (Setting<Boolean>)this.register(new Setting("Teleport", true,  v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK));
+        this.boundingBox = (Setting<Boolean>)this.register(new Setting("BoundingBox", true,  v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK));
+        this.teleportConfirm = (Setting<Integer>)this.register(new Setting("Confirm", 2, 0, 4,  v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK));
+        this.ultraPacket = (Setting<Boolean>)this.register(new Setting("DoublePacket", false,  v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK));
+        this.updates = (Setting<Boolean>)this.register(new Setting("Update", false,  v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK));
+        this.setOnMove = (Setting<Boolean>)this.register(new Setting("SetMove", false,  v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK));
+        this.cliperino = (Setting<Boolean>)this.register(new Setting("NoClip", false,  v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK && this.setOnMove.getValue()));
+        this.scanPackets = (Setting<Boolean>)this.register(new Setting("ScanPackets", false,  v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK));
+        this.resetConfirm = (Setting<Boolean>)this.register(new Setting("Reset", false,  v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK));
+        this.posLook = (Setting<Boolean>)this.register(new Setting("PosLook", false,  v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK));
+        this.cancel = (Setting<Boolean>)this.register(new Setting("Cancel", false,  v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK && this.posLook.getValue()));
+        this.cancelType = (Setting<Boolean>)this.register(new Setting("SetYaw", false,  v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK && this.posLook.getValue() && this.cancel.getValue()));
+        this.onlyY = (Setting<Boolean>)this.register(new Setting("OnlyY", false,  v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK && this.posLook.getValue()));
+        this.cancelPacket = (Setting<Integer>)this.register(new Setting("Packets", 20, 0, 20,  v -> this.mode.getValue() == Mode.PACKETFLY && this.type.getValue() == PacketFlyMode.SETBACK && this.posLook.getValue()));
         this.teleport = true;
         this.setInstance();
     }
@@ -142,7 +142,7 @@ public class Phase extends Module
             final double posX = Phase.mc.player.posX + dirSpeed[0];
             final double posY = Phase.mc.player.posY + (Phase.mc.gameSettings.keyBindJump.isKeyDown() ? (this.teleport ? (this.yMove.getValue() / 10000.0) : ((this.yMove.getValue() - 1) / 10000.0)) : 1.0E-8) - (Phase.mc.gameSettings.keyBindSneak.isKeyDown() ? (this.teleport ? (this.yMove.getValue() / 10000.0) : ((this.yMove.getValue() - 1) / 10000.0)) : 2.0E-8);
             final double posZ = Phase.mc.player.posZ + dirSpeed[1];
-            final CPacketPlayer.PositionRotation packetPlayer = new CPacketPlayer.PositionRotation(posX, posY, posZ, Phase.mc.player.rotationYaw, Phase.mc.player.rotationPitch, false);
+            final CPacketPlayer.PositionRotation packetPlayer = new CPacketPlayer.PositionRotation(posX,  posY,  posZ,  Phase.mc.player.rotationYaw,  Phase.mc.player.rotationPitch,  false);
             this.packets.add((CPacketPlayer)packetPlayer);
             Phase.mc.player.connection.sendPacket((Packet)packetPlayer);
             if (this.teleportConfirm.getValue() != 3) {
@@ -150,7 +150,7 @@ public class Phase extends Module
                 ++this.teleportIds;
             }
             if (this.extra.getValue()) {
-                final CPacketPlayer.PositionRotation packet = new CPacketPlayer.PositionRotation(Phase.mc.player.posX, this.offset.getValue() + Phase.mc.player.posY, Phase.mc.player.posZ, Phase.mc.player.rotationYaw, Phase.mc.player.rotationPitch, true);
+                final CPacketPlayer.PositionRotation packet = new CPacketPlayer.PositionRotation(Phase.mc.player.posX,  this.offset.getValue() + Phase.mc.player.posY,  Phase.mc.player.posZ,  Phase.mc.player.rotationYaw,  Phase.mc.player.rotationPitch,  true);
                 this.packets.add((CPacketPlayer)packet);
                 Phase.mc.player.connection.sendPacket((Packet)packet);
             }
@@ -159,7 +159,7 @@ public class Phase extends Module
                 ++this.teleportIds;
             }
             if (this.ultraPacket.getValue()) {
-                final CPacketPlayer.PositionRotation packet2 = new CPacketPlayer.PositionRotation(posX, posY, posZ, Phase.mc.player.rotationYaw, Phase.mc.player.rotationPitch, false);
+                final CPacketPlayer.PositionRotation packet2 = new CPacketPlayer.PositionRotation(posX,  posY,  posZ,  Phase.mc.player.rotationYaw,  Phase.mc.player.rotationPitch,  false);
                 this.packets.add((CPacketPlayer)packet2);
                 Phase.mc.player.connection.sendPacket((Packet)packet2);
             }
@@ -168,9 +168,9 @@ public class Phase extends Module
                 ++this.teleportIds;
             }
             if (this.fallPacket.getValue()) {
-                Phase.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)Phase.mc.player, CPacketEntityAction.Action.START_FALL_FLYING));
+                Phase.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)Phase.mc.player,  CPacketEntityAction.Action.START_FALL_FLYING));
             }
-            Phase.mc.player.setPosition(posX, posY, posZ);
+            Phase.mc.player.setPosition(posX,  posY,  posZ);
             this.teleport = (!this.teleporter.getValue() || !this.teleport);
             if (event != null) {
                 event.setX(0.0);
@@ -187,10 +187,10 @@ public class Phase extends Module
     
     private void doBoundingBox() {
         final double[] dirSpeed = this.getMotion(this.teleport ? 0.02250000089406967 : 0.02239999920129776);
-        Phase.mc.player.connection.sendPacket((Packet)new CPacketPlayer.PositionRotation(Phase.mc.player.posX + dirSpeed[0], Phase.mc.player.posY + (Phase.mc.gameSettings.keyBindJump.isKeyDown() ? (this.teleport ? 0.0625 : 0.0624) : 1.0E-8) - (Phase.mc.gameSettings.keyBindSneak.isKeyDown() ? (this.teleport ? 0.0625 : 0.0624) : 2.0E-8), Phase.mc.player.posZ + dirSpeed[1], Phase.mc.player.rotationYaw, Phase.mc.player.rotationPitch, false));
-        Phase.mc.player.connection.sendPacket((Packet)new CPacketPlayer.PositionRotation(Phase.mc.player.posX, -1337.0, Phase.mc.player.posZ, Phase.mc.player.rotationYaw, Phase.mc.player.rotationPitch, true));
-        Phase.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)Phase.mc.player, CPacketEntityAction.Action.START_FALL_FLYING));
-        Phase.mc.player.setPosition(Phase.mc.player.posX + dirSpeed[0], Phase.mc.player.posY + (Phase.mc.gameSettings.keyBindJump.isKeyDown() ? (this.teleport ? 0.0625 : 0.0624) : 1.0E-8) - (Phase.mc.gameSettings.keyBindSneak.isKeyDown() ? (this.teleport ? 0.0625 : 0.0624) : 2.0E-8), Phase.mc.player.posZ + dirSpeed[1]);
+        Phase.mc.player.connection.sendPacket((Packet)new CPacketPlayer.PositionRotation(Phase.mc.player.posX + dirSpeed[0],  Phase.mc.player.posY + (Phase.mc.gameSettings.keyBindJump.isKeyDown() ? (this.teleport ? 0.0625 : 0.0624) : 1.0E-8) - (Phase.mc.gameSettings.keyBindSneak.isKeyDown() ? (this.teleport ? 0.0625 : 0.0624) : 2.0E-8),  Phase.mc.player.posZ + dirSpeed[1],  Phase.mc.player.rotationYaw,  Phase.mc.player.rotationPitch,  false));
+        Phase.mc.player.connection.sendPacket((Packet)new CPacketPlayer.PositionRotation(Phase.mc.player.posX,  -1337.0,  Phase.mc.player.posZ,  Phase.mc.player.rotationYaw,  Phase.mc.player.rotationPitch,  true));
+        Phase.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)Phase.mc.player,  CPacketEntityAction.Action.START_FALL_FLYING));
+        Phase.mc.player.setPosition(Phase.mc.player.posX + dirSpeed[0],  Phase.mc.player.posY + (Phase.mc.gameSettings.keyBindJump.isKeyDown() ? (this.teleport ? 0.0625 : 0.0624) : 1.0E-8) - (Phase.mc.gameSettings.keyBindSneak.isKeyDown() ? (this.teleport ? 0.0625 : 0.0624) : 2.0E-8),  Phase.mc.player.posZ + dirSpeed[1]);
         this.teleport = !this.teleport;
         Phase.mc.player.motionZ = 0.0;
         Phase.mc.player.motionY = 0.0;
@@ -202,7 +202,7 @@ public class Phase extends Module
     public void onPacketReceive(final PacketEvent.Receive event) {
         if (this.posLook.getValue() && event.getPacket() instanceof SPacketPlayerPosLook) {
             final SPacketPlayerPosLook packet = (SPacketPlayerPosLook)event.getPacket();
-            if (Phase.mc.player.isEntityAlive() && Phase.mc.world.isBlockLoaded(new BlockPos(Phase.mc.player.posX, Phase.mc.player.posY, Phase.mc.player.posZ)) && !(Phase.mc.currentScreen instanceof GuiDownloadTerrain)) {
+            if (Phase.mc.player.isEntityAlive() && Phase.mc.world.isBlockLoaded(new BlockPos(Phase.mc.player.posX,  Phase.mc.player.posY,  Phase.mc.player.posZ)) && !(Phase.mc.currentScreen instanceof GuiDownloadTerrain)) {
                 if (this.teleportIds <= 0) {
                     this.teleportIds = packet.getTeleportId();
                 }
@@ -254,7 +254,7 @@ public class Phase extends Module
         }
         final double posX = moveForward * speed * -Math.sin(Math.toRadians(rotationYaw)) + moveStrafe * speed * Math.cos(Math.toRadians(rotationYaw));
         final double posZ = moveForward * speed * Math.cos(Math.toRadians(rotationYaw)) - moveStrafe * speed * -Math.sin(Math.toRadians(rotationYaw));
-        return new double[] { posX, posZ };
+        return new double[] { posX,  posZ };
     }
     
     static {
@@ -263,7 +263,7 @@ public class Phase extends Module
     
     public enum PacketFlyMode
     {
-        NONE, 
+        NONE,  
         SETBACK;
     }
     

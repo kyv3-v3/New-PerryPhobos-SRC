@@ -36,12 +36,12 @@ public class Tracker extends Module
     private boolean shouldEnable;
     
     public Tracker() {
-        super("Tracker", "Tracks players in 1v1s. Only good in duels tho!", Category.MISC, true, false, true);
+        super("Tracker",  "Tracks players in 1v1s. Only good in duels tho!",  Category.MISC,  true,  false,  true);
         this.timer = new TimerUtil();
         this.manuallyPlaced = new HashSet<BlockPos>();
-        this.color = (Setting<TextUtil.Color>)this.register(new Setting("Color", (T)TextUtil.Color.RED));
-        this.autoEnable = (Setting<Boolean>)this.register(new Setting("AutoEnable", (T)false));
-        this.autoDisable = (Setting<Boolean>)this.register(new Setting("AutoDisable", (T)true));
+        this.color = (Setting<TextUtil.Color>)this.register(new Setting("Color", TextUtil.Color.RED));
+        this.autoEnable = (Setting<Boolean>)this.register(new Setting("AutoEnable", false));
+        this.autoDisable = (Setting<Boolean>)this.register(new Setting("AutoDisable", true));
         Tracker.instance = this;
     }
     
@@ -96,11 +96,11 @@ public class Tracker extends Module
         else {
             if (this.usedStacks != this.usedExp / 64) {
                 this.usedStacks = this.usedExp / 64;
-                Command.sendMessage(TextUtil.coloredString(this.trackedPlayer.getName() + " used: " + this.usedStacks + " Stacks of EXP.", this.color.getValue()));
+                Command.sendMessage(TextUtil.coloredString(this.trackedPlayer.getName() + " used: " + this.usedStacks + " Stacks of EXP.",  this.color.getValue()));
             }
             if (this.usedCStacks != this.usedCrystals / 64) {
                 this.usedCStacks = this.usedCrystals / 64;
-                Command.sendMessage(TextUtil.coloredString(this.trackedPlayer.getName() + " used: " + this.usedCStacks + " Stacks of Crystals.", this.color.getValue()));
+                Command.sendMessage(TextUtil.coloredString(this.trackedPlayer.getName() + " used: " + this.usedCStacks + " Stacks of Crystals.",  this.color.getValue()));
             }
         }
     }
@@ -109,7 +109,7 @@ public class Tracker extends Module
         if (this.isOff()) {
             return;
         }
-        if (entity instanceof EntityExpBottle && Objects.equals(Tracker.mc.world.getClosestPlayerToEntity(entity, 3.0), this.trackedPlayer)) {
+        if (entity instanceof EntityExpBottle && Objects.equals(Tracker.mc.world.getClosestPlayerToEntity(entity,  3.0),  this.trackedPlayer)) {
             ++this.usedExp;
         }
         if (entity instanceof EntityEnderCrystal) {
@@ -132,7 +132,7 @@ public class Tracker extends Module
         }
         final String name = event.getName();
         if (this.trackedPlayer != null && name != null && name.equals(this.trackedPlayer.getName()) && this.autoDisable.getValue()) {
-            Command.sendMessage(name + " logged, Tracker disabling.");
+            Command.sendMessage(name + " logged,  Tracker disabling.");
             this.disable();
         }
     }

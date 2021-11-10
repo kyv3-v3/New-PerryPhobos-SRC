@@ -12,13 +12,13 @@ import org.spongepowered.asm.mixin.injection.invoke.*;
 
 public class ModifyArgInjectionInfo extends InjectionInfo
 {
-    public ModifyArgInjectionInfo(final MixinTargetContext mixin, final MethodNode method, final AnnotationNode annotation) {
-        super(mixin, method, annotation);
+    public ModifyArgInjectionInfo(final MixinTargetContext mixin,  final MethodNode method,  final AnnotationNode annotation) {
+        super(mixin,  method,  annotation);
     }
     
     protected Injector parseInjector(final AnnotationNode injectAnnotation) {
-        final int index = Annotations.getValue(injectAnnotation, "index", -1);
-        return (Injector)new ModifyArgInjector((InjectionInfo)this, index);
+        final int index = Annotations.getValue(injectAnnotation,  "index",  -1);
+        return (Injector)new ModifyArgInjector((InjectionInfo)this,  index);
     }
     
     protected String getDescription() {

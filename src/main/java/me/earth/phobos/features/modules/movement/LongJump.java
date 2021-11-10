@@ -44,15 +44,15 @@ public class LongJump extends Module
     private boolean beganJump;
     
     public LongJump() {
-        super("LongJump", "Jumps long.", Module.Category.MOVEMENT, true, false, false);
-        this.timeout = (Setting<Integer>)this.register(new Setting("TimeOut", (T)2000, (T)0, (T)5000));
-        this.boost = (Setting<Float>)this.register(new Setting("Boost", (T)4.48f, (T)1.0f, (T)20.0f));
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", (T)Mode.DIRECT));
-        this.lagOff = (Setting<Boolean>)this.register(new Setting("LagOff", (T)false));
-        this.autoOff = (Setting<Boolean>)this.register(new Setting("AutoOff", (T)false));
-        this.disableStrafe = (Setting<Boolean>)this.register(new Setting("DisableStrafe", (T)false));
-        this.strafeOff = (Setting<Boolean>)this.register(new Setting("StrafeOff", (T)false));
-        this.step = (Setting<Boolean>)this.register(new Setting("SetStep", (T)false));
+        super("LongJump",  "Jumps long.",  Module.Category.MOVEMENT,  true,  false,  false);
+        this.timeout = (Setting<Integer>)this.register(new Setting("TimeOut", 2000, 0, 5000));
+        this.boost = (Setting<Float>)this.register(new Setting("Boost", 4.48f, 1.0f, 20.0f));
+        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.DIRECT));
+        this.lagOff = (Setting<Boolean>)this.register(new Setting("LagOff", false));
+        this.autoOff = (Setting<Boolean>)this.register(new Setting("AutoOff", false));
+        this.disableStrafe = (Setting<Boolean>)this.register(new Setting("DisableStrafe", false));
+        this.strafeOff = (Setting<Boolean>)this.register(new Setting("StrafeOff", false));
+        this.step = (Setting<Boolean>)this.register(new Setting("SetStep", false));
         this.timer = new TimerUtil();
     }
     
@@ -154,7 +154,7 @@ public class LongJump extends Module
                 if (!LongJump.mc.player.collidedVertically) {
                     ++this.airTicks;
                     if (LongJump.mc.gameSettings.keyBindSneak.isKeyDown()) {
-                        LongJump.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(0.0, 2.147483647E9, 0.0, false));
+                        LongJump.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(0.0,  2.147483647E9,  0.0,  false));
                     }
                     this.groundTicks = 0;
                     if (!LongJump.mc.player.collidedVertically) {
@@ -225,7 +225,7 @@ public class LongJump extends Module
                         }
                     }
                     Phobos.timerManager.setTimer(0.85f);
-                    final double[] speedVals = { 0.420606, 0.417924, 0.415258, 0.412609, 0.409977, 0.407361, 0.404761, 0.402178, 0.399611, 0.39706, 0.394525, 0.392, 0.3894, 0.38644, 0.383655, 0.381105, 0.37867, 0.37625, 0.37384, 0.37145, 0.369, 0.3666, 0.3642, 0.3618, 0.35945, 0.357, 0.354, 0.351, 0.348, 0.345, 0.342, 0.339, 0.336, 0.333, 0.33, 0.327, 0.324, 0.321, 0.318, 0.315, 0.312, 0.309, 0.307, 0.305, 0.303, 0.3, 0.297, 0.295, 0.293, 0.291, 0.289, 0.287, 0.285, 0.283, 0.281, 0.279, 0.277, 0.275, 0.273, 0.271, 0.269, 0.267, 0.265, 0.263, 0.261, 0.259, 0.257, 0.255, 0.253, 0.251, 0.249, 0.247, 0.245, 0.243, 0.241, 0.239, 0.237 };
+                    final double[] speedVals = { 0.420606,  0.417924,  0.415258,  0.412609,  0.409977,  0.407361,  0.404761,  0.402178,  0.399611,  0.39706,  0.394525,  0.392,  0.3894,  0.38644,  0.383655,  0.381105,  0.37867,  0.37625,  0.37384,  0.37145,  0.369,  0.3666,  0.3642,  0.3618,  0.35945,  0.357,  0.354,  0.351,  0.348,  0.345,  0.342,  0.339,  0.336,  0.333,  0.33,  0.327,  0.324,  0.321,  0.318,  0.315,  0.312,  0.309,  0.307,  0.305,  0.303,  0.3,  0.297,  0.295,  0.293,  0.291,  0.289,  0.287,  0.285,  0.283,  0.281,  0.279,  0.277,  0.275,  0.273,  0.271,  0.269,  0.267,  0.265,  0.263,  0.261,  0.259,  0.257,  0.255,  0.253,  0.251,  0.249,  0.247,  0.245,  0.243,  0.241,  0.239,  0.237 };
                     if (LongJump.mc.gameSettings.keyBindForward.pressed) {
                         try {
                             LongJump.mc.player.motionX = xDir * speedVals[this.airTicks - 1] * 3.0;
@@ -250,11 +250,11 @@ public class LongJump extends Module
                 final EntityPlayerSP player15 = player15 = LongJump.mc.player;
                 player15.motionZ /= 13.0;
                 if (this.groundTicks == 1) {
-                    this.updatePosition(LongJump.mc.player.posX, LongJump.mc.player.posY, LongJump.mc.player.posZ);
-                    this.updatePosition(LongJump.mc.player.posX + 0.0624, LongJump.mc.player.posY, LongJump.mc.player.posZ);
-                    this.updatePosition(LongJump.mc.player.posX, LongJump.mc.player.posY + 0.419, LongJump.mc.player.posZ);
-                    this.updatePosition(LongJump.mc.player.posX + 0.0624, LongJump.mc.player.posY, LongJump.mc.player.posZ);
-                    this.updatePosition(LongJump.mc.player.posX, LongJump.mc.player.posY + 0.419, LongJump.mc.player.posZ);
+                    this.updatePosition(LongJump.mc.player.posX,  LongJump.mc.player.posY,  LongJump.mc.player.posZ);
+                    this.updatePosition(LongJump.mc.player.posX + 0.0624,  LongJump.mc.player.posY,  LongJump.mc.player.posZ);
+                    this.updatePosition(LongJump.mc.player.posX,  LongJump.mc.player.posY + 0.419,  LongJump.mc.player.posZ);
+                    this.updatePosition(LongJump.mc.player.posX + 0.0624,  LongJump.mc.player.posY,  LongJump.mc.player.posZ);
+                    this.updatePosition(LongJump.mc.player.posX,  LongJump.mc.player.posY + 0.419,  LongJump.mc.player.posZ);
                     break;
                 }
                 if (this.groundTicks > 2) {
@@ -286,9 +286,9 @@ public class LongJump extends Module
             else {
                 this.moveSpeed = this.lastDist - this.lastDist / 159.0;
             }
-            this.setMoveSpeed(event, this.moveSpeed = Math.max(this.getBaseMoveSpeed(), this.moveSpeed));
-            final List<AxisAlignedBB> collidingList = (List<AxisAlignedBB>)LongJump.mc.world.getCollisionBoxes((Entity)LongJump.mc.player, LongJump.mc.player.getEntityBoundingBox().offset(0.0, LongJump.mc.player.motionY, 0.0));
-            final List<AxisAlignedBB> collidingList2 = (List<AxisAlignedBB>)LongJump.mc.world.getCollisionBoxes((Entity)LongJump.mc.player, LongJump.mc.player.getEntityBoundingBox().offset(0.0, -0.4, 0.0));
+            this.setMoveSpeed(event,  this.moveSpeed = Math.max(this.getBaseMoveSpeed(),  this.moveSpeed));
+            final List<AxisAlignedBB> collidingList = (List<AxisAlignedBB>)LongJump.mc.world.getCollisionBoxes((Entity)LongJump.mc.player,  LongJump.mc.player.getEntityBoundingBox().offset(0.0,  LongJump.mc.player.motionY,  0.0));
+            final List<AxisAlignedBB> collidingList2 = (List<AxisAlignedBB>)LongJump.mc.world.getCollisionBoxes((Entity)LongJump.mc.player,  LongJump.mc.player.getEntityBoundingBox().offset(0.0,  -0.4,  0.0));
             if (!LongJump.mc.player.collidedVertically && (collidingList.size() > 0 || collidingList2.size() > 0)) {
                 event.setY(LongJump.mc.player.motionY = -0.001);
             }
@@ -299,16 +299,16 @@ public class LongJump extends Module
         }
     }
     
-    private void updatePosition(final double x, final double y, final double z) {
-        LongJump.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(x, y, z, LongJump.mc.player.onGround));
+    private void updatePosition(final double x,  final double y,  final double z) {
+        LongJump.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(x,  y,  z,  LongJump.mc.player.onGround));
     }
     
     private Block getBlock(final BlockPos pos) {
         return LongJump.mc.world.getBlockState(pos).getBlock();
     }
     
-    private double getDistance(final EntityPlayer player, final double distance) {
-        final List<AxisAlignedBB> boundingBoxes = (List<AxisAlignedBB>)player.world.getCollisionBoxes((Entity)player, player.getEntityBoundingBox().offset(0.0, -distance, 0.0));
+    private double getDistance(final EntityPlayer player,  final double distance) {
+        final List<AxisAlignedBB> boundingBoxes = (List<AxisAlignedBB>)player.world.getCollisionBoxes((Entity)player,  player.getEntityBoundingBox().offset(0.0,  -distance,  0.0));
         if (boundingBoxes.isEmpty()) {
             return 0.0;
         }
@@ -321,7 +321,7 @@ public class LongJump extends Module
         return player.posY - y;
     }
     
-    private void setMoveSpeed(final MoveEvent event, final double speed) {
+    private void setMoveSpeed(final MoveEvent event,  final double speed) {
         final MovementInput movementInput = LongJump.mc.player.movementInput;
         double forward = movementInput.moveForward;
         double strafe = movementInput.moveStrafe;
@@ -364,8 +364,8 @@ public class LongJump extends Module
     
     public enum Mode
     {
-        VIRTUE, 
-        DIRECT, 
+        VIRTUE,  
+        DIRECT,  
         TICK;
     }
 }

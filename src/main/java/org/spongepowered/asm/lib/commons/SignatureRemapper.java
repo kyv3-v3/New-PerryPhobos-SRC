@@ -13,11 +13,11 @@ public class SignatureRemapper extends SignatureVisitor
     private final Remapper remapper;
     private Stack<String> classNames;
     
-    public SignatureRemapper(final SignatureVisitor v, final Remapper remapper) {
-        this(327680, v, remapper);
+    public SignatureRemapper(final SignatureVisitor v,  final Remapper remapper) {
+        this(327680,  v,  remapper);
     }
     
-    protected SignatureRemapper(final int api, final SignatureVisitor v, final Remapper remapper) {
+    protected SignatureRemapper(final int api,  final SignatureVisitor v,  final Remapper remapper) {
         super(api);
         this.classNames = new Stack<String>();
         this.v = v;

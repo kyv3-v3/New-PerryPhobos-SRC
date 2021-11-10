@@ -23,8 +23,8 @@ public class Godmode extends Module
     public Entity entity;
     
     public Godmode() {
-        super("Godmode", "Makes u able to be in godmode via riding entities and can dupe with it.", Module.Category.PLAYER, true, false, false);
-        this.remount = (Setting<Boolean>)this.register(new Setting("Remount", (T)false));
+        super("Godmode",  "Makes u able to be in godmode via riding entities and can dupe with it.",  Module.Category.PLAYER,  true,  false,  false);
+        this.remount = (Setting<Boolean>)this.register(new Setting("Remount", false));
         this.mc = Minecraft.getMinecraft();
     }
     
@@ -34,7 +34,7 @@ public class Godmode extends Module
             this.entity = this.mc.player.getRidingEntity();
             this.mc.renderGlobal.loadRenderers();
             this.hideEntity();
-            this.mc.player.setPosition((double)Minecraft.getMinecraft().player.getPosition().getX(), (double)(Minecraft.getMinecraft().player.getPosition().getY() - 1), (double)Minecraft.getMinecraft().player.getPosition().getZ());
+            this.mc.player.setPosition((double)Minecraft.getMinecraft().player.getPosition().getX(),  (double)(Minecraft.getMinecraft().player.getPosition().getY() - 1),  (double)Minecraft.getMinecraft().player.getPosition().getZ());
         }
         if (this.mc.world != null && this.remount.getValue()) {
             this.remount.setValue(false);
@@ -47,8 +47,8 @@ public class Godmode extends Module
             this.remount.setValue(false);
         }
         this.mc.player.dismountRidingEntity();
-        Objects.requireNonNull(this.mc.getConnection()).sendPacket((Packet)new CPacketEntityAction((Entity)this.mc.player, CPacketEntityAction.Action.START_SNEAKING));
-        this.mc.getConnection().sendPacket((Packet)new CPacketEntityAction((Entity)this.mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
+        Objects.requireNonNull(this.mc.getConnection()).sendPacket((Packet)new CPacketEntityAction((Entity)this.mc.player,  CPacketEntityAction.Action.START_SNEAKING));
+        this.mc.getConnection().sendPacket((Packet)new CPacketEntityAction((Entity)this.mc.player,  CPacketEntityAction.Action.STOP_SNEAKING));
     }
     
     @SubscribeEvent
@@ -68,7 +68,7 @@ public class Godmode extends Module
     private void showEntity(final Entity entity2) {
         entity2.isDead = false;
         this.mc.world.loadedEntityList.add(entity2);
-        this.mc.player.startRiding(entity2, true);
+        this.mc.player.startRiding(entity2,  true);
     }
     
     @SubscribeEvent
@@ -80,9 +80,9 @@ public class Godmode extends Module
             if (this.remount.getValue() && Objects.requireNonNull((Godmode)Phobos.moduleManager.getModuleByClass((Class<T>)Godmode.class)).isEnabled()) {
                 this.showEntity(this.entity);
             }
-            this.entity.setPositionAndRotation(Minecraft.getMinecraft().player.posX, Minecraft.getMinecraft().player.posY, Minecraft.getMinecraft().player.posZ, Minecraft.getMinecraft().player.rotationYaw, Minecraft.getMinecraft().player.rotationPitch);
-            this.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Rotation(this.mc.player.rotationYaw, this.mc.player.rotationPitch, true));
-            this.mc.player.connection.sendPacket((Packet)new CPacketInput(this.mc.player.movementInput.moveForward, this.mc.player.movementInput.moveStrafe, false, false));
+            this.entity.setPositionAndRotation(Minecraft.getMinecraft().player.posX,  Minecraft.getMinecraft().player.posY,  Minecraft.getMinecraft().player.posZ,  Minecraft.getMinecraft().player.rotationYaw,  Minecraft.getMinecraft().player.rotationPitch);
+            this.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Rotation(this.mc.player.rotationYaw,  this.mc.player.rotationPitch,  true));
+            this.mc.player.connection.sendPacket((Packet)new CPacketInput(this.mc.player.movementInput.moveForward,  this.mc.player.movementInput.moveStrafe,  false,  false));
             this.mc.player.connection.sendPacket((Packet)new CPacketVehicleMove(this.entity));
         }
     }

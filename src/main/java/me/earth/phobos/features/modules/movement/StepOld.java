@@ -32,20 +32,20 @@ public class StepOld extends Module
     private int packets;
     
     public StepOld() {
-        super("StepOld", "Allows you to step up blocks.", Module.Category.MOVEMENT, true, false, false);
-        this.twoFiveOffset = new double[] { 0.425, 0.821, 0.699, 0.599, 1.022, 1.372, 1.652, 1.869, 2.019, 1.907 };
-        this.oneblockPositions = new double[] { 0.42, 0.75 };
-        this.twoblockPositions = new double[] { 0.4, 0.75, 0.5, 0.41, 0.83, 1.16, 1.41, 1.57, 1.58, 1.42 };
-        this.futurePositions = new double[] { 0.42, 0.78, 0.63, 0.51, 0.9, 1.21, 1.45, 1.43 };
-        this.fourBlockPositions = new double[] { 0.42, 0.78, 0.63, 0.51, 0.9, 1.21, 1.45, 1.43, 1.78, 1.63, 1.51, 1.9, 2.21, 2.45, 2.43, 2.78, 2.63, 2.51, 2.9, 3.21, 3.45, 3.43 };
-        this.vanilla = (Setting<Boolean>)this.register(new Setting("Vanilla", (T)false));
-        this.stepHeightVanilla = (Setting<Float>)this.register(new Setting("VHeight", (T)2.0f, (T)0.1f, (T)5.0f, v -> this.vanilla.getValue()));
-        this.stepHeight = (Setting<Integer>)this.register(new Setting("Height", (T)2, (T)1, (T)5, v -> !this.vanilla.getValue()));
-        this.small = (Setting<Boolean>)this.register(new Setting("Offset", (T)false, v -> this.stepHeight.getValue() > 1 && !this.vanilla.getValue()));
-        this.spoof = (Setting<Boolean>)this.register(new Setting("Spoof", (T)true, v -> !this.vanilla.getValue()));
-        this.ticks = (Setting<Integer>)this.register(new Setting("Delay", (T)3, (T)0, (T)25, v -> this.spoof.getValue() && !this.vanilla.getValue()));
-        this.turnOff = (Setting<Boolean>)this.register(new Setting("Disable", (T)false, v -> !this.vanilla.getValue()));
-        this.check = (Setting<Boolean>)this.register(new Setting("Check", (T)true, v -> !this.vanilla.getValue()));
+        super("StepOld",  "Allows you to step up blocks.",  Module.Category.MOVEMENT,  true,  false,  false);
+        this.twoFiveOffset = new double[] { 0.425,  0.821,  0.699,  0.599,  1.022,  1.372,  1.652,  1.869,  2.019,  1.907 };
+        this.oneblockPositions = new double[] { 0.42,  0.75 };
+        this.twoblockPositions = new double[] { 0.4,  0.75,  0.5,  0.41,  0.83,  1.16,  1.41,  1.57,  1.58,  1.42 };
+        this.futurePositions = new double[] { 0.42,  0.78,  0.63,  0.51,  0.9,  1.21,  1.45,  1.43 };
+        this.fourBlockPositions = new double[] { 0.42,  0.78,  0.63,  0.51,  0.9,  1.21,  1.45,  1.43,  1.78,  1.63,  1.51,  1.9,  2.21,  2.45,  2.43,  2.78,  2.63,  2.51,  2.9,  3.21,  3.45,  3.43 };
+        this.vanilla = (Setting<Boolean>)this.register(new Setting("Vanilla", false));
+        this.stepHeightVanilla = (Setting<Float>)this.register(new Setting("VHeight", 2.0f, 0.1f, 5.0f,  v -> this.vanilla.getValue()));
+        this.stepHeight = (Setting<Integer>)this.register(new Setting("Height", 2, 1, 5,  v -> !this.vanilla.getValue()));
+        this.small = (Setting<Boolean>)this.register(new Setting("Offset", false,  v -> this.stepHeight.getValue() > 1 && !this.vanilla.getValue()));
+        this.spoof = (Setting<Boolean>)this.register(new Setting("Spoof", true,  v -> !this.vanilla.getValue()));
+        this.ticks = (Setting<Integer>)this.register(new Setting("Delay", 3, 0, 25,  v -> this.spoof.getValue() && !this.vanilla.getValue()));
+        this.turnOff = (Setting<Boolean>)this.register(new Setting("Disable", false,  v -> !this.vanilla.getValue()));
+        this.check = (Setting<Boolean>)this.register(new Setting("Check", true,  v -> !this.vanilla.getValue()));
         this.selectedPositions = new double[0];
         StepOld.instance = this;
     }
@@ -90,7 +90,7 @@ public class StepOld extends Module
         if (this.check.getValue()) {
             for (int x = MathHelper.floor(bb.minX); x < MathHelper.floor(bb.maxX + 1.0); ++x) {
                 for (int z = MathHelper.floor(bb.minZ); z < MathHelper.floor(bb.maxZ + 1.0); ++z) {
-                    final Block block = StepOld.mc.world.getBlockState(new BlockPos((double)x, bb.maxY + 1.0, (double)z)).getBlock();
+                    final Block block = StepOld.mc.world.getBlockState(new BlockPos((double)x,  bb.maxY + 1.0,  (double)z)).getBlock();
                     if (!(block instanceof BlockAir)) {
                         return;
                     }
@@ -99,9 +99,9 @@ public class StepOld extends Module
         }
         if (StepOld.mc.player.onGround && !StepOld.mc.player.isInsideOfMaterial(Material.WATER) && !StepOld.mc.player.isInsideOfMaterial(Material.LAVA) && StepOld.mc.player.collidedVertically && StepOld.mc.player.fallDistance == 0.0f && !StepOld.mc.gameSettings.keyBindJump.pressed && StepOld.mc.player.collidedHorizontally && !StepOld.mc.player.isOnLadder() && (this.packets > this.selectedPositions.length - 2 || (this.spoof.getValue() && this.packets > this.ticks.getValue()))) {
             for (final double position : this.selectedPositions) {
-                StepOld.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(StepOld.mc.player.posX, StepOld.mc.player.posY + position, StepOld.mc.player.posZ, true));
+                StepOld.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(StepOld.mc.player.posX,  StepOld.mc.player.posY + position,  StepOld.mc.player.posZ,  true));
             }
-            StepOld.mc.player.setPosition(StepOld.mc.player.posX, StepOld.mc.player.posY + this.selectedPositions[this.selectedPositions.length - 1], StepOld.mc.player.posZ);
+            StepOld.mc.player.setPosition(StepOld.mc.player.posX,  StepOld.mc.player.posY + this.selectedPositions[this.selectedPositions.length - 1],  StepOld.mc.player.posZ);
             this.packets = 0;
             if (this.turnOff.getValue()) {
                 this.disable();

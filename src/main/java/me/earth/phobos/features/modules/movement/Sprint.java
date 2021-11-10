@@ -15,8 +15,8 @@ public class Sprint extends Module
     public Setting<Mode> mode;
     
     public Sprint() {
-        super("Sprint", "Modifies sprinting.", Module.Category.MOVEMENT, false, false, false);
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", (T)Mode.RAGE));
+        super("Sprint",  "Modifies sprinting.",  Module.Category.MOVEMENT,  false,  false,  false);
+        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.RAGE));
         this.setInstance();
     }
     
@@ -79,7 +79,7 @@ public class Sprint extends Module
     
     public enum Mode
     {
-        LEGIT, 
+        LEGIT,  
         RAGE;
     }
 }

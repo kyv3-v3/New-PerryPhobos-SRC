@@ -16,9 +16,9 @@ public class AntiHunger extends Module
     public Setting<Boolean> ground;
     
     public AntiHunger() {
-        super("AntiHunger", "Prevents you from getting hungry as fast.", Module.Category.PLAYER, true, false, false);
-        this.cancelSprint = (Setting<Boolean>)this.register(new Setting("Sprint", (T)true));
-        this.ground = (Setting<Boolean>)this.register(new Setting("Ground", (T)true));
+        super("AntiHunger",  "Prevents you from getting hungry as fast.",  Module.Category.PLAYER,  true,  false,  false);
+        this.cancelSprint = (Setting<Boolean>)this.register(new Setting("Sprint", true));
+        this.ground = (Setting<Boolean>)this.register(new Setting("Ground", true));
     }
     
     @SubscribeEvent

@@ -14,6 +14,6 @@ public class ClearRamCommand extends Command
     
     public void execute(final String[] commands) {
         System.gc();
-        Command.sendMessage("Finished clearing the ram.", false);
+        Command.sendMessage("Finished clearing the ram.",  false);
     }
 }

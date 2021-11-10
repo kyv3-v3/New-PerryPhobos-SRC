@@ -15,7 +15,7 @@ import me.earth.phobos.features.gui.alts.ias.events.*;
 import net.minecraftforge.fml.common.event.*;
 import me.earth.phobos.features.gui.alts.ias.tools.*;
 
-@Mod(modid = "ias", name = "In-Game Account Switcher", clientSideOnly = true, guiFactory = "me.earth.phobos.features.gui.alts.ias.config.IASGuiFactory", updateJSON = "https://thefireplace.bitnamiapp.com/jsons/ias.json", acceptedMinecraftVersions = "[1.11,)")
+@Mod(modid = "ias",  name = "In-Game Account Switcher",  clientSideOnly = true,  guiFactory = "me.earth.phobos.features.gui.alts.ias.config.IASGuiFactory",  updateJSON = "https://thefireplace.bitnamiapp.com/jsons/ias.json",  acceptedMinecraftVersions = "[1.11, )")
 public class IAS
 {
     public static Configuration config;
@@ -33,8 +33,8 @@ public class IAS
     @Mod.EventHandler
     public void preInit(final FMLPreInitializationEvent event) {
         (IAS.config = new Configuration(event.getSuggestedConfigurationFile())).load();
-        IAS.CASESENSITIVE_PROPERTY = IAS.config.get("general", "ias.cfg.casesensitive", false, I18n.format("ias.cfg.casesensitive.tooltip", new Object[0]));
-        IAS.ENABLERELOG_PROPERTY = IAS.config.get("general", "ias.cfg.enablerelog", false, I18n.format("ias.cfg.enablerelog.tooltip", new Object[0]));
+        IAS.CASESENSITIVE_PROPERTY = IAS.config.get("general",  "ias.cfg.casesensitive",  false,  I18n.format("ias.cfg.casesensitive.tooltip",  new Object[0]));
+        IAS.ENABLERELOG_PROPERTY = IAS.config.get("general",  "ias.cfg.enablerelog",  false,  I18n.format("ias.cfg.enablerelog.tooltip",  new Object[0]));
         syncConfig();
         if (!event.getModMetadata().version.equals("${version}")) {
             Standards.updateFolder();

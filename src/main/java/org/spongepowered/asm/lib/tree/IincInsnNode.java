@@ -12,7 +12,7 @@ public class IincInsnNode extends AbstractInsnNode
     public int var;
     public int incr;
     
-    public IincInsnNode(final int var, final int incr) {
+    public IincInsnNode(final int var,  final int incr) {
         super(132);
         this.var = var;
         this.incr = incr;
@@ -23,11 +23,11 @@ public class IincInsnNode extends AbstractInsnNode
     }
     
     public void accept(final MethodVisitor mv) {
-        mv.visitIincInsn(this.var, this.incr);
+        mv.visitIincInsn(this.var,  this.incr);
         this.acceptAnnotations(mv);
     }
     
-    public AbstractInsnNode clone(final Map<LabelNode, LabelNode> labels) {
-        return new IincInsnNode(this.var, this.incr).cloneAnnotations((AbstractInsnNode)this);
+    public AbstractInsnNode clone(final Map<LabelNode,  LabelNode> labels) {
+        return new IincInsnNode(this.var,  this.incr).cloneAnnotations((AbstractInsnNode)this);
     }
 }

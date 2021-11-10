@@ -21,7 +21,7 @@ public final class EncryptionTools
     
     public static String decodeOld(final String text) {
         try {
-            return new String(EncryptionTools.decoder.decode(text), "UTF-8");
+            return new String(EncryptionTools.decoder.decode(text),  "UTF-8");
         }
         catch (IOException e) {
             return null;
@@ -32,11 +32,11 @@ public final class EncryptionTools
         try {
             final byte[] data = text.getBytes("UTF-8");
             final Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(1, getSecretKey());
+            cipher.init(1,  getSecretKey());
             return new String(EncryptionTools.encoder.encode(cipher.doFinal(data)));
         }
         catch (BadPaddingException e) {
-            throw new RuntimeException("The password does not match", e);
+            throw new RuntimeException("The password does not match",  e);
         }
         catch (IllegalBlockSizeException | InvalidKeyException | IOException | NoSuchAlgorithmException | NoSuchPaddingException ex2) {
             final Exception ex;
@@ -49,11 +49,11 @@ public final class EncryptionTools
         try {
             final byte[] data = EncryptionTools.decoder.decode(text);
             final Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(2, getSecretKey());
-            return new String(cipher.doFinal(data), "UTF-8");
+            cipher.init(2,  getSecretKey());
+            return new String(cipher.doFinal(data),  "UTF-8");
         }
         catch (BadPaddingException e) {
-            throw new RuntimeException("The password does not match", e);
+            throw new RuntimeException("The password does not match",  e);
         }
         catch (IllegalBlockSizeException | InvalidKeyException | IOException | NoSuchAlgorithmException | NoSuchPaddingException ex2) {
             final Exception ex;
@@ -88,8 +88,8 @@ public final class EncryptionTools
     private static SecretKeySpec getSecretKey() {
         try {
             final String password = "${secretSalt}" + Standards.getPassword() + "${secretSalt}";
-            final byte[] key = Arrays.copyOf(EncryptionTools.sha512.digest(password.getBytes("UTF-8")), 16);
-            return new SecretKeySpec(key, "AES");
+            final byte[] key = Arrays.copyOf(EncryptionTools.sha512.digest(password.getBytes("UTF-8")),  16);
+            return new SecretKeySpec(key,  "AES");
         }
         catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);

@@ -14,7 +14,7 @@ public class JesusEvent extends EventStage
     private BlockPos pos;
     private AxisAlignedBB boundingBox;
     
-    public JesusEvent(final int stage, final BlockPos pos) {
+    public JesusEvent(final int stage,  final BlockPos pos) {
         super(stage);
         this.pos = pos;
     }

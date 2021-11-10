@@ -16,12 +16,12 @@ public class ObfuscationEnvironmentMCP extends ObfuscationEnvironment
     }
     
     @Override
-    protected IMappingProvider getMappingProvider(final Messager messager, final Filer filer) {
-        return (IMappingProvider)new MappingProviderSrg(messager, filer);
+    protected IMappingProvider getMappingProvider(final Messager messager,  final Filer filer) {
+        return (IMappingProvider)new MappingProviderSrg(messager,  filer);
     }
     
     @Override
-    protected IMappingWriter getMappingWriter(final Messager messager, final Filer filer) {
-        return (IMappingWriter)new MappingWriterSrg(messager, filer);
+    protected IMappingWriter getMappingWriter(final Messager messager,  final Filer filer) {
+        return (IMappingWriter)new MappingWriterSrg(messager,  filer);
     }
 }

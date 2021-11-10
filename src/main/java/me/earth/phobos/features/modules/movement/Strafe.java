@@ -54,30 +54,30 @@ public class Strafe extends Module
     private int hops;
     
     public Strafe() {
-        super("Strafe", "AirControl etc.", Module.Category.MOVEMENT, true, false, false);
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", (T)Mode.NCP));
-        this.limiter = (Setting<Boolean>)this.register(new Setting("SetGround", (T)true));
-        this.bhop2 = (Setting<Boolean>)this.register(new Setting("Hop", (T)true));
-        this.limiter2 = (Setting<Boolean>)this.register(new Setting("Bhop", (T)false));
-        this.noLag = (Setting<Boolean>)this.register(new Setting("NoLag", (T)false));
-        this.specialMoveSpeed = (Setting<Integer>)this.register(new Setting("Speed", (T)100, (T)0, (T)150));
-        this.potionSpeed = (Setting<Integer>)this.register(new Setting("Speed1", (T)130, (T)0, (T)150));
-        this.potionSpeed2 = (Setting<Integer>)this.register(new Setting("Speed2", (T)125, (T)0, (T)150));
-        this.dFactor = (Setting<Integer>)this.register(new Setting("DFactor", (T)159, (T)100, (T)200));
-        this.acceleration = (Setting<Integer>)this.register(new Setting("Accel", (T)2149, (T)1000, (T)2500));
-        this.speedLimit = (Setting<Float>)this.register(new Setting("SpeedLimit", (T)35.0f, (T)20.0f, (T)60.0f));
-        this.speedLimit2 = (Setting<Float>)this.register(new Setting("SpeedLimit2", (T)60.0f, (T)20.0f, (T)60.0f));
-        this.yOffset = (Setting<Integer>)this.register(new Setting("YOffset", (T)400, (T)350, (T)500));
-        this.potion = (Setting<Boolean>)this.register(new Setting("Potion", (T)false));
-        this.wait = (Setting<Boolean>)this.register(new Setting("Wait", (T)true));
-        this.hopWait = (Setting<Boolean>)this.register(new Setting("HopWait", (T)true));
-        this.startStage = (Setting<Integer>)this.register(new Setting("Stage", (T)2, (T)0, (T)4));
-        this.setPos = (Setting<Boolean>)this.register(new Setting("SetPos", (T)true));
-        this.setNull = (Setting<Boolean>)this.register(new Setting("SetNull", (T)false));
-        this.setGroundLimit = (Setting<Integer>)this.register(new Setting("GroundLimit", (T)138, (T)0, (T)1000));
-        this.groundFactor = (Setting<Integer>)this.register(new Setting("GroundFactor", (T)13, (T)0, (T)50));
-        this.step = (Setting<Integer>)this.register(new Setting("SetStep", (T)1, (T)0, (T)2, v -> this.mode.getValue() == Mode.BHOP));
-        this.setGroundNoLag = (Setting<Boolean>)this.register(new Setting("NoGroundLag", (T)true));
+        super("Strafe",  "AirControl etc.",  Module.Category.MOVEMENT,  true,  false,  false);
+        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.NCP));
+        this.limiter = (Setting<Boolean>)this.register(new Setting("SetGround", true));
+        this.bhop2 = (Setting<Boolean>)this.register(new Setting("Hop", true));
+        this.limiter2 = (Setting<Boolean>)this.register(new Setting("Bhop", false));
+        this.noLag = (Setting<Boolean>)this.register(new Setting("NoLag", false));
+        this.specialMoveSpeed = (Setting<Integer>)this.register(new Setting("Speed", 100, 0, 150));
+        this.potionSpeed = (Setting<Integer>)this.register(new Setting("Speed1", 130, 0, 150));
+        this.potionSpeed2 = (Setting<Integer>)this.register(new Setting("Speed2", 125, 0, 150));
+        this.dFactor = (Setting<Integer>)this.register(new Setting("DFactor", 159, 100, 200));
+        this.acceleration = (Setting<Integer>)this.register(new Setting("Accel", 2149, 1000, 2500));
+        this.speedLimit = (Setting<Float>)this.register(new Setting("SpeedLimit", 35.0f, 20.0f, 60.0f));
+        this.speedLimit2 = (Setting<Float>)this.register(new Setting("SpeedLimit2", 60.0f, 20.0f, 60.0f));
+        this.yOffset = (Setting<Integer>)this.register(new Setting("YOffset", 400, 350, 500));
+        this.potion = (Setting<Boolean>)this.register(new Setting("Potion", false));
+        this.wait = (Setting<Boolean>)this.register(new Setting("Wait", true));
+        this.hopWait = (Setting<Boolean>)this.register(new Setting("HopWait", true));
+        this.startStage = (Setting<Integer>)this.register(new Setting("Stage", 2, 0, 4));
+        this.setPos = (Setting<Boolean>)this.register(new Setting("SetPos", true));
+        this.setNull = (Setting<Boolean>)this.register(new Setting("SetNull", false));
+        this.setGroundLimit = (Setting<Integer>)this.register(new Setting("GroundLimit", 138, 0, 1000));
+        this.groundFactor = (Setting<Integer>)this.register(new Setting("GroundFactor", 13, 0, 50));
+        this.step = (Setting<Integer>)this.register(new Setting("SetStep", 1, 0, 2,  v -> this.mode.getValue() == Mode.BHOP));
+        this.setGroundNoLag = (Setting<Boolean>)this.register(new Setting("NoGroundLag", true));
         this.timer = new TimerUtil();
         this.stage = 1;
         Strafe.INSTANCE = this;
@@ -99,11 +99,11 @@ public class Strafe extends Module
         return baseSpeed;
     }
     
-    public static double round(final double value, final int places) {
+    public static double round(final double value,  final int places) {
         if (places < 0) {
             throw new IllegalArgumentException();
         }
-        final BigDecimal bigDecimal = new BigDecimal(value).setScale(places, RoundingMode.HALF_UP);
+        final BigDecimal bigDecimal = new BigDecimal(value).setScale(places,  RoundingMode.HALF_UP);
         return bigDecimal.doubleValue();
     }
     
@@ -155,7 +155,7 @@ public class Strafe extends Module
             if (this.limiter2.getValue() && Strafe.mc.player.onGround && Phobos.speedManager.getSpeedKpH() < this.speedLimit2.getValue()) {
                 this.stage = 2;
             }
-            if (this.limiter.getValue() && round(Strafe.mc.player.posY - (int)Strafe.mc.player.posY, 3) == round(this.setGroundLimit.getValue() / 1000.0, 3) && (!this.setGroundNoLag.getValue() || EntityUtil.isEntityMoving((Entity)Strafe.mc.player))) {
+            if (this.limiter.getValue() && round(Strafe.mc.player.posY - (int)Strafe.mc.player.posY,  3) == round(this.setGroundLimit.getValue() / 1000.0,  3) && (!this.setGroundNoLag.getValue() || EntityUtil.isEntityMoving((Entity)Strafe.mc.player))) {
                 if (this.setNull.getValue()) {
                     Strafe.mc.player.motionY = 0.0;
                 }
@@ -190,12 +190,12 @@ public class Strafe extends Module
                 this.moveSpeed = this.lastDist - difference;
             }
             else {
-                if (Strafe.mc.world.getCollisionBoxes((Entity)Strafe.mc.player, Strafe.mc.player.getEntityBoundingBox().offset(0.0, Strafe.mc.player.motionY, 0.0)).size() > 0 || (Strafe.mc.player.collidedVertically && this.stage > 0)) {
+                if (Strafe.mc.world.getCollisionBoxes((Entity)Strafe.mc.player,  Strafe.mc.player.getEntityBoundingBox().offset(0.0,  Strafe.mc.player.motionY,  0.0)).size() > 0 || (Strafe.mc.player.collidedVertically && this.stage > 0)) {
                     this.stage = (((!this.bhop2.getValue() || Phobos.speedManager.getSpeedKpH() < this.speedLimit.getValue()) && (Strafe.mc.player.moveForward != 0.0f || Strafe.mc.player.moveStrafing != 0.0f)) ? 1 : 0);
                 }
                 this.moveSpeed = this.lastDist - this.lastDist / this.dFactor.getValue();
             }
-            this.moveSpeed = Math.max(this.moveSpeed, getBaseMoveSpeed());
+            this.moveSpeed = Math.max(this.moveSpeed,  getBaseMoveSpeed());
             if (this.hopWait.getValue() && this.limiter2.getValue() && this.hops < 2) {
                 this.moveSpeed = EntityUtil.getMaxSpeed();
             }
@@ -267,14 +267,14 @@ public class Strafe extends Module
                 break;
             }
             default: {
-                if (Strafe.mc.world.getCollisionBoxes((Entity)Strafe.mc.player, Strafe.mc.player.getEntityBoundingBox().offset(0.0, Strafe.mc.player.motionY, 0.0)).size() > 0 || (Strafe.mc.player.collidedVertically && this.stage > 0)) {
+                if (Strafe.mc.world.getCollisionBoxes((Entity)Strafe.mc.player,  Strafe.mc.player.getEntityBoundingBox().offset(0.0,  Strafe.mc.player.motionY,  0.0)).size() > 0 || (Strafe.mc.player.collidedVertically && this.stage > 0)) {
                     this.stage = (((!this.bhop2.getValue() || Phobos.speedManager.getSpeedKpH() < this.speedLimit.getValue()) && (Strafe.mc.player.moveForward != 0.0f || Strafe.mc.player.moveStrafing != 0.0f)) ? 1 : 0);
                 }
                 this.moveSpeed = this.lastDist - this.lastDist / 159.0;
                 break;
             }
         }
-        this.moveSpeed = Math.max(this.moveSpeed, getBaseMoveSpeed());
+        this.moveSpeed = Math.max(this.moveSpeed,  getBaseMoveSpeed());
         double forward = Strafe.mc.player.movementInput.moveForward;
         double strafe = Strafe.mc.player.movementInput.moveStrafe;
         final double yaw = Strafe.mc.player.rotationYaw;
@@ -323,8 +323,8 @@ public class Strafe extends Module
     
     public enum Mode
     {
-        NONE, 
-        NCP, 
+        NONE,  
+        NCP,  
         BHOP;
     }
 }

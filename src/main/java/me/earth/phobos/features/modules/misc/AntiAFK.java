@@ -32,19 +32,19 @@ public class AntiAFK extends Module
     private final Setting<Boolean> move;
     
     public AntiAFK() {
-        super("AntiAFK", "Attempts to stop the server from kicking u when ur afk.", Category.MISC, true, false, false);
-        this.swing = (Setting<Boolean>)this.register(new Setting("Swing", (T)true));
-        this.turn = (Setting<Boolean>)this.register(new Setting("Turn", (T)true));
-        this.jump = (Setting<Boolean>)this.register(new Setting("Jump", (T)true));
-        this.sneak = (Setting<Boolean>)this.register(new Setting("Sneak", (T)true));
-        this.interact = (Setting<Boolean>)this.register(new Setting("InteractBlock", (T)false));
-        this.tabcomplete = (Setting<Boolean>)this.register(new Setting("TabComplete", (T)true));
-        this.msgs = (Setting<Boolean>)this.register(new Setting("ChatMsgs", (T)true));
-        this.stats = (Setting<Boolean>)this.register(new Setting("Stats", (T)true));
-        this.window = (Setting<Boolean>)this.register(new Setting("WindowClick", (T)true));
-        this.swap = (Setting<Boolean>)this.register(new Setting("ItemSwap", (T)true));
-        this.dig = (Setting<Boolean>)this.register(new Setting("HitBlock", (T)true));
-        this.move = (Setting<Boolean>)this.register(new Setting("Move", (T)true));
+        super("AntiAFK",  "Attempts to stop the server from kicking u when ur afk.",  Category.MISC,  true,  false,  false);
+        this.swing = (Setting<Boolean>)this.register(new Setting("Swing", true));
+        this.turn = (Setting<Boolean>)this.register(new Setting("Turn", true));
+        this.jump = (Setting<Boolean>)this.register(new Setting("Jump", true));
+        this.sneak = (Setting<Boolean>)this.register(new Setting("Sneak", true));
+        this.interact = (Setting<Boolean>)this.register(new Setting("InteractBlock", false));
+        this.tabcomplete = (Setting<Boolean>)this.register(new Setting("TabComplete", true));
+        this.msgs = (Setting<Boolean>)this.register(new Setting("ChatMsgs", true));
+        this.stats = (Setting<Boolean>)this.register(new Setting("Stats", true));
+        this.window = (Setting<Boolean>)this.register(new Setting("WindowClick", true));
+        this.swap = (Setting<Boolean>)this.register(new Setting("ItemSwap", true));
+        this.dig = (Setting<Boolean>)this.register(new Setting("HitBlock", true));
+        this.move = (Setting<Boolean>)this.register(new Setting("Move", true));
         this.random = new Random();
     }
     
@@ -68,11 +68,11 @@ public class AntiAFK extends Module
         if (AntiAFK.mc.player.ticksExisted % 30 == 0 && this.interact.getValue()) {
             final BlockPos blockPos = AntiAFK.mc.objectMouseOver.getBlockPos();
             if (!AntiAFK.mc.world.isAirBlock(blockPos)) {
-                AntiAFK.mc.playerController.clickBlock(blockPos, AntiAFK.mc.objectMouseOver.sideHit);
+                AntiAFK.mc.playerController.clickBlock(blockPos,  AntiAFK.mc.objectMouseOver.sideHit);
             }
         }
         if (AntiAFK.mc.player.ticksExisted % 80 == 0 && this.tabcomplete.getValue() && !AntiAFK.mc.player.isDead) {
-            AntiAFK.mc.player.connection.sendPacket((Packet)new CPacketTabComplete("/" + UUID.randomUUID().toString().replace('-', 'v'), AntiAFK.mc.player.getPosition(), false));
+            AntiAFK.mc.player.connection.sendPacket((Packet)new CPacketTabComplete("/" + UUID.randomUUID().toString().replace('-',  'v'),  AntiAFK.mc.player.getPosition(),  false));
         }
         if (AntiAFK.mc.player.ticksExisted % 200 == 0 && this.msgs.getValue() && !AntiAFK.mc.player.isDead) {
             AntiAFK.mc.player.sendChatMessage("Perry Phobos AntiAFK " + this.random.nextInt());
@@ -81,13 +81,13 @@ public class AntiAFK extends Module
             AntiAFK.mc.player.sendChatMessage("/stats");
         }
         if (AntiAFK.mc.player.ticksExisted % 125 == 0 && this.window.getValue() && !AntiAFK.mc.player.isDead) {
-            AntiAFK.mc.player.connection.sendPacket((Packet)new CPacketClickWindow(1, 1, 1, ClickType.CLONE, new ItemStack(Blocks.OBSIDIAN), (short)1));
+            AntiAFK.mc.player.connection.sendPacket((Packet)new CPacketClickWindow(1,  1,  1,  ClickType.CLONE,  new ItemStack(Blocks.OBSIDIAN),  (short)1));
         }
         if (AntiAFK.mc.player.ticksExisted % 70 == 0 && this.swap.getValue() && !AntiAFK.mc.player.isDead) {
-            AntiAFK.mc.player.connection.sendPacket((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.SWAP_HELD_ITEMS, AntiAFK.mc.player.getPosition(), EnumFacing.DOWN));
+            AntiAFK.mc.player.connection.sendPacket((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.SWAP_HELD_ITEMS,  AntiAFK.mc.player.getPosition(),  EnumFacing.DOWN));
         }
         if (AntiAFK.mc.player.ticksExisted % 50 == 0 && this.dig.getValue()) {
-            AntiAFK.mc.player.connection.sendPacket((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, AntiAFK.mc.player.getPosition(), EnumFacing.DOWN));
+            AntiAFK.mc.player.connection.sendPacket((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK,  AntiAFK.mc.player.getPosition(),  EnumFacing.DOWN));
         }
         if (AntiAFK.mc.player.ticksExisted % 150 == 0 && this.move.getValue()) {
             AntiAFK.mc.gameSettings.keyBindForward.pressed = true;

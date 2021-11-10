@@ -16,28 +16,28 @@ public class MathUtil implements Util
 {
     private static final Random random;
     
-    public static int getRandom(final int min, final int max) {
+    public static int getRandom(final int min,  final int max) {
         return min + MathUtil.random.nextInt(max - min + 1);
     }
     
-    public static double getRandom(final double min, final double max) {
-        return MathHelper.clamp(min + MathUtil.random.nextDouble() * max, min, max);
+    public static double getRandom(final double min,  final double max) {
+        return MathHelper.clamp(min + MathUtil.random.nextDouble() * max,  min,  max);
     }
     
-    public static float getRandom(final float min, final float max) {
-        return MathHelper.clamp(min + MathUtil.random.nextFloat() * max, min, max);
+    public static float getRandom(final float min,  final float max) {
+        return MathHelper.clamp(min + MathUtil.random.nextFloat() * max,  min,  max);
     }
     
-    public static int clamp(final int num, final int min, final int max) {
-        return (num < min) ? min : Math.min(num, max);
+    public static int clamp(final int num,  final int min,  final int max) {
+        return (num < min) ? min : Math.min(num,  max);
     }
     
-    public static float clamp(final float num, final float min, final float max) {
-        return (num < min) ? min : Math.min(num, max);
+    public static float clamp(final float num,  final float min,  final float max) {
+        return (num < min) ? min : Math.min(num,  max);
     }
     
-    public static double clamp(final double num, final double min, final double max) {
-        return (num < min) ? min : Math.min(num, max);
+    public static double clamp(final double num,  final double min,  final double max) {
+        return (num < min) ? min : Math.min(num,  max);
     }
     
     public static float sin(final float value) {
@@ -56,12 +56,12 @@ public class MathUtil implements Util
         return MathHelper.wrapDegrees(value);
     }
     
-    public static Vec3d roundVec(final Vec3d vec3d, final int places) {
-        return new Vec3d(round(vec3d.x, places), round(vec3d.y, places), round(vec3d.z, places));
+    public static Vec3d roundVec(final Vec3d vec3d,  final int places) {
+        return new Vec3d(round(vec3d.x,  places),  round(vec3d.y,  places),  round(vec3d.z,  places));
     }
     
-    public static double angleBetweenVecs(final Vec3d vec3d, final Vec3d other) {
-        double angle = Math.atan2(vec3d.x - other.x, vec3d.z - other.z);
+    public static double angleBetweenVecs(final Vec3d vec3d,  final Vec3d other) {
+        double angle = Math.atan2(vec3d.x - other.x,  vec3d.z - other.z);
         angle = -(angle / 3.141592653589793) * 360.0 / 2.0 + 180.0;
         return angle;
     }
@@ -74,7 +74,7 @@ public class MathUtil implements Util
         return Math.sqrt(lengthSQ(vec3d));
     }
     
-    public static double dot(final Vec3d vec3d, final Vec3d other) {
+    public static double dot(final Vec3d vec3d,  final Vec3d other) {
         return vec3d.x * other.x + vec3d.y * other.y + vec3d.z * other.z;
     }
     
@@ -86,12 +86,12 @@ public class MathUtil implements Util
         return input * input;
     }
     
-    public static double round(final double value, final int places) {
+    public static double round(final double value,  final int places) {
         if (places < 0) {
             throw new IllegalArgumentException();
         }
         BigDecimal bd = BigDecimal.valueOf(value);
-        bd = bd.setScale(places, RoundingMode.FLOOR);
+        bd = bd.setScale(places,  RoundingMode.FLOOR);
         return bd.doubleValue();
     }
     
@@ -107,29 +107,29 @@ public class MathUtil implements Util
     }
     
     public static Vec3d direction(final float yaw) {
-        return new Vec3d(Math.cos(degToRad(yaw + 90.0f)), 0.0, Math.sin(degToRad(yaw + 90.0f)));
+        return new Vec3d(Math.cos(degToRad(yaw + 90.0f)),  0.0,  Math.sin(degToRad(yaw + 90.0f)));
     }
     
-    public static float round(final float value, final int places) {
+    public static float round(final float value,  final int places) {
         if (places < 0) {
             throw new IllegalArgumentException();
         }
         BigDecimal bd = BigDecimal.valueOf(value);
-        bd = bd.setScale(places, RoundingMode.FLOOR);
+        bd = bd.setScale(places,  RoundingMode.FLOOR);
         return bd.floatValue();
     }
     
-    public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(final Map<K, V> map, final boolean descending) {
-        final LinkedList<Map.Entry<K, V>> list = new LinkedList<Map.Entry<K, V>>(map.entrySet());
+    public static <K,  V extends Comparable<? super V>> Map<K,  V> sortByValue(final Map<K,  V> map,  final boolean descending) {
+        final LinkedList<Map.Entry<K,  V>> list = new LinkedList<Map.Entry<K,  V>>(map.entrySet());
         if (descending) {
             list.sort((Comparator<? super Object>)Map.Entry.comparingByValue(Comparator.reverseOrder()));
         }
         else {
             list.sort((Comparator<? super Object>)Map.Entry.comparingByValue());
         }
-        final LinkedHashMap<K, V> result = new LinkedHashMap<K, V>();
-        for (final Map.Entry<K, V> entry : list) {
-            result.put(entry.getKey(), entry.getValue());
+        final LinkedHashMap<K,  V> result = new LinkedHashMap<K,  V>();
+        for (final Map.Entry<K,  V> entry : list) {
+            result.put(entry.getKey(),  entry.getValue());
         }
         return result;
     }
@@ -157,7 +157,7 @@ public class MathUtil implements Util
         return deg * 0.01745329238474369;
     }
     
-    public static double getIncremental(final double val, final double inc) {
+    public static double getIncremental(final double val,  final double inc) {
         final double one = 1.0 / inc;
         return Math.round(val * one) / one;
     }
@@ -185,20 +185,20 @@ public class MathUtil implements Util
         final double cos = Math.cos(Math.toRadians(yaw + 90.0f));
         final double posX = forward * speed * cos + side * speed * sin;
         final double posZ = forward * speed * sin - side * speed * cos;
-        return new double[] { posX, posZ };
+        return new double[] { posX,  posZ };
     }
     
     public static List<Vec3d> getBlockBlocks(final Entity entity) {
         final ArrayList<Vec3d> vec3ds = new ArrayList<Vec3d>();
         final AxisAlignedBB bb = entity.getEntityBoundingBox();
         final double y = entity.posY;
-        final double minX = round(bb.minX, 0);
-        final double minZ = round(bb.minZ, 0);
-        final double maxX = round(bb.maxX, 0);
-        final double maxZ = round(bb.maxZ, 0);
+        final double minX = round(bb.minX,  0);
+        final double minZ = round(bb.minZ,  0);
+        final double maxX = round(bb.maxX,  0);
+        final double maxZ = round(bb.maxZ,  0);
         if (minX != maxX) {
-            final Vec3d vec3d1 = new Vec3d(minX, y, minZ);
-            final Vec3d vec3d2 = new Vec3d(maxX, y, minZ);
+            final Vec3d vec3d1 = new Vec3d(minX,  y,  minZ);
+            final Vec3d vec3d2 = new Vec3d(maxX,  y,  minZ);
             final BlockPos pos1 = new BlockPos(vec3d1);
             final BlockPos pos2 = new BlockPos(vec3d2);
             if (BlockUtil.isBlockUnSolid(pos1) && BlockUtil.isBlockUnSolid(pos2)) {
@@ -206,8 +206,8 @@ public class MathUtil implements Util
                 vec3ds.add(vec3d2);
             }
             if (minZ != maxZ) {
-                final Vec3d vec3d3 = new Vec3d(minX, y, maxZ);
-                final Vec3d vec3d4 = new Vec3d(maxX, y, maxZ);
+                final Vec3d vec3d3 = new Vec3d(minX,  y,  maxZ);
+                final Vec3d vec3d4 = new Vec3d(maxX,  y,  maxZ);
                 final BlockPos pos3 = new BlockPos(vec3d1);
                 final BlockPos pos4 = new BlockPos(vec3d2);
                 if (BlockUtil.isBlockUnSolid(pos3) && BlockUtil.isBlockUnSolid(pos4)) {
@@ -222,8 +222,8 @@ public class MathUtil implements Util
             return vec3ds;
         }
         if (minZ != maxZ) {
-            final Vec3d vec3d1 = new Vec3d(minX, y, minZ);
-            final Vec3d vec3d2 = new Vec3d(minX, y, maxZ);
+            final Vec3d vec3d1 = new Vec3d(minX,  y,  minZ);
+            final Vec3d vec3d2 = new Vec3d(minX,  y,  maxZ);
             final BlockPos pos1 = new BlockPos(vec3d1);
             final BlockPos pos2 = new BlockPos(vec3d2);
             if (BlockUtil.isBlockUnSolid(pos1) && BlockUtil.isBlockUnSolid(pos2)) {
@@ -239,31 +239,31 @@ public class MathUtil implements Util
         return vec3ds;
     }
     
-    public static boolean areVec3dsAligned(final Vec3d vec3d1, final Vec3d vec3d2) {
-        return areVec3dsAlignedRetarded(vec3d1, vec3d2);
+    public static boolean areVec3dsAligned(final Vec3d vec3d1,  final Vec3d vec3d2) {
+        return areVec3dsAlignedRetarded(vec3d1,  vec3d2);
     }
     
-    public static boolean areVec3dsAlignedRetarded(final Vec3d vec3d1, final Vec3d vec3d2) {
+    public static boolean areVec3dsAlignedRetarded(final Vec3d vec3d1,  final Vec3d vec3d2) {
         final BlockPos pos1 = new BlockPos(vec3d1);
-        final BlockPos pos2 = new BlockPos(vec3d2.x, vec3d1.y, vec3d2.z);
+        final BlockPos pos2 = new BlockPos(vec3d2.x,  vec3d1.y,  vec3d2.z);
         return pos1.equals((Object)pos2);
     }
     
-    public static float[] calcAngle(final Vec3d from, final Vec3d to) {
+    public static float[] calcAngle(final Vec3d from,  final Vec3d to) {
         final double difX = to.x - from.x;
         final double difY = (to.y - from.y) * -1.0;
         final double difZ = to.z - from.z;
         final double dist = MathHelper.sqrt(difX * difX + difZ * difZ);
-        return new float[] { (float)MathHelper.wrapDegrees(Math.toDegrees(Math.atan2(difZ, difX)) - 90.0), (float)MathHelper.wrapDegrees(Math.toDegrees(Math.atan2(difY, dist))) };
+        return new float[] { (float)MathHelper.wrapDegrees(Math.toDegrees(Math.atan2(difZ,  difX)) - 90.0),  (float)MathHelper.wrapDegrees(Math.toDegrees(Math.atan2(difY,  dist))) };
     }
     
-    public static float[] calcAngleNoY(final Vec3d from, final Vec3d to) {
+    public static float[] calcAngleNoY(final Vec3d from,  final Vec3d to) {
         final double difX = to.x - from.x;
         final double difZ = to.z - from.z;
-        return new float[] { (float)MathHelper.wrapDegrees(Math.toDegrees(Math.atan2(difZ, difX)) - 90.0) };
+        return new float[] { (float)MathHelper.wrapDegrees(Math.toDegrees(Math.atan2(difZ,  difX)) - 90.0) };
     }
     
-    public static Vec3d calculateLine(final Vec3d x1, final Vec3d x2, final double distance) {
+    public static Vec3d calculateLine(final Vec3d x1,  final Vec3d x2,  final double distance) {
         final double length = Math.sqrt(multiply(x2.x - x1.x) + multiply(x2.y - x1.y) + multiply(x2.z - x1.z));
         final double unitSlopeX = (x2.x - x1.x) / length;
         final double unitSlopeY = (x2.y - x1.y) / length;
@@ -271,19 +271,19 @@ public class MathUtil implements Util
         final double x3 = x1.x + unitSlopeX * distance;
         final double y = x1.y + unitSlopeY * distance;
         final double z = x1.z + unitSlopeZ * distance;
-        return new Vec3d(x3, y, z);
+        return new Vec3d(x3,  y,  z);
     }
     
     public static double multiply(final double one) {
         return one * one;
     }
     
-    public static Vec3d extrapolatePlayerPosition(final EntityPlayer player, final int ticks) {
-        final Vec3d lastPos = new Vec3d(player.lastTickPosX, player.lastTickPosY, player.lastTickPosZ);
-        final Vec3d currentPos = new Vec3d(player.posX, player.posY, player.posZ);
+    public static Vec3d extrapolatePlayerPosition(final EntityPlayer player,  final int ticks) {
+        final Vec3d lastPos = new Vec3d(player.lastTickPosX,  player.lastTickPosY,  player.lastTickPosZ);
+        final Vec3d currentPos = new Vec3d(player.posX,  player.posY,  player.posZ);
         final double distance = multiply(player.motionX) + multiply(player.motionY) + multiply(player.motionZ);
-        final Vec3d tempVec = calculateLine(lastPos, currentPos, distance * ticks);
-        return new Vec3d(tempVec.x, player.posY, tempVec.z);
+        final Vec3d tempVec = calculateLine(lastPos,  currentPos,  distance * ticks);
+        return new Vec3d(tempVec.x,  player.posY,  tempVec.z);
     }
     
     public static double[] differentDirectionSpeed(final double speed) {
@@ -310,11 +310,11 @@ public class MathUtil implements Util
         final double cos = Math.cos(Math.toRadians(yaw + 90.0f));
         final double posX = forward * speed * cos + side * speed * sin;
         final double posZ = forward * speed * sin - side * speed * cos;
-        return new double[] { posX, posZ };
+        return new double[] { posX,  posZ };
     }
     
-    public static String getDirectionFromPlayer(final double x, final double z) {
-        final double angle = Math.toDegrees(Math.atan2(-(MathUtil.mc.player.posX - x), -(MathUtil.mc.player.posZ - z)));
+    public static String getDirectionFromPlayer(final double x,  final double z) {
+        final double angle = Math.toDegrees(Math.atan2(-(MathUtil.mc.player.posX - x),  -(MathUtil.mc.player.posZ - z)));
         double r = angle + MathUtil.mc.player.rotationYaw;
         if (r < 0.0) {
             r += 360.0;

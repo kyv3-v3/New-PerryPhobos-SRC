@@ -14,7 +14,7 @@ public class EchestBP extends Module
     private GuiScreen echestScreen;
     
     public EchestBP() {
-        super("EchestBP", "Allows to open your echest later.", Module.Category.PLAYER, false, false, false);
+        super("EchestBP",  "Allows to open your echest later.",  Module.Category.PLAYER,  false,  false,  false);
     }
     
     public void onUpdate() {

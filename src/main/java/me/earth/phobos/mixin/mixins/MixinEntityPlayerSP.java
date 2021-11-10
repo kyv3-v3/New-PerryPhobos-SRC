@@ -23,35 +23,35 @@ import me.earth.phobos.*;
 import net.minecraft.entity.*;
 import me.earth.phobos.event.events.*;
 
-@Mixin(value = { EntityPlayerSP.class }, priority = 9998)
+@Mixin(value = { EntityPlayerSP.class },  priority = 9998)
 public abstract class MixinEntityPlayerSP extends AbstractClientPlayer
 {
-    public MixinEntityPlayerSP(final Minecraft p_i47378_1_, final World p_i47378_2_, final NetHandlerPlayClient p_i47378_3_, final StatisticsManager p_i47378_4_, final RecipeBook p_i47378_5_) {
-        super(p_i47378_2_, p_i47378_3_.getGameProfile());
+    public MixinEntityPlayerSP(final Minecraft p_i47378_1_,  final World p_i47378_2_,  final NetHandlerPlayClient p_i47378_3_,  final StatisticsManager p_i47378_4_,  final RecipeBook p_i47378_5_) {
+        super(p_i47378_2_,  p_i47378_3_.getGameProfile());
     }
     
-    @Inject(method = { "sendChatMessage" }, at = { @At("HEAD") }, cancellable = true)
-    public void sendChatMessage(final String message, final CallbackInfo callback) {
+    @Inject(method = { "sendChatMessage" },  at = { @At("HEAD") },  cancellable = true)
+    public void sendChatMessage(final String message,  final CallbackInfo callback) {
         final ChatEvent chatEvent = new ChatEvent(message);
         MinecraftForge.EVENT_BUS.post((Event)chatEvent);
     }
     
-    @Redirect(method = { "onLivingUpdate" }, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;closeScreen()V"))
+    @Redirect(method = { "onLivingUpdate" },  at = @At(value = "INVOKE",  target = "Lnet/minecraft/client/entity/EntityPlayerSP;closeScreen()V"))
     public void closeScreenHook(final EntityPlayerSP entityPlayerSP) {
         if (!BetterPortals.getInstance().isOn() || !(boolean)BetterPortals.getInstance().portalChat.getValue()) {
             entityPlayerSP.closeScreen();
         }
     }
     
-    @Redirect(method = { "onLivingUpdate" }, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;displayGuiScreen(Lnet/minecraft/client/gui/GuiScreen;)V"))
-    public void displayGuiScreenHook(final Minecraft mc, final GuiScreen screen) {
+    @Redirect(method = { "onLivingUpdate" },  at = @At(value = "INVOKE",  target = "Lnet/minecraft/client/Minecraft;displayGuiScreen(Lnet/minecraft/client/gui/GuiScreen;)V"))
+    public void displayGuiScreenHook(final Minecraft mc,  final GuiScreen screen) {
         if (!BetterPortals.getInstance().isOn() || !(boolean)BetterPortals.getInstance().portalChat.getValue()) {
             mc.displayGuiScreen(screen);
         }
     }
     
-    @Redirect(method = { "onLivingUpdate" }, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;setSprinting(Z)V", ordinal = 2))
-    public void onLivingUpdate(final EntityPlayerSP entityPlayerSP, final boolean sprinting) {
+    @Redirect(method = { "onLivingUpdate" },  at = @At(value = "INVOKE",  target = "Lnet/minecraft/client/entity/EntityPlayerSP;setSprinting(Z)V",  ordinal = 2))
+    public void onLivingUpdate(final EntityPlayerSP entityPlayerSP,  final boolean sprinting) {
         if (Sprint.getInstance().isOn() && Sprint.getInstance().mode.getValue() == Sprint.Mode.RAGE && (Util.mc.player.movementInput.moveForward != 0.0f || Util.mc.player.movementInput.moveStrafe != 0.0f)) {
             entityPlayerSP.setSprinting(true);
         }
@@ -60,8 +60,8 @@ public abstract class MixinEntityPlayerSP extends AbstractClientPlayer
         }
     }
     
-    @Inject(method = { "pushOutOfBlocks" }, at = { @At("HEAD") }, cancellable = true)
-    private void pushOutOfBlocksHook(final double x, final double y, final double z, final CallbackInfoReturnable<Boolean> info) {
+    @Inject(method = { "pushOutOfBlocks" },  at = { @At("HEAD") },  cancellable = true)
+    private void pushOutOfBlocksHook(final double x,  final double y,  final double z,  final CallbackInfoReturnable<Boolean> info) {
         final PushEvent event = new PushEvent(1);
         MinecraftForge.EVENT_BUS.post((Event)event);
         if (event.isCanceled()) {
@@ -69,7 +69,7 @@ public abstract class MixinEntityPlayerSP extends AbstractClientPlayer
         }
     }
     
-    @Inject(method = { "onUpdateWalkingPlayer" }, at = { @At("HEAD") }, cancellable = true)
+    @Inject(method = { "onUpdateWalkingPlayer" },  at = { @At("HEAD") },  cancellable = true)
     private void preMotion(final CallbackInfo info) {
         final UpdateWalkingPlayerEvent event = new UpdateWalkingPlayerEvent(0);
         MinecraftForge.EVENT_BUS.post((Event)event);
@@ -78,7 +78,7 @@ public abstract class MixinEntityPlayerSP extends AbstractClientPlayer
         }
     }
     
-    @Redirect(method = { "onUpdateWalkingPlayer" }, at = @At(value = "FIELD", target = "net/minecraft/util/math/AxisAlignedBB.minY:D"))
+    @Redirect(method = { "onUpdateWalkingPlayer" },  at = @At(value = "FIELD",  target = "net/minecraft/util/math/AxisAlignedBB.minY:D"))
     private double minYHook(final AxisAlignedBB bb) {
         if (Speed.getInstance().isOn() && Speed.getInstance().mode.getValue() == Speed.Mode.VANILLA && Speed.getInstance().changeY) {
             Speed.getInstance().changeY = false;
@@ -87,25 +87,25 @@ public abstract class MixinEntityPlayerSP extends AbstractClientPlayer
         return bb.minY;
     }
     
-    @Inject(method = { "onUpdateWalkingPlayer" }, at = { @At("RETURN") })
+    @Inject(method = { "onUpdateWalkingPlayer" },  at = { @At("RETURN") })
     private void postMotion(final CallbackInfo info) {
         final UpdateWalkingPlayerEvent event = new UpdateWalkingPlayerEvent(1);
         MinecraftForge.EVENT_BUS.post((Event)event);
     }
     
-    @Inject(method = { "Lnet/minecraft/client/entity/EntityPlayerSP;setServerBrand(Ljava/lang/String;)V" }, at = { @At("HEAD") })
-    public void getBrand(final String brand, final CallbackInfo callbackInfo) {
+    @Inject(method = { "Lnet/minecraft/client/entity/EntityPlayerSP;setServerBrand(Ljava/lang/String;)V" },  at = { @At("HEAD") })
+    public void getBrand(final String brand,  final CallbackInfo callbackInfo) {
         if (Phobos.serverManager != null) {
             Phobos.serverManager.setServerBrand(brand);
         }
     }
     
-    @Redirect(method = { "move" }, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/AbstractClientPlayer;move(Lnet/minecraft/entity/MoverType;DDD)V"))
-    public void move(final AbstractClientPlayer player, final MoverType moverType, final double x, final double y, final double z) {
-        final MoveEvent event = new MoveEvent(0, moverType, x, y, z);
+    @Redirect(method = { "move" },  at = @At(value = "INVOKE",  target = "Lnet/minecraft/client/entity/AbstractClientPlayer;move(Lnet/minecraft/entity/MoverType;DDD)V"))
+    public void move(final AbstractClientPlayer player,  final MoverType moverType,  final double x,  final double y,  final double z) {
+        final MoveEvent event = new MoveEvent(0,  moverType,  x,  y,  z);
         MinecraftForge.EVENT_BUS.post((Event)event);
         if (!event.isCanceled()) {
-            super.move(event.getType(), event.getX(), event.getY(), event.getZ());
+            super.move(event.getType(),  event.getX(),  event.getY(),  event.getZ());
         }
     }
 }

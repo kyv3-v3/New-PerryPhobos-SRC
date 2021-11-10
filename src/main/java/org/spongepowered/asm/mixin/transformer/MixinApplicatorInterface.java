@@ -29,9 +29,9 @@ class MixinApplicatorInterface extends MixinApplicatorStandard
     
     @Override
     protected void applyFields(final MixinTargetContext mixin) {
-        for (final Map.Entry<FieldNode, ClassInfo.Field> entry : mixin.getShadowFields()) {
+        for (final Map.Entry<FieldNode,  ClassInfo.Field> entry : mixin.getShadowFields()) {
             final FieldNode shadow = entry.getKey();
-            this.logger.error("Ignoring redundant @Shadow field {}:{} in {}", new Object[] { shadow.name, shadow.desc, mixin });
+            this.logger.error("Ignoring redundant @Shadow field {}:{} in {}",  new Object[] { shadow.name,  shadow.desc,  mixin });
         }
         this.mergeNewFields(mixin);
     }
@@ -44,15 +44,15 @@ class MixinApplicatorInterface extends MixinApplicatorStandard
     protected void prepareInjections(final MixinTargetContext mixin) {
         for (final MethodNode method : this.targetClass.methods) {
             try {
-                final InjectionInfo injectInfo = InjectionInfo.parse(mixin, method);
+                final InjectionInfo injectInfo = InjectionInfo.parse(mixin,  method);
                 if (injectInfo != null) {
-                    throw new InvalidInterfaceMixinException((IMixinContext)mixin, injectInfo + " is not supported on interface mixin method " + method.name);
+                    throw new InvalidInterfaceMixinException((IMixinContext)mixin,  injectInfo + " is not supported on interface mixin method " + method.name);
                 }
                 continue;
             }
             catch (InvalidInjectionException ex) {
                 final String description = (ex.getInjectionInfo() != null) ? ex.getInjectionInfo().toString() : "Injection";
-                throw new InvalidInterfaceMixinException((IMixinContext)mixin, description + " is not supported in interface mixin");
+                throw new InvalidInterfaceMixinException((IMixinContext)mixin,  description + " is not supported in interface mixin");
             }
         }
     }

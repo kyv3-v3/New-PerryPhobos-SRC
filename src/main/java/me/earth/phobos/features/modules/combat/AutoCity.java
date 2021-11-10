@@ -29,37 +29,37 @@ public class AutoCity extends Module
     public Setting<Integer> rotations;
     
     public AutoCity() {
-        super("AutoCity", "Automatically mines ur opponent out of their hole.", Category.COMBAT, true, false, false);
-        this.raytrace = (Setting<Boolean>)this.register(new Setting("Raytrace", (T)false));
-        this.range = (Setting<Integer>)this.register(new Setting("Range", (T)5, (T)1, (T)6));
-        this.rotate = (Setting<Boolean>)this.register(new Setting("Rotate", (T)true));
-        this.autodisable = (Setting<Boolean>)this.register(new Setting("Auto Disable", (T)true));
-        this.rotations = (Setting<Integer>)this.register(new Setting("Spoofs", (T)1, (T)1, (T)20));
+        super("AutoCity",  "Automatically mines ur opponent out of their hole.",  Category.COMBAT,  true,  false,  false);
+        this.raytrace = (Setting<Boolean>)this.register(new Setting("Raytrace", false));
+        this.range = (Setting<Integer>)this.register(new Setting("Range", 5, 1, 6));
+        this.rotate = (Setting<Boolean>)this.register(new Setting("Rotate", true));
+        this.autodisable = (Setting<Boolean>)this.register(new Setting("Auto Disable", true));
+        this.rotations = (Setting<Integer>)this.register(new Setting("Spoofs", 1, 1, 20));
     }
     
-    public static ArrayList<PairUtil<EntityPlayer, ArrayList<BlockPos>>> GetPlayersReadyToBeCitied() {
-        final ArrayList<PairUtil<EntityPlayer, ArrayList<BlockPos>>> arrayList = new ArrayList<PairUtil<EntityPlayer, ArrayList<BlockPos>>>();
-        for (final EntityPlayer entity : Objects.requireNonNull(EntityUtil.getNearbyPlayers(6.0)).stream().filter(entityPlayer -> !Phobos.friendManager.isFriend(entityPlayer)).collect((Collector<? super Object, ?, List<? super Object>>)Collectors.toList())) {
+    public static ArrayList<PairUtil<EntityPlayer,  ArrayList<BlockPos>>> GetPlayersReadyToBeCitied() {
+        final ArrayList<PairUtil<EntityPlayer,  ArrayList<BlockPos>>> arrayList = new ArrayList<PairUtil<EntityPlayer,  ArrayList<BlockPos>>>();
+        for (final EntityPlayer entity : Objects.requireNonNull(EntityUtil.getNearbyPlayers(6.0)).stream().filter(entityPlayer -> !Phobos.friendManager.isFriend(entityPlayer)).collect((Collector<? super Object,  ?,  List<? super Object>>)Collectors.toList())) {
             final ArrayList<BlockPos> arrayList2 = new ArrayList<BlockPos>();
             for (int i = 0; i < 4; ++i) {
-                final BlockPos blockPos = EntityUtil.GetPositionVectorBlockPos((Entity)entity, AutoCity.surroundOffset[i]);
+                final BlockPos blockPos = EntityUtil.GetPositionVectorBlockPos((Entity)entity,  AutoCity.surroundOffset[i]);
                 if (AutoCity.mc.world.getBlockState(blockPos).getBlock() == Blocks.OBSIDIAN) {
                     boolean bl = false;
                     switch (i) {
                         case 0: {
-                            bl = BlockUtil.canPlaceCrystal(blockPos.north(2), true, false, false);
+                            bl = BlockUtil.canPlaceCrystal(blockPos.north(2),  true,  false,  false);
                             break;
                         }
                         case 1: {
-                            bl = BlockUtil.canPlaceCrystal(blockPos.east(2), true, false, false);
+                            bl = BlockUtil.canPlaceCrystal(blockPos.east(2),  true,  false,  false);
                             break;
                         }
                         case 2: {
-                            bl = BlockUtil.canPlaceCrystal(blockPos.south(2), true, false, false);
+                            bl = BlockUtil.canPlaceCrystal(blockPos.south(2),  true,  false,  false);
                             break;
                         }
                         case 3: {
-                            bl = BlockUtil.canPlaceCrystal(blockPos.west(2), true, false, false);
+                            bl = BlockUtil.canPlaceCrystal(blockPos.west(2),  true,  false,  false);
                             break;
                         }
                     }
@@ -71,14 +71,14 @@ public class AutoCity extends Module
             if (arrayList2.isEmpty()) {
                 continue;
             }
-            arrayList.add(new PairUtil<EntityPlayer, ArrayList<BlockPos>>(entity, arrayList2));
+            arrayList.add(new PairUtil<EntityPlayer,  ArrayList<BlockPos>>(entity,  arrayList2));
         }
         return arrayList;
     }
     
     @Override
     public void onEnable() {
-        final ArrayList<PairUtil<EntityPlayer, ArrayList<BlockPos>>> arrayList = GetPlayersReadyToBeCitied();
+        final ArrayList<PairUtil<EntityPlayer,  ArrayList<BlockPos>>> arrayList = GetPlayersReadyToBeCitied();
         if (arrayList.isEmpty()) {
             Command.sendMessage("There is no one to city!");
             this.toggle();
@@ -87,14 +87,14 @@ public class AutoCity extends Module
         EntityPlayer entityPlayer = null;
         BlockPos blockPos = null;
         double d = 50.0;
-        for (final PairUtil<EntityPlayer, ArrayList<BlockPos>> pairUtil : arrayList) {
+        for (final PairUtil<EntityPlayer,  ArrayList<BlockPos>> pairUtil : arrayList) {
             for (final BlockPos blockPos2 : pairUtil.getSecond()) {
                 if (blockPos == null) {
                     entityPlayer = pairUtil.getFirst();
                     blockPos = blockPos2;
                 }
                 else {
-                    final double d2 = blockPos2.getDistance(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+                    final double d2 = blockPos2.getDistance(blockPos.getX(),  blockPos.getY(),  blockPos.getZ());
                     if (d2 >= d) {
                         continue;
                     }
@@ -145,10 +145,10 @@ public class AutoCity extends Module
             Phobos.rotationManager.lookAtPos(blockPos);
             updateWalkingPlayerEvent.setCanceled(true);
         }
-        BlockUtil.Update(this.range.getValue(), this.raytrace.getValue());
+        BlockUtil.Update(this.range.getValue(),  this.raytrace.getValue());
     }
     
     static {
-        surroundOffset = new BlockPos[] { new BlockPos(0, 0, 0), new BlockPos(0, 0, -1), new BlockPos(1, 0, 0), new BlockPos(0, 0, 1), new BlockPos(-1, 0, 0) };
+        surroundOffset = new BlockPos[] { new BlockPos(0,  0,  0),  new BlockPos(0,  0,  -1),  new BlockPos(1,  0,  0),  new BlockPos(0,  0,  1),  new BlockPos(-1,  0,  0) };
     }
 }

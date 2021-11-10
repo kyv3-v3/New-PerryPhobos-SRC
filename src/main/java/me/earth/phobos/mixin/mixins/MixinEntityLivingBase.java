@@ -19,7 +19,7 @@ public abstract class MixinEntityLivingBase extends Entity
         super(worldIn);
     }
     
-    @Inject(method = { "isElytraFlying" }, at = { @At("HEAD") }, cancellable = true)
+    @Inject(method = { "isElytraFlying" },  at = { @At("HEAD") },  cancellable = true)
     private void isElytraFlyingHook(final CallbackInfoReturnable<Boolean> info) {
         if (Util.mc.player != null && Util.mc.player.equals((Object)this) && ElytraFlight.getInstance().isOn() && ElytraFlight.getInstance().mode.getValue() == ElytraFlight.Mode.BETTER) {
             info.setReturnValue((Object)false);

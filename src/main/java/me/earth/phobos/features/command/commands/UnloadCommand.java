@@ -10,7 +10,7 @@ import me.earth.phobos.*;
 public class UnloadCommand extends Command
 {
     public UnloadCommand() {
-        super("unload", new String[0]);
+        super("unload",  new String[0]);
     }
     
     public void execute(final String[] commands) {

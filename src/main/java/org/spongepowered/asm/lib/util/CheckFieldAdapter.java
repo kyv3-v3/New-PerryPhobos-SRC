@@ -11,31 +11,31 @@ public class CheckFieldAdapter extends FieldVisitor
     private boolean end;
     
     public CheckFieldAdapter(final FieldVisitor fv) {
-        this(327680, fv);
+        this(327680,  fv);
         if (this.getClass() != CheckFieldAdapter.class) {
             throw new IllegalStateException();
         }
     }
     
-    protected CheckFieldAdapter(final int api, final FieldVisitor fv) {
-        super(api, fv);
+    protected CheckFieldAdapter(final int api,  final FieldVisitor fv) {
+        super(api,  fv);
     }
     
-    public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
+    public AnnotationVisitor visitAnnotation(final String desc,  final boolean visible) {
         this.checkEnd();
-        CheckMethodAdapter.checkDesc(desc, false);
-        return (AnnotationVisitor)new CheckAnnotationAdapter(super.visitAnnotation(desc, visible));
+        CheckMethodAdapter.checkDesc(desc,  false);
+        return (AnnotationVisitor)new CheckAnnotationAdapter(super.visitAnnotation(desc,  visible));
     }
     
-    public AnnotationVisitor visitTypeAnnotation(final int typeRef, final TypePath typePath, final String desc, final boolean visible) {
+    public AnnotationVisitor visitTypeAnnotation(final int typeRef,  final TypePath typePath,  final String desc,  final boolean visible) {
         this.checkEnd();
         final int sort = typeRef >>> 24;
         if (sort != 19) {
             throw new IllegalArgumentException("Invalid type reference sort 0x" + Integer.toHexString(sort));
         }
-        CheckClassAdapter.checkTypeRefAndPath(typeRef, typePath);
-        CheckMethodAdapter.checkDesc(desc, false);
-        return (AnnotationVisitor)new CheckAnnotationAdapter(super.visitTypeAnnotation(typeRef, typePath, desc, visible));
+        CheckClassAdapter.checkTypeRefAndPath(typeRef,  typePath);
+        CheckMethodAdapter.checkDesc(desc,  false);
+        return (AnnotationVisitor)new CheckAnnotationAdapter(super.visitTypeAnnotation(typeRef,  typePath,  desc,  visible));
     }
     
     public void visitAttribute(final Attribute attr) {

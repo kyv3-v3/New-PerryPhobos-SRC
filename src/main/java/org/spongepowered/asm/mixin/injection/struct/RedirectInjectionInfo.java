@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.invoke.*;
 
 public class RedirectInjectionInfo extends InjectionInfo
 {
-    public RedirectInjectionInfo(final MixinTargetContext mixin, final MethodNode method, final AnnotationNode annotation) {
-        super(mixin, method, annotation);
+    public RedirectInjectionInfo(final MixinTargetContext mixin,  final MethodNode method,  final AnnotationNode annotation) {
+        super(mixin,  method,  annotation);
     }
     
     protected Injector parseInjector(final AnnotationNode injectAnnotation) {

@@ -52,7 +52,7 @@ public class TextUtil
         return TextUtil.STRIP_COLOR_PATTERN.matcher(input).replaceAll("");
     }
     
-    public static String coloredString(final String string, final Color color) {
+    public static String coloredString(final String string,  final Color color) {
         String coloredString = string;
         switch (color) {
             case AQUA: {
@@ -123,10 +123,10 @@ public class TextUtil
         return coloredString;
     }
     
-    public static String cropMaxLengthMessage(final String s, final int i) {
+    public static String cropMaxLengthMessage(final String s,  final int i) {
         String output = "";
         if (s.length() >= 256 - i) {
-            output = s.substring(0, 256 - i);
+            output = s.substring(0,  256 - i);
         }
         return output;
     }
@@ -140,22 +140,22 @@ public class TextUtil
     
     public enum Color
     {
-        NONE, 
-        WHITE, 
-        BLACK, 
-        DARK_BLUE, 
-        DARK_GREEN, 
-        DARK_AQUA, 
-        DARK_RED, 
-        DARK_PURPLE, 
-        GOLD, 
-        GRAY, 
-        DARK_GRAY, 
-        BLUE, 
-        GREEN, 
-        AQUA, 
-        RED, 
-        LIGHT_PURPLE, 
+        NONE,  
+        WHITE,  
+        BLACK,  
+        DARK_BLUE,  
+        DARK_GREEN,  
+        DARK_AQUA,  
+        DARK_RED,  
+        DARK_PURPLE,  
+        GOLD,  
+        GRAY,  
+        DARK_GRAY,  
+        BLUE,  
+        GREEN,  
+        AQUA,  
+        RED,  
+        LIGHT_PURPLE,  
         YELLOW;
     }
 }

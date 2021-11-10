@@ -18,7 +18,7 @@ public class LocalVariableDiscriminator
     private final Set<String> names;
     private final boolean print;
     
-    public LocalVariableDiscriminator(final boolean argsOnly, final int ordinal, final int index, final Set<String> names, final boolean print) {
+    public LocalVariableDiscriminator(final boolean argsOnly,  final int ordinal,  final int index,  final Set<String> names,  final boolean print) {
         this.argsOnly = argsOnly;
         this.ordinal = ordinal;
         this.index = index;
@@ -54,9 +54,9 @@ public class LocalVariableDiscriminator
         return this.ordinal < 0 && this.index < context.baseArgIndex && this.names.isEmpty();
     }
     
-    public int findLocal(final Type returnType, final boolean argsOnly, final Target target, final AbstractInsnNode node) {
+    public int findLocal(final Type returnType,  final boolean argsOnly,  final Target target,  final AbstractInsnNode node) {
         try {
-            return this.findLocal(new Context(returnType, argsOnly, target, node));
+            return this.findLocal(new Context(returnType,  argsOnly,  target,  node));
         }
         catch (InvalidImplicitDiscriminatorException ex) {
             return -2;
@@ -113,16 +113,16 @@ public class LocalVariableDiscriminator
     }
     
     public static LocalVariableDiscriminator parse(final AnnotationNode annotation) {
-        final boolean argsOnly = Annotations.getValue(annotation, "argsOnly", Boolean.FALSE);
-        final int ordinal = Annotations.getValue(annotation, "ordinal", -1);
-        final int index = Annotations.getValue(annotation, "index", -1);
-        final boolean print = Annotations.getValue(annotation, "print", Boolean.FALSE);
+        final boolean argsOnly = Annotations.getValue(annotation,  "argsOnly",  Boolean.FALSE);
+        final int ordinal = Annotations.getValue(annotation,  "ordinal",  -1);
+        final int index = Annotations.getValue(annotation,  "index",  -1);
+        final boolean print = Annotations.getValue(annotation,  "print",  Boolean.FALSE);
         final Set<String> names = new HashSet<String>();
-        final List<String> namesList = Annotations.getValue(annotation, "name", (List<String>)null);
+        final List<String> namesList = Annotations.getValue(annotation,  "name",  (List<String>)null);
         if (namesList != null) {
             names.addAll(namesList);
         }
-        return new LocalVariableDiscriminator(argsOnly, ordinal, index, names, print);
+        return new LocalVariableDiscriminator(argsOnly,  ordinal,  index,  names,  print);
     }
     
     public static class Context implements PrettyPrinter.IPrettyPrintable
@@ -134,24 +134,24 @@ public class LocalVariableDiscriminator
         final Local[] locals;
         private final boolean isStatic;
         
-        public Context(final Type returnType, final boolean argsOnly, final Target target, final AbstractInsnNode node) {
+        public Context(final Type returnType,  final boolean argsOnly,  final Target target,  final AbstractInsnNode node) {
             this.isStatic = Bytecode.methodIsStatic(target.method);
             this.returnType = returnType;
             this.target = target;
             this.node = node;
             this.baseArgIndex = (this.isStatic ? 0 : 1);
-            this.locals = this.initLocals(target, argsOnly, node);
+            this.locals = this.initLocals(target,  argsOnly,  node);
             this.initOrdinals();
         }
         
-        private Local[] initLocals(final Target target, final boolean argsOnly, final AbstractInsnNode node) {
+        private Local[] initLocals(final Target target,  final boolean argsOnly,  final AbstractInsnNode node) {
             if (!argsOnly) {
-                final LocalVariableNode[] locals = Locals.getLocalsAt(target.classNode, target.method, node);
+                final LocalVariableNode[] locals = Locals.getLocalsAt(target.classNode,  target.method,  node);
                 if (locals != null) {
                     final Local[] lvt = new Local[locals.length];
                     for (int l = 0; l < locals.length; ++l) {
                         if (locals[l] != null) {
-                            lvt[l] = new Local(locals[l].name, Type.getType(locals[l].desc));
+                            lvt[l] = new Local(locals[l].name,  Type.getType(locals[l].desc));
                         }
                     }
                     return lvt;
@@ -159,22 +159,22 @@ public class LocalVariableDiscriminator
             }
             final Local[] lvt2 = new Local[this.baseArgIndex + target.arguments.length];
             if (!this.isStatic) {
-                lvt2[0] = new Local("this", Type.getType(target.classNode.name));
+                lvt2[0] = new Local("this",  Type.getType(target.classNode.name));
             }
             for (int local = this.baseArgIndex; local < lvt2.length; ++local) {
                 final Type arg = target.arguments[local - this.baseArgIndex];
-                lvt2[local] = new Local("arg" + local, arg);
+                lvt2[local] = new Local("arg" + local,  arg);
             }
             return lvt2;
         }
         
         private void initOrdinals() {
-            final Map<Type, Integer> ordinalMap = new HashMap<Type, Integer>();
+            final Map<Type,  Integer> ordinalMap = new HashMap<Type,  Integer>();
             for (int l = 0; l < this.locals.length; ++l) {
                 Integer ordinal = 0;
                 if (this.locals[l] != null) {
                     ordinal = ordinalMap.get(this.locals[l].type);
-                    ordinalMap.put(this.locals[l].type, ordinal = ((ordinal == null) ? 0 : (ordinal + 1)));
+                    ordinalMap.put(this.locals[l].type,  ordinal = ((ordinal == null) ? 0 : (ordinal + 1)));
                     this.locals[l].ord = ordinal;
                 }
             }
@@ -182,7 +182,7 @@ public class LocalVariableDiscriminator
         
         @Override
         public void print(final PrettyPrinter printer) {
-            printer.add("%5s  %7s  %30s  %-50s  %s", "INDEX", "ORDINAL", "TYPE", "NAME", "CANDIDATE");
+            printer.add("%5s  %7s  %30s  %-50s  %s",  "INDEX",  "ORDINAL",  "TYPE",  "NAME",  "CANDIDATE");
             for (int l = this.baseArgIndex; l < this.locals.length; ++l) {
                 final Local local = this.locals[l];
                 if (local != null) {
@@ -190,12 +190,12 @@ public class LocalVariableDiscriminator
                     final String localName = local.name;
                     final int ordinal = local.ord;
                     final String candidate = this.returnType.equals((Object)localType) ? "YES" : "-";
-                    printer.add("[%3d]    [%3d]  %30s  %-50s  %s", l, ordinal, SignaturePrinter.getTypeName(localType, false), localName, candidate);
+                    printer.add("[%3d]    [%3d]  %30s  %-50s  %s",  l,  ordinal,  SignaturePrinter.getTypeName(localType,  false),  localName,  candidate);
                 }
                 else if (l > 0) {
                     final Local prevLocal = this.locals[l - 1];
                     final boolean isTop = prevLocal != null && prevLocal.type != null && prevLocal.type.getSize() > 1;
-                    printer.add("[%3d]           %30s", l, isTop ? "<top>" : "-");
+                    printer.add("[%3d]           %30s",  l,  isTop ? "<top>" : "-");
                 }
             }
         }
@@ -206,7 +206,7 @@ public class LocalVariableDiscriminator
             String name;
             Type type;
             
-            public Local(final String name, final Type type) {
+            public Local(final String name,  final Type type) {
                 this.ord = 0;
                 this.name = name;
                 this.type = type;
@@ -214,7 +214,7 @@ public class LocalVariableDiscriminator
             
             @Override
             public String toString() {
-                return String.format("Local[ordinal=%d, name=%s, type=%s]", this.ord, this.name, this.type);
+                return String.format("Local[ordinal=%d,  name=%s,  type=%s]",  this.ord,  this.name,  this.type);
             }
         }
     }

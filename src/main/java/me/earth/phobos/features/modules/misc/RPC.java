@@ -16,10 +16,10 @@ public class RPC extends Module
     public Setting<String> state;
     
     public RPC() {
-        super("RPC", "Discord rich presence.", Category.MISC, false, false, false);
-        this.catMode = (Setting<Boolean>)this.register(new Setting("CatMode", (T)false));
-        this.showIP = (Setting<Boolean>)this.register(new Setting("ShowIP", (T)true, "Shows the server IP in your discord presence."));
-        this.state = (Setting<String>)this.register(new Setting("State", (T)"Perry's Phobos 1.9.0", "Sets the state of the DiscordRPC."));
+        super("RPC",  "Discord rich presence.",  Category.MISC,  false,  false,  false);
+        this.catMode = (Setting<Boolean>)this.register(new Setting("CatMode", false));
+        this.showIP = (Setting<Boolean>)this.register(new Setting("ShowIP", true,  "Shows the server IP in your discord presence."));
+        this.state = (Setting<String>)this.register(new Setting("State", "Perry's Phobos 1.9.0",  "Sets the state of the DiscordRPC."));
         RPC.INSTANCE = this;
     }
     

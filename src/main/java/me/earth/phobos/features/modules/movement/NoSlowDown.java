@@ -38,16 +38,16 @@ public class NoSlowDown extends Module
     private boolean sneaking;
     
     public NoSlowDown() {
-        super("NoSlow", "Prevents you from getting slowed down.", Module.Category.MOVEMENT, true, false, false);
-        this.webHorizontalFactor = (Setting<Double>)this.register(new Setting("WebHSpeed", (T)2.0, (T)0.0, (T)100.0));
-        this.webVerticalFactor = (Setting<Double>)this.register(new Setting("WebVSpeed", (T)2.0, (T)0.0, (T)100.0));
-        this.guiMove = (Setting<Boolean>)this.register(new Setting("GuiMove", (T)true));
-        this.noSlow = (Setting<Boolean>)this.register(new Setting("NoSlow", (T)true));
-        this.soulSand = (Setting<Boolean>)this.register(new Setting("SoulSand", (T)true));
-        this.strict = (Setting<Boolean>)this.register(new Setting("Strict", (T)false));
-        this.sneakPacket = (Setting<Boolean>)this.register(new Setting("SneakPacket", (T)false));
-        this.endPortal = (Setting<Boolean>)this.register(new Setting("EndPortal", (T)false));
-        this.webs = (Setting<Boolean>)this.register(new Setting("Webs", (T)false));
+        super("NoSlow",  "Prevents you from getting slowed down.",  Module.Category.MOVEMENT,  true,  false,  false);
+        this.webHorizontalFactor = (Setting<Double>)this.register(new Setting("WebHSpeed", 2.0, 0.0, 100.0));
+        this.webVerticalFactor = (Setting<Double>)this.register(new Setting("WebVSpeed", 2.0, 0.0, 100.0));
+        this.guiMove = (Setting<Boolean>)this.register(new Setting("GuiMove", true));
+        this.noSlow = (Setting<Boolean>)this.register(new Setting("NoSlow", true));
+        this.soulSand = (Setting<Boolean>)this.register(new Setting("SoulSand", true));
+        this.strict = (Setting<Boolean>)this.register(new Setting("Strict", false));
+        this.sneakPacket = (Setting<Boolean>)this.register(new Setting("SneakPacket", false));
+        this.endPortal = (Setting<Boolean>)this.register(new Setting("EndPortal", false));
+        this.webs = (Setting<Boolean>)this.register(new Setting("Webs", false));
         this.setInstance();
     }
     
@@ -65,12 +65,12 @@ public class NoSlowDown extends Module
     public void onUpdate() {
         if (this.guiMove.getValue()) {
             for (final KeyBinding bind : NoSlowDown.keys) {
-                KeyBinding.setKeyBindState(bind.getKeyCode(), Keyboard.isKeyDown(bind.getKeyCode()));
+                KeyBinding.setKeyBindState(bind.getKeyCode(),  Keyboard.isKeyDown(bind.getKeyCode()));
             }
             if (NoSlowDown.mc.currentScreen == null) {
                 for (final KeyBinding bind : NoSlowDown.keys) {
                     if (!Keyboard.isKeyDown(bind.getKeyCode())) {
-                        KeyBinding.setKeyBindState(bind.getKeyCode(), false);
+                        KeyBinding.setKeyBindState(bind.getKeyCode(),  false);
                     }
                 }
             }
@@ -85,7 +85,7 @@ public class NoSlowDown extends Module
         }
         NoSlowDown.mc.player.getActiveItemStack().getItem();
         if (this.sneaking && !NoSlowDown.mc.player.isHandActive() && this.sneakPacket.getValue()) {
-            NoSlowDown.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)NoSlowDown.mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
+            NoSlowDown.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)NoSlowDown.mc.player,  CPacketEntityAction.Action.STOP_SNEAKING));
             this.sneaking = false;
         }
     }
@@ -94,7 +94,7 @@ public class NoSlowDown extends Module
     public void onUseItem(final PlayerInteractEvent.RightClickItem event) {
         final Item item = NoSlowDown.mc.player.getHeldItem(event.getHand()).getItem();
         if ((item instanceof ItemFood || item instanceof ItemBow || (item instanceof ItemPotion && this.sneakPacket.getValue())) && !this.sneaking) {
-            NoSlowDown.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)NoSlowDown.mc.player, CPacketEntityAction.Action.START_SNEAKING));
+            NoSlowDown.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)NoSlowDown.mc.player,  CPacketEntityAction.Action.START_SNEAKING));
             this.sneaking = true;
         }
     }
@@ -119,12 +119,12 @@ public class NoSlowDown extends Module
     @SubscribeEvent
     public void onPacket(final PacketEvent.Send event) {
         if (event.getPacket() instanceof CPacketPlayer && this.strict.getValue() && this.noSlow.getValue() && NoSlowDown.mc.player.isHandActive() && !NoSlowDown.mc.player.isRiding()) {
-            NoSlowDown.mc.player.connection.sendPacket((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, new BlockPos(Math.floor(NoSlowDown.mc.player.posX), Math.floor(NoSlowDown.mc.player.posY), Math.floor(NoSlowDown.mc.player.posZ)), EnumFacing.DOWN));
+            NoSlowDown.mc.player.connection.sendPacket((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK,  new BlockPos(Math.floor(NoSlowDown.mc.player.posX),  Math.floor(NoSlowDown.mc.player.posY),  Math.floor(NoSlowDown.mc.player.posZ)),  EnumFacing.DOWN));
         }
     }
     
     static {
-        keys = new KeyBinding[] { NoSlowDown.mc.gameSettings.keyBindForward, NoSlowDown.mc.gameSettings.keyBindBack, NoSlowDown.mc.gameSettings.keyBindLeft, NoSlowDown.mc.gameSettings.keyBindRight, NoSlowDown.mc.gameSettings.keyBindJump, NoSlowDown.mc.gameSettings.keyBindSprint };
+        keys = new KeyBinding[] { NoSlowDown.mc.gameSettings.keyBindForward,  NoSlowDown.mc.gameSettings.keyBindBack,  NoSlowDown.mc.gameSettings.keyBindLeft,  NoSlowDown.mc.gameSettings.keyBindRight,  NoSlowDown.mc.gameSettings.keyBindJump,  NoSlowDown.mc.gameSettings.keyBindSprint };
         NoSlowDown.INSTANCE = new NoSlowDown();
     }
 }

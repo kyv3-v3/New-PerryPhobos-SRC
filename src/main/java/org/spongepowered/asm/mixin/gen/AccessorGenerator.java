@@ -15,9 +15,9 @@ public abstract class AccessorGenerator
         this.info = info;
     }
     
-    protected final MethodNode createMethod(final int maxLocals, final int maxStack) {
+    protected final MethodNode createMethod(final int maxLocals,  final int maxStack) {
         final MethodNode method = this.info.getMethod();
-        final MethodNode accessor = new MethodNode(327680, (method.access & 0xFFFFFBFF) | 0x1000, method.name, method.desc, (String)null, (String[])null);
+        final MethodNode accessor = new MethodNode(327680,  (method.access & 0xFFFFFBFF) | 0x1000,  method.name,  method.desc,  (String)null,  (String[])null);
         (accessor.visibleAnnotations = new ArrayList()).add(this.info.getAnnotation());
         accessor.maxLocals = maxLocals;
         accessor.maxStack = maxStack;

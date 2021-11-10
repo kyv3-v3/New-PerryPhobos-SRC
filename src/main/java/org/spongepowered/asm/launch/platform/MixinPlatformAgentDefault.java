@@ -8,8 +8,8 @@ import java.net.*;
 
 public class MixinPlatformAgentDefault extends MixinPlatformAgentAbstract
 {
-    public MixinPlatformAgentDefault(final MixinPlatformManager manager, final URI uri) {
-        super(manager, uri);
+    public MixinPlatformAgentDefault(final MixinPlatformManager manager,  final URI uri) {
+        super(manager,  uri);
     }
     
     public void prepare() {
@@ -19,13 +19,13 @@ public class MixinPlatformAgentDefault extends MixinPlatformAgentAbstract
         }
         final String mixinConfigs = this.attributes.get("MixinConfigs");
         if (mixinConfigs != null) {
-            for (final String config : mixinConfigs.split(",")) {
+            for (final String config : mixinConfigs.split(", ")) {
                 this.manager.addConfig(config.trim());
             }
         }
         final String tokenProviders = this.attributes.get("MixinTokenProviders");
         if (tokenProviders != null) {
-            for (final String provider : tokenProviders.split(",")) {
+            for (final String provider : tokenProviders.split(", ")) {
                 this.manager.addTokenProvider(provider.trim());
             }
         }

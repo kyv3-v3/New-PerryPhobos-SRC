@@ -25,17 +25,17 @@ public class MixinBlockLiquid extends Block
         super(materialIn);
     }
     
-    @Inject(method = { "getCollisionBoundingBox" }, at = { @At("HEAD") }, cancellable = true)
-    public void getCollisionBoundingBoxHook(final IBlockState blockState, final IBlockAccess worldIn, final BlockPos pos, final CallbackInfoReturnable<AxisAlignedBB> info) {
-        final JesusEvent event = new JesusEvent(0, pos);
+    @Inject(method = { "getCollisionBoundingBox" },  at = { @At("HEAD") },  cancellable = true)
+    public void getCollisionBoundingBoxHook(final IBlockState blockState,  final IBlockAccess worldIn,  final BlockPos pos,  final CallbackInfoReturnable<AxisAlignedBB> info) {
+        final JesusEvent event = new JesusEvent(0,  pos);
         MinecraftForge.EVENT_BUS.post((Event)event);
         if (event.isCanceled()) {
             info.setReturnValue((Object)event.getBoundingBox());
         }
     }
     
-    @Inject(method = { "canCollideCheck" }, at = { @At("HEAD") }, cancellable = true)
-    public void canCollideCheckHook(final IBlockState blockState, final boolean hitIfLiquid, final CallbackInfoReturnable<Boolean> info) {
+    @Inject(method = { "canCollideCheck" },  at = { @At("HEAD") },  cancellable = true)
+    public void canCollideCheckHook(final IBlockState blockState,  final boolean hitIfLiquid,  final CallbackInfoReturnable<Boolean> info) {
         info.setReturnValue((Object)((hitIfLiquid && (int)blockState.getValue((IProperty)BlockLiquid.LEVEL) == 0) || LiquidInteract.getInstance().isOn()));
     }
 }

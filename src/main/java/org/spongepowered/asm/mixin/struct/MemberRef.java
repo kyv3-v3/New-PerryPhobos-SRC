@@ -34,7 +34,7 @@ public abstract class MemberRef
     @Override
     public String toString() {
         final String name = Bytecode.getOpcodeName(this.getOpcode());
-        return String.format("%s for %s.%s%s%s", name, this.getOwner(), this.getName(), this.isField() ? ":" : "", this.getDesc());
+        return String.format("%s for %s.%s%s%s",  name,  this.getOwner(),  this.getName(),  this.isField() ? ":" : "",  this.getDesc());
     }
     
     @Override
@@ -65,7 +65,7 @@ public abstract class MemberRef
     }
     
     static {
-        H_OPCODES = new int[] { 0, 180, 178, 181, 179, 182, 184, 183, 183, 185 };
+        H_OPCODES = new int[] { 0,  180,  178,  181,  179,  182,  184,  183,  183,  185 };
     }
     
     public static final class Method extends MemberRef
@@ -234,7 +234,7 @@ public abstract class MemberRef
                 throw new MixinTransformerError("Invalid opcode " + Bytecode.getOpcodeName(opcode) + " for method handle " + this.handle + ".");
             }
             final boolean itf = tag == 9;
-            this.handle = new org.spongepowered.asm.lib.Handle(tag, this.handle.getOwner(), this.handle.getName(), this.handle.getDesc(), itf);
+            this.handle = new org.spongepowered.asm.lib.Handle(tag,  this.handle.getOwner(),  this.handle.getName(),  this.handle.getDesc(),  itf);
         }
         
         @Override
@@ -245,7 +245,7 @@ public abstract class MemberRef
         @Override
         public void setOwner(final String owner) {
             final boolean itf = this.handle.getTag() == 9;
-            this.handle = new org.spongepowered.asm.lib.Handle(this.handle.getTag(), owner, this.handle.getName(), this.handle.getDesc(), itf);
+            this.handle = new org.spongepowered.asm.lib.Handle(this.handle.getTag(),  owner,  this.handle.getName(),  this.handle.getDesc(),  itf);
         }
         
         @Override
@@ -256,7 +256,7 @@ public abstract class MemberRef
         @Override
         public void setName(final String name) {
             final boolean itf = this.handle.getTag() == 9;
-            this.handle = new org.spongepowered.asm.lib.Handle(this.handle.getTag(), this.handle.getOwner(), name, this.handle.getDesc(), itf);
+            this.handle = new org.spongepowered.asm.lib.Handle(this.handle.getTag(),  this.handle.getOwner(),  name,  this.handle.getDesc(),  itf);
         }
         
         @Override
@@ -267,7 +267,7 @@ public abstract class MemberRef
         @Override
         public void setDesc(final String desc) {
             final boolean itf = this.handle.getTag() == 9;
-            this.handle = new org.spongepowered.asm.lib.Handle(this.handle.getTag(), this.handle.getOwner(), this.handle.getName(), desc, itf);
+            this.handle = new org.spongepowered.asm.lib.Handle(this.handle.getTag(),  this.handle.getOwner(),  this.handle.getName(),  desc,  itf);
         }
     }
 }

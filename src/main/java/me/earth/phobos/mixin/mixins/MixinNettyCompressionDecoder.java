@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.*;
 @Mixin({ NettyCompressionDecoder.class })
 public abstract class MixinNettyCompressionDecoder
 {
-    @ModifyConstant(method = { "decode" }, constant = { @Constant(intValue = 2097152) })
+    @ModifyConstant(method = { "decode" },  constant = { @Constant(intValue = 2097152) })
     private int decodeHook(final int n) {
         if (Bypass.getInstance().isOn() && (boolean)Bypass.getInstance().packets.getValue() && (boolean)Bypass.getInstance().noLimit.getValue()) {
             return Integer.MAX_VALUE;

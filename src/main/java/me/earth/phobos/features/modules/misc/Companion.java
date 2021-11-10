@@ -17,10 +17,10 @@ public class Companion extends Module
     public Setting<String> deathMessages;
     
     public Companion() {
-        super("Companion", "The best module.", Category.MISC, true, false, false);
+        super("Companion",  "The best module.",  Category.MISC,  true,  false,  false);
         this.narrator = Narrator.getNarrator();
-        this.totemPopMessage = (Setting<String>)this.register(new Setting("PopMessage", (T)"<player> watch out you're popping!"));
-        this.deathMessages = (Setting<String>)this.register(new Setting("DeathMessage", (T)"<player> you retard you just fucking died!"));
+        this.totemPopMessage = (Setting<String>)this.register(new Setting("PopMessage", "<player> watch out you're popping!"));
+        this.deathMessages = (Setting<String>)this.register(new Setting("DeathMessage", "<player> you retard you just fucking died!"));
     }
     
     @Override
@@ -36,14 +36,14 @@ public class Companion extends Module
     @SubscribeEvent
     public void onTotemPop(final TotemPopEvent event) {
         if (event.getEntity() == Companion.mc.player) {
-            this.narrator.say(this.totemPopMessage.getValue().replaceAll("<player>", Companion.mc.player.getName()));
+            this.narrator.say(this.totemPopMessage.getValue().replaceAll("<player>",  Companion.mc.player.getName()));
         }
     }
     
     @SubscribeEvent
     public void onDeath(final DeathEvent event) {
         if (event.player == Companion.mc.player) {
-            this.narrator.say(this.deathMessages.getValue().replaceAll("<player>", Companion.mc.player.getName()));
+            this.narrator.say(this.deathMessages.getValue().replaceAll("<player>",  Companion.mc.player.getName()));
         }
     }
 }

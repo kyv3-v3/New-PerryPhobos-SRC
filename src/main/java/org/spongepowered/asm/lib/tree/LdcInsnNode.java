@@ -25,7 +25,7 @@ public class LdcInsnNode extends AbstractInsnNode
         this.acceptAnnotations(mv);
     }
     
-    public AbstractInsnNode clone(final Map<LabelNode, LabelNode> labels) {
+    public AbstractInsnNode clone(final Map<LabelNode,  LabelNode> labels) {
         return new LdcInsnNode(this.cst).cloneAnnotations((AbstractInsnNode)this);
     }
 }

@@ -20,10 +20,10 @@ public class Step extends Module
     public Setting<Boolean> turnOff;
     
     public Step() {
-        super("Step", "Allows you to step up blocks.", Module.Category.MOVEMENT, true, false, false);
-        this.vanilla = (Setting<Boolean>)this.register(new Setting("Vanilla", (T)false));
-        this.stepHeight = (Setting<Integer>)this.register(new Setting("Height", (T)2, (T)1, (T)5));
-        this.turnOff = (Setting<Boolean>)this.register(new Setting("Disable", (T)false));
+        super("Step",  "Allows you to step up blocks.",  Module.Category.MOVEMENT,  true,  false,  false);
+        this.vanilla = (Setting<Boolean>)this.register(new Setting("Vanilla", false));
+        this.stepHeight = (Setting<Integer>)this.register(new Setting("Height", 2, 1, 5));
+        this.turnOff = (Setting<Boolean>)this.register(new Setting("Disable", false));
         Step.instance = this;
     }
     
@@ -63,18 +63,18 @@ public class Step extends Module
         double y = Step.mc.player.posY;
         if (height >= 1.1) {
             if (height < 1.6) {
-                for (final double off : new double[] { 0.42, 0.33, 0.24, 0.083, -0.078 }) {
-                    Step.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(posX, y += off, posZ, false));
+                for (final double off : new double[] { 0.42,  0.33,  0.24,  0.083,  -0.078 }) {
+                    Step.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(posX,  y += off,  posZ,  false));
                 }
             }
             else if (height < 2.1) {
-                for (final double off : new double[] { 0.425, 0.821, 0.699, 0.599, 1.022, 1.372, 1.652, 1.869 }) {
-                    Step.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(posX, y + off, posZ, false));
+                for (final double off : new double[] { 0.425,  0.821,  0.699,  0.599,  1.022,  1.372,  1.652,  1.869 }) {
+                    Step.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(posX,  y + off,  posZ,  false));
                 }
             }
             else {
-                for (final double off : new double[] { 0.425, 0.821, 0.699, 0.599, 1.022, 1.372, 1.652, 1.869, 2.019, 1.907 }) {
-                    Step.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(posX, y + off, posZ, false));
+                for (final double off : new double[] { 0.425,  0.821,  0.699,  0.599,  1.022,  1.372,  1.652,  1.869,  2.019,  1.907 }) {
+                    Step.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(posX,  y + off,  posZ,  false));
                 }
             }
         }
@@ -94,9 +94,9 @@ public class Step extends Module
                     second = 0.49;
                 }
             }
-            Step.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(posX, y + first, posZ, false));
+            Step.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(posX,  y + first,  posZ,  false));
             if (y + second < y + height) {
-                Step.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(posX, y + second, posZ, false));
+                Step.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(posX,  y + second,  posZ,  false));
             }
         }
     }

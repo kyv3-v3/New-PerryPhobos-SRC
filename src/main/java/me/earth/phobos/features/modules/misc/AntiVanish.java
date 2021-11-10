@@ -19,7 +19,7 @@ public class AntiVanish extends Module
     private final Queue<UUID> toLookUp;
     
     public AntiVanish() {
-        super("AntiVanish", "Notifies you when players vanish.", Category.MISC, true, false, false);
+        super("AntiVanish",  "Notifies you when players vanish.",  Category.MISC,  true,  false,  false);
         this.toLookUp = new ConcurrentLinkedQueue<UUID>();
     }
     

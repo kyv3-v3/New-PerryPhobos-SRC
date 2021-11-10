@@ -32,12 +32,12 @@ public class AnvilAura extends Module
     private BlockPos placeTarget;
     
     public AnvilAura() {
-        super("AnvilAura", "WIP.", Category.COMBAT, true, false, false);
-        this.range = (Setting<Float>)this.register(new Setting("Range", (T)6.0f, (T)0.0f, (T)10.0f));
-        this.rotate = (Setting<Boolean>)this.register(new Setting("Rotate", (T)true));
-        this.packet = (Setting<Boolean>)this.register(new Setting("Packet", (T)true));
-        this.switcher = (Setting<Boolean>)this.register(new Setting("Switch", (T)true));
-        this.rotations = (Setting<Integer>)this.register(new Setting("Spoofs", (T)1, (T)1, (T)20));
+        super("AnvilAura",  "WIP.",  Category.COMBAT,  true,  false,  false);
+        this.range = (Setting<Float>)this.register(new Setting("Range", 6.0f, 0.0f, 10.0f));
+        this.rotate = (Setting<Boolean>)this.register(new Setting("Rotate", true));
+        this.packet = (Setting<Boolean>)this.register(new Setting("Packet", true));
+        this.switcher = (Setting<Boolean>)this.register(new Setting("Switch", true));
+        this.rotations = (Setting<Integer>)this.register(new Setting("Spoofs", 1, 1, 20));
     }
     
     @Override
@@ -78,7 +78,7 @@ public class AnvilAura extends Module
         if (this.switcher.getValue() && !this.isHoldingAnvil()) {
             this.doSwitch();
         }
-        BlockUtil.placeBlock(pos, EnumHand.MAIN_HAND, false, this.packet.getValue(), AnvilAura.mc.player.isSneaking());
+        BlockUtil.placeBlock(pos,  EnumHand.MAIN_HAND,  false,  this.packet.getValue(),  AnvilAura.mc.player.isSneaking());
     }
     
     public boolean isHoldingAnvil() {
@@ -125,16 +125,16 @@ public class AnvilAura extends Module
                 continue;
             }
             finalPos = pos;
-            distance = AnvilAura.mc.player.getDistance((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
+            distance = AnvilAura.mc.player.getDistance((double)pos.getX(),  (double)pos.getY(),  (double)pos.getZ());
         }
         return finalPos;
     }
     
     public List<BlockPos> getPlaceableBlocksAboveEntity(final Entity target) {
-        new BlockPos(Math.floor(AnvilAura.mc.player.posX), Math.floor(AnvilAura.mc.player.posY), Math.floor(AnvilAura.mc.player.posZ));
+        new BlockPos(Math.floor(AnvilAura.mc.player.posX),  Math.floor(AnvilAura.mc.player.posY),  Math.floor(AnvilAura.mc.player.posZ));
         final ArrayList<BlockPos> positions = new ArrayList<BlockPos>();
         BlockPos pos;
-        for (int i = (int)Math.floor(AnvilAura.mc.player.posY + 2.0); i <= 256 && BlockUtil.isPositionPlaceable(pos = new BlockPos(Math.floor(AnvilAura.mc.player.posX), (double)i, Math.floor(AnvilAura.mc.player.posZ)), false) != 0 && BlockUtil.isPositionPlaceable(pos, false) != -1 && BlockUtil.isPositionPlaceable(pos, false) != 2; ++i) {
+        for (int i = (int)Math.floor(AnvilAura.mc.player.posY + 2.0); i <= 256 && BlockUtil.isPositionPlaceable(pos = new BlockPos(Math.floor(AnvilAura.mc.player.posX),  (double)i,  Math.floor(AnvilAura.mc.player.posZ)),  false) != 0 && BlockUtil.isPositionPlaceable(pos,  false) != -1 && BlockUtil.isPositionPlaceable(pos,  false) != 2; ++i) {
             positions.add(pos);
         }
         return positions;
@@ -142,7 +142,7 @@ public class AnvilAura extends Module
     
     private void rotateToPos(final BlockPos pos) {
         if (this.rotate.getValue()) {
-            final float[] angle = MathUtil.calcAngle(AnvilAura.mc.player.getPositionEyes(AnvilAura.mc.getRenderPartialTicks()), new Vec3d((double)(pos.getX() + 0.5f), (double)(pos.getY() - 0.5f), (double)(pos.getZ() + 0.5f)));
+            final float[] angle = MathUtil.calcAngle(AnvilAura.mc.player.getPositionEyes(AnvilAura.mc.getRenderPartialTicks()),  new Vec3d((double)(pos.getX() + 0.5f),  (double)(pos.getY() - 0.5f),  (double)(pos.getZ() + 0.5f)));
             this.yaw = angle[0];
             this.pitch = angle[1];
             this.rotating = true;

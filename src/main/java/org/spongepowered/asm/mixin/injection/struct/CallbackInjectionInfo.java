@@ -13,16 +13,16 @@ import com.google.common.base.*;
 
 public class CallbackInjectionInfo extends InjectionInfo
 {
-    protected CallbackInjectionInfo(final MixinTargetContext mixin, final MethodNode method, final AnnotationNode annotation) {
-        super(mixin, method, annotation);
+    protected CallbackInjectionInfo(final MixinTargetContext mixin,  final MethodNode method,  final AnnotationNode annotation) {
+        super(mixin,  method,  annotation);
     }
     
     @Override
     protected Injector parseInjector(final AnnotationNode injectAnnotation) {
-        final boolean cancellable = Annotations.getValue(injectAnnotation, "cancellable", Boolean.FALSE);
-        final LocalCapture locals = Annotations.getValue(injectAnnotation, "locals", LocalCapture.class, LocalCapture.NO_CAPTURE);
-        final String identifier = Annotations.getValue(injectAnnotation, "id", "");
-        return (Injector)new CallbackInjector((InjectionInfo)this, cancellable, locals, identifier);
+        final boolean cancellable = Annotations.getValue(injectAnnotation,  "cancellable",  Boolean.FALSE);
+        final LocalCapture locals = Annotations.getValue(injectAnnotation,  "locals",  LocalCapture.class,  LocalCapture.NO_CAPTURE);
+        final String identifier = Annotations.getValue(injectAnnotation,  "id",  "");
+        return (Injector)new CallbackInjector((InjectionInfo)this,  cancellable,  locals,  identifier);
     }
     
     @Override

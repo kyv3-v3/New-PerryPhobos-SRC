@@ -33,22 +33,22 @@ public class AutoGG extends Module
     private final Setting<Boolean> test;
     private final TimerUtil timer;
     private final TimerUtil cooldownTimer;
-    public Map<EntityPlayer, Integer> targets;
+    public Map<EntityPlayer,  Integer> targets;
     public List<String> messages;
     public EntityPlayer cauraTarget;
     private boolean cooldown;
     
     public AutoGG() {
-        super("AutoGG", "Automatically GGs.", Category.MISC, true, false, false);
-        this.onOwnDeath = (Setting<Boolean>)this.register(new Setting("OwnDeath", (T)false));
-        this.greentext = (Setting<Boolean>)this.register(new Setting("Greentext", (T)false));
-        this.loadFiles = (Setting<Boolean>)this.register(new Setting("LoadFiles", (T)false));
-        this.targetResetTimer = (Setting<Integer>)this.register(new Setting("Reset", (T)30, (T)0, (T)90));
-        this.delay = (Setting<Integer>)this.register(new Setting("Delay", (T)10, (T)0, (T)30));
-        this.test = (Setting<Boolean>)this.register(new Setting("Test", (T)false));
+        super("AutoGG",  "Automatically GGs.",  Category.MISC,  true,  false,  false);
+        this.onOwnDeath = (Setting<Boolean>)this.register(new Setting("OwnDeath", false));
+        this.greentext = (Setting<Boolean>)this.register(new Setting("Greentext", false));
+        this.loadFiles = (Setting<Boolean>)this.register(new Setting("LoadFiles", false));
+        this.targetResetTimer = (Setting<Integer>)this.register(new Setting("Reset", 30, 0, 90));
+        this.delay = (Setting<Integer>)this.register(new Setting("Delay", 10, 0, 30));
+        this.test = (Setting<Boolean>)this.register(new Setting("Test", false));
         this.timer = new TimerUtil();
         this.cooldownTimer = new TimerUtil();
-        this.targets = new ConcurrentHashMap<EntityPlayer, Integer>();
+        this.targets = new ConcurrentHashMap<EntityPlayer,  Integer>();
         this.messages = new ArrayList<String>();
         final File file = new File("phobos/autogg.txt");
         if (!file.exists()) {
@@ -90,9 +90,9 @@ public class AutoGG extends Module
             this.cooldownTimer.reset();
         }
         if (AutoCrystal.target != null) {
-            this.targets.put(AutoCrystal.target, (int)(this.timer.getPassedTimeMs() / 1000L));
+            this.targets.put(AutoCrystal.target,  (int)(this.timer.getPassedTimeMs() / 1000L));
         }
-        this.targets.replaceAll((p, v) -> Integer.valueOf((int)(this.timer.getPassedTimeMs() / 1000L)));
+        this.targets.replaceAll((p,  v) -> Integer.valueOf((int)(this.timer.getPassedTimeMs() / 1000L)));
         for (final EntityPlayer player : this.targets.keySet()) {
             if (this.targets.get(player) <= this.targetResetTimer.getValue()) {
                 continue;
@@ -122,7 +122,7 @@ public class AutoGG extends Module
     @SubscribeEvent
     public void onAttackEntity(final AttackEntityEvent event) {
         if (event.getTarget() instanceof EntityPlayer && !Phobos.friendManager.isFriend(event.getEntityPlayer())) {
-            this.targets.put((EntityPlayer)event.getTarget(), 0);
+            this.targets.put((EntityPlayer)event.getTarget(),  0);
         }
     }
     
@@ -130,7 +130,7 @@ public class AutoGG extends Module
     public void onSendAttackPacket(final PacketEvent.Send event) {
         final CPacketUseEntity packet;
         if (event.getPacket() instanceof CPacketUseEntity && (packet = (CPacketUseEntity)event.getPacket()).getAction() == CPacketUseEntity.Action.ATTACK && packet.getEntityFromWorld((World)AutoGG.mc.world) instanceof EntityPlayer && !Phobos.friendManager.isFriend(Objects.requireNonNull((EntityPlayer)packet.getEntityFromWorld((World)AutoGG.mc.world)))) {
-            this.targets.put((EntityPlayer)packet.getEntityFromWorld((World)AutoGG.mc.world), 0);
+            this.targets.put((EntityPlayer)packet.getEntityFromWorld((World)AutoGG.mc.world),  0);
         }
     }
     
@@ -147,10 +147,10 @@ public class AutoGG extends Module
         if (this.messages.size() == 1) {
             return this.messages.get(0);
         }
-        return this.messages.get(MathUtil.clamp(rand.nextInt(this.messages.size()), 0, this.messages.size() - 1));
+        return this.messages.get(MathUtil.clamp(rand.nextInt(this.messages.size()),  0,  this.messages.size() - 1));
     }
     
     public void announceDeath(final EntityPlayer target) {
-        AutoGG.mc.player.connection.sendPacket((Packet)new CPacketChatMessage((this.greentext.getValue() ? ">" : "") + this.getRandomMessage().replaceAll("<player>", target.getDisplayNameString())));
+        AutoGG.mc.player.connection.sendPacket((Packet)new CPacketChatMessage((this.greentext.getValue() ? ">" : "") + this.getRandomMessage().replaceAll("<player>",  target.getDisplayNameString())));
     }
 }

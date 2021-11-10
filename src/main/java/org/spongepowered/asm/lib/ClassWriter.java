@@ -102,13 +102,13 @@ public class ClassWriter extends ClassVisitor
         this.compute = (((flags & 0x2) != 0x0) ? 0 : (((flags & 0x1) != 0x0) ? 2 : 3));
     }
     
-    public ClassWriter(final ClassReader classReader, final int flags) {
+    public ClassWriter(final ClassReader classReader,  final int flags) {
         this(flags);
         classReader.copyPool(this);
         this.cr = classReader;
     }
     
-    public final void visit(final int version, final int access, final String name, final String signature, final String superName, final String[] interfaces) {
+    public final void visit(final int version,  final int access,  final String name,  final String signature,  final String superName,  final String[] interfaces) {
         this.version = version;
         this.access = access;
         this.name = this.newClass(name);
@@ -126,26 +126,26 @@ public class ClassWriter extends ClassVisitor
         }
     }
     
-    public final void visitSource(final String file, final String debug) {
+    public final void visitSource(final String file,  final String debug) {
         if (file != null) {
             this.sourceFile = this.newUTF8(file);
         }
         if (debug != null) {
-            this.sourceDebug = new ByteVector().encodeUTF8(debug, 0, Integer.MAX_VALUE);
+            this.sourceDebug = new ByteVector().encodeUTF8(debug,  0,  Integer.MAX_VALUE);
         }
     }
     
-    public final void visitOuterClass(final String owner, final String name, final String desc) {
+    public final void visitOuterClass(final String owner,  final String name,  final String desc) {
         this.enclosingMethodOwner = this.newClass(owner);
         if (name != null && desc != null) {
-            this.enclosingMethod = this.newNameType(name, desc);
+            this.enclosingMethod = this.newNameType(name,  desc);
         }
     }
     
-    public final AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
+    public final AnnotationVisitor visitAnnotation(final String desc,  final boolean visible) {
         final ByteVector bv = new ByteVector();
         bv.putShort(this.newUTF8(desc)).putShort(0);
-        final AnnotationWriter aw = new AnnotationWriter(this, true, bv, bv, 2);
+        final AnnotationWriter aw = new AnnotationWriter(this,  true,  bv,  bv,  2);
         if (visible) {
             aw.next = this.anns;
             this.anns = aw;
@@ -157,11 +157,11 @@ public class ClassWriter extends ClassVisitor
         return (AnnotationVisitor)aw;
     }
     
-    public final AnnotationVisitor visitTypeAnnotation(final int typeRef, final TypePath typePath, final String desc, final boolean visible) {
+    public final AnnotationVisitor visitTypeAnnotation(final int typeRef,  final TypePath typePath,  final String desc,  final boolean visible) {
         final ByteVector bv = new ByteVector();
-        AnnotationWriter.putTarget(typeRef, typePath, bv);
+        AnnotationWriter.putTarget(typeRef,  typePath,  bv);
         bv.putShort(this.newUTF8(desc)).putShort(0);
-        final AnnotationWriter aw = new AnnotationWriter(this, true, bv, bv, bv.length - 2);
+        final AnnotationWriter aw = new AnnotationWriter(this,  true,  bv,  bv,  bv.length - 2);
         if (visible) {
             aw.next = this.tanns;
             this.tanns = aw;
@@ -178,7 +178,7 @@ public class ClassWriter extends ClassVisitor
         this.attrs = attr;
     }
     
-    public final void visitInnerClass(final String name, final String outerName, final String innerName, final int access) {
+    public final void visitInnerClass(final String name,  final String outerName,  final String innerName,  final int access) {
         if (this.innerClasses == null) {
             this.innerClasses = new ByteVector();
         }
@@ -193,12 +193,12 @@ public class ClassWriter extends ClassVisitor
         }
     }
     
-    public final FieldVisitor visitField(final int access, final String name, final String desc, final String signature, final Object value) {
-        return new FieldWriter(this, access, name, desc, signature, value);
+    public final FieldVisitor visitField(final int access,  final String name,  final String desc,  final String signature,  final Object value) {
+        return new FieldWriter(this,  access,  name,  desc,  signature,  value);
     }
     
-    public final MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature, final String[] exceptions) {
-        return new MethodWriter(this, access, name, desc, signature, exceptions, this.compute);
+    public final MethodVisitor visitMethod(final int access,  final String name,  final String desc,  final String signature,  final String[] exceptions) {
+        return new MethodWriter(this,  access,  name,  desc,  signature,  exceptions,  this.compute);
     }
     
     public final void visitEnd() {
@@ -282,12 +282,12 @@ public class ClassWriter extends ClassVisitor
         }
         if (this.attrs != null) {
             attributeCount += this.attrs.getCount();
-            size += this.attrs.getSize(this, (byte[])null, 0, -1, -1);
+            size += this.attrs.getSize(this,  (byte[])null,  0,  -1,  -1);
         }
         size += this.pool.length;
         final ByteVector out = new ByteVector(size);
         out.putInt(-889275714).putInt(this.version);
-        out.putShort(this.index).putByteArray(this.pool.data, 0, this.pool.length);
+        out.putShort(this.index).putByteArray(this.pool.data,  0,  this.pool.length);
         final int mask = 0x60000 | (this.access & 0x40000) / 64;
         out.putShort(this.access & ~mask).putShort(this.name).putShort(this.superName);
         out.putShort(this.interfaceCount);
@@ -306,7 +306,7 @@ public class ClassWriter extends ClassVisitor
         if (this.bootstrapMethods != null) {
             out.putShort(this.newUTF8("BootstrapMethods"));
             out.putInt(this.bootstrapMethods.length + 2).putShort(this.bootstrapMethodsCount);
-            out.putByteArray(this.bootstrapMethods.data, 0, this.bootstrapMethods.length);
+            out.putByteArray(this.bootstrapMethods.data,  0,  this.bootstrapMethods.length);
         }
         if (this.signature != 0) {
             out.putShort(this.newUTF8("Signature")).putInt(2).putShort(this.signature);
@@ -317,7 +317,7 @@ public class ClassWriter extends ClassVisitor
         if (this.sourceDebug != null) {
             final int len = this.sourceDebug.length;
             out.putShort(this.newUTF8("SourceDebugExtension")).putInt(len);
-            out.putByteArray(this.sourceDebug.data, 0, len);
+            out.putByteArray(this.sourceDebug.data,  0,  len);
         }
         if (this.enclosingMethodOwner != 0) {
             out.putShort(this.newUTF8("EnclosingMethod")).putInt(4);
@@ -332,7 +332,7 @@ public class ClassWriter extends ClassVisitor
         if (this.innerClasses != null) {
             out.putShort(this.newUTF8("InnerClasses"));
             out.putInt(this.innerClasses.length + 2).putShort(this.innerClassesCount);
-            out.putByteArray(this.innerClasses.data, 0, this.innerClasses.length);
+            out.putByteArray(this.innerClasses.data,  0,  this.innerClasses.length);
         }
         if (this.anns != null) {
             out.putShort(this.newUTF8("RuntimeVisibleAnnotations"));
@@ -351,7 +351,7 @@ public class ClassWriter extends ClassVisitor
             this.itanns.put(out);
         }
         if (this.attrs != null) {
-            this.attrs.put(this, (byte[])null, 0, -1, -1, out);
+            this.attrs.put(this,  (byte[])null,  0,  -1,  -1,  out);
         }
         if (this.hasAsmInsns) {
             this.anns = null;
@@ -365,7 +365,7 @@ public class ClassWriter extends ClassVisitor
             this.lastMethod = null;
             this.compute = 1;
             this.hasAsmInsns = false;
-            new ClassReader(out.data).accept((ClassVisitor)this, 264);
+            new ClassReader(out.data).accept((ClassVisitor)this,  264);
             return this.toByteArray();
         }
         return out.data;
@@ -421,7 +421,7 @@ public class ClassWriter extends ClassVisitor
         else {
             if (cst instanceof Handle) {
                 final Handle h = (Handle)cst;
-                return this.newHandleItem(h.tag, h.owner, h.name, h.desc, h.itf);
+                return this.newHandleItem(h.tag,  h.owner,  h.name,  h.desc,  h.itf);
             }
             throw new IllegalArgumentException("value " + cst);
         }
@@ -432,22 +432,22 @@ public class ClassWriter extends ClassVisitor
     }
     
     public int newUTF8(final String value) {
-        this.key.set(1, value, null, null);
+        this.key.set(1,  value,  null,  null);
         Item result = this.get(this.key);
         if (result == null) {
             this.pool.putByte(1).putUTF8(value);
-            result = new Item(this.index++, this.key);
+            result = new Item(this.index++,  this.key);
             this.put(result);
         }
         return result.index;
     }
     
     Item newClassItem(final String value) {
-        this.key2.set(7, value, null, null);
+        this.key2.set(7,  value,  null,  null);
         Item result = this.get(this.key2);
         if (result == null) {
-            this.pool.put12(7, this.newUTF8(value));
-            result = new Item(this.index++, this.key2);
+            this.pool.put12(7,  this.newUTF8(value));
+            result = new Item(this.index++,  this.key2);
             this.put(result);
         }
         return result;
@@ -458,11 +458,11 @@ public class ClassWriter extends ClassVisitor
     }
     
     Item newMethodTypeItem(final String methodDesc) {
-        this.key2.set(16, methodDesc, null, null);
+        this.key2.set(16,  methodDesc,  null,  null);
         Item result = this.get(this.key2);
         if (result == null) {
-            this.pool.put12(16, this.newUTF8(methodDesc));
-            result = new Item(this.index++, this.key2);
+            this.pool.put12(16,  this.newUTF8(methodDesc));
+            result = new Item(this.index++,  this.key2);
             this.put(result);
         }
         return result;
@@ -472,32 +472,32 @@ public class ClassWriter extends ClassVisitor
         return this.newMethodTypeItem(methodDesc).index;
     }
     
-    Item newHandleItem(final int tag, final String owner, final String name, final String desc, final boolean itf) {
-        this.key4.set(20 + tag, owner, name, desc);
+    Item newHandleItem(final int tag,  final String owner,  final String name,  final String desc,  final boolean itf) {
+        this.key4.set(20 + tag,  owner,  name,  desc);
         Item result = this.get(this.key4);
         if (result == null) {
             if (tag <= 4) {
-                this.put112(15, tag, this.newField(owner, name, desc));
+                this.put112(15,  tag,  this.newField(owner,  name,  desc));
             }
             else {
-                this.put112(15, tag, this.newMethod(owner, name, desc, itf));
+                this.put112(15,  tag,  this.newMethod(owner,  name,  desc,  itf));
             }
-            result = new Item(this.index++, this.key4);
+            result = new Item(this.index++,  this.key4);
             this.put(result);
         }
         return result;
     }
     
     @Deprecated
-    public int newHandle(final int tag, final String owner, final String name, final String desc) {
-        return this.newHandle(tag, owner, name, desc, tag == 9);
+    public int newHandle(final int tag,  final String owner,  final String name,  final String desc) {
+        return this.newHandle(tag,  owner,  name,  desc,  tag == 9);
     }
     
-    public int newHandle(final int tag, final String owner, final String name, final String desc, final boolean itf) {
-        return this.newHandleItem(tag, owner, name, desc, itf).index;
+    public int newHandle(final int tag,  final String owner,  final String name,  final String desc,  final boolean itf) {
+        return this.newHandleItem(tag,  owner,  name,  desc,  itf).index;
     }
     
-    Item newInvokeDynamicItem(final String name, final String desc, final Handle bsm, final Object... bsmArgs) {
+    Item newInvokeDynamicItem(final String name,  final String desc,  final Handle bsm,  final Object... bsmArgs) {
         ByteVector bootstrapMethods = this.bootstrapMethods;
         if (bootstrapMethods == null) {
             final ByteVector bootstrapMethods2 = new ByteVector();
@@ -506,7 +506,7 @@ public class ClassWriter extends ClassVisitor
         }
         final int position = bootstrapMethods.length;
         int hashCode = bsm.hashCode();
-        bootstrapMethods.putShort(this.newHandle(bsm.tag, bsm.owner, bsm.name, bsm.desc, bsm.isInterface()));
+        bootstrapMethods.putShort(this.newHandle(bsm.tag,  bsm.owner,  bsm.name,  bsm.desc,  bsm.isInterface()));
         final int argsLength = bsmArgs.length;
         bootstrapMethods.putShort(argsLength);
         for (final Object bsmArg : bsmArgs) {
@@ -539,52 +539,52 @@ public class ClassWriter extends ClassVisitor
         else {
             bootstrapMethodIndex = this.bootstrapMethodsCount++;
             result = new Item(bootstrapMethodIndex);
-            result.set(position, hashCode);
+            result.set(position,  hashCode);
             this.put(result);
         }
-        this.key3.set(name, desc, bootstrapMethodIndex);
+        this.key3.set(name,  desc,  bootstrapMethodIndex);
         result = this.get(this.key3);
         if (result == null) {
-            this.put122(18, bootstrapMethodIndex, this.newNameType(name, desc));
-            result = new Item(this.index++, this.key3);
+            this.put122(18,  bootstrapMethodIndex,  this.newNameType(name,  desc));
+            result = new Item(this.index++,  this.key3);
             this.put(result);
         }
         return result;
     }
     
-    public int newInvokeDynamic(final String name, final String desc, final Handle bsm, final Object... bsmArgs) {
-        return this.newInvokeDynamicItem(name, desc, bsm, bsmArgs).index;
+    public int newInvokeDynamic(final String name,  final String desc,  final Handle bsm,  final Object... bsmArgs) {
+        return this.newInvokeDynamicItem(name,  desc,  bsm,  bsmArgs).index;
     }
     
-    Item newFieldItem(final String owner, final String name, final String desc) {
-        this.key3.set(9, owner, name, desc);
+    Item newFieldItem(final String owner,  final String name,  final String desc) {
+        this.key3.set(9,  owner,  name,  desc);
         Item result = this.get(this.key3);
         if (result == null) {
-            this.put122(9, this.newClass(owner), this.newNameType(name, desc));
-            result = new Item(this.index++, this.key3);
+            this.put122(9,  this.newClass(owner),  this.newNameType(name,  desc));
+            result = new Item(this.index++,  this.key3);
             this.put(result);
         }
         return result;
     }
     
-    public int newField(final String owner, final String name, final String desc) {
-        return this.newFieldItem(owner, name, desc).index;
+    public int newField(final String owner,  final String name,  final String desc) {
+        return this.newFieldItem(owner,  name,  desc).index;
     }
     
-    Item newMethodItem(final String owner, final String name, final String desc, final boolean itf) {
+    Item newMethodItem(final String owner,  final String name,  final String desc,  final boolean itf) {
         final int type = itf ? 11 : 10;
-        this.key3.set(type, owner, name, desc);
+        this.key3.set(type,  owner,  name,  desc);
         Item result = this.get(this.key3);
         if (result == null) {
-            this.put122(type, this.newClass(owner), this.newNameType(name, desc));
-            result = new Item(this.index++, this.key3);
+            this.put122(type,  this.newClass(owner),  this.newNameType(name,  desc));
+            result = new Item(this.index++,  this.key3);
             this.put(result);
         }
         return result;
     }
     
-    public int newMethod(final String owner, final String name, final String desc, final boolean itf) {
-        return this.newMethodItem(owner, name, desc, itf).index;
+    public int newMethod(final String owner,  final String name,  final String desc,  final boolean itf) {
+        return this.newMethodItem(owner,  name,  desc,  itf).index;
     }
     
     Item newInteger(final int value) {
@@ -592,7 +592,7 @@ public class ClassWriter extends ClassVisitor
         Item result = this.get(this.key);
         if (result == null) {
             this.pool.putByte(3).putInt(value);
-            result = new Item(this.index++, this.key);
+            result = new Item(this.index++,  this.key);
             this.put(result);
         }
         return result;
@@ -603,7 +603,7 @@ public class ClassWriter extends ClassVisitor
         Item result = this.get(this.key);
         if (result == null) {
             this.pool.putByte(4).putInt(this.key.intVal);
-            result = new Item(this.index++, this.key);
+            result = new Item(this.index++,  this.key);
             this.put(result);
         }
         return result;
@@ -614,7 +614,7 @@ public class ClassWriter extends ClassVisitor
         Item result = this.get(this.key);
         if (result == null) {
             this.pool.putByte(5).putLong(value);
-            result = new Item(this.index, this.key);
+            result = new Item(this.index,  this.key);
             this.index += 2;
             this.put(result);
         }
@@ -626,7 +626,7 @@ public class ClassWriter extends ClassVisitor
         Item result = this.get(this.key);
         if (result == null) {
             this.pool.putByte(6).putLong(this.key.longVal);
-            result = new Item(this.index, this.key);
+            result = new Item(this.index,  this.key);
             this.index += 2;
             this.put(result);
         }
@@ -634,33 +634,33 @@ public class ClassWriter extends ClassVisitor
     }
     
     private Item newString(final String value) {
-        this.key2.set(8, value, null, null);
+        this.key2.set(8,  value,  null,  null);
         Item result = this.get(this.key2);
         if (result == null) {
-            this.pool.put12(8, this.newUTF8(value));
-            result = new Item(this.index++, this.key2);
+            this.pool.put12(8,  this.newUTF8(value));
+            result = new Item(this.index++,  this.key2);
             this.put(result);
         }
         return result;
     }
     
-    public int newNameType(final String name, final String desc) {
-        return this.newNameTypeItem(name, desc).index;
+    public int newNameType(final String name,  final String desc) {
+        return this.newNameTypeItem(name,  desc).index;
     }
     
-    Item newNameTypeItem(final String name, final String desc) {
-        this.key2.set(12, name, desc, null);
+    Item newNameTypeItem(final String name,  final String desc) {
+        this.key2.set(12,  name,  desc,  null);
         Item result = this.get(this.key2);
         if (result == null) {
-            this.put122(12, this.newUTF8(name), this.newUTF8(desc));
-            result = new Item(this.index++, this.key2);
+            this.put122(12,  this.newUTF8(name),  this.newUTF8(desc));
+            result = new Item(this.index++,  this.key2);
             this.put(result);
         }
         return result;
     }
     
     int addType(final String type) {
-        this.key.set(30, type, null, null);
+        this.key.set(30,  type,  null,  null);
         Item result = this.get(this.key);
         if (result == null) {
             result = this.addType(this.key);
@@ -668,7 +668,7 @@ public class ClassWriter extends ClassVisitor
         return result.index;
     }
     
-    int addUninitializedType(final String type, final int offset) {
+    int addUninitializedType(final String type,  final int offset) {
         this.key.type = 31;
         this.key.intVal = offset;
         this.key.strVal1 = type;
@@ -682,20 +682,20 @@ public class ClassWriter extends ClassVisitor
     
     private Item addType(final Item item) {
         ++this.typeCount;
-        final Item result = new Item(this.typeCount, this.key);
+        final Item result = new Item(this.typeCount,  this.key);
         this.put(result);
         if (this.typeTable == null) {
             this.typeTable = new Item[16];
         }
         if (this.typeCount == this.typeTable.length) {
             final Item[] newTable = new Item[2 * this.typeTable.length];
-            System.arraycopy(this.typeTable, 0, newTable, 0, this.typeTable.length);
+            System.arraycopy(this.typeTable,  0,  newTable,  0,  this.typeTable.length);
             this.typeTable = newTable;
         }
         return this.typeTable[this.typeCount] = result;
     }
     
-    int getMergedType(final int type1, final int type2) {
+    int getMergedType(final int type1,  final int type2) {
         this.key2.type = 32;
         this.key2.longVal = ((long)type1 | (long)type2 << 32);
         this.key2.hashCode = (Integer.MAX_VALUE & 32 + type1 + type2);
@@ -703,20 +703,20 @@ public class ClassWriter extends ClassVisitor
         if (result == null) {
             final String t = this.typeTable[type1].strVal1;
             final String u = this.typeTable[type2].strVal1;
-            this.key2.intVal = this.addType(this.getCommonSuperClass(t, u));
-            result = new Item(0, this.key2);
+            this.key2.intVal = this.addType(this.getCommonSuperClass(t,  u));
+            result = new Item(0,  this.key2);
             this.put(result);
         }
         return result.intVal;
     }
     
-    protected String getCommonSuperClass(final String type1, final String type2) {
+    protected String getCommonSuperClass(final String type1,  final String type2) {
         final ClassLoader classLoader = this.getClass().getClassLoader();
         Class<?> c;
         Class<?> d;
         try {
-            c = Class.forName(type1.replace('/', '.'), false, classLoader);
-            d = Class.forName(type2.replace('/', '.'), false, classLoader);
+            c = Class.forName(type1.replace('/',  '.'),  false,  classLoader);
+            d = Class.forName(type2.replace('/',  '.'),  false,  classLoader);
         }
         catch (Exception e) {
             throw new RuntimeException(e.toString());
@@ -733,7 +733,7 @@ public class ClassWriter extends ClassVisitor
         do {
             c = c.getSuperclass();
         } while (!c.isAssignableFrom(d));
-        return c.getName().replace('.', '/');
+        return c.getName().replace('.',  '/');
     }
     
     private Item get(final Item key) {
@@ -764,12 +764,12 @@ public class ClassWriter extends ClassVisitor
         this.items[index2] = i;
     }
     
-    private void put122(final int b, final int s1, final int s2) {
-        this.pool.put12(b, s1).putShort(s2);
+    private void put122(final int b,  final int s1,  final int s2) {
+        this.pool.put12(b,  s1).putShort(s2);
     }
     
-    private void put112(final int b1, final int b2, final int s) {
-        this.pool.put11(b1, b2).putShort(s);
+    private void put112(final int b1,  final int b2,  final int s) {
+        this.pool.put11(b1,  b2).putShort(s);
     }
     
     static {

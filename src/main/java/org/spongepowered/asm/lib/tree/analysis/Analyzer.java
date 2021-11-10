@@ -24,7 +24,7 @@ public class Analyzer<V extends Value> implements Opcodes
         this.interpreter = interpreter;
     }
     
-    public Frame<V>[] analyze(final String owner, final MethodNode m) throws AnalyzerException {
+    public Frame<V>[] analyze(final String owner,  final MethodNode m) throws AnalyzerException {
         if ((m.access & 0x500) != 0x0) {
             return this.frames = (Frame<V>[])new Frame[0];
         }
@@ -39,7 +39,7 @@ public class Analyzer<V extends Value> implements Opcodes
         for (int i = 0; i < m.tryCatchBlocks.size(); ++i) {
             final TryCatchBlockNode tcb = m.tryCatchBlocks.get(i);
             final int begin = this.insns.indexOf(tcb.start);
-            for (int end = this.insns.indexOf(tcb.end), j = begin; j < end; ++j) {
+            for (int end = this.insns.indexOf(tcb.end),  j = begin; j < end; ++j) {
                 List<TryCatchBlockNode> insnHandlers = this.handlers[j];
                 if (insnHandlers == null) {
                     insnHandlers = new ArrayList<TryCatchBlockNode>();
@@ -48,17 +48,17 @@ public class Analyzer<V extends Value> implements Opcodes
                 insnHandlers.add(tcb);
             }
         }
-        final Subroutine main = new Subroutine(null, m.maxLocals, null);
+        final Subroutine main = new Subroutine(null,  m.maxLocals,  null);
         final List<AbstractInsnNode> subroutineCalls = new ArrayList<AbstractInsnNode>();
-        final Map<LabelNode, Subroutine> subroutineHeads = new HashMap<LabelNode, Subroutine>();
-        this.findSubroutine(0, main, subroutineCalls);
+        final Map<LabelNode,  Subroutine> subroutineHeads = new HashMap<LabelNode,  Subroutine>();
+        this.findSubroutine(0,  main,  subroutineCalls);
         while (!subroutineCalls.isEmpty()) {
             final JumpInsnNode jsr = subroutineCalls.remove(0);
             Subroutine sub = subroutineHeads.get(jsr.label);
             if (sub == null) {
-                sub = new Subroutine(jsr.label, m.maxLocals, jsr);
-                subroutineHeads.put(jsr.label, sub);
-                this.findSubroutine(this.insns.indexOf(jsr.label), sub, subroutineCalls);
+                sub = new Subroutine(jsr.label,  m.maxLocals,  jsr);
+                subroutineHeads.put(jsr.label,  sub);
+                this.findSubroutine(this.insns.indexOf(jsr.label),  sub,  subroutineCalls);
             }
             else {
                 sub.callers.add(jsr);
@@ -69,26 +69,26 @@ public class Analyzer<V extends Value> implements Opcodes
                 this.subroutines[k] = null;
             }
         }
-        final Frame<V> current = this.newFrame(m.maxLocals, m.maxStack);
-        final Frame<V> handler = this.newFrame(m.maxLocals, m.maxStack);
+        final Frame<V> current = this.newFrame(m.maxLocals,  m.maxStack);
+        final Frame<V> handler = this.newFrame(m.maxLocals,  m.maxStack);
         current.setReturn(this.interpreter.newValue(Type.getReturnType(m.desc)));
         final Type[] args = Type.getArgumentTypes(m.desc);
         int local = 0;
         if ((m.access & 0x8) == 0x0) {
             final Type ctype = Type.getObjectType(owner);
-            current.setLocal(local++, this.interpreter.newValue(ctype));
+            current.setLocal(local++,  this.interpreter.newValue(ctype));
         }
         for (int l = 0; l < args.length; ++l) {
-            current.setLocal(local++, this.interpreter.newValue(args[l]));
+            current.setLocal(local++,  this.interpreter.newValue(args[l]));
             if (args[l].getSize() == 2) {
-                current.setLocal(local++, this.interpreter.newValue(null));
+                current.setLocal(local++,  this.interpreter.newValue(null));
             }
         }
         while (local < m.maxLocals) {
-            current.setLocal(local++, this.interpreter.newValue(null));
+            current.setLocal(local++,  this.interpreter.newValue(null));
         }
-        this.merge(0, current, null);
-        this.init(owner, m);
+        this.merge(0,  current,  null);
+        this.init(owner,  m);
         while (this.top > 0) {
             final int[] queue = this.queue;
             final int top = this.top - 1;
@@ -103,61 +103,61 @@ public class Analyzer<V extends Value> implements Opcodes
                 final int insnOpcode = insnNode.getOpcode();
                 final int insnType = insnNode.getType();
                 if (insnType == 8 || insnType == 15 || insnType == 14) {
-                    this.merge(insn + 1, f, subroutine);
-                    this.newControlFlowEdge(insn, insn + 1);
+                    this.merge(insn + 1,  f,  subroutine);
+                    this.newControlFlowEdge(insn,  insn + 1);
                 }
                 else {
-                    current.init((Frame<? extends V>)f).execute(insnNode, this.interpreter);
+                    current.init((Frame<? extends V>)f).execute(insnNode,  this.interpreter);
                     subroutine = ((subroutine == null) ? null : subroutine.copy());
                     if (insnNode instanceof JumpInsnNode) {
                         final JumpInsnNode j2 = (JumpInsnNode)insnNode;
                         if (insnOpcode != 167 && insnOpcode != 168) {
-                            this.merge(insn + 1, current, subroutine);
-                            this.newControlFlowEdge(insn, insn + 1);
+                            this.merge(insn + 1,  current,  subroutine);
+                            this.newControlFlowEdge(insn,  insn + 1);
                         }
                         final int jump = this.insns.indexOf(j2.label);
                         if (insnOpcode == 168) {
-                            this.merge(jump, current, new Subroutine(j2.label, m.maxLocals, j2));
+                            this.merge(jump,  current,  new Subroutine(j2.label,  m.maxLocals,  j2));
                         }
                         else {
-                            this.merge(jump, current, subroutine);
+                            this.merge(jump,  current,  subroutine);
                         }
-                        this.newControlFlowEdge(insn, jump);
+                        this.newControlFlowEdge(insn,  jump);
                     }
                     else if (insnNode instanceof LookupSwitchInsnNode) {
                         final LookupSwitchInsnNode lsi = (LookupSwitchInsnNode)insnNode;
                         int jump = this.insns.indexOf(lsi.dflt);
-                        this.merge(jump, current, subroutine);
-                        this.newControlFlowEdge(insn, jump);
+                        this.merge(jump,  current,  subroutine);
+                        this.newControlFlowEdge(insn,  jump);
                         for (int j3 = 0; j3 < lsi.labels.size(); ++j3) {
                             final LabelNode label = lsi.labels.get(j3);
                             jump = this.insns.indexOf(label);
-                            this.merge(jump, current, subroutine);
-                            this.newControlFlowEdge(insn, jump);
+                            this.merge(jump,  current,  subroutine);
+                            this.newControlFlowEdge(insn,  jump);
                         }
                     }
                     else if (insnNode instanceof TableSwitchInsnNode) {
                         final TableSwitchInsnNode tsi = (TableSwitchInsnNode)insnNode;
                         int jump = this.insns.indexOf(tsi.dflt);
-                        this.merge(jump, current, subroutine);
-                        this.newControlFlowEdge(insn, jump);
+                        this.merge(jump,  current,  subroutine);
+                        this.newControlFlowEdge(insn,  jump);
                         for (int j3 = 0; j3 < tsi.labels.size(); ++j3) {
                             final LabelNode label = tsi.labels.get(j3);
                             jump = this.insns.indexOf(label);
-                            this.merge(jump, current, subroutine);
-                            this.newControlFlowEdge(insn, jump);
+                            this.merge(jump,  current,  subroutine);
+                            this.newControlFlowEdge(insn,  jump);
                         }
                     }
                     else if (insnOpcode == 169) {
                         if (subroutine == null) {
-                            throw new AnalyzerException(insnNode, "RET instruction outside of a sub routine");
+                            throw new AnalyzerException(insnNode,  "RET instruction outside of a sub routine");
                         }
                         for (int i2 = 0; i2 < subroutine.callers.size(); ++i2) {
                             final JumpInsnNode caller = subroutine.callers.get(i2);
                             final int call = this.insns.indexOf(caller);
                             if (this.frames[call] != null) {
-                                this.merge(call + 1, this.frames[call], current, this.subroutines[call], subroutine.access);
-                                this.newControlFlowEdge(insn, call + 1);
+                                this.merge(call + 1,  this.frames[call],  current,  this.subroutines[call],  subroutine.access);
+                                this.newControlFlowEdge(insn,  call + 1);
                             }
                         }
                     }
@@ -175,8 +175,8 @@ public class Analyzer<V extends Value> implements Opcodes
                                 subroutine.access[var] = true;
                             }
                         }
-                        this.merge(insn + 1, current, subroutine);
-                        this.newControlFlowEdge(insn, insn + 1);
+                        this.merge(insn + 1,  current,  subroutine);
+                        this.newControlFlowEdge(insn,  insn + 1);
                     }
                 }
                 final List<TryCatchBlockNode> insnHandlers2 = this.handlers[insn];
@@ -193,25 +193,25 @@ public class Analyzer<V extends Value> implements Opcodes
                         type = Type.getObjectType(tcb2.type);
                     }
                     final int jump2 = this.insns.indexOf(tcb2.handler);
-                    if (this.newControlFlowExceptionEdge(insn, tcb2)) {
+                    if (this.newControlFlowExceptionEdge(insn,  tcb2)) {
                         handler.init((Frame<? extends V>)f);
                         handler.clearStack();
                         handler.push(this.interpreter.newValue(type));
-                        this.merge(jump2, handler, subroutine);
+                        this.merge(jump2,  handler,  subroutine);
                     }
                 }
             }
             catch (AnalyzerException e) {
-                throw new AnalyzerException(e.node, "Error at instruction " + insn + ": " + e.getMessage(), e);
+                throw new AnalyzerException(e.node,  "Error at instruction " + insn + ": " + e.getMessage(),  e);
             }
             catch (Exception e2) {
-                throw new AnalyzerException(insnNode, "Error at instruction " + insn + ": " + e2.getMessage(), e2);
+                throw new AnalyzerException(insnNode,  "Error at instruction " + insn + ": " + e2.getMessage(),  e2);
             }
         }
         return this.frames;
     }
     
-    private void findSubroutine(int insn, final Subroutine sub, final List<AbstractInsnNode> calls) throws AnalyzerException {
+    private void findSubroutine(int insn,  final Subroutine sub,  final List<AbstractInsnNode> calls) throws AnalyzerException {
         while (insn >= 0 && insn < this.n) {
             if (this.subroutines[insn] != null) {
                 return;
@@ -224,30 +224,30 @@ public class Analyzer<V extends Value> implements Opcodes
                 }
                 else {
                     final JumpInsnNode jnode = (JumpInsnNode)node;
-                    this.findSubroutine(this.insns.indexOf(jnode.label), sub, calls);
+                    this.findSubroutine(this.insns.indexOf(jnode.label),  sub,  calls);
                 }
             }
             else if (node instanceof TableSwitchInsnNode) {
                 final TableSwitchInsnNode tsnode = (TableSwitchInsnNode)node;
-                this.findSubroutine(this.insns.indexOf(tsnode.dflt), sub, calls);
+                this.findSubroutine(this.insns.indexOf(tsnode.dflt),  sub,  calls);
                 for (int i = tsnode.labels.size() - 1; i >= 0; --i) {
                     final LabelNode l = tsnode.labels.get(i);
-                    this.findSubroutine(this.insns.indexOf(l), sub, calls);
+                    this.findSubroutine(this.insns.indexOf(l),  sub,  calls);
                 }
             }
             else if (node instanceof LookupSwitchInsnNode) {
                 final LookupSwitchInsnNode lsnode = (LookupSwitchInsnNode)node;
-                this.findSubroutine(this.insns.indexOf(lsnode.dflt), sub, calls);
+                this.findSubroutine(this.insns.indexOf(lsnode.dflt),  sub,  calls);
                 for (int i = lsnode.labels.size() - 1; i >= 0; --i) {
                     final LabelNode l = lsnode.labels.get(i);
-                    this.findSubroutine(this.insns.indexOf(l), sub, calls);
+                    this.findSubroutine(this.insns.indexOf(l),  sub,  calls);
                 }
             }
             final List<TryCatchBlockNode> insnHandlers = this.handlers[insn];
             if (insnHandlers != null) {
                 for (int i = 0; i < insnHandlers.size(); ++i) {
                     final TryCatchBlockNode tcb = insnHandlers.get(i);
-                    this.findSubroutine(this.insns.indexOf(tcb.handler), sub, calls);
+                    this.findSubroutine(this.insns.indexOf(tcb.handler),  sub,  calls);
                 }
             }
             switch (node.getOpcode()) {
@@ -270,7 +270,7 @@ public class Analyzer<V extends Value> implements Opcodes
                 }
             }
         }
-        throw new AnalyzerException(null, "Execution can fall off end of the code");
+        throw new AnalyzerException(null,  "Execution can fall off end of the code");
     }
     
     public Frame<V>[] getFrames() {
@@ -281,29 +281,29 @@ public class Analyzer<V extends Value> implements Opcodes
         return this.handlers[insn];
     }
     
-    protected void init(final String owner, final MethodNode m) throws AnalyzerException {
+    protected void init(final String owner,  final MethodNode m) throws AnalyzerException {
     }
     
-    protected Frame<V> newFrame(final int nLocals, final int nStack) {
-        return new Frame<V>(nLocals, nStack);
+    protected Frame<V> newFrame(final int nLocals,  final int nStack) {
+        return new Frame<V>(nLocals,  nStack);
     }
     
     protected Frame<V> newFrame(final Frame<? extends V> src) {
         return new Frame<V>(src);
     }
     
-    protected void newControlFlowEdge(final int insn, final int successor) {
+    protected void newControlFlowEdge(final int insn,  final int successor) {
     }
     
-    protected boolean newControlFlowExceptionEdge(final int insn, final int successor) {
+    protected boolean newControlFlowExceptionEdge(final int insn,  final int successor) {
         return true;
     }
     
-    protected boolean newControlFlowExceptionEdge(final int insn, final TryCatchBlockNode tcb) {
-        return this.newControlFlowExceptionEdge(insn, this.insns.indexOf(tcb.handler));
+    protected boolean newControlFlowExceptionEdge(final int insn,  final TryCatchBlockNode tcb) {
+        return this.newControlFlowExceptionEdge(insn,  this.insns.indexOf(tcb.handler));
     }
     
-    private void merge(final int insn, final Frame<V> frame, final Subroutine subroutine) throws AnalyzerException {
+    private void merge(final int insn,  final Frame<V> frame,  final Subroutine subroutine) throws AnalyzerException {
         final Frame<V> oldFrame = this.frames[insn];
         final Subroutine oldSubroutine = this.subroutines[insn];
         boolean changes;
@@ -312,7 +312,7 @@ public class Analyzer<V extends Value> implements Opcodes
             changes = true;
         }
         else {
-            changes = oldFrame.merge((Frame<? extends V>)frame, this.interpreter);
+            changes = oldFrame.merge((Frame<? extends V>)frame,  this.interpreter);
         }
         if (oldSubroutine == null) {
             if (subroutine != null) {
@@ -329,17 +329,17 @@ public class Analyzer<V extends Value> implements Opcodes
         }
     }
     
-    private void merge(final int insn, final Frame<V> beforeJSR, final Frame<V> afterRET, final Subroutine subroutineBeforeJSR, final boolean[] access) throws AnalyzerException {
+    private void merge(final int insn,  final Frame<V> beforeJSR,  final Frame<V> afterRET,  final Subroutine subroutineBeforeJSR,  final boolean[] access) throws AnalyzerException {
         final Frame<V> oldFrame = this.frames[insn];
         final Subroutine oldSubroutine = this.subroutines[insn];
-        afterRET.merge((Frame<? extends V>)beforeJSR, access);
+        afterRET.merge((Frame<? extends V>)beforeJSR,  access);
         boolean changes;
         if (oldFrame == null) {
             this.frames[insn] = this.newFrame((Frame<? extends V>)afterRET);
             changes = true;
         }
         else {
-            changes = oldFrame.merge((Frame<? extends V>)afterRET, this.interpreter);
+            changes = oldFrame.merge((Frame<? extends V>)afterRET,  this.interpreter);
         }
         if (oldSubroutine != null && subroutineBeforeJSR != null) {
             changes |= oldSubroutine.merge(subroutineBeforeJSR);

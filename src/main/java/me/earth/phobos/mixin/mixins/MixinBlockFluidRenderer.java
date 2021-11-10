@@ -16,8 +16,8 @@ import org.spongepowered.asm.mixin.injection.*;
 @Mixin({ BlockFluidRenderer.class })
 public class MixinBlockFluidRenderer
 {
-    @Inject(method = { "renderFluid" }, at = { @At("HEAD") }, cancellable = true)
-    public void renderFluidHook(final IBlockAccess blockAccess, final IBlockState blockState, final BlockPos blockPos, final BufferBuilder bufferBuilder, final CallbackInfoReturnable<Boolean> info) {
+    @Inject(method = { "renderFluid" },  at = { @At("HEAD") },  cancellable = true)
+    public void renderFluidHook(final IBlockAccess blockAccess,  final IBlockState blockState,  final BlockPos blockPos,  final BufferBuilder bufferBuilder,  final CallbackInfoReturnable<Boolean> info) {
         if (XRay.getInstance().isOn() && !XRay.getInstance().shouldRender(blockState.getBlock())) {
             info.setReturnValue((Object)false);
             info.cancel();

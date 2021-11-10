@@ -22,7 +22,7 @@ public class AltManager
     
     private AltManager() {
         final UUID uuid = UUID.randomUUID();
-        final AuthenticationService authService = (AuthenticationService)new YggdrasilAuthenticationService(Minecraft.getMinecraft().getProxy(), uuid.toString());
+        final AuthenticationService authService = (AuthenticationService)new YggdrasilAuthenticationService(Minecraft.getMinecraft().getProxy(),  uuid.toString());
         this.auth = authService.createUserAuthentication(Agent.MINECRAFT);
         authService.createMinecraftSessionService();
     }
@@ -34,7 +34,7 @@ public class AltManager
         return AltManager.manager;
     }
     
-    public Throwable setUser(final String username, final String password) {
+    public Throwable setUser(final String username,  final String password) {
         Throwable throwable = null;
         if (!Minecraft.getMinecraft().getSession().getUsername().equals(EncryptionTools.decode(username)) || Minecraft.getMinecraft().getSession().getToken().equals("0")) {
             if (!Minecraft.getMinecraft().getSession().getToken().equals("0")) {
@@ -50,7 +50,7 @@ public class AltManager
             this.auth.setPassword(EncryptionTools.decode(password));
             try {
                 this.auth.logIn();
-                final Session session = new Session(this.auth.getSelectedProfile().getName(), UUIDTypeAdapter.fromUUID(this.auth.getSelectedProfile().getId()), this.auth.getAuthenticatedToken(), this.auth.getUserType().getName());
+                final Session session = new Session(this.auth.getSelectedProfile().getName(),  UUIDTypeAdapter.fromUUID(this.auth.getSelectedProfile().getId()),  this.auth.getAuthenticatedToken(),  this.auth.getUserType().getName());
                 MR.setSession(session);
                 for (int i = 0; i < AltDatabase.getInstance().getAlts().size(); ++i) {
                     final AccountData data2 = AltDatabase.getInstance().getAlts().get(i);
@@ -71,7 +71,7 @@ public class AltManager
     
     public void setUserOffline(final String username) {
         this.auth.logOut();
-        final Session session = new Session(username, username, "0", "legacy");
+        final Session session = new Session(username,  username,  "0",  "legacy");
         try {
             MR.setSession(session);
         }

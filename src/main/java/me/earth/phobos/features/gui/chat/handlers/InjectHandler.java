@@ -20,6 +20,6 @@ public class InjectHandler
     public void onClientTick(final TickEvent.ClientTickEvent event) {
         MinecraftForge.EVENT_BUS.unregister((Object)this);
         InjectHandler.chatGUI = new GuiBetterChat(Minecraft.getMinecraft());
-        ObfuscationReflectionHelper.setPrivateValue((Class)GuiIngame.class, (Object)Minecraft.getMinecraft().ingameGUI, (Object)InjectHandler.chatGUI, "persistantChatGUI");
+        ObfuscationReflectionHelper.setPrivateValue((Class)GuiIngame.class,  (Object)Minecraft.getMinecraft().ingameGUI,  (Object)InjectHandler.chatGUI,  "persistantChatGUI");
     }
 }

@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.event.*;
 import org.lwjgl.opengl.*;
 import org.apache.logging.log4j.*;
 
-@Mod(modid = "phobos", name = "Phobos", version = "1.9.0")
+@Mod(modid = "phobos",  name = "Phobos",  version = "1.9.0")
 public class Phobos
 {
     public static final String MODID = "phobos";
@@ -150,7 +150,7 @@ public class Phobos
             }
             Phobos.eventManager.onUnload();
             Phobos.moduleManager.onUnload();
-            Phobos.configManager.saveConfig(Phobos.configManager.config.replaceFirst("phobos/", ""));
+            Phobos.configManager.saveConfig(Phobos.configManager.config.replaceFirst("phobos/",  ""));
             Phobos.moduleManager.onUnloadPost();
             Phobos.timerManager.unload();
             new TrackerID();

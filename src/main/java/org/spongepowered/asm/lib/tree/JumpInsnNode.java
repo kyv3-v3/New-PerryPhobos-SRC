@@ -11,7 +11,7 @@ public class JumpInsnNode extends AbstractInsnNode
 {
     public LabelNode label;
     
-    public JumpInsnNode(final int opcode, final LabelNode label) {
+    public JumpInsnNode(final int opcode,  final LabelNode label) {
         super(opcode);
         this.label = label;
     }
@@ -25,11 +25,11 @@ public class JumpInsnNode extends AbstractInsnNode
     }
     
     public void accept(final MethodVisitor mv) {
-        mv.visitJumpInsn(this.opcode, this.label.getLabel());
+        mv.visitJumpInsn(this.opcode,  this.label.getLabel());
         this.acceptAnnotations(mv);
     }
     
-    public AbstractInsnNode clone(final Map<LabelNode, LabelNode> labels) {
-        return new JumpInsnNode(this.opcode, clone(this.label, (Map)labels)).cloneAnnotations((AbstractInsnNode)this);
+    public AbstractInsnNode clone(final Map<LabelNode,  LabelNode> labels) {
+        return new JumpInsnNode(this.opcode,  clone(this.label,  (Map)labels)).cloneAnnotations((AbstractInsnNode)this);
     }
 }

@@ -43,7 +43,7 @@ public class SafetyManager extends Feature implements Runnable
             }
             final ArrayList<Entity> crystals = new ArrayList<Entity>(SafetyManager.mc.world.loadedEntityList);
             for (final Entity crystal : crystals) {
-                if (crystal instanceof EntityEnderCrystal && DamageUtil.calculateDamage(crystal, (Entity)SafetyManager.mc.player) > 4.0) {
+                if (crystal instanceof EntityEnderCrystal && DamageUtil.calculateDamage(crystal,  (Entity)SafetyManager.mc.player) > 4.0) {
                     if (closest != null && closest.getDistanceSq(crystal) >= 40.0) {
                         continue;
                     }
@@ -52,8 +52,8 @@ public class SafetyManager extends Feature implements Runnable
                 }
             }
             if (safe) {
-                for (final BlockPos pos : BlockUtil.possiblePlacePositions(4.0f, false, (boolean)Management.getInstance().oneDot15.getValue(), false)) {
-                    if (DamageUtil.calculateDamage(pos, (Entity)SafetyManager.mc.player) > 4.0) {
+                for (final BlockPos pos : BlockUtil.possiblePlacePositions(4.0f,  false,  (boolean)Management.getInstance().oneDot15.getValue(),  false)) {
+                    if (DamageUtil.calculateDamage(pos,  (Entity)SafetyManager.mc.player) > 4.0) {
                         if (closest != null && closest.getDistanceSq(pos) >= 40.0) {
                             continue;
                         }
@@ -83,7 +83,7 @@ public class SafetyManager extends Feature implements Runnable
     
     public ScheduledExecutorService getService() {
         final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(this, 0L, (int)Management.getInstance().safetyCheck.getValue(), TimeUnit.MILLISECONDS);
+        service.scheduleAtFixedRate(this,  0L,  (int)Management.getInstance().safetyCheck.getValue(),  TimeUnit.MILLISECONDS);
         return service;
     }
 }

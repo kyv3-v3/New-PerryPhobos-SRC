@@ -15,8 +15,8 @@ import org.spongepowered.asm.mixin.injection.*;
 @Mixin({ ModelBiped.class })
 public class MixinModelBiped
 {
-    @Inject(method = { "render" }, at = { @At("HEAD") }, cancellable = true)
-    public void render(final Entity entityIn, final float limbSwing, final float limbSwingAmount, final float ageInTicks, final float netHeadYaw, final float headPitch, final float scale, final CallbackInfo ci) {
+    @Inject(method = { "render" },  at = { @At("HEAD") },  cancellable = true)
+    public void render(final Entity entityIn,  final float limbSwing,  final float limbSwingAmount,  final float ageInTicks,  final float netHeadYaw,  final float headPitch,  final float scale,  final CallbackInfo ci) {
         if (entityIn instanceof EntityPigZombie && (boolean)NoRender.getInstance().pigmen.getValue()) {
             ci.cancel();
         }

@@ -13,11 +13,11 @@ class Handler
     int type;
     Handler next;
     
-    static Handler remove(Handler h, final Label start, final Label end) {
+    static Handler remove(Handler h,  final Label start,  final Label end) {
         if (h == null) {
             return null;
         }
-        h.next = remove(h.next, start, end);
+        h.next = remove(h.next,  start,  end);
         final int hstart = h.start.position;
         final int hend = h.end.position;
         final int s = start.position;

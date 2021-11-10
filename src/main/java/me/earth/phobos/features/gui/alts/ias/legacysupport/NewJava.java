@@ -10,7 +10,7 @@ import java.time.*;
 public class NewJava implements ILegacyCompat
 {
     public int[] getDate() {
-        final int[] ret = { LocalDateTime.now().getMonthValue(), LocalDateTime.now().getDayOfMonth(), LocalDateTime.now().getYear() };
+        final int[] ret = { LocalDateTime.now().getMonthValue(),  LocalDateTime.now().getDayOfMonth(),  LocalDateTime.now().getYear() };
         return ret;
     }
     

@@ -16,7 +16,7 @@ public class MixinTransformerError extends Error
         super(cause);
     }
     
-    public MixinTransformerError(final String message, final Throwable cause) {
-        super(message, cause);
+    public MixinTransformerError(final String message,  final Throwable cause) {
+        super(message,  cause);
     }
 }

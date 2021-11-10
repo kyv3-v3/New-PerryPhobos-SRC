@@ -13,7 +13,7 @@ import me.earth.phobos.features.modules.*;
 public class BindCommand extends Command
 {
     public BindCommand() {
-        super("bind", new String[] { "<module>", "<bind>" });
+        super("bind",  new String[] { "<module>",  "<bind>" });
     }
     
     public void execute(final String[] commands) {

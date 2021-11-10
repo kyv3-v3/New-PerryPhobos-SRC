@@ -25,7 +25,7 @@ public class RotationManager extends Feature
         RotationManager.mc.player.rotationPitch = this.pitch;
     }
     
-    public void setPlayerRotations(final float yaw, final float pitch) {
+    public void setPlayerRotations(final float yaw,  final float pitch) {
         RotationManager.mc.player.rotationYaw = yaw;
         RotationManager.mc.player.rotationYawHead = yaw;
         RotationManager.mc.player.rotationPitch = pitch;
@@ -37,23 +37,23 @@ public class RotationManager extends Feature
     }
     
     public void lookAtPos(final BlockPos pos) {
-        final float[] angle = MathUtil.calcAngle(RotationManager.mc.player.getPositionEyes(RotationManager.mc.getRenderPartialTicks()), new Vec3d((double)(pos.getX() + 0.5f), (double)(pos.getY() + 0.5f), (double)(pos.getZ() + 0.5f)));
-        this.setPlayerRotations(angle[0], angle[1]);
+        final float[] angle = MathUtil.calcAngle(RotationManager.mc.player.getPositionEyes(RotationManager.mc.getRenderPartialTicks()),  new Vec3d((double)(pos.getX() + 0.5f),  (double)(pos.getY() + 0.5f),  (double)(pos.getZ() + 0.5f)));
+        this.setPlayerRotations(angle[0],  angle[1]);
     }
     
     public void lookAtVec3d(final Vec3d vec3d) {
-        final float[] angle = MathUtil.calcAngle(RotationManager.mc.player.getPositionEyes(RotationManager.mc.getRenderPartialTicks()), new Vec3d(vec3d.x, vec3d.y, vec3d.z));
-        this.setPlayerRotations(angle[0], angle[1]);
+        final float[] angle = MathUtil.calcAngle(RotationManager.mc.player.getPositionEyes(RotationManager.mc.getRenderPartialTicks()),  new Vec3d(vec3d.x,  vec3d.y,  vec3d.z));
+        this.setPlayerRotations(angle[0],  angle[1]);
     }
     
-    public void lookAtVec3d(final double x, final double y, final double z) {
-        final Vec3d vec3d = new Vec3d(x, y, z);
+    public void lookAtVec3d(final double x,  final double y,  final double z) {
+        final Vec3d vec3d = new Vec3d(x,  y,  z);
         this.lookAtVec3d(vec3d);
     }
     
     public void lookAtEntity(final Entity entity) {
-        final float[] angle = MathUtil.calcAngle(RotationManager.mc.player.getPositionEyes(RotationManager.mc.getRenderPartialTicks()), entity.getPositionEyes(RotationManager.mc.getRenderPartialTicks()));
-        this.setPlayerRotations(angle[0], angle[1]);
+        final float[] angle = MathUtil.calcAngle(RotationManager.mc.player.getPositionEyes(RotationManager.mc.getRenderPartialTicks()),  entity.getPositionEyes(RotationManager.mc.getRenderPartialTicks()));
+        this.setPlayerRotations(angle[0],  angle[1]);
     }
     
     public void setPlayerPitch(final float pitch) {

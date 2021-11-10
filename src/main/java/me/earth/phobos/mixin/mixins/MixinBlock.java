@@ -25,15 +25,15 @@ public abstract class MixinBlock
 {
     @Shadow
     @Deprecated
-    public abstract float getBlockHardness(final IBlockState p0, final World p1, final BlockPos p2);
+    public abstract float getBlockHardness(final IBlockState p0,  final World p1,  final BlockPos p2);
     
-    @Inject(method = { "addCollisionBoxToList(Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/AxisAlignedBB;Ljava/util/List;Lnet/minecraft/entity/Entity;Z)V" }, at = { @At("HEAD") }, cancellable = true)
-    public void addCollisionBoxToListHook(final IBlockState state, final World worldIn, final BlockPos pos, final AxisAlignedBB entityBox, final List<AxisAlignedBB> collidingBoxes, @Nullable final Entity entityIn, final boolean isActualState, final CallbackInfo info) {
+    @Inject(method = { "addCollisionBoxToList(Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/AxisAlignedBB;Ljava/util/List;Lnet/minecraft/entity/Entity;Z)V" },  at = { @At("HEAD") },  cancellable = true)
+    public void addCollisionBoxToListHook(final IBlockState state,  final World worldIn,  final BlockPos pos,  final AxisAlignedBB entityBox,  final List<AxisAlignedBB> collidingBoxes,  @Nullable final Entity entityIn,  final boolean isActualState,  final CallbackInfo info) {
         if (entityIn != null && Util.mc.player != null && (entityIn.equals((Object)Util.mc.player) || (Util.mc.player.getRidingEntity() != null && entityIn.equals((Object)Util.mc.player.getRidingEntity()))) && ((Flight.getInstance().isOn() && ((Flight.getInstance().mode.getValue() == Flight.Mode.PACKET && (boolean)Flight.getInstance().better.getValue() && (boolean)Flight.getInstance().phase.getValue()) || (Flight.getInstance().mode.getValue() == Flight.Mode.DAMAGE && (boolean)Flight.getInstance().noClip.getValue()))) || (Phase.getInstance().isOn() && Phase.getInstance().mode.getValue() == Phase.Mode.PACKETFLY && Phase.getInstance().type.getValue() == Phase.PacketFlyMode.SETBACK && (boolean)Phase.getInstance().boundingBox.getValue()))) {
             info.cancel();
         }
         try {
-            if ((Freecam.getInstance().isOff() && Jesus.getInstance().isOn() && Jesus.getInstance().mode.getValue() == Jesus.Mode.TRAMPOLINE && Util.mc.player != null && state != null && state.getBlock() instanceof BlockLiquid && !(entityIn instanceof EntityBoat) && !Util.mc.player.isSneaking() && Util.mc.player.fallDistance < 3.0f && !EntityUtil.isAboveLiquid((Entity)Util.mc.player) && EntityUtil.checkForLiquid((Entity)Util.mc.player, false)) || (EntityUtil.checkForLiquid((Entity)Util.mc.player, false) && Util.mc.player.getRidingEntity() != null && Util.mc.player.getRidingEntity().fallDistance < 3.0f && EntityUtil.isAboveBlock((Entity)Util.mc.player, pos))) {
+            if ((Freecam.getInstance().isOff() && Jesus.getInstance().isOn() && Jesus.getInstance().mode.getValue() == Jesus.Mode.TRAMPOLINE && Util.mc.player != null && state != null && state.getBlock() instanceof BlockLiquid && !(entityIn instanceof EntityBoat) && !Util.mc.player.isSneaking() && Util.mc.player.fallDistance < 3.0f && !EntityUtil.isAboveLiquid((Entity)Util.mc.player) && EntityUtil.checkForLiquid((Entity)Util.mc.player,  false)) || (EntityUtil.checkForLiquid((Entity)Util.mc.player,  false) && Util.mc.player.getRidingEntity() != null && Util.mc.player.getRidingEntity().fallDistance < 3.0f && EntityUtil.isAboveBlock((Entity)Util.mc.player,  pos))) {
                 final AxisAlignedBB offset = Jesus.offset.offset(pos);
                 if (entityBox.intersects(offset)) {
                     collidingBoxes.add(offset);
@@ -44,8 +44,8 @@ public abstract class MixinBlock
         catch (Exception ex) {}
     }
     
-    @Inject(method = { "isFullCube" }, at = { @At("HEAD") }, cancellable = true)
-    public void isFullCubeHook(final IBlockState blockState, final CallbackInfoReturnable<Boolean> info) {
+    @Inject(method = { "isFullCube" },  at = { @At("HEAD") },  cancellable = true)
+    public void isFullCubeHook(final IBlockState blockState,  final CallbackInfoReturnable<Boolean> info) {
         try {
             if (XRay.getInstance().isOn()) {
                 info.setReturnValue((Object)XRay.getInstance().shouldRender((Block)Block.class.cast(this)));

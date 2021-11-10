@@ -49,22 +49,22 @@ public class Flight extends Module
     private int level;
     
     public Flight() {
-        super("Flight", "Makes you fly.", Module.Category.MOVEMENT, true, false, false);
+        super("Flight",  "Makes you fly.",  Module.Category.MOVEMENT,  true,  false,  false);
         this.flySwitch = new Fly();
         this.packets = new ArrayList<CPacketPlayer>();
         this.delayTimer = new TimerUtil();
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", (T)Mode.PACKET));
-        this.better = (Setting<Boolean>)this.register(new Setting("Better", (T)false, v -> this.mode.getValue() == Mode.PACKET));
-        this.phase = (Setting<Boolean>)this.register(new Setting("Phase", (T)false, v -> this.mode.getValue() == Mode.PACKET && this.better.getValue()));
-        this.format = (Setting<Format>)this.register(new Setting("Format", (T)Format.DAMAGE, v -> this.mode.getValue() == Mode.DAMAGE));
-        this.type = (Setting<PacketMode>)this.register(new Setting("Type", (T)PacketMode.Y, v -> this.mode.getValue() == Mode.PACKET));
-        this.speed = (Setting<Float>)this.register(new Setting("Speed", (T)0.1f, (T)0.0f, (T)10.0f, v -> this.mode.getValue() == Mode.PACKET || this.mode.getValue() == Mode.CREATIVE || this.mode.getValue() == Mode.VANILLA || this.mode.getValue() == Mode.DESCEND || this.mode.getValue() == Mode.DAMAGE, "The speed."));
-        this.noKick = (Setting<Boolean>)this.register(new Setting("NoKick", (T)false, v -> this.mode.getValue() == Mode.PACKET || this.mode.getValue() == Mode.VANILLA || this.mode.getValue() == Mode.DAMAGE));
-        this.noClip = (Setting<Boolean>)this.register(new Setting("NoClip", (T)false, v -> this.mode.getValue() == Mode.DAMAGE));
-        this.groundSpoof = (Setting<Boolean>)this.register(new Setting("GroundSpoof", (T)false, v -> this.mode.getValue() == Mode.SPOOF));
-        this.antiGround = (Setting<Boolean>)this.register(new Setting("AntiGround", (T)true, v -> this.mode.getValue() == Mode.SPOOF));
-        this.cooldown = (Setting<Integer>)this.register(new Setting("Cooldown", (T)1, v -> this.mode.getValue() == Mode.DESCEND));
-        this.ascend = (Setting<Boolean>)this.register(new Setting("Ascend", (T)false, v -> this.mode.getValue() == Mode.DESCEND));
+        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.PACKET));
+        this.better = (Setting<Boolean>)this.register(new Setting("Better", false,  v -> this.mode.getValue() == Mode.PACKET));
+        this.phase = (Setting<Boolean>)this.register(new Setting("Phase", false,  v -> this.mode.getValue() == Mode.PACKET && this.better.getValue()));
+        this.format = (Setting<Format>)this.register(new Setting("Format", Format.DAMAGE,  v -> this.mode.getValue() == Mode.DAMAGE));
+        this.type = (Setting<PacketMode>)this.register(new Setting("Type", PacketMode.Y,  v -> this.mode.getValue() == Mode.PACKET));
+        this.speed = (Setting<Float>)this.register(new Setting("Speed", 0.1f, 0.0f, 10.0f,  v -> this.mode.getValue() == Mode.PACKET || this.mode.getValue() == Mode.CREATIVE || this.mode.getValue() == Mode.VANILLA || this.mode.getValue() == Mode.DESCEND || this.mode.getValue() == Mode.DAMAGE,  "The speed."));
+        this.noKick = (Setting<Boolean>)this.register(new Setting("NoKick", false,  v -> this.mode.getValue() == Mode.PACKET || this.mode.getValue() == Mode.VANILLA || this.mode.getValue() == Mode.DAMAGE));
+        this.noClip = (Setting<Boolean>)this.register(new Setting("NoClip", false,  v -> this.mode.getValue() == Mode.DAMAGE));
+        this.groundSpoof = (Setting<Boolean>)this.register(new Setting("GroundSpoof", false,  v -> this.mode.getValue() == Mode.SPOOF));
+        this.antiGround = (Setting<Boolean>)this.register(new Setting("AntiGround", true,  v -> this.mode.getValue() == Mode.SPOOF));
+        this.cooldown = (Setting<Integer>)this.register(new Setting("Cooldown", 1,  v -> this.mode.getValue() == Mode.DESCEND));
+        this.ascend = (Setting<Boolean>)this.register(new Setting("Ascend", false,  v -> this.mode.getValue() == Mode.DESCEND));
         this.setInstance();
     }
     
@@ -88,8 +88,8 @@ public class Flight extends Module
             if (!Flight.mc.player.isElytraFlying()) {
                 if (this.counter < 1) {
                     this.counter += this.cooldown.getValue();
-                    Flight.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Flight.mc.player.posX, Flight.mc.player.posY, Flight.mc.player.posZ, false));
-                    Flight.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Flight.mc.player.posX, Flight.mc.player.posY - 0.03, Flight.mc.player.posZ, true));
+                    Flight.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Flight.mc.player.posX,  Flight.mc.player.posY,  Flight.mc.player.posZ,  false));
+                    Flight.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Flight.mc.player.posX,  Flight.mc.player.posY - 0.03,  Flight.mc.player.posZ,  true));
                 }
                 else {
                     --this.counter;
@@ -108,7 +108,7 @@ public class Flight extends Module
         if (this.mode.getValue() == Mode.PACKET) {
             this.teleportId = 0;
             this.packets.clear();
-            final CPacketPlayer.Position bounds = new CPacketPlayer.Position(Flight.mc.player.posX, 0.0, Flight.mc.player.posZ, Flight.mc.player.onGround);
+            final CPacketPlayer.Position bounds = new CPacketPlayer.Position(Flight.mc.player.posX,  0.0,  Flight.mc.player.posZ,  Flight.mc.player.onGround);
             this.packets.add((CPacketPlayer)bounds);
             Flight.mc.player.connection.sendPacket((Packet)bounds);
         }
@@ -127,7 +127,7 @@ public class Flight extends Module
             if (this.format.getValue() == Format.PACKET && Flight.mc.world != null) {
                 this.teleportId = 0;
                 this.packets.clear();
-                final CPacketPlayer.Position bounds = new CPacketPlayer.Position(Flight.mc.player.posX, (Flight.mc.player.posY <= 10.0) ? 255.0 : 1.0, Flight.mc.player.posZ, Flight.mc.player.onGround);
+                final CPacketPlayer.Position bounds = new CPacketPlayer.Position(Flight.mc.player.posX,  (Flight.mc.player.posY <= 10.0) ? 255.0 : 1.0,  Flight.mc.player.posZ,  Flight.mc.player.onGround);
                 this.packets.add((CPacketPlayer)bounds);
                 Flight.mc.player.connection.sendPacket((Packet)bounds);
             }
@@ -146,12 +146,12 @@ public class Flight extends Module
                             motionY += (Objects.requireNonNull(Flight.mc.player.getActivePotionEffect(MobEffects.JUMP_BOOST)).getAmplifier() + 1) * 0.1f;
                         }
                         Flight.mc.player.motionY = motionY;
-                        Phobos.positionManager.setPlayerPosition(Flight.mc.player.posX, Flight.mc.player.motionY, Flight.mc.player.posZ);
+                        Phobos.positionManager.setPlayerPosition(Flight.mc.player.posX,  Flight.mc.player.motionY,  Flight.mc.player.posZ);
                         this.moveSpeed *= 2.149;
                     }
                 }
                 if (Flight.mc.player.ticksExisted % 2 == 0) {
-                    Flight.mc.player.setPosition(Flight.mc.player.posX, Flight.mc.player.posY + MathUtil.getRandom(1.2354235325235235E-14, 1.2354235325235233E-13), Flight.mc.player.posZ);
+                    Flight.mc.player.setPosition(Flight.mc.player.posX,  Flight.mc.player.posY + MathUtil.getRandom(1.2354235325235235E-14,  1.2354235325235233E-13),  Flight.mc.player.posZ);
                 }
                 if (Flight.mc.gameSettings.keyBindJump.isKeyDown()) {
                     final EntityPlayerSP player = Flight.mc.player;
@@ -165,7 +165,7 @@ public class Flight extends Module
             if (this.format.getValue() == Format.NORMAL) {
                 Flight.mc.player.motionY = (double)(Flight.mc.gameSettings.keyBindJump.isKeyDown() ? this.speed.getValue() : (Flight.mc.gameSettings.keyBindSneak.isKeyDown() ? (-this.speed.getValue()) : 0.0));
                 if (this.noKick.getValue() && Flight.mc.player.ticksExisted % 5 == 0) {
-                    Phobos.positionManager.setPlayerPosition(Flight.mc.player.posX, Flight.mc.player.posY - 0.03125, Flight.mc.player.posZ, true);
+                    Phobos.positionManager.setPlayerPosition(Flight.mc.player.posX,  Flight.mc.player.posY - 0.03125,  Flight.mc.player.posZ,  true);
                 }
                 final double[] dir = EntityUtil.forward(this.speed.getValue());
                 Flight.mc.player.motionX = dir[0];
@@ -173,32 +173,32 @@ public class Flight extends Module
             }
             if (this.format.getValue() == Format.PACKET) {
                 if (this.teleportId <= 0) {
-                    final CPacketPlayer.Position bounds = new CPacketPlayer.Position(Flight.mc.player.posX, (Flight.mc.player.posY <= 10.0) ? 255.0 : 1.0, Flight.mc.player.posZ, Flight.mc.player.onGround);
+                    final CPacketPlayer.Position bounds = new CPacketPlayer.Position(Flight.mc.player.posX,  (Flight.mc.player.posY <= 10.0) ? 255.0 : 1.0,  Flight.mc.player.posZ,  Flight.mc.player.onGround);
                     this.packets.add((CPacketPlayer)bounds);
                     Flight.mc.player.connection.sendPacket((Packet)bounds);
                     return;
                 }
-                Flight.mc.player.setVelocity(0.0, 0.0, 0.0);
+                Flight.mc.player.setVelocity(0.0,  0.0,  0.0);
                 final double posY = -1.0E-8;
                 if (!Flight.mc.gameSettings.keyBindJump.isKeyDown() && !Flight.mc.gameSettings.keyBindSneak.isKeyDown()) {
                     if (EntityUtil.isMoving()) {
                         for (double x = 0.0625; x < this.speed.getValue(); x += 0.262) {
                             final double[] dir2 = EntityUtil.forward(x);
-                            Flight.mc.player.setVelocity(dir2[0], posY, dir2[1]);
-                            this.move(dir2[0], posY, dir2[1]);
+                            Flight.mc.player.setVelocity(dir2[0],  posY,  dir2[1]);
+                            this.move(dir2[0],  posY,  dir2[1]);
                         }
                     }
                 }
                 else if (Flight.mc.gameSettings.keyBindJump.isKeyDown()) {
                     for (int i = 0; i <= 3; ++i) {
-                        Flight.mc.player.setVelocity(0.0, (Flight.mc.player.ticksExisted % 20 == 0) ? -0.03999999910593033 : ((double)(0.062f * i)), 0.0);
-                        this.move(0.0, (Flight.mc.player.ticksExisted % 20 == 0) ? -0.03999999910593033 : ((double)(0.062f * i)), 0.0);
+                        Flight.mc.player.setVelocity(0.0,  (Flight.mc.player.ticksExisted % 20 == 0) ? -0.03999999910593033 : ((double)(0.062f * i)),  0.0);
+                        this.move(0.0,  (Flight.mc.player.ticksExisted % 20 == 0) ? -0.03999999910593033 : ((double)(0.062f * i)),  0.0);
                     }
                 }
                 else if (Flight.mc.gameSettings.keyBindSneak.isKeyDown()) {
                     for (int i = 0; i <= 3; ++i) {
-                        Flight.mc.player.setVelocity(0.0, posY - 0.0625 * i, 0.0);
-                        this.move(0.0, posY - 0.0625 * i, 0.0);
+                        Flight.mc.player.setVelocity(0.0,  posY - 0.0625 * i,  0.0);
+                        this.move(0.0,  posY - 0.0625 * i,  0.0);
                     }
                 }
             }
@@ -207,52 +207,52 @@ public class Flight extends Module
                 final double posY2 = Flight.mc.player.posY;
                 final double posZ = Flight.mc.player.posZ;
                 final boolean ground = Flight.mc.player.onGround;
-                Flight.mc.player.setVelocity(0.0, 0.0, 0.0);
+                Flight.mc.player.setVelocity(0.0,  0.0,  0.0);
                 if (!Flight.mc.gameSettings.keyBindJump.isKeyDown() && !Flight.mc.gameSettings.keyBindSneak.isKeyDown()) {
                     final double[] dir3 = EntityUtil.forward(0.0625);
-                    Flight.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(posX + dir3[0], posY2, posZ + dir3[1], ground));
-                    Flight.mc.player.setPositionAndUpdate(posX + dir3[0], posY2, posZ + dir3[1]);
+                    Flight.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(posX + dir3[0],  posY2,  posZ + dir3[1],  ground));
+                    Flight.mc.player.setPositionAndUpdate(posX + dir3[0],  posY2,  posZ + dir3[1]);
                 }
                 else if (Flight.mc.gameSettings.keyBindJump.isKeyDown()) {
-                    Flight.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(posX, posY2 + 0.0625, posZ, ground));
-                    Flight.mc.player.setPositionAndUpdate(posX, posY2 + 0.0625, posZ);
+                    Flight.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(posX,  posY2 + 0.0625,  posZ,  ground));
+                    Flight.mc.player.setPositionAndUpdate(posX,  posY2 + 0.0625,  posZ);
                 }
                 else if (Flight.mc.gameSettings.keyBindSneak.isKeyDown()) {
-                    Flight.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(posX, posY2 - 0.0625, posZ, ground));
-                    Flight.mc.player.setPositionAndUpdate(posX, posY2 - 0.0625, posZ);
+                    Flight.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(posX,  posY2 - 0.0625,  posZ,  ground));
+                    Flight.mc.player.setPositionAndUpdate(posX,  posY2 - 0.0625,  posZ);
                 }
-                Flight.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(posX + Flight.mc.player.motionX, (Flight.mc.player.posY <= 10.0) ? 255.0 : 1.0, posZ + Flight.mc.player.motionZ, ground));
+                Flight.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(posX + Flight.mc.player.motionX,  (Flight.mc.player.posY <= 10.0) ? 255.0 : 1.0,  posZ + Flight.mc.player.motionZ,  ground));
             }
             if (this.format.getValue() == Format.DELAY) {
                 if (this.delayTimer.passedMs(1000L)) {
                     this.delayTimer.reset();
                 }
                 if (this.delayTimer.passedMs(600L)) {
-                    Flight.mc.player.setVelocity(0.0, 0.0, 0.0);
+                    Flight.mc.player.setVelocity(0.0,  0.0,  0.0);
                     return;
                 }
                 if (this.teleportId <= 0) {
-                    final CPacketPlayer.Position bounds = new CPacketPlayer.Position(Flight.mc.player.posX, (Flight.mc.player.posY <= 10.0) ? 255.0 : 1.0, Flight.mc.player.posZ, Flight.mc.player.onGround);
+                    final CPacketPlayer.Position bounds = new CPacketPlayer.Position(Flight.mc.player.posX,  (Flight.mc.player.posY <= 10.0) ? 255.0 : 1.0,  Flight.mc.player.posZ,  Flight.mc.player.onGround);
                     this.packets.add((CPacketPlayer)bounds);
                     Flight.mc.player.connection.sendPacket((Packet)bounds);
                     return;
                 }
-                Flight.mc.player.setVelocity(0.0, 0.0, 0.0);
+                Flight.mc.player.setVelocity(0.0,  0.0,  0.0);
                 final double posY = -1.0E-8;
                 if (!Flight.mc.gameSettings.keyBindJump.isKeyDown() && !Flight.mc.gameSettings.keyBindSneak.isKeyDown()) {
                     if (EntityUtil.isMoving()) {
                         final double[] dir4 = EntityUtil.forward(0.2);
-                        Flight.mc.player.setVelocity(dir4[0], posY, dir4[1]);
-                        this.move(dir4[0], posY, dir4[1]);
+                        Flight.mc.player.setVelocity(dir4[0],  posY,  dir4[1]);
+                        this.move(dir4[0],  posY,  dir4[1]);
                     }
                 }
                 else if (Flight.mc.gameSettings.keyBindJump.isKeyDown()) {
-                    Flight.mc.player.setVelocity(0.0, 0.06199999898672104, 0.0);
-                    this.move(0.0, 0.06199999898672104, 0.0);
+                    Flight.mc.player.setVelocity(0.0,  0.06199999898672104,  0.0);
+                    this.move(0.0,  0.06199999898672104,  0.0);
                 }
                 else if (Flight.mc.gameSettings.keyBindSneak.isKeyDown()) {
-                    Flight.mc.player.setVelocity(0.0, 0.0625, 0.0);
-                    this.move(0.0, 0.0625, 0.0);
+                    Flight.mc.player.setVelocity(0.0,  0.0625,  0.0);
+                    this.move(0.0,  0.0625,  0.0);
                 }
             }
             if (this.noClip.getValue()) {
@@ -269,7 +269,7 @@ public class Flight extends Module
                 Flight.mc.player.capabilities.allowFlying = true;
             }
             if (this.mode.getValue() == Mode.VANILLA) {
-                Flight.mc.player.setVelocity(0.0, 0.0, 0.0);
+                Flight.mc.player.setVelocity(0.0,  0.0,  0.0);
                 Flight.mc.player.jumpMovementFactor = this.speed.getValue();
                 if (this.noKick.getValue() && Flight.mc.player.ticksExisted % 4 == 0) {
                     Flight.mc.player.motionY = -0.03999999910593033;
@@ -311,88 +311,88 @@ public class Flight extends Module
     
     private void doNormalPacketFly() {
         if (this.teleportId <= 0) {
-            final CPacketPlayer.Position bounds = new CPacketPlayer.Position(Flight.mc.player.posX, 0.0, Flight.mc.player.posZ, Flight.mc.player.onGround);
+            final CPacketPlayer.Position bounds = new CPacketPlayer.Position(Flight.mc.player.posX,  0.0,  Flight.mc.player.posZ,  Flight.mc.player.onGround);
             this.packets.add((CPacketPlayer)bounds);
             Flight.mc.player.connection.sendPacket((Packet)bounds);
             return;
         }
-        Flight.mc.player.setVelocity(0.0, 0.0, 0.0);
-        if (Flight.mc.world.getCollisionBoxes((Entity)Flight.mc.player, Flight.mc.player.getEntityBoundingBox().expand(-0.0625, 0.0, -0.0625)).isEmpty()) {
-            final double ySpeed = Flight.mc.gameSettings.keyBindJump.isKeyDown() ? (this.noKick.getValue() ? ((Flight.mc.player.ticksExisted % 20 == 0) ? -0.03999999910593033 : 0.06199999898672104) : 0.06199999898672104) : (Flight.mc.gameSettings.keyBindSneak.isKeyDown() ? -0.062 : (Flight.mc.world.getCollisionBoxes((Entity)Flight.mc.player, Flight.mc.player.getEntityBoundingBox().expand(-0.0625, -0.0625, -0.0625)).isEmpty() ? ((Flight.mc.player.ticksExisted % 4 == 0) ? (this.noKick.getValue() ? -0.04f : 0.0f) : 0.0) : 0.0));
+        Flight.mc.player.setVelocity(0.0,  0.0,  0.0);
+        if (Flight.mc.world.getCollisionBoxes((Entity)Flight.mc.player,  Flight.mc.player.getEntityBoundingBox().expand(-0.0625,  0.0,  -0.0625)).isEmpty()) {
+            final double ySpeed = Flight.mc.gameSettings.keyBindJump.isKeyDown() ? (this.noKick.getValue() ? ((Flight.mc.player.ticksExisted % 20 == 0) ? -0.03999999910593033 : 0.06199999898672104) : 0.06199999898672104) : (Flight.mc.gameSettings.keyBindSneak.isKeyDown() ? -0.062 : (Flight.mc.world.getCollisionBoxes((Entity)Flight.mc.player,  Flight.mc.player.getEntityBoundingBox().expand(-0.0625,  -0.0625,  -0.0625)).isEmpty() ? ((Flight.mc.player.ticksExisted % 4 == 0) ? (this.noKick.getValue() ? -0.04f : 0.0f) : 0.0) : 0.0));
             final double[] directionalSpeed = MathUtil.directionSpeed(this.speed.getValue());
             if (Flight.mc.gameSettings.keyBindJump.isKeyDown() || Flight.mc.gameSettings.keyBindSneak.isKeyDown() || Flight.mc.gameSettings.keyBindForward.isKeyDown() || Flight.mc.gameSettings.keyBindBack.isKeyDown() || Flight.mc.gameSettings.keyBindRight.isKeyDown() || Flight.mc.gameSettings.keyBindLeft.isKeyDown()) {
                 if (directionalSpeed[0] != 0.0 || directionalSpeed[1] != 0.0) {
                     if (Flight.mc.player.movementInput.jump && (Flight.mc.player.moveStrafing != 0.0f || Flight.mc.player.moveForward != 0.0f)) {
-                        Flight.mc.player.setVelocity(0.0, 0.0, 0.0);
-                        this.move(0.0, 0.0, 0.0);
+                        Flight.mc.player.setVelocity(0.0,  0.0,  0.0);
+                        this.move(0.0,  0.0,  0.0);
                         for (int i = 0; i <= 3; ++i) {
-                            Flight.mc.player.setVelocity(0.0, ySpeed * i, 0.0);
-                            this.move(0.0, ySpeed * i, 0.0);
+                            Flight.mc.player.setVelocity(0.0,  ySpeed * i,  0.0);
+                            this.move(0.0,  ySpeed * i,  0.0);
                         }
                     }
                     else if (Flight.mc.player.movementInput.jump) {
-                        Flight.mc.player.setVelocity(0.0, 0.0, 0.0);
-                        this.move(0.0, 0.0, 0.0);
+                        Flight.mc.player.setVelocity(0.0,  0.0,  0.0);
+                        this.move(0.0,  0.0,  0.0);
                         for (int i = 0; i <= 3; ++i) {
-                            Flight.mc.player.setVelocity(0.0, ySpeed * i, 0.0);
-                            this.move(0.0, ySpeed * i, 0.0);
+                            Flight.mc.player.setVelocity(0.0,  ySpeed * i,  0.0);
+                            this.move(0.0,  ySpeed * i,  0.0);
                         }
                     }
                     else {
                         for (int i = 0; i <= 2; ++i) {
-                            Flight.mc.player.setVelocity(directionalSpeed[0] * i, ySpeed * i, directionalSpeed[1] * i);
-                            this.move(directionalSpeed[0] * i, ySpeed * i, directionalSpeed[1] * i);
+                            Flight.mc.player.setVelocity(directionalSpeed[0] * i,  ySpeed * i,  directionalSpeed[1] * i);
+                            this.move(directionalSpeed[0] * i,  ySpeed * i,  directionalSpeed[1] * i);
                         }
                     }
                 }
             }
-            else if (this.noKick.getValue() && Flight.mc.world.getCollisionBoxes((Entity)Flight.mc.player, Flight.mc.player.getEntityBoundingBox().expand(-0.0625, -0.0625, -0.0625)).isEmpty()) {
-                Flight.mc.player.setVelocity(0.0, (Flight.mc.player.ticksExisted % 2 == 0) ? 0.03999999910593033 : -0.03999999910593033, 0.0);
-                this.move(0.0, (Flight.mc.player.ticksExisted % 2 == 0) ? 0.03999999910593033 : -0.03999999910593033, 0.0);
+            else if (this.noKick.getValue() && Flight.mc.world.getCollisionBoxes((Entity)Flight.mc.player,  Flight.mc.player.getEntityBoundingBox().expand(-0.0625,  -0.0625,  -0.0625)).isEmpty()) {
+                Flight.mc.player.setVelocity(0.0,  (Flight.mc.player.ticksExisted % 2 == 0) ? 0.03999999910593033 : -0.03999999910593033,  0.0);
+                this.move(0.0,  (Flight.mc.player.ticksExisted % 2 == 0) ? 0.03999999910593033 : -0.03999999910593033,  0.0);
             }
         }
     }
     
     private void doBetterPacketFly() {
         if (this.teleportId <= 0) {
-            final CPacketPlayer.Position bounds = new CPacketPlayer.Position(Flight.mc.player.posX, 10000.0, Flight.mc.player.posZ, Flight.mc.player.onGround);
+            final CPacketPlayer.Position bounds = new CPacketPlayer.Position(Flight.mc.player.posX,  10000.0,  Flight.mc.player.posZ,  Flight.mc.player.onGround);
             this.packets.add((CPacketPlayer)bounds);
             Flight.mc.player.connection.sendPacket((Packet)bounds);
             return;
         }
-        Flight.mc.player.setVelocity(0.0, 0.0, 0.0);
-        if (Flight.mc.world.getCollisionBoxes((Entity)Flight.mc.player, Flight.mc.player.getEntityBoundingBox().expand(-0.0625, 0.0, -0.0625)).isEmpty()) {
-            final double ySpeed = Flight.mc.gameSettings.keyBindJump.isKeyDown() ? (this.noKick.getValue() ? ((Flight.mc.player.ticksExisted % 20 == 0) ? -0.03999999910593033 : 0.06199999898672104) : 0.06199999898672104) : (Flight.mc.gameSettings.keyBindSneak.isKeyDown() ? -0.062 : (Flight.mc.world.getCollisionBoxes((Entity)Flight.mc.player, Flight.mc.player.getEntityBoundingBox().expand(-0.0625, -0.0625, -0.0625)).isEmpty() ? ((Flight.mc.player.ticksExisted % 4 == 0) ? (this.noKick.getValue() ? -0.04f : 0.0f) : 0.0) : 0.0));
+        Flight.mc.player.setVelocity(0.0,  0.0,  0.0);
+        if (Flight.mc.world.getCollisionBoxes((Entity)Flight.mc.player,  Flight.mc.player.getEntityBoundingBox().expand(-0.0625,  0.0,  -0.0625)).isEmpty()) {
+            final double ySpeed = Flight.mc.gameSettings.keyBindJump.isKeyDown() ? (this.noKick.getValue() ? ((Flight.mc.player.ticksExisted % 20 == 0) ? -0.03999999910593033 : 0.06199999898672104) : 0.06199999898672104) : (Flight.mc.gameSettings.keyBindSneak.isKeyDown() ? -0.062 : (Flight.mc.world.getCollisionBoxes((Entity)Flight.mc.player,  Flight.mc.player.getEntityBoundingBox().expand(-0.0625,  -0.0625,  -0.0625)).isEmpty() ? ((Flight.mc.player.ticksExisted % 4 == 0) ? (this.noKick.getValue() ? -0.04f : 0.0f) : 0.0) : 0.0));
             final double[] directionalSpeed = MathUtil.directionSpeed(this.speed.getValue());
             if (Flight.mc.gameSettings.keyBindJump.isKeyDown() || Flight.mc.gameSettings.keyBindSneak.isKeyDown() || Flight.mc.gameSettings.keyBindForward.isKeyDown() || Flight.mc.gameSettings.keyBindBack.isKeyDown() || Flight.mc.gameSettings.keyBindRight.isKeyDown() || Flight.mc.gameSettings.keyBindLeft.isKeyDown()) {
                 if (directionalSpeed[0] != 0.0 || directionalSpeed[1] != 0.0) {
                     if (Flight.mc.player.movementInput.jump && (Flight.mc.player.moveStrafing != 0.0f || Flight.mc.player.moveForward != 0.0f)) {
-                        Flight.mc.player.setVelocity(0.0, 0.0, 0.0);
-                        this.move(0.0, 0.0, 0.0);
+                        Flight.mc.player.setVelocity(0.0,  0.0,  0.0);
+                        this.move(0.0,  0.0,  0.0);
                         for (int i = 0; i <= 3; ++i) {
-                            Flight.mc.player.setVelocity(0.0, ySpeed * i, 0.0);
-                            this.move(0.0, ySpeed * i, 0.0);
+                            Flight.mc.player.setVelocity(0.0,  ySpeed * i,  0.0);
+                            this.move(0.0,  ySpeed * i,  0.0);
                         }
                     }
                     else if (Flight.mc.player.movementInput.jump) {
-                        Flight.mc.player.setVelocity(0.0, 0.0, 0.0);
-                        this.move(0.0, 0.0, 0.0);
+                        Flight.mc.player.setVelocity(0.0,  0.0,  0.0);
+                        this.move(0.0,  0.0,  0.0);
                         for (int i = 0; i <= 3; ++i) {
-                            Flight.mc.player.setVelocity(0.0, ySpeed * i, 0.0);
-                            this.move(0.0, ySpeed * i, 0.0);
+                            Flight.mc.player.setVelocity(0.0,  ySpeed * i,  0.0);
+                            this.move(0.0,  ySpeed * i,  0.0);
                         }
                     }
                     else {
                         for (int i = 0; i <= 2; ++i) {
-                            Flight.mc.player.setVelocity(directionalSpeed[0] * i, ySpeed * i, directionalSpeed[1] * i);
-                            this.move(directionalSpeed[0] * i, ySpeed * i, directionalSpeed[1] * i);
+                            Flight.mc.player.setVelocity(directionalSpeed[0] * i,  ySpeed * i,  directionalSpeed[1] * i);
+                            this.move(directionalSpeed[0] * i,  ySpeed * i,  directionalSpeed[1] * i);
                         }
                     }
                 }
             }
-            else if (this.noKick.getValue() && Flight.mc.world.getCollisionBoxes((Entity)Flight.mc.player, Flight.mc.player.getEntityBoundingBox().expand(-0.0625, -0.0625, -0.0625)).isEmpty()) {
-                Flight.mc.player.setVelocity(0.0, (Flight.mc.player.ticksExisted % 2 == 0) ? 0.03999999910593033 : -0.03999999910593033, 0.0);
-                this.move(0.0, (Flight.mc.player.ticksExisted % 2 == 0) ? 0.03999999910593033 : -0.03999999910593033, 0.0);
+            else if (this.noKick.getValue() && Flight.mc.world.getCollisionBoxes((Entity)Flight.mc.player,  Flight.mc.player.getEntityBoundingBox().expand(-0.0625,  -0.0625,  -0.0625)).isEmpty()) {
+                Flight.mc.player.setVelocity(0.0,  (Flight.mc.player.ticksExisted % 2 == 0) ? 0.03999999910593033 : -0.03999999910593033,  0.0);
+                this.move(0.0,  (Flight.mc.player.ticksExisted % 2 == 0) ? 0.03999999910593033 : -0.03999999910593033,  0.0);
             }
         }
     }
@@ -425,7 +425,7 @@ public class Flight extends Module
         }
         if (this.mode.getValue() == Mode.DAMAGE) {
             Phobos.timerManager.reset();
-            Flight.mc.player.setVelocity(0.0, 0.0, 0.0);
+            Flight.mc.player.setVelocity(0.0,  0.0,  0.0);
             this.moveSpeed = Strafe.getBaseMoveSpeed();
             this.lastDist = 0.0;
             if (this.noClip.getValue()) {
@@ -468,7 +468,7 @@ public class Flight extends Module
                     this.moveSpeed = this.lastDist - difference;
                 }
                 else {
-                    if (Flight.mc.world.getCollisionBoxes((Entity)Flight.mc.player, Flight.mc.player.getEntityBoundingBox().offset(0.0, Flight.mc.player.motionY, 0.0)).size() > 0 || Flight.mc.player.collidedVertically) {
+                    if (Flight.mc.world.getCollisionBoxes((Entity)Flight.mc.player,  Flight.mc.player.getEntityBoundingBox().offset(0.0,  Flight.mc.player.motionY,  0.0)).size() > 0 || Flight.mc.player.collidedVertically) {
                         this.level = 1;
                     }
                     this.moveSpeed = this.lastDist - this.lastDist / 159.0;
@@ -479,7 +479,7 @@ public class Flight extends Module
                 final double boost = Flight.mc.player.isPotionActive(MobEffects.SPEED) ? 1.86 : 2.05;
                 this.moveSpeed = boost * Strafe.getBaseMoveSpeed() - 0.01;
             }
-            this.moveSpeed = Math.max(this.moveSpeed, Strafe.getBaseMoveSpeed());
+            this.moveSpeed = Math.max(this.moveSpeed,  Strafe.getBaseMoveSpeed());
             final double mx = -Math.sin(Math.toRadians(yaw));
             final double mz = Math.cos(Math.toRadians(yaw));
             event.setX(forward * this.moveSpeed * mx + strafe * this.moveSpeed * mz);
@@ -517,11 +517,11 @@ public class Flight extends Module
                 if (!packet.moving) {
                     return;
                 }
-                final AxisAlignedBB range = Flight.mc.player.getEntityBoundingBox().expand(0.0, -Flight.mc.player.posY, 0.0).contract(0.0, (double)(-Flight.mc.player.height), 0.0);
-                final List<AxisAlignedBB> collisionBoxes = (List<AxisAlignedBB>)Flight.mc.player.world.getCollisionBoxes((Entity)Flight.mc.player, range);
+                final AxisAlignedBB range = Flight.mc.player.getEntityBoundingBox().expand(0.0,  -Flight.mc.player.posY,  0.0).contract(0.0,  (double)(-Flight.mc.player.height),  0.0);
+                final List<AxisAlignedBB> collisionBoxes = (List<AxisAlignedBB>)Flight.mc.player.world.getCollisionBoxes((Entity)Flight.mc.player,  range);
                 final AtomicReference<Double> newHeight = new AtomicReference<Double>(0.0);
                 final AtomicReference<Double> atomicReference;
-                collisionBoxes.forEach(box -> atomicReference.set(Math.max(atomicReference.get(), box.maxY)));
+                collisionBoxes.forEach(box -> atomicReference.set(Math.max(atomicReference.get(),  box.maxY)));
                 packet.y = newHeight.get();
                 packet.onGround = true;
             }
@@ -550,7 +550,7 @@ public class Flight extends Module
                 }
                 if (event.getPacket() instanceof SPacketPlayerPosLook) {
                     final SPacketPlayerPosLook packet = (SPacketPlayerPosLook)event.getPacket();
-                    if (Flight.mc.player.isEntityAlive() && Flight.mc.world.isBlockLoaded(new BlockPos(Flight.mc.player.posX, Flight.mc.player.posY, Flight.mc.player.posZ)) && !(Flight.mc.currentScreen instanceof GuiDownloadTerrain)) {
+                    if (Flight.mc.player.isEntityAlive() && Flight.mc.world.isBlockLoaded(new BlockPos(Flight.mc.player.posX,  Flight.mc.player.posY,  Flight.mc.player.posZ)) && !(Flight.mc.currentScreen instanceof GuiDownloadTerrain)) {
                         if (this.teleportId <= 0) {
                             this.teleportId = packet.getTeleportId();
                         }
@@ -569,17 +569,17 @@ public class Flight extends Module
                 }
                 final SPacketPlayerPosLook packet = (SPacketPlayerPosLook)event.getPacket();
                 final double oldY = Flight.mc.player.posY;
-                Flight.mc.player.setPosition(packet.x, packet.y, packet.z);
-                final AxisAlignedBB range = Flight.mc.player.getEntityBoundingBox().expand(0.0, 256.0f - Flight.mc.player.height - Flight.mc.player.posY, 0.0).contract(0.0, (double)Flight.mc.player.height, 0.0);
-                final List<AxisAlignedBB> collisionBoxes = (List<AxisAlignedBB>)Flight.mc.player.world.getCollisionBoxes((Entity)Flight.mc.player, range);
+                Flight.mc.player.setPosition(packet.x,  packet.y,  packet.z);
+                final AxisAlignedBB range = Flight.mc.player.getEntityBoundingBox().expand(0.0,  256.0f - Flight.mc.player.height - Flight.mc.player.posY,  0.0).contract(0.0,  (double)Flight.mc.player.height,  0.0);
+                final List<AxisAlignedBB> collisionBoxes = (List<AxisAlignedBB>)Flight.mc.player.world.getCollisionBoxes((Entity)Flight.mc.player,  range);
                 final AtomicReference<Double> newY = new AtomicReference<Double>(256.0);
                 final AtomicReference<Double> atomicReference;
-                collisionBoxes.forEach(box -> atomicReference.set(Math.min(atomicReference.get(), box.minY - Flight.mc.player.height)));
-                packet.y = Math.min(oldY, newY.get());
+                collisionBoxes.forEach(box -> atomicReference.set(Math.min(atomicReference.get(),  box.minY - Flight.mc.player.height)));
+                packet.y = Math.min(oldY,  newY.get());
             }
             if (this.mode.getValue() == Mode.DAMAGE && (this.format.getValue() == Format.PACKET || this.format.getValue() == Format.DELAY) && event.getPacket() instanceof SPacketPlayerPosLook) {
                 final SPacketPlayerPosLook packet = (SPacketPlayerPosLook)event.getPacket();
-                if (Flight.mc.player.isEntityAlive() && Flight.mc.world.isBlockLoaded(new BlockPos(Flight.mc.player.posX, Flight.mc.player.posY, Flight.mc.player.posZ)) && !(Flight.mc.currentScreen instanceof GuiDownloadTerrain)) {
+                if (Flight.mc.player.isEntityAlive() && Flight.mc.world.isBlockLoaded(new BlockPos(Flight.mc.player.posX,  Flight.mc.player.posY,  Flight.mc.player.posZ)) && !(Flight.mc.currentScreen instanceof GuiDownloadTerrain)) {
                     if (this.teleportId <= 0) {
                         this.teleportId = packet.getTeleportId();
                     }
@@ -605,11 +605,11 @@ public class Flight extends Module
         }
     }
     
-    private void move(final double x, final double y, final double z) {
-        final CPacketPlayer.Position pos = new CPacketPlayer.Position(Flight.mc.player.posX + x, Flight.mc.player.posY + y, Flight.mc.player.posZ + z, Flight.mc.player.onGround);
+    private void move(final double x,  final double y,  final double z) {
+        final CPacketPlayer.Position pos = new CPacketPlayer.Position(Flight.mc.player.posX + x,  Flight.mc.player.posY + y,  Flight.mc.player.posZ + z,  Flight.mc.player.onGround);
         this.packets.add((CPacketPlayer)pos);
         Flight.mc.player.connection.sendPacket((Packet)pos);
-        final Object bounds = ((boolean)this.better.getValue()) ? this.createBoundsPacket(x, y, z) : new CPacketPlayer.Position(Flight.mc.player.posX + x, 0.0, Flight.mc.player.posZ + z, Flight.mc.player.onGround);
+        final Object bounds = ((boolean)this.better.getValue()) ? this.createBoundsPacket(x,  y,  z) : new CPacketPlayer.Position(Flight.mc.player.posX + x,  0.0,  Flight.mc.player.posZ + z,  Flight.mc.player.onGround);
         this.packets.add((CPacketPlayer)bounds);
         Flight.mc.player.connection.sendPacket((Packet)bounds);
         ++this.teleportId;
@@ -618,31 +618,31 @@ public class Flight extends Module
         Flight.mc.player.connection.sendPacket((Packet)new CPacketConfirmTeleport(this.teleportId + 1));
     }
     
-    private CPacketPlayer createBoundsPacket(final double x, final double y, final double z) {
+    private CPacketPlayer createBoundsPacket(final double x,  final double y,  final double z) {
         switch (this.type.getValue()) {
             case Up: {
-                return (CPacketPlayer)new CPacketPlayer.Position(Flight.mc.player.posX + x, 10000.0, Flight.mc.player.posZ + z, Flight.mc.player.onGround);
+                return (CPacketPlayer)new CPacketPlayer.Position(Flight.mc.player.posX + x,  10000.0,  Flight.mc.player.posZ + z,  Flight.mc.player.onGround);
             }
             case Down: {
-                return (CPacketPlayer)new CPacketPlayer.Position(Flight.mc.player.posX + x, -10000.0, Flight.mc.player.posZ + z, Flight.mc.player.onGround);
+                return (CPacketPlayer)new CPacketPlayer.Position(Flight.mc.player.posX + x,  -10000.0,  Flight.mc.player.posZ + z,  Flight.mc.player.onGround);
             }
             case Zero: {
-                return (CPacketPlayer)new CPacketPlayer.Position(Flight.mc.player.posX + x, 0.0, Flight.mc.player.posZ + z, Flight.mc.player.onGround);
+                return (CPacketPlayer)new CPacketPlayer.Position(Flight.mc.player.posX + x,  0.0,  Flight.mc.player.posZ + z,  Flight.mc.player.onGround);
             }
             case Y: {
-                return (CPacketPlayer)new CPacketPlayer.Position(Flight.mc.player.posX + x, (Flight.mc.player.posY + y <= 10.0) ? 255.0 : 1.0, Flight.mc.player.posZ + z, Flight.mc.player.onGround);
+                return (CPacketPlayer)new CPacketPlayer.Position(Flight.mc.player.posX + x,  (Flight.mc.player.posY + y <= 10.0) ? 255.0 : 1.0,  Flight.mc.player.posZ + z,  Flight.mc.player.onGround);
             }
             case X: {
-                return (CPacketPlayer)new CPacketPlayer.Position(Flight.mc.player.posX + x + 75.0, Flight.mc.player.posY + y, Flight.mc.player.posZ + z, Flight.mc.player.onGround);
+                return (CPacketPlayer)new CPacketPlayer.Position(Flight.mc.player.posX + x + 75.0,  Flight.mc.player.posY + y,  Flight.mc.player.posZ + z,  Flight.mc.player.onGround);
             }
             case Z: {
-                return (CPacketPlayer)new CPacketPlayer.Position(Flight.mc.player.posX + x, Flight.mc.player.posY + y, Flight.mc.player.posZ + z + 75.0, Flight.mc.player.onGround);
+                return (CPacketPlayer)new CPacketPlayer.Position(Flight.mc.player.posX + x,  Flight.mc.player.posY + y,  Flight.mc.player.posZ + z + 75.0,  Flight.mc.player.onGround);
             }
             case XZ: {
-                return (CPacketPlayer)new CPacketPlayer.Position(Flight.mc.player.posX + x + 75.0, Flight.mc.player.posY + y, Flight.mc.player.posZ + z + 75.0, Flight.mc.player.onGround);
+                return (CPacketPlayer)new CPacketPlayer.Position(Flight.mc.player.posX + x + 75.0,  Flight.mc.player.posY + y,  Flight.mc.player.posZ + z + 75.0,  Flight.mc.player.onGround);
             }
             default: {
-                return (CPacketPlayer)new CPacketPlayer.Position(Flight.mc.player.posX + x, 2000.0, Flight.mc.player.posZ + z, Flight.mc.player.onGround);
+                return (CPacketPlayer)new CPacketPlayer.Position(Flight.mc.player.posX + x,  2000.0,  Flight.mc.player.posZ + z,  Flight.mc.player.onGround);
             }
         }
     }
@@ -653,31 +653,31 @@ public class Flight extends Module
     
     private enum PacketMode
     {
-        Up, 
-        Down, 
-        Zero, 
-        Y, 
-        X, 
-        Z, 
+        Up,  
+        Down,  
+        Zero,  
+        Y,  
+        X,  
+        Z,  
         XZ;
     }
     
     public enum Format
     {
-        DAMAGE, 
-        SLOW, 
-        DELAY, 
-        NORMAL, 
+        DAMAGE,  
+        SLOW,  
+        DELAY,  
+        NORMAL,  
         PACKET;
     }
     
     public enum Mode
     {
-        CREATIVE, 
-        VANILLA, 
-        PACKET, 
-        SPOOF, 
-        DESCEND, 
+        CREATIVE,  
+        VANILLA,  
+        PACKET,  
+        SPOOF,  
+        DESCEND,  
         DAMAGE;
     }
     

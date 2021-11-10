@@ -19,9 +19,9 @@ public class Fullbright extends Module
     private float previousSetting;
     
     public Fullbright() {
-        super("Fullbright", "Makes your game brighter.", Module.Category.RENDER, true, false, false);
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", (T)Mode.GAMMA));
-        this.effects = (Setting<Boolean>)this.register(new Setting("Effects", (T)false));
+        super("Fullbright",  "Makes your game brighter.",  Module.Category.RENDER,  true,  false,  false);
+        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.GAMMA));
+        this.effects = (Setting<Boolean>)this.register(new Setting("Effects", false));
         this.previousSetting = 1.0f;
     }
     
@@ -34,7 +34,7 @@ public class Fullbright extends Module
             Fullbright.mc.gameSettings.gammaSetting = 1000.0f;
         }
         if (this.mode.getValue() == Mode.POTION) {
-            Fullbright.mc.player.addPotionEffect(new PotionEffect(MobEffects.NIGHT_VISION, 5210));
+            Fullbright.mc.player.addPotionEffect(new PotionEffect(MobEffects.NIGHT_VISION,  5210));
         }
     }
     
@@ -57,7 +57,7 @@ public class Fullbright extends Module
     
     public enum Mode
     {
-        GAMMA, 
+        GAMMA,  
         POTION;
     }
 }

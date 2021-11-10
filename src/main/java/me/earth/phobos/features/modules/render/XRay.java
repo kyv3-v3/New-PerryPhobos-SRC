@@ -20,9 +20,9 @@ public class XRay extends Module
     public Setting<Boolean> showBlocks;
     
     public XRay() {
-        super("XRay", "Lets you look through walls.", Module.Category.RENDER, false, false, true);
-        this.newBlock = (Setting<String>)this.register(new Setting("NewBlock", (T)"Add Block..."));
-        this.showBlocks = (Setting<Boolean>)this.register(new Setting("ShowBlocks", (T)false));
+        super("XRay",  "Lets you look through walls.",  Module.Category.RENDER,  false,  false,  true);
+        this.newBlock = (Setting<String>)this.register(new Setting("NewBlock", "Add Block..."));
+        this.showBlocks = (Setting<Boolean>)this.register(new Setting("ShowBlocks", false));
         this.setInstance();
     }
     
@@ -52,7 +52,7 @@ public class XRay extends Module
         }
         if (event.getStage() == 2 && event.getSetting() != null && event.getSetting().getFeature() != null && event.getSetting().getFeature().equals(this)) {
             if (event.getSetting().equals(this.newBlock) && !this.shouldRender(this.newBlock.getPlannedValue())) {
-                this.register(new Setting(this.newBlock.getPlannedValue(), (T)true, v -> this.showBlocks.getValue()));
+                this.register(new Setting(this.newBlock.getPlannedValue(), true,  v -> this.showBlocks.getValue()));
                 Command.sendMessage("<Xray> Added new Block: " + this.newBlock.getPlannedValue());
                 if (this.isOn()) {
                     XRay.mc.renderGlobal.loadRenderers();

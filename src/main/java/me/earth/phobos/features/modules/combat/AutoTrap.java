@@ -72,9 +72,9 @@ public class AutoTrap extends Module
     private final Setting<Integer> blue;
     private final Setting<Integer> alpha;
     private final TimerUtil timer;
-    private final Map<BlockPos, Integer> retries;
+    private final Map<BlockPos,  Integer> retries;
     private final TimerUtil retryTimer;
-    private final Map<BlockPos, IBlockState> toAir;
+    private final Map<BlockPos,  IBlockState> toAir;
     public EntityPlayer target;
     private boolean didPlace;
     private boolean switchedItem;
@@ -86,55 +86,55 @@ public class AutoTrap extends Module
     private List<Vec3d> currentPlaceList;
     
     public AutoTrap() {
-        super("AutoTrap", "Traps other players.", Category.COMBAT, true, false, false);
-        this.server = (Setting<Boolean>)this.register(new Setting("Server", (T)false));
-        this.delay = (Setting<Integer>)this.register(new Setting("Delay/Place", (T)50, (T)0, (T)250));
-        this.blocksPerPlace = (Setting<Integer>)this.register(new Setting("Block/Place", (T)8, (T)1, (T)30));
-        this.targetRange = (Setting<Double>)this.register(new Setting("TargetRange", (T)10.0, (T)0.0, (T)20.0));
-        this.range = (Setting<Double>)this.register(new Setting("PlaceRange", (T)6.0, (T)0.0, (T)10.0));
-        this.targetMode = (Setting<TargetMode>)this.register(new Setting("Target", (T)TargetMode.CLOSEST));
-        this.switchMode = (Setting<InventoryUtil.Switch>)this.register(new Setting("Switch", (T)InventoryUtil.Switch.NORMAL));
-        this.rotate = (Setting<Boolean>)this.register(new Setting("Rotate", (T)true));
-        this.raytrace = (Setting<Boolean>)this.register(new Setting("Raytrace", (T)false));
-        this.pattern = (Setting<Pattern>)this.register(new Setting("Pattern", (T)Pattern.STATIC));
-        this.extend = (Setting<Integer>)this.register(new Setting("Extend", (T)4, (T)1, (T)4, v -> this.pattern.getValue() != Pattern.STATIC, "Extending the Trap."));
-        this.antiScaffold = (Setting<Boolean>)this.register(new Setting("AntiScaffold", (T)false));
-        this.antiStep = (Setting<Boolean>)this.register(new Setting("AntiStep", (T)false));
-        this.face = (Setting<Boolean>)this.register(new Setting("Face", (T)true));
-        this.legs = (Setting<Boolean>)this.register(new Setting("Legs", (T)false, v -> this.pattern.getValue() != Pattern.OPEN));
-        this.platform = (Setting<Boolean>)this.register(new Setting("Platform", (T)false, v -> this.pattern.getValue() != Pattern.OPEN));
-        this.antiDrop = (Setting<Boolean>)this.register(new Setting("AntiDrop", (T)false));
-        this.speed = (Setting<Double>)this.register(new Setting("Speed", (T)10.0, (T)0.0, (T)30.0));
-        this.antiSelf = (Setting<Boolean>)this.register(new Setting("AntiSelf", (T)false));
-        this.eventMode = (Setting<Integer>)this.register(new Setting("Updates", (T)3, (T)1, (T)3));
-        this.freecam = (Setting<Boolean>)this.register(new Setting("Freecam", (T)false));
-        this.info = (Setting<Boolean>)this.register(new Setting("Info", (T)false));
-        this.entityCheck = (Setting<Boolean>)this.register(new Setting("NoBlock", (T)true));
-        this.noScaffoldExtend = (Setting<Boolean>)this.register(new Setting("NoScaffoldExtend", (T)false));
-        this.disable = (Setting<Boolean>)this.register(new Setting("TSelfMove", (T)false));
-        this.packet = (Setting<Boolean>)this.register(new Setting("Packet", (T)false));
-        this.airPacket = (Setting<Boolean>)this.register(new Setting("AirPacket", (T)false, v -> this.packet.getValue()));
-        this.retryer = (Setting<Integer>)this.register(new Setting("Retries", (T)4, (T)1, (T)15));
-        this.endPortals = (Setting<Boolean>)this.register(new Setting("EndPortals", (T)false));
-        this.render = (Setting<Boolean>)this.register(new Setting("Render", (T)true));
-        this.colorSync = (Setting<Boolean>)this.register(new Setting("Sync", (T)false, v -> this.render.getValue()));
-        this.box = (Setting<Boolean>)this.register(new Setting("Box", (T)false, v -> this.render.getValue()));
-        this.boxAlpha = (Setting<Integer>)this.register(new Setting("BoxAlpha", (T)125, (T)0, (T)255, v -> this.box.getValue() && this.render.getValue()));
-        this.outline = (Setting<Boolean>)this.register(new Setting("Outline", (T)true, v -> this.render.getValue()));
-        this.customOutline = (Setting<Boolean>)this.register(new Setting("CustomLine", (T)false, v -> this.outline.getValue() && this.render.getValue()));
-        this.cRed = (Setting<Integer>)this.register(new Setting("OL-Red", (T)255, (T)0, (T)255, v -> this.customOutline.getValue() && this.outline.getValue() && this.render.getValue()));
-        this.cGreen = (Setting<Integer>)this.register(new Setting("OL-Green", (T)255, (T)0, (T)255, v -> this.customOutline.getValue() && this.outline.getValue() && this.render.getValue()));
-        this.cBlue = (Setting<Integer>)this.register(new Setting("OL-Blue", (T)255, (T)0, (T)255, v -> this.customOutline.getValue() && this.outline.getValue() && this.render.getValue()));
-        this.cAlpha = (Setting<Integer>)this.register(new Setting("OL-Alpha", (T)255, (T)0, (T)255, v -> this.customOutline.getValue() && this.outline.getValue() && this.render.getValue()));
-        this.lineWidth = (Setting<Float>)this.register(new Setting("LineWidth", (T)1.0f, (T)0.1f, (T)5.0f, v -> this.outline.getValue() && this.render.getValue()));
-        this.red = (Setting<Integer>)this.register(new Setting("Red", (T)0, (T)0, (T)255, v -> this.render.getValue()));
-        this.green = (Setting<Integer>)this.register(new Setting("Green", (T)255, (T)0, (T)255, v -> this.render.getValue()));
-        this.blue = (Setting<Integer>)this.register(new Setting("Blue", (T)0, (T)0, (T)255, v -> this.render.getValue()));
-        this.alpha = (Setting<Integer>)this.register(new Setting("Alpha", (T)255, (T)0, (T)255, v -> this.render.getValue()));
+        super("AutoTrap",  "Traps other players.",  Category.COMBAT,  true,  false,  false);
+        this.server = (Setting<Boolean>)this.register(new Setting("Server", false));
+        this.delay = (Setting<Integer>)this.register(new Setting("Delay/Place", 50, 0, 250));
+        this.blocksPerPlace = (Setting<Integer>)this.register(new Setting("Block/Place", 8, 1, 30));
+        this.targetRange = (Setting<Double>)this.register(new Setting("TargetRange", 10.0, 0.0, 20.0));
+        this.range = (Setting<Double>)this.register(new Setting("PlaceRange", 6.0, 0.0, 10.0));
+        this.targetMode = (Setting<TargetMode>)this.register(new Setting("Target", TargetMode.CLOSEST));
+        this.switchMode = (Setting<InventoryUtil.Switch>)this.register(new Setting("Switch", InventoryUtil.Switch.NORMAL));
+        this.rotate = (Setting<Boolean>)this.register(new Setting("Rotate", true));
+        this.raytrace = (Setting<Boolean>)this.register(new Setting("Raytrace", false));
+        this.pattern = (Setting<Pattern>)this.register(new Setting("Pattern", Pattern.STATIC));
+        this.extend = (Setting<Integer>)this.register(new Setting("Extend", 4, 1, 4,  v -> this.pattern.getValue() != Pattern.STATIC,  "Extending the Trap."));
+        this.antiScaffold = (Setting<Boolean>)this.register(new Setting("AntiScaffold", false));
+        this.antiStep = (Setting<Boolean>)this.register(new Setting("AntiStep", false));
+        this.face = (Setting<Boolean>)this.register(new Setting("Face", true));
+        this.legs = (Setting<Boolean>)this.register(new Setting("Legs", false,  v -> this.pattern.getValue() != Pattern.OPEN));
+        this.platform = (Setting<Boolean>)this.register(new Setting("Platform", false,  v -> this.pattern.getValue() != Pattern.OPEN));
+        this.antiDrop = (Setting<Boolean>)this.register(new Setting("AntiDrop", false));
+        this.speed = (Setting<Double>)this.register(new Setting("Speed", 10.0, 0.0, 30.0));
+        this.antiSelf = (Setting<Boolean>)this.register(new Setting("AntiSelf", false));
+        this.eventMode = (Setting<Integer>)this.register(new Setting("Updates", 3, 1, 3));
+        this.freecam = (Setting<Boolean>)this.register(new Setting("Freecam", false));
+        this.info = (Setting<Boolean>)this.register(new Setting("Info", false));
+        this.entityCheck = (Setting<Boolean>)this.register(new Setting("NoBlock", true));
+        this.noScaffoldExtend = (Setting<Boolean>)this.register(new Setting("NoScaffoldExtend", false));
+        this.disable = (Setting<Boolean>)this.register(new Setting("TSelfMove", false));
+        this.packet = (Setting<Boolean>)this.register(new Setting("Packet", false));
+        this.airPacket = (Setting<Boolean>)this.register(new Setting("AirPacket", false,  v -> this.packet.getValue()));
+        this.retryer = (Setting<Integer>)this.register(new Setting("Retries", 4, 1, 15));
+        this.endPortals = (Setting<Boolean>)this.register(new Setting("EndPortals", false));
+        this.render = (Setting<Boolean>)this.register(new Setting("Render", true));
+        this.colorSync = (Setting<Boolean>)this.register(new Setting("Sync", false,  v -> this.render.getValue()));
+        this.box = (Setting<Boolean>)this.register(new Setting("Box", false,  v -> this.render.getValue()));
+        this.boxAlpha = (Setting<Integer>)this.register(new Setting("BoxAlpha", 125, 0, 255,  v -> this.box.getValue() && this.render.getValue()));
+        this.outline = (Setting<Boolean>)this.register(new Setting("Outline", true,  v -> this.render.getValue()));
+        this.customOutline = (Setting<Boolean>)this.register(new Setting("CustomLine", false,  v -> this.outline.getValue() && this.render.getValue()));
+        this.cRed = (Setting<Integer>)this.register(new Setting("OL-Red", 255, 0, 255,  v -> this.customOutline.getValue() && this.outline.getValue() && this.render.getValue()));
+        this.cGreen = (Setting<Integer>)this.register(new Setting("OL-Green", 255, 0, 255,  v -> this.customOutline.getValue() && this.outline.getValue() && this.render.getValue()));
+        this.cBlue = (Setting<Integer>)this.register(new Setting("OL-Blue", 255, 0, 255,  v -> this.customOutline.getValue() && this.outline.getValue() && this.render.getValue()));
+        this.cAlpha = (Setting<Integer>)this.register(new Setting("OL-Alpha", 255, 0, 255,  v -> this.customOutline.getValue() && this.outline.getValue() && this.render.getValue()));
+        this.lineWidth = (Setting<Float>)this.register(new Setting("LineWidth", 1.0f, 0.1f, 5.0f,  v -> this.outline.getValue() && this.render.getValue()));
+        this.red = (Setting<Integer>)this.register(new Setting("Red", 0, 0, 255,  v -> this.render.getValue()));
+        this.green = (Setting<Integer>)this.register(new Setting("Green", 255, 0, 255,  v -> this.render.getValue()));
+        this.blue = (Setting<Integer>)this.register(new Setting("Blue", 0, 0, 255,  v -> this.render.getValue()));
+        this.alpha = (Setting<Integer>)this.register(new Setting("Alpha", 255, 0, 255,  v -> this.render.getValue()));
         this.timer = new TimerUtil();
-        this.retries = new HashMap<BlockPos, Integer>();
+        this.retries = new HashMap<BlockPos,  Integer>();
         this.retryTimer = new TimerUtil();
-        this.toAir = new HashMap<BlockPos, IBlockState>();
+        this.toAir = new HashMap<BlockPos,  IBlockState>();
         this.currentPlaceList = new ArrayList<Vec3d>();
     }
     
@@ -214,7 +214,7 @@ public class AutoTrap extends Module
                 if (!(AutoTrap.mc.world.getBlockState(pos).getBlock() instanceof BlockAir)) {
                     continue;
                 }
-                RenderUtil.drawBoxESP(pos, ((boolean)this.colorSync.getValue()) ? Colors.INSTANCE.getCurrentColor() : new Color(this.red.getValue(), this.green.getValue(), this.blue.getValue(), this.alpha.getValue()), this.customOutline.getValue(), new Color(this.cRed.getValue(), this.cGreen.getValue(), this.cBlue.getValue(), this.cAlpha.getValue()), this.lineWidth.getValue(), this.outline.getValue(), this.box.getValue(), this.boxAlpha.getValue(), false);
+                RenderUtil.drawBoxESP(pos,  ((boolean)this.colorSync.getValue()) ? Colors.INSTANCE.getCurrentColor() : new Color(this.red.getValue(),  this.green.getValue(),  this.blue.getValue(),  this.alpha.getValue()),  this.customOutline.getValue(),  new Color(this.cRed.getValue(),  this.cGreen.getValue(),  this.cBlue.getValue(),  this.cAlpha.getValue()),  this.lineWidth.getValue(),  this.outline.getValue(),  this.box.getValue(),  this.boxAlpha.getValue(),  false);
             }
         }
     }
@@ -239,8 +239,8 @@ public class AutoTrap extends Module
             }
         }
         if (this.packet.getValue() && this.airPacket.getValue()) {
-            for (final Map.Entry<BlockPos, IBlockState> entry : this.toAir.entrySet()) {
-                AutoTrap.mc.world.setBlockState((BlockPos)entry.getKey(), (IBlockState)entry.getValue());
+            for (final Map.Entry<BlockPos,  IBlockState> entry : this.toAir.entrySet()) {
+                AutoTrap.mc.world.setBlockState((BlockPos)entry.getKey(),  (IBlockState)entry.getValue());
             }
             this.toAir.clear();
         }
@@ -250,33 +250,33 @@ public class AutoTrap extends Module
     }
     
     private void doSmartTrap() {
-        final List<Vec3d> placeTargets = EntityUtil.getUntrappedBlocksExtended(this.extend.getValue(), this.target, this.antiScaffold.getValue(), this.antiStep.getValue(), this.legs.getValue(), this.platform.getValue(), this.antiDrop.getValue(), this.raytrace.getValue(), this.noScaffoldExtend.getValue(), this.face.getValue());
+        final List<Vec3d> placeTargets = EntityUtil.getUntrappedBlocksExtended(this.extend.getValue(),  this.target,  this.antiScaffold.getValue(),  this.antiStep.getValue(),  this.legs.getValue(),  this.platform.getValue(),  this.antiDrop.getValue(),  this.raytrace.getValue(),  this.noScaffoldExtend.getValue(),  this.face.getValue());
         this.placeList(placeTargets);
         this.currentPlaceList = placeTargets;
     }
     
     private void doStaticTrap() {
-        final List<Vec3d> placeTargets = EntityUtil.targets(this.target.getPositionVector(), this.antiScaffold.getValue(), this.antiStep.getValue(), this.legs.getValue(), this.platform.getValue(), this.antiDrop.getValue(), this.raytrace.getValue(), this.face.getValue());
+        final List<Vec3d> placeTargets = EntityUtil.targets(this.target.getPositionVector(),  this.antiScaffold.getValue(),  this.antiStep.getValue(),  this.legs.getValue(),  this.platform.getValue(),  this.antiDrop.getValue(),  this.raytrace.getValue(),  this.face.getValue());
         this.placeList(placeTargets);
         this.currentPlaceList = placeTargets;
     }
     
     private void placeList(final List<Vec3d> list) {
-        list.sort((vec3d, vec3d2) -> Double.compare(AutoTrap.mc.player.getDistanceSq(vec3d2.x, vec3d2.y, vec3d2.z), AutoTrap.mc.player.getDistanceSq(vec3d.x, vec3d.y, vec3d.z)));
+        list.sort((vec3d,  vec3d2) -> Double.compare(AutoTrap.mc.player.getDistanceSq(vec3d2.x,  vec3d2.y,  vec3d2.z),  AutoTrap.mc.player.getDistanceSq(vec3d.x,  vec3d.y,  vec3d.z)));
         list.sort(Comparator.comparingDouble(vec3d -> vec3d.y));
         for (final Vec3d vec3d3 : list) {
             final BlockPos position = new BlockPos(vec3d3);
-            final int placeability = BlockUtil.isPositionPlaceable(position, this.raytrace.getValue());
+            final int placeability = BlockUtil.isPositionPlaceable(position,  this.raytrace.getValue());
             if (this.entityCheck.getValue() && placeability == 1 && (this.switchMode.getValue() == InventoryUtil.Switch.SILENT || (BlockTweaks.getINSTANCE().isOn() && BlockTweaks.getINSTANCE().noBlock.getValue())) && (this.retries.get(position) == null || this.retries.get(position) < this.retryer.getValue())) {
                 this.placeBlock(position);
-                this.retries.put(position, (this.retries.get(position) == null) ? 1 : (this.retries.get(position) + 1));
+                this.retries.put(position,  (this.retries.get(position) == null) ? 1 : (this.retries.get(position) + 1));
                 this.retryTimer.reset();
             }
             else {
                 if (placeability != 3) {
                     continue;
                 }
-                if (this.antiSelf.getValue() && MathUtil.areVec3dsAligned(AutoTrap.mc.player.getPositionVector(), vec3d3)) {
+                if (this.antiSelf.getValue() && MathUtil.areVec3dsAligned(AutoTrap.mc.player.getPositionVector(),  vec3d3)) {
                     continue;
                 }
                 this.placeBlock(position);
@@ -323,15 +323,15 @@ public class AutoTrap extends Module
         }
         this.switchItem(true);
         this.isSneaking = EntityUtil.stopSneaking(this.isSneaking);
-        this.target = this.getTarget(this.targetRange.getValue(), this.targetMode.getValue() == TargetMode.UNTRAPPED);
+        this.target = this.getTarget(this.targetRange.getValue(),  this.targetMode.getValue() == TargetMode.UNTRAPPED);
         return this.target == null || (Phobos.moduleManager.isModuleEnabled("Freecam") && !this.freecam.getValue()) || !this.timer.passedMs(this.delay.getValue()) || (this.switchMode.getValue() == InventoryUtil.Switch.NONE && AutoTrap.mc.player.inventory.currentItem != InventoryUtil.findHotbarBlock(BlockObsidian.class));
     }
     
-    private EntityPlayer getTarget(final double range, final boolean trapped) {
+    private EntityPlayer getTarget(final double range,  final boolean trapped) {
         EntityPlayer target = null;
-        double distance = Math.pow(range, 2.0) + 1.0;
+        double distance = Math.pow(range,  2.0) + 1.0;
         for (final EntityPlayer player : AutoTrap.mc.world.playerEntities) {
-            if (!EntityUtil.isntValid((Entity)player, range) && (this.pattern.getValue() != Pattern.STATIC || !trapped || !EntityUtil.isTrapped(player, this.antiScaffold.getValue(), this.antiStep.getValue(), this.legs.getValue(), this.platform.getValue(), this.antiDrop.getValue(), this.face.getValue())) && (this.pattern.getValue() == Pattern.STATIC || !trapped || !EntityUtil.isTrappedExtended(this.extend.getValue(), player, this.antiScaffold.getValue(), this.antiStep.getValue(), this.legs.getValue(), this.platform.getValue(), this.antiDrop.getValue(), this.raytrace.getValue(), this.noScaffoldExtend.getValue(), this.face.getValue())) && (!EntityUtil.getRoundedBlockPos((Entity)AutoTrap.mc.player).equals((Object)EntityUtil.getRoundedBlockPos((Entity)player)) || !this.antiSelf.getValue())) {
+            if (!EntityUtil.isntValid((Entity)player,  range) && (this.pattern.getValue() != Pattern.STATIC || !trapped || !EntityUtil.isTrapped(player,  this.antiScaffold.getValue(),  this.antiStep.getValue(),  this.legs.getValue(),  this.platform.getValue(),  this.antiDrop.getValue(),  this.face.getValue())) && (this.pattern.getValue() == Pattern.STATIC || !trapped || !EntityUtil.isTrappedExtended(this.extend.getValue(),  player,  this.antiScaffold.getValue(),  this.antiStep.getValue(),  this.legs.getValue(),  this.platform.getValue(),  this.antiDrop.getValue(),  this.raytrace.getValue(),  this.noScaffoldExtend.getValue(),  this.face.getValue())) && (!EntityUtil.getRoundedBlockPos((Entity)AutoTrap.mc.player).equals((Object)EntityUtil.getRoundedBlockPos((Entity)player)) || !this.antiSelf.getValue())) {
                 if (Phobos.speedManager.getPlayerSpeed(player) > this.speed.getValue()) {
                     continue;
                 }
@@ -355,30 +355,30 @@ public class AutoTrap extends Module
         if (this.placements < this.blocksPerPlace.getValue() && AutoTrap.mc.player.getDistanceSq(pos) <= MathUtil.square(this.range.getValue()) && this.switchItem(false)) {
             AutoTrap.isPlacing = true;
             if (this.airPacket.getValue() && this.packet.getValue()) {
-                this.toAir.put(pos, AutoTrap.mc.world.getBlockState(pos));
+                this.toAir.put(pos,  AutoTrap.mc.world.getBlockState(pos));
             }
-            this.isSneaking = (this.smartRotate ? BlockUtil.placeBlockSmartRotate(pos, EnumHand.MAIN_HAND, true, !this.airPacket.getValue() && this.packet.getValue(), this.isSneaking) : BlockUtil.placeBlock(pos, EnumHand.MAIN_HAND, this.rotate.getValue(), !this.airPacket.getValue() && this.packet.getValue(), this.isSneaking));
+            this.isSneaking = (this.smartRotate ? BlockUtil.placeBlockSmartRotate(pos,  EnumHand.MAIN_HAND,  true,  !this.airPacket.getValue() && this.packet.getValue(),  this.isSneaking) : BlockUtil.placeBlock(pos,  EnumHand.MAIN_HAND,  this.rotate.getValue(),  !this.airPacket.getValue() && this.packet.getValue(),  this.isSneaking));
             this.didPlace = true;
             ++this.placements;
         }
     }
     
     private boolean switchItem(final boolean back) {
-        final boolean[] value = InventoryUtil.switchItem(back, this.lastHotbarSlot, this.switchedItem, this.switchMode.getValue(), (Class)((this.endPortals.getValue() && InventoryUtil.findHotbarBlock(BlockEndPortalFrame.class) != -1) ? BlockEndPortalFrame.class : BlockObsidian.class));
+        final boolean[] value = InventoryUtil.switchItem(back,  this.lastHotbarSlot,  this.switchedItem,  this.switchMode.getValue(),  (Class)((this.endPortals.getValue() && InventoryUtil.findHotbarBlock(BlockEndPortalFrame.class) != -1) ? BlockEndPortalFrame.class : BlockObsidian.class));
         this.switchedItem = value[0];
         return value[1];
     }
     
     public enum TargetMode
     {
-        CLOSEST, 
+        CLOSEST,  
         UNTRAPPED;
     }
     
     public enum Pattern
     {
-        STATIC, 
-        SMART, 
+        STATIC,  
+        SMART,  
         OPEN;
     }
 }

@@ -15,18 +15,18 @@ import java.util.*;
 public class InjectorTarget
 {
     private final ISliceContext context;
-    private final Map<String, ReadOnlyInsnList> cache;
+    private final Map<String,  ReadOnlyInsnList> cache;
     private final Target target;
     private final String mergedBy;
     private final int mergedPriority;
     
-    public InjectorTarget(final ISliceContext context, final Target target) {
-        this.cache = new HashMap<String, ReadOnlyInsnList>();
+    public InjectorTarget(final ISliceContext context,  final Target target) {
+        this.cache = new HashMap<String,  ReadOnlyInsnList>();
         this.context = context;
         this.target = target;
-        final AnnotationNode merged = Annotations.getVisible(target.method, MixinMerged.class);
-        this.mergedBy = Annotations.getValue(merged, "mixin");
-        this.mergedPriority = Annotations.getValue(merged, "priority", 1000);
+        final AnnotationNode merged = Annotations.getVisible(target.method,  MixinMerged.class);
+        this.mergedBy = Annotations.getValue(merged,  "mixin");
+        this.mergedPriority = Annotations.getValue(merged,  "priority",  1000);
     }
     
     @Override
@@ -64,7 +64,7 @@ public class InjectorTarget
             else {
                 slice = new ReadOnlyInsnList(this.target.method.instructions);
             }
-            this.cache.put(id, slice);
+            this.cache.put(id,  slice);
         }
         return slice;
     }

@@ -180,18 +180,18 @@ public class EventManager extends Feature
                 switch (sPacketPlayerListItem.getAction()) {
                     case ADD_PLAYER: {
                         name = data.getProfile().getName();
-                        MinecraftForge.EVENT_BUS.post((Event)new ConnectionEvent(0, id, name));
+                        MinecraftForge.EVENT_BUS.post((Event)new ConnectionEvent(0,  id,  name));
                         break;
                     }
                     case REMOVE_PLAYER: {
                         entity = EventManager.mc.world.getPlayerEntityByUUID(id);
                         if (entity != null) {
                             logoutName = entity.getName();
-                            MinecraftForge.EVENT_BUS.post((Event)new ConnectionEvent(1, entity, id, logoutName));
+                            MinecraftForge.EVENT_BUS.post((Event)new ConnectionEvent(1,  entity,  id,  logoutName));
                             break;
                         }
                         else {
-                            MinecraftForge.EVENT_BUS.post((Event)new ConnectionEvent(2, id, (String)null));
+                            MinecraftForge.EVENT_BUS.post((Event)new ConnectionEvent(2,  id,  (String)null));
                             break;
                         }
                         break;
@@ -204,7 +204,7 @@ public class EventManager extends Feature
         }
         else if (event.getPacket() instanceof SPacketSoundEffect && ((SPacketSoundEffect)event.getPacket()).getSound() == SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT) {
             if (!this.chorusTimer.passedMs(100L)) {
-                MinecraftForge.EVENT_BUS.post((Event)new ChorusEvent(((SPacketSoundEffect)event.getPacket()).getX(), ((SPacketSoundEffect)event.getPacket()).getY(), ((SPacketSoundEffect)event.getPacket()).getZ()));
+                MinecraftForge.EVENT_BUS.post((Event)new ChorusEvent(((SPacketSoundEffect)event.getPacket()).getX(),  ((SPacketSoundEffect)event.getPacket()).getY(),  ((SPacketSoundEffect)event.getPacket()).getZ()));
             }
             this.chorusTimer.reset();
         }
@@ -219,7 +219,7 @@ public class EventManager extends Feature
         GlStateManager.disableTexture2D();
         GlStateManager.enableBlend();
         GlStateManager.disableAlpha();
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.tryBlendFuncSeparate(770,  771,  1,  0);
         GlStateManager.shadeModel(7425);
         GlStateManager.disableDepth();
         GlStateManager.glLineWidth(1.0f);
@@ -228,11 +228,11 @@ public class EventManager extends Feature
         final IntBuffer viewPort = GLAllocation.createDirectIntBuffer(16);
         final FloatBuffer modelView = GLAllocation.createDirectFloatBuffer(16);
         final FloatBuffer projectionPort = GLAllocation.createDirectFloatBuffer(16);
-        GL11.glGetFloat(2982, modelView);
-        GL11.glGetFloat(2983, projectionPort);
-        GL11.glGetInteger(2978, viewPort);
+        GL11.glGetFloat(2982,  modelView);
+        GL11.glGetFloat(2983,  projectionPort);
+        GL11.glGetInteger(2978,  viewPort);
         final ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-        projection.updateMatrices(viewPort, modelView, projectionPort, scaledResolution.getScaledWidth() / (double)Minecraft.getMinecraft().displayWidth, scaledResolution.getScaledHeight() / (double)Minecraft.getMinecraft().displayHeight);
+        projection.updateMatrices(viewPort,  modelView,  projectionPort,  scaledResolution.getScaledWidth() / (double)Minecraft.getMinecraft().displayWidth,  scaledResolution.getScaledHeight() / (double)Minecraft.getMinecraft().displayHeight);
         Phobos.moduleManager.onRender3D(render3dEvent);
         GlStateManager.glLineWidth(1.0f);
         GlStateManager.shadeModel(7424);
@@ -260,9 +260,9 @@ public class EventManager extends Feature
     public void onRenderGameOverlayEvent(final RenderGameOverlayEvent.Text event) {
         if (event.getType().equals((Object)RenderGameOverlayEvent.ElementType.TEXT)) {
             final ScaledResolution resolution = new ScaledResolution(EventManager.mc);
-            final Render2DEvent render2DEvent = new Render2DEvent(event.getPartialTicks(), resolution);
+            final Render2DEvent render2DEvent = new Render2DEvent(event.getPartialTicks(),  resolution);
             Phobos.moduleManager.onRender2D(render2DEvent);
-            GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+            GlStateManager.color(1.0f,  1.0f,  1.0f,  1.0f);
         }
     }
     

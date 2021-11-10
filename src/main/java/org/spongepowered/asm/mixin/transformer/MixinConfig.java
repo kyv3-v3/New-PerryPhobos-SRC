@@ -20,12 +20,12 @@ import org.spongepowered.asm.service.*;
 import com.google.gson.*;
 import java.io.*;
 
-final class MixinConfig implements Comparable<MixinConfig>, IMixinConfig
+final class MixinConfig implements Comparable<MixinConfig>,  IMixinConfig
 {
     private static int configOrder;
     private static final Set<String> globalMixinList;
     private final Logger logger;
-    private final transient Map<String, List<MixinInfo>> mixinMapping;
+    private final transient Map<String,  List<MixinInfo>> mixinMapping;
     private final transient Set<String> unhandledTargets;
     private final transient List<MixinInfo> mixins;
     private transient Config handle;
@@ -73,7 +73,7 @@ final class MixinConfig implements Comparable<MixinConfig>, IMixinConfig
     
     private MixinConfig() {
         this.logger = LogManager.getLogger("mixin");
-        this.mixinMapping = new HashMap<String, List<MixinInfo>>();
+        this.mixinMapping = new HashMap<String,  List<MixinInfo>>();
         this.unhandledTargets = new HashSet<String>();
         this.mixins = new ArrayList<MixinInfo>();
         this.priority = 1000;
@@ -87,10 +87,10 @@ final class MixinConfig implements Comparable<MixinConfig>, IMixinConfig
         this.visited = false;
     }
     
-    private boolean onLoad(final IMixinService service, final String name, final MixinEnvironment fallbackEnvironment) {
+    private boolean onLoad(final IMixinService service,  final String name,  final MixinEnvironment fallbackEnvironment) {
         this.service = service;
         this.name = name;
-        this.env = this.parseSelector(this.selector, fallbackEnvironment);
+        this.env = this.parseSelector(this.selector,  fallbackEnvironment);
         this.required &= !this.env.getOption(MixinEnvironment.Option.IGNORE_REQUIRED);
         this.initCompatibilityLevel();
         this.initInjectionPoints();
@@ -115,7 +115,7 @@ final class MixinConfig implements Comparable<MixinConfig>, IMixinConfig
         MixinEnvironment.setCompatibilityLevel(level);
     }
     
-    private MixinEnvironment parseSelector(final String target, final MixinEnvironment fallbackEnvironment) {
+    private MixinEnvironment parseSelector(final String target,  final MixinEnvironment fallbackEnvironment) {
         if (target != null) {
             final String[] split;
             final String[] selectors = split = target.split("[&\\| ]");
@@ -141,12 +141,12 @@ final class MixinConfig implements Comparable<MixinConfig>, IMixinConfig
         }
         for (final String injectionPoint : this.injectorOptions.injectionPoints) {
             try {
-                final Class<?> injectionPointClass = this.service.getClassProvider().findClass(injectionPoint, true);
+                final Class<?> injectionPointClass = this.service.getClassProvider().findClass(injectionPoint,  true);
                 if (InjectionPoint.class.isAssignableFrom(injectionPointClass)) {
                     InjectionPoint.register((Class)injectionPointClass);
                 }
                 else {
-                    this.logger.error("Unable to register injection point {} for {}, class must extend InjectionPoint", new Object[] { injectionPointClass, this });
+                    this.logger.error("Unable to register injection point {} for {},  class must extend InjectionPoint",  new Object[] { injectionPointClass,  this });
                 }
             }
             catch (Throwable th) {
@@ -157,14 +157,14 @@ final class MixinConfig implements Comparable<MixinConfig>, IMixinConfig
     
     private boolean checkVersion() throws MixinInitialisationError {
         if (this.version == null) {
-            this.logger.error("Mixin config {} does not specify \"minVersion\" property", new Object[] { this.name });
+            this.logger.error("Mixin config {} does not specify \"minVersion\" property",  new Object[] { this.name });
         }
         final VersionNumber minVersion = VersionNumber.parse(this.version);
         final VersionNumber curVersion = VersionNumber.parse(this.env.getVersion());
         if (minVersion.compareTo(curVersion) <= 0) {
             return true;
         }
-        this.logger.warn("Mixin config {} requires mixin subsystem version {} but {} was found. The mixin config will not be applied.", new Object[] { this.name, minVersion, curVersion });
+        this.logger.warn("Mixin config {} requires mixin subsystem version {} but {} was found. The mixin config will not be applied.",  new Object[] { this.name,  minVersion,  curVersion });
         if (this.required) {
             throw new MixinInitialisationError("Required mixin config " + this.name + " requires mixin subsystem version " + minVersion);
         }
@@ -178,7 +178,7 @@ final class MixinConfig implements Comparable<MixinConfig>, IMixinConfig
     void onSelect() {
         if (this.pluginClassName != null) {
             try {
-                final Class<?> pluginClass = this.service.getClassProvider().findClass(this.pluginClassName, true);
+                final Class<?> pluginClass = this.service.getClassProvider().findClass(this.pluginClassName,  true);
                 this.plugin = (IMixinConfigPlugin)pluginClass.newInstance();
                 if (this.plugin != null) {
                     this.plugin.onLoad(this.mixinPackage);
@@ -205,10 +205,10 @@ final class MixinConfig implements Comparable<MixinConfig>, IMixinConfig
         this.refMapper = (IReferenceMapper)ReferenceMapper.read(this.refMapperConfig);
         this.verboseLogging |= this.env.getOption(MixinEnvironment.Option.DEBUG_VERBOSE);
         if (!suppressRefMapWarning && this.refMapper.isDefault() && !this.env.getOption(MixinEnvironment.Option.DISABLE_REFMAP)) {
-            this.logger.warn("Reference map '{}' for {} could not be read. If this is a development environment you can ignore this message", new Object[] { this.refMapperConfig, this });
+            this.logger.warn("Reference map '{}' for {} could not be read. If this is a development environment you can ignore this message",  new Object[] { this.refMapperConfig,  this });
         }
         if (this.env.getOption(MixinEnvironment.Option.REFMAP_REMAP)) {
-            this.refMapper = RemappingReferenceMapper.of(this.env, this.refMapper);
+            this.refMapper = RemappingReferenceMapper.of(this.env,  this.refMapper);
         }
     }
     
@@ -217,18 +217,18 @@ final class MixinConfig implements Comparable<MixinConfig>, IMixinConfig
             return;
         }
         this.prepared = true;
-        this.prepareMixins(this.mixinClasses, false);
+        this.prepareMixins(this.mixinClasses,  false);
         switch (this.env.getSide()) {
             case CLIENT: {
-                this.prepareMixins(this.mixinClassesClient, false);
+                this.prepareMixins(this.mixinClassesClient,  false);
                 break;
             }
             case SERVER: {
-                this.prepareMixins(this.mixinClassesServer, false);
+                this.prepareMixins(this.mixinClassesServer,  false);
                 break;
             }
             default: {
-                this.logger.warn("Mixin environment was unable to detect the current side, sided mixins will not be applied");
+                this.logger.warn("Mixin environment was unable to detect the current side,  sided mixins will not be applied");
                 break;
             }
         }
@@ -237,7 +237,7 @@ final class MixinConfig implements Comparable<MixinConfig>, IMixinConfig
     void postInitialise() {
         if (this.plugin != null) {
             final List<String> pluginMixins = (List<String>)this.plugin.getMixins();
-            this.prepareMixins(pluginMixins, true);
+            this.prepareMixins(pluginMixins,  true);
         }
         final Iterator<MixinInfo> iter = this.mixins.iterator();
         while (iter.hasNext()) {
@@ -249,12 +249,12 @@ final class MixinConfig implements Comparable<MixinConfig>, IMixinConfig
                 }
             }
             catch (InvalidMixinException ex) {
-                this.logger.error(ex.getMixin() + ": " + ex.getMessage(), (Throwable)ex);
+                this.logger.error(ex.getMixin() + ": " + ex.getMessage(),  (Throwable)ex);
                 this.removeMixin(mixin);
                 iter.remove();
             }
             catch (Exception ex2) {
-                this.logger.error(ex2.getMessage(), (Throwable)ex2);
+                this.logger.error(ex2.getMessage(),  (Throwable)ex2);
                 this.removeMixin(mixin);
                 iter.remove();
             }
@@ -272,7 +272,7 @@ final class MixinConfig implements Comparable<MixinConfig>, IMixinConfig
         }
     }
     
-    private void prepareMixins(final List<String> mixinClasses, final boolean suppressPlugin) {
+    private void prepareMixins(final List<String> mixinClasses,  final boolean suppressPlugin) {
         if (mixinClasses == null) {
             return;
         }
@@ -284,13 +284,13 @@ final class MixinConfig implements Comparable<MixinConfig>, IMixinConfig
                 }
                 MixinInfo mixin = null;
                 try {
-                    mixin = new MixinInfo(this.service, this, mixinClass, true, this.plugin, suppressPlugin);
+                    mixin = new MixinInfo(this.service,  this,  mixinClass,  true,  this.plugin,  suppressPlugin);
                     if (mixin.getTargetClasses().size() <= 0) {
                         continue;
                     }
                     MixinConfig.globalMixinList.add(fqMixinClass);
                     for (final String targetClass : mixin.getTargetClasses()) {
-                        final String targetClassName = targetClass.replace('/', '.');
+                        final String targetClassName = targetClass.replace('/',  '.');
                         this.mixinsFor(targetClassName).add(mixin);
                         this.unhandledTargets.add(targetClassName);
                     }
@@ -303,19 +303,19 @@ final class MixinConfig implements Comparable<MixinConfig>, IMixinConfig
                     if (this.required) {
                         throw ex;
                     }
-                    this.logger.error(ex.getMessage(), (Throwable)ex);
+                    this.logger.error(ex.getMessage(),  (Throwable)ex);
                 }
                 catch (Exception ex2) {
                     if (this.required) {
-                        throw new InvalidMixinException((IMixinInfo)mixin, "Error initialising mixin " + mixin + " - " + ex2.getClass() + ": " + ex2.getMessage(), ex2);
+                        throw new InvalidMixinException((IMixinInfo)mixin,  "Error initialising mixin " + mixin + " - " + ex2.getClass() + ": " + ex2.getMessage(),  ex2);
                     }
-                    this.logger.error(ex2.getMessage(), (Throwable)ex2);
+                    this.logger.error(ex2.getMessage(),  (Throwable)ex2);
                 }
             }
         }
     }
     
-    void postApply(final String transformedName, final ClassNode targetClass) {
+    void postApply(final String transformedName,  final ClassNode targetClass) {
         this.unhandledTargets.remove(transformedName);
     }
     
@@ -368,7 +368,7 @@ final class MixinConfig implements Comparable<MixinConfig>, IMixinConfig
     }
     
     public int getMaxShiftByValue() {
-        return Math.min(Math.max(this.injectorOptions.maxShiftBy, 0), 5);
+        return Math.min(Math.max(this.injectorOptions.maxShiftBy,  0),  5);
     }
     
     public boolean select(final MixinEnvironment environment) {
@@ -381,7 +381,7 @@ final class MixinConfig implements Comparable<MixinConfig>, IMixinConfig
     }
     
     int getDeclaredMixinCount() {
-        return getCollectionSize(this.mixinClasses, this.mixinClassesClient, this.mixinClassesServer);
+        return getCollectionSize(this.mixinClasses,  this.mixinClassesClient,  this.mixinClassesServer);
     }
     
     int getMixinCount() {
@@ -404,8 +404,8 @@ final class MixinConfig implements Comparable<MixinConfig>, IMixinConfig
         return this.refMapper;
     }
     
-    String remapClassName(final String className, final String reference) {
-        return this.getReferenceMapper().remap(className, reference);
+    String remapClassName(final String className,  final String reference) {
+        return this.getReferenceMapper().remap(className,  reference);
     }
     
     public IMixinConfigPlugin getPlugin() {
@@ -440,12 +440,12 @@ final class MixinConfig implements Comparable<MixinConfig>, IMixinConfig
         List<MixinInfo> mixins = this.mixinMapping.get(targetClass);
         if (mixins == null) {
             mixins = new ArrayList<MixinInfo>();
-            this.mixinMapping.put(targetClass, mixins);
+            this.mixinMapping.put(targetClass,  mixins);
         }
         return mixins;
     }
     
-    public List<String> reloadMixin(final String mixinClass, final byte[] bytes) {
+    public List<String> reloadMixin(final String mixinClass,  final byte[] bytes) {
         for (final MixinInfo mixin : this.mixins) {
             if (mixin.getClassName().equals(mixinClass)) {
                 mixin.reloadMixin(bytes);
@@ -471,18 +471,18 @@ final class MixinConfig implements Comparable<MixinConfig>, IMixinConfig
         return this.priority - other.priority;
     }
     
-    static Config create(final String configFile, final MixinEnvironment outer) {
+    static Config create(final String configFile,  final MixinEnvironment outer) {
         try {
             final IMixinService service = MixinService.getService();
-            final MixinConfig config = (MixinConfig)new Gson().fromJson((Reader)new InputStreamReader(service.getResourceAsStream(configFile)), (Class)MixinConfig.class);
-            if (config.onLoad(service, configFile, outer)) {
+            final MixinConfig config = (MixinConfig)new Gson().fromJson((Reader)new InputStreamReader(service.getResourceAsStream(configFile)),  (Class)MixinConfig.class);
+            if (config.onLoad(service,  configFile,  outer)) {
                 return config.getHandle();
             }
             return null;
         }
         catch (Exception ex) {
             ex.printStackTrace();
-            throw new IllegalArgumentException(String.format("The specified resource '%s' was invalid or could not be read", configFile), ex);
+            throw new IllegalArgumentException(String.format("The specified resource '%s' was invalid or could not be read",  configFile),  ex);
         }
     }
     

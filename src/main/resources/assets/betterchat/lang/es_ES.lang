@@ -10,5 +10,5 @@ gui.betterchat.text.scale.name=Escala:
 gui.betterchat.text.width.name=Anchura:
 gui.betterchat.text.reset.name=Reinicia Configuraciones
 gui.betterchat.text.example1=Ejemplo del chat
-gui.betterchat.text.example2=Test, test, 1, 2, 3
+gui.betterchat.text.example2=Test,  test,  1,  2,  3
 gui.betterchat.text.example3=Los mensajes de los jugadores se van a mirar así

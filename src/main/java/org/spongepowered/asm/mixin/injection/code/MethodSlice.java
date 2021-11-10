@@ -22,9 +22,9 @@ public final class MethodSlice
     private final InjectionPoint to;
     private final String name;
     
-    private MethodSlice(final ISliceContext owner, final String id, final InjectionPoint from, final InjectionPoint to) {
+    private MethodSlice(final ISliceContext owner,  final String id,  final InjectionPoint from,  final InjectionPoint to) {
         if (from == null && to == null) {
-            throw new InvalidSliceException(owner, String.format("%s is redundant. No 'from' or 'to' value specified", this));
+            throw new InvalidSliceException(owner,  String.format("%s is redundant. No 'from' or 'to' value specified",  this));
         }
         this.owner = owner;
         this.id = Strings.nullToEmpty(id);
@@ -39,10 +39,10 @@ public final class MethodSlice
     
     public ReadOnlyInsnList getSlice(final MethodNode method) {
         final int max = method.instructions.size() - 1;
-        final int start = this.find(method, this.from, 0, 0, this.name + "(from)");
-        final int end = this.find(method, this.to, max, start, this.name + "(to)");
+        final int start = this.find(method,  this.from,  0,  0,  this.name + "(from)");
+        final int end = this.find(method,  this.to,  max,  start,  this.name + "(to)");
         if (start > end) {
-            throw new InvalidSliceException(this.owner, String.format("%s is negative size. Range(%d -> %d)", this.describe(), start, end));
+            throw new InvalidSliceException(this.owner,  String.format("%s is negative size. Range(%d -> %d)",  this.describe(),  start,  end));
         }
         if (start < 0 || end < 0 || start > max || end > max) {
             throw new InjectionError("Unexpected critical error in " + this + ": out of bounds start=" + start + " end=" + end + " lim=" + max);
@@ -50,23 +50,23 @@ public final class MethodSlice
         if (start == 0 && end == max) {
             return new ReadOnlyInsnList(method.instructions);
         }
-        return new InsnListSlice(method.instructions, start, end);
+        return new InsnListSlice(method.instructions,  start,  end);
     }
     
-    private int find(final MethodNode method, final InjectionPoint injectionPoint, final int defaultValue, final int failValue, final String description) {
+    private int find(final MethodNode method,  final InjectionPoint injectionPoint,  final int defaultValue,  final int failValue,  final String description) {
         if (injectionPoint == null) {
             return defaultValue;
         }
         final Deque<AbstractInsnNode> nodes = new LinkedList<AbstractInsnNode>();
         final ReadOnlyInsnList insns = new ReadOnlyInsnList(method.instructions);
-        final boolean result = injectionPoint.find(method.desc, insns, nodes);
+        final boolean result = injectionPoint.find(method.desc,  insns,  nodes);
         final InjectionPoint.Selector select = injectionPoint.getSelector();
         if (nodes.size() != 1 && select == InjectionPoint.Selector.ONE) {
-            throw new InvalidSliceException(this.owner, String.format("%s requires 1 result but found %d", this.describe(description), nodes.size()));
+            throw new InvalidSliceException(this.owner,  String.format("%s requires 1 result but found %d",  this.describe(description),  nodes.size()));
         }
         if (!result) {
             if (this.owner.getContext().getOption(MixinEnvironment.Option.DEBUG_VERBOSE)) {
-                MethodSlice.logger.warn("{} did not match any instructions", new Object[] { this.describe(description) });
+                MethodSlice.logger.warn("{} did not match any instructions",  new Object[] { this.describe(description) });
             }
             return failValue;
         }
@@ -83,35 +83,35 @@ public final class MethodSlice
     }
     
     private String describe(final String description) {
-        return describeSlice(description, this.owner);
+        return describeSlice(description,  this.owner);
     }
     
-    private static String describeSlice(final String description, final ISliceContext owner) {
+    private static String describeSlice(final String description,  final ISliceContext owner) {
         final String annotation = Bytecode.getSimpleName(owner.getAnnotation());
         final MethodNode method = owner.getMethod();
-        return String.format("%s->%s(%s)::%s%s", owner.getContext(), annotation, description, method.name, method.desc);
+        return String.format("%s->%s(%s)::%s%s",  owner.getContext(),  annotation,  description,  method.name,  method.desc);
     }
     
     private static String getSliceName(final String id) {
-        return String.format("@Slice[%s]", Strings.nullToEmpty(id));
+        return String.format("@Slice[%s]",  Strings.nullToEmpty(id));
     }
     
-    public static MethodSlice parse(final ISliceContext owner, final Slice slice) {
+    public static MethodSlice parse(final ISliceContext owner,  final Slice slice) {
         final String id = slice.id();
         final At from = slice.from();
         final At to = slice.to();
-        final InjectionPoint fromPoint = (from != null) ? InjectionPoint.parse((IInjectionPointContext)owner, from) : null;
-        final InjectionPoint toPoint = (to != null) ? InjectionPoint.parse((IInjectionPointContext)owner, to) : null;
-        return new MethodSlice(owner, id, fromPoint, toPoint);
+        final InjectionPoint fromPoint = (from != null) ? InjectionPoint.parse((IInjectionPointContext)owner,  from) : null;
+        final InjectionPoint toPoint = (to != null) ? InjectionPoint.parse((IInjectionPointContext)owner,  to) : null;
+        return new MethodSlice(owner,  id,  fromPoint,  toPoint);
     }
     
-    public static MethodSlice parse(final ISliceContext info, final AnnotationNode node) {
-        final String id = Annotations.getValue(node, "id");
-        final AnnotationNode from = Annotations.getValue(node, "from");
-        final AnnotationNode to = Annotations.getValue(node, "to");
-        final InjectionPoint fromPoint = (from != null) ? InjectionPoint.parse((IInjectionPointContext)info, from) : null;
-        final InjectionPoint toPoint = (to != null) ? InjectionPoint.parse((IInjectionPointContext)info, to) : null;
-        return new MethodSlice(info, id, fromPoint, toPoint);
+    public static MethodSlice parse(final ISliceContext info,  final AnnotationNode node) {
+        final String id = Annotations.getValue(node,  "id");
+        final AnnotationNode from = Annotations.getValue(node,  "from");
+        final AnnotationNode to = Annotations.getValue(node,  "to");
+        final InjectionPoint fromPoint = (from != null) ? InjectionPoint.parse((IInjectionPointContext)info,  from) : null;
+        final InjectionPoint toPoint = (to != null) ? InjectionPoint.parse((IInjectionPointContext)info,  to) : null;
+        return new MethodSlice(info,  id,  fromPoint,  toPoint);
     }
     
     static {
@@ -123,7 +123,7 @@ public final class MethodSlice
         private final int start;
         private final int end;
         
-        protected InsnListSlice(final InsnList inner, final int start, final int end) {
+        protected InsnListSlice(final InsnList inner,  final int start,  final int end) {
             super(inner);
             this.start = start;
             this.end = end;
@@ -136,14 +136,14 @@ public final class MethodSlice
         
         @Override
         public ListIterator<AbstractInsnNode> iterator(final int index) {
-            return new SliceIterator(super.iterator(this.start + index), this.start, this.end, this.start + index);
+            return new SliceIterator(super.iterator(this.start + index),  this.start,  this.end,  this.start + index);
         }
         
         @Override
         public AbstractInsnNode[] toArray() {
             final AbstractInsnNode[] all = super.toArray();
             final AbstractInsnNode[] subset = new AbstractInsnNode[this.size()];
-            System.arraycopy(all, this.start, subset, 0, subset.length);
+            System.arraycopy(all,  this.start,  subset,  0,  subset.length);
             return subset;
         }
         
@@ -194,7 +194,7 @@ public final class MethodSlice
             private int end;
             private int index;
             
-            public SliceIterator(final ListIterator<AbstractInsnNode> iter, final int start, final int end, final int index) {
+            public SliceIterator(final ListIterator<AbstractInsnNode> iter,  final int start,  final int end,  final int index) {
                 this.iter = iter;
                 this.start = start;
                 this.end = end;

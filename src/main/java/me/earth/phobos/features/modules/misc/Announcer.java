@@ -27,27 +27,27 @@ public class Announcer extends Module
     private final Setting<Integer> queueSize;
     private final Setting<Integer> mindistance;
     private final Setting<Boolean> clearQueue;
-    private final Map<Action, Message> queue;
-    private Map<Action, ArrayList<String>> loadedMessages;
+    private final Map<Action,  Message> queue;
+    private Map<Action,  ArrayList<String>> loadedMessages;
     
     public Announcer() {
-        super("Announcer", "How to get muted quick.", Category.MISC, true, false, false);
-        this.join = (Setting<Boolean>)this.register(new Setting("Join", (T)true));
-        this.leave = (Setting<Boolean>)this.register(new Setting("Leave", (T)true));
-        this.eat = (Setting<Boolean>)this.register(new Setting("Eat", (T)true));
-        this.walk = (Setting<Boolean>)this.register(new Setting("Walk", (T)true));
-        this.mine = (Setting<Boolean>)this.register(new Setting("Mine", (T)true));
-        this.place = (Setting<Boolean>)this.register(new Setting("Place", (T)true));
-        this.totem = (Setting<Boolean>)this.register(new Setting("TotemPop", (T)true));
-        this.random = (Setting<Boolean>)this.register(new Setting("Random", (T)true));
-        this.greentext = (Setting<Boolean>)this.register(new Setting("Greentext", (T)false));
-        this.loadFiles = (Setting<Boolean>)this.register(new Setting("LoadFiles", (T)false));
-        this.delay = (Setting<Integer>)this.register(new Setting("SendDelay", (T)40));
-        this.queueSize = (Setting<Integer>)this.register(new Setting("QueueSize", (T)5, (T)1, (T)100));
-        this.mindistance = (Setting<Integer>)this.register(new Setting("Min Distance", (T)10, (T)1, (T)100));
-        this.clearQueue = (Setting<Boolean>)this.register(new Setting("ClearQueue", (T)false));
-        this.queue = new HashMap<Action, Message>();
-        this.loadedMessages = new HashMap<Action, ArrayList<String>>();
+        super("Announcer",  "How to get muted quick.",  Category.MISC,  true,  false,  false);
+        this.join = (Setting<Boolean>)this.register(new Setting("Join", true));
+        this.leave = (Setting<Boolean>)this.register(new Setting("Leave", true));
+        this.eat = (Setting<Boolean>)this.register(new Setting("Eat", true));
+        this.walk = (Setting<Boolean>)this.register(new Setting("Walk", true));
+        this.mine = (Setting<Boolean>)this.register(new Setting("Mine", true));
+        this.place = (Setting<Boolean>)this.register(new Setting("Place", true));
+        this.totem = (Setting<Boolean>)this.register(new Setting("TotemPop", true));
+        this.random = (Setting<Boolean>)this.register(new Setting("Random", true));
+        this.greentext = (Setting<Boolean>)this.register(new Setting("Greentext", false));
+        this.loadFiles = (Setting<Boolean>)this.register(new Setting("LoadFiles", false));
+        this.delay = (Setting<Integer>)this.register(new Setting("SendDelay", 40));
+        this.queueSize = (Setting<Integer>)this.register(new Setting("QueueSize", 5, 1, 100));
+        this.mindistance = (Setting<Integer>)this.register(new Setting("Min Distance", 10, 1, 100));
+        this.clearQueue = (Setting<Boolean>)this.register(new Setting("ClearQueue", false));
+        this.queue = new HashMap<Action,  Message>();
+        this.loadedMessages = new HashMap<Action,  ArrayList<String>>();
     }
     
     @Override
@@ -70,7 +70,7 @@ public class Announcer extends Module
     }
     
     public void loadMessages() {
-        final HashMap<Action, ArrayList<String>> newLoadedMessages = new HashMap<Action, ArrayList<String>>();
+        final HashMap<Action,  ArrayList<String>> newLoadedMessages = new HashMap<Action,  ArrayList<String>>();
         for (final Action action : Action.values()) {
             final String fileName = "phobos/announcer/" + action.getName() + ".txt";
             final List<String> fileInput = FileManager.readTextFileAllLines(fileName);
@@ -78,7 +78,7 @@ public class Announcer extends Module
             final ArrayList<String> msgs = new ArrayList<String>();
             while (i.hasNext()) {
                 final String string = i.next();
-                if (string.replaceAll("\\s", "").isEmpty()) {
+                if (string.replaceAll("\\s",  "").isEmpty()) {
                     continue;
                 }
                 msgs.add(string);
@@ -86,12 +86,12 @@ public class Announcer extends Module
             if (msgs.isEmpty()) {
                 msgs.add(action.getStandartMessage());
             }
-            newLoadedMessages.put(action, msgs);
+            newLoadedMessages.put(action,  msgs);
         }
         this.loadedMessages = newLoadedMessages;
     }
     
-    private String getMessage(final Action action, final int number, final String info) {
+    private String getMessage(final Action action,  final int number,  final String info) {
         return "";
     }
     
@@ -110,18 +110,18 @@ public class Announcer extends Module
     
     public enum Action
     {
-        JOIN("Join", "Welcome _!"), 
-        LEAVE("Leave", "Goodbye _!"), 
-        EAT("Eat", "I just ate % _!"), 
-        WALK("Walk", "I just walked % Blocks!"), 
-        MINE("Mine", "I mined % _!"), 
-        PLACE("Place", "I just placed % _!"), 
-        TOTEM("Totem", "_ just popped % Totems!");
+        JOIN("Join",  "Welcome _!"),  
+        LEAVE("Leave",  "Goodbye _!"),  
+        EAT("Eat",  "I just ate % _!"),  
+        WALK("Walk",  "I just walked % Blocks!"),  
+        MINE("Mine",  "I mined % _!"),  
+        PLACE("Place",  "I just placed % _!"),  
+        TOTEM("Totem",  "_ just popped % Totems!");
         
         private final String name;
         private final String standartMessage;
         
-        private Action(final String name, final String standartMessage) {
+        private Action(final String name,  final String standartMessage) {
             this.name = name;
             this.standartMessage = standartMessage;
         }
@@ -141,7 +141,7 @@ public class Announcer extends Module
         public final String name;
         public final int amount;
         
-        public Message(final Action action, final String name, final int amount) {
+        public Message(final Action action,  final String name,  final int amount) {
             this.action = action;
             this.name = name;
             this.amount = amount;

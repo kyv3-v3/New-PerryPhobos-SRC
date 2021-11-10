@@ -14,11 +14,11 @@ public class ObfuscationTypeDescriptor
     private final String outFileArgName;
     private final Class<? extends ObfuscationEnvironment> environmentType;
     
-    public ObfuscationTypeDescriptor(final String key, final String inputFileArgName, final String outFileArgName, final Class<? extends ObfuscationEnvironment> environmentType) {
-        this(key, inputFileArgName, null, outFileArgName, environmentType);
+    public ObfuscationTypeDescriptor(final String key,  final String inputFileArgName,  final String outFileArgName,  final Class<? extends ObfuscationEnvironment> environmentType) {
+        this(key,  inputFileArgName,  null,  outFileArgName,  environmentType);
     }
     
-    public ObfuscationTypeDescriptor(final String key, final String inputFileArgName, final String extraInputFilesArgName, final String outFileArgName, final Class<? extends ObfuscationEnvironment> environmentType) {
+    public ObfuscationTypeDescriptor(final String key,  final String inputFileArgName,  final String extraInputFilesArgName,  final String outFileArgName,  final Class<? extends ObfuscationEnvironment> environmentType) {
         this.key = key;
         this.inputFileArgName = inputFileArgName;
         this.extraInputFilesArgName = extraInputFilesArgName;

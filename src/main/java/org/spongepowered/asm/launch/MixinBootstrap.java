@@ -33,7 +33,7 @@ public abstract class MixinBootstrap
                 MixinBootstrap.platform = (MixinPlatformManager)globalPlatformManager;
             }
             else {
-                GlobalProperties.put("mixin.platform", (Object)(MixinBootstrap.platform = new MixinPlatformManager()));
+                GlobalProperties.put("mixin.platform",  (Object)(MixinBootstrap.platform = new MixinPlatformManager()));
                 MixinBootstrap.platform.init();
             }
         }
@@ -54,7 +54,7 @@ public abstract class MixinBootstrap
                 MixinBootstrap.initialised = true;
                 final String command = System.getProperty("sun.java.command");
                 if (command != null && command.contains("GradleStart")) {
-                    System.setProperty("mixin.env.remapRefMap", "true");
+                    System.setProperty("mixin.env.remapRefMap",  "true");
                 }
                 final MixinEnvironment.Phase initialPhase = MixinService.getService().getInitialPhase();
                 if (initialPhase == MixinEnvironment.Phase.DEFAULT) {
@@ -87,7 +87,7 @@ public abstract class MixinBootstrap
             return;
         }
         if (isSubsystemRegistered()) {
-            MixinBootstrap.logger.warn("Multiple Mixin containers present, init suppressed for 0.7.11");
+            MixinBootstrap.logger.warn("Multiple Mixin containers present,  init suppressed for 0.7.11");
             return;
         }
         throw new IllegalStateException("MixinBootstrap.doInit() called before MixinBootstrap.start()");
@@ -111,7 +111,7 @@ public abstract class MixinBootstrap
     }
     
     private static void registerSubsystem(final String version) {
-        GlobalProperties.put("mixin.initialised", (Object)version);
+        GlobalProperties.put("mixin.initialised",  (Object)version);
     }
     
     static {

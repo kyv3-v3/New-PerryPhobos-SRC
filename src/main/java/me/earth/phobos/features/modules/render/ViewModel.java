@@ -37,30 +37,30 @@ public class ViewModel extends Module
     public Setting<Double> offScaleZ;
     
     public ViewModel() {
-        super("ViewModel", "Change the looks of items in 1st player view.", Module.Category.RENDER, true, false, false);
-        this.settings = (Setting<Settings>)this.register(new Setting("Settings", (T)Settings.TRANSLATE));
-        this.noEatAnimation = (Setting<Boolean>)this.register(new Setting("NoEatAnimation", (T)false, v -> this.settings.getValue() == Settings.TWEAKS));
-        this.eatX = (Setting<Double>)this.register(new Setting("EatX", (T)1.0, (T)(-2.0), (T)5.0, v -> this.settings.getValue() == Settings.TWEAKS && !this.noEatAnimation.getValue()));
-        this.eatY = (Setting<Double>)this.register(new Setting("EatY", (T)1.0, (T)(-2.0), (T)5.0, v -> this.settings.getValue() == Settings.TWEAKS && !this.noEatAnimation.getValue()));
-        this.doBob = (Setting<Boolean>)this.register(new Setting("ItemBob", (T)true, v -> this.settings.getValue() == Settings.TWEAKS));
-        this.mainX = (Setting<Double>)this.register(new Setting("MainX", (T)1.2, (T)(-2.0), (T)4.0, v -> this.settings.getValue() == Settings.TRANSLATE));
-        this.mainY = (Setting<Double>)this.register(new Setting("MainY", (T)(-0.95), (T)(-3.0), (T)3.0, v -> this.settings.getValue() == Settings.TRANSLATE));
-        this.mainZ = (Setting<Double>)this.register(new Setting("MainZ", (T)(-1.45), (T)(-5.0), (T)5.0, v -> this.settings.getValue() == Settings.TRANSLATE));
-        this.offX = (Setting<Double>)this.register(new Setting("OffX", (T)1.2, (T)(-2.0), (T)4.0, v -> this.settings.getValue() == Settings.TRANSLATE));
-        this.offY = (Setting<Double>)this.register(new Setting("OffY", (T)(-0.95), (T)(-3.0), (T)3.0, v -> this.settings.getValue() == Settings.TRANSLATE));
-        this.offZ = (Setting<Double>)this.register(new Setting("OffZ", (T)(-1.45), (T)(-5.0), (T)5.0, v -> this.settings.getValue() == Settings.TRANSLATE));
-        this.mainRotX = (Setting<Integer>)this.register(new Setting("MainRotationX", (T)0, (T)(-36), (T)36, v -> this.settings.getValue() == Settings.ROTATE));
-        this.mainRotY = (Setting<Integer>)this.register(new Setting("MainRotationY", (T)0, (T)(-36), (T)36, v -> this.settings.getValue() == Settings.ROTATE));
-        this.mainRotZ = (Setting<Integer>)this.register(new Setting("MainRotationZ", (T)0, (T)(-36), (T)36, v -> this.settings.getValue() == Settings.ROTATE));
-        this.offRotX = (Setting<Integer>)this.register(new Setting("OffRotationX", (T)0, (T)(-36), (T)36, v -> this.settings.getValue() == Settings.ROTATE));
-        this.offRotY = (Setting<Integer>)this.register(new Setting("OffRotationY", (T)0, (T)(-36), (T)36, v -> this.settings.getValue() == Settings.ROTATE));
-        this.offRotZ = (Setting<Integer>)this.register(new Setting("OffRotationZ", (T)0, (T)(-36), (T)36, v -> this.settings.getValue() == Settings.ROTATE));
-        this.mainScaleX = (Setting<Double>)this.register(new Setting("MainScaleX", (T)1.0, (T)0.1, (T)5.0, v -> this.settings.getValue() == Settings.SCALE));
-        this.mainScaleY = (Setting<Double>)this.register(new Setting("MainScaleY", (T)1.0, (T)0.1, (T)5.0, v -> this.settings.getValue() == Settings.SCALE));
-        this.mainScaleZ = (Setting<Double>)this.register(new Setting("MainScaleZ", (T)1.0, (T)0.1, (T)5.0, v -> this.settings.getValue() == Settings.SCALE));
-        this.offScaleX = (Setting<Double>)this.register(new Setting("OffScaleX", (T)1.0, (T)0.1, (T)5.0, v -> this.settings.getValue() == Settings.SCALE));
-        this.offScaleY = (Setting<Double>)this.register(new Setting("OffScaleY", (T)1.0, (T)0.1, (T)5.0, v -> this.settings.getValue() == Settings.SCALE));
-        this.offScaleZ = (Setting<Double>)this.register(new Setting("OffScaleZ", (T)1.0, (T)0.1, (T)5.0, v -> this.settings.getValue() == Settings.SCALE));
+        super("ViewModel",  "Change the looks of items in 1st player view.",  Module.Category.RENDER,  true,  false,  false);
+        this.settings = (Setting<Settings>)this.register(new Setting("Settings", Settings.TRANSLATE));
+        this.noEatAnimation = (Setting<Boolean>)this.register(new Setting("NoEatAnimation", false,  v -> this.settings.getValue() == Settings.TWEAKS));
+        this.eatX = (Setting<Double>)this.register(new Setting("EatX", 1.0, (-2.0), 5.0,  v -> this.settings.getValue() == Settings.TWEAKS && !this.noEatAnimation.getValue()));
+        this.eatY = (Setting<Double>)this.register(new Setting("EatY", 1.0, (-2.0), 5.0,  v -> this.settings.getValue() == Settings.TWEAKS && !this.noEatAnimation.getValue()));
+        this.doBob = (Setting<Boolean>)this.register(new Setting("ItemBob", true,  v -> this.settings.getValue() == Settings.TWEAKS));
+        this.mainX = (Setting<Double>)this.register(new Setting("MainX", 1.2, (-2.0), 4.0,  v -> this.settings.getValue() == Settings.TRANSLATE));
+        this.mainY = (Setting<Double>)this.register(new Setting("MainY", (-0.95), (-3.0), 3.0,  v -> this.settings.getValue() == Settings.TRANSLATE));
+        this.mainZ = (Setting<Double>)this.register(new Setting("MainZ", (-1.45), (-5.0), 5.0,  v -> this.settings.getValue() == Settings.TRANSLATE));
+        this.offX = (Setting<Double>)this.register(new Setting("OffX", 1.2, (-2.0), 4.0,  v -> this.settings.getValue() == Settings.TRANSLATE));
+        this.offY = (Setting<Double>)this.register(new Setting("OffY", (-0.95), (-3.0), 3.0,  v -> this.settings.getValue() == Settings.TRANSLATE));
+        this.offZ = (Setting<Double>)this.register(new Setting("OffZ", (-1.45), (-5.0), 5.0,  v -> this.settings.getValue() == Settings.TRANSLATE));
+        this.mainRotX = (Setting<Integer>)this.register(new Setting("MainRotationX", 0, (-36), 36,  v -> this.settings.getValue() == Settings.ROTATE));
+        this.mainRotY = (Setting<Integer>)this.register(new Setting("MainRotationY", 0, (-36), 36,  v -> this.settings.getValue() == Settings.ROTATE));
+        this.mainRotZ = (Setting<Integer>)this.register(new Setting("MainRotationZ", 0, (-36), 36,  v -> this.settings.getValue() == Settings.ROTATE));
+        this.offRotX = (Setting<Integer>)this.register(new Setting("OffRotationX", 0, (-36), 36,  v -> this.settings.getValue() == Settings.ROTATE));
+        this.offRotY = (Setting<Integer>)this.register(new Setting("OffRotationY", 0, (-36), 36,  v -> this.settings.getValue() == Settings.ROTATE));
+        this.offRotZ = (Setting<Integer>)this.register(new Setting("OffRotationZ", 0, (-36), 36,  v -> this.settings.getValue() == Settings.ROTATE));
+        this.mainScaleX = (Setting<Double>)this.register(new Setting("MainScaleX", 1.0, 0.1, 5.0,  v -> this.settings.getValue() == Settings.SCALE));
+        this.mainScaleY = (Setting<Double>)this.register(new Setting("MainScaleY", 1.0, 0.1, 5.0,  v -> this.settings.getValue() == Settings.SCALE));
+        this.mainScaleZ = (Setting<Double>)this.register(new Setting("MainScaleZ", 1.0, 0.1, 5.0,  v -> this.settings.getValue() == Settings.SCALE));
+        this.offScaleX = (Setting<Double>)this.register(new Setting("OffScaleX", 1.0, 0.1, 5.0,  v -> this.settings.getValue() == Settings.SCALE));
+        this.offScaleY = (Setting<Double>)this.register(new Setting("OffScaleY", 1.0, 0.1, 5.0,  v -> this.settings.getValue() == Settings.SCALE));
+        this.offScaleZ = (Setting<Double>)this.register(new Setting("OffScaleZ", 1.0, 0.1, 5.0,  v -> this.settings.getValue() == Settings.SCALE));
         this.setInstance();
     }
     
@@ -103,9 +103,9 @@ public class ViewModel extends Module
     
     private enum Settings
     {
-        TRANSLATE, 
-        ROTATE, 
-        SCALE, 
+        TRANSLATE,  
+        ROTATE,  
+        SCALE,  
         TWEAKS;
     }
 }

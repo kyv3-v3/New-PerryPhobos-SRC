@@ -14,9 +14,9 @@ public interface IMappingConsumer
 {
     void clear();
     
-    void addFieldMapping(final ObfuscationType p0, final MappingField p1, final MappingField p2);
+    void addFieldMapping(final ObfuscationType p0,  final MappingField p1,  final MappingField p2);
     
-    void addMethodMapping(final ObfuscationType p0, final MappingMethod p1, final MappingMethod p2);
+    void addMethodMapping(final ObfuscationType p0,  final MappingMethod p1,  final MappingMethod p2);
     
     MappingSet<MappingField> getFieldMappings(final ObfuscationType p0);
     
@@ -31,7 +31,7 @@ public interface IMappingConsumer
             public final TMapping from;
             public final TMapping to;
             
-            public Pair(final TMapping from, final TMapping to) {
+            public Pair(final TMapping from,  final TMapping to) {
                 this.from = from;
                 this.to = to;
             }
@@ -42,17 +42,17 @@ public interface IMappingConsumer
                     return false;
                 }
                 final Pair<TMapping> other = (Pair<TMapping>)obj;
-                return Objects.equal((Object)this.from, (Object)other.from) && Objects.equal((Object)this.to, (Object)other.to);
+                return Objects.equal((Object)this.from,  (Object)other.from) && Objects.equal((Object)this.to,  (Object)other.to);
             }
             
             @Override
             public int hashCode() {
-                return Objects.hashCode(new Object[] { this.from, this.to });
+                return Objects.hashCode(new Object[] { this.from,  this.to });
             }
             
             @Override
             public String toString() {
-                return String.format("%s -> %s", this.from, this.to);
+                return String.format("%s -> %s",  this.from,  this.to);
             }
         }
     }

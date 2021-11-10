@@ -24,7 +24,7 @@ public class Setting<T>
     private String description;
     private Feature feature;
     
-    public Setting(final String name, final T defaultValue) {
+    public Setting(final String name,  final T defaultValue) {
         this.name = name;
         this.defaultValue = defaultValue;
         this.value = defaultValue;
@@ -32,7 +32,7 @@ public class Setting<T>
         this.description = "";
     }
     
-    public Setting(final String name, final T defaultValue, final String description) {
+    public Setting(final String name,  final T defaultValue,  final String description) {
         this.name = name;
         this.defaultValue = defaultValue;
         this.value = defaultValue;
@@ -40,7 +40,7 @@ public class Setting<T>
         this.description = description;
     }
     
-    public Setting(final String name, final T defaultValue, final T min, final T max, final String description) {
+    public Setting(final String name,  final T defaultValue,  final T min,  final T max,  final String description) {
         this.name = name;
         this.defaultValue = defaultValue;
         this.value = defaultValue;
@@ -51,7 +51,7 @@ public class Setting<T>
         this.hasRestriction = true;
     }
     
-    public Setting(final String name, final T defaultValue, final T min, final T max) {
+    public Setting(final String name,  final T defaultValue,  final T min,  final T max) {
         this.name = name;
         this.defaultValue = defaultValue;
         this.value = defaultValue;
@@ -62,7 +62,7 @@ public class Setting<T>
         this.hasRestriction = true;
     }
     
-    public Setting(final String name, final T defaultValue, final T min, final T max, final Predicate<T> visibility, final String description) {
+    public Setting(final String name,  final T defaultValue,  final T min,  final T max,  final Predicate<T> visibility,  final String description) {
         this.name = name;
         this.defaultValue = defaultValue;
         this.value = defaultValue;
@@ -74,7 +74,7 @@ public class Setting<T>
         this.hasRestriction = true;
     }
     
-    public Setting(final String name, final T defaultValue, final T min, final T max, final Predicate<T> visibility) {
+    public Setting(final String name,  final T defaultValue,  final T min,  final T max,  final Predicate<T> visibility) {
         this.name = name;
         this.defaultValue = defaultValue;
         this.value = defaultValue;
@@ -86,7 +86,7 @@ public class Setting<T>
         this.hasRestriction = true;
     }
     
-    public Setting(final String name, final T defaultValue, final Predicate<T> visibility) {
+    public Setting(final String name,  final T defaultValue,  final Predicate<T> visibility) {
         this.name = name;
         this.defaultValue = defaultValue;
         this.value = defaultValue;

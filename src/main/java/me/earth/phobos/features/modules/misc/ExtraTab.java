@@ -16,13 +16,13 @@ public class ExtraTab extends Module
     public Setting<Integer> size;
     
     public ExtraTab() {
-        super("ExtraTab", "Extends Tab.", Category.MISC, false, false, false);
-        this.size = (Setting<Integer>)this.register(new Setting("Size", (T)250, (T)1, (T)1000));
+        super("ExtraTab",  "Extends Tab.",  Category.MISC,  false,  false,  false);
+        this.size = (Setting<Integer>)this.register(new Setting("Size", 250, 1, 1000));
         this.setInstance();
     }
     
     public static String getPlayerName(final NetworkPlayerInfo networkPlayerInfoIn) {
-        final String name = (networkPlayerInfoIn.getDisplayName() != null) ? networkPlayerInfoIn.getDisplayName().getFormattedText() : ScorePlayerTeam.formatPlayerName((Team)networkPlayerInfoIn.getPlayerTeam(), networkPlayerInfoIn.getGameProfile().getName());
+        final String name = (networkPlayerInfoIn.getDisplayName() != null) ? networkPlayerInfoIn.getDisplayName().getFormattedText() : ScorePlayerTeam.formatPlayerName((Team)networkPlayerInfoIn.getPlayerTeam(),  networkPlayerInfoIn.getGameProfile().getName());
         if (Phobos.friendManager.isFriend(name)) {
             return "§b" + name;
         }

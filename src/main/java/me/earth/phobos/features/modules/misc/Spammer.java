@@ -33,19 +33,19 @@ public class Spammer extends Module
     public Setting<Boolean> loadFile;
     
     public Spammer() {
-        super("Spammer", "Spams stuff.", Category.MISC, true, false, false);
+        super("Spammer",  "Spams stuff.",  Category.MISC,  true,  false,  false);
         this.timer = new TimerUtil();
         this.sendPlayers = new ArrayList<String>();
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", (T)Mode.PWORD));
-        this.type = (Setting<PwordMode>)this.register(new Setting("Pword", (T)PwordMode.CHAT, v -> this.mode.getValue() == Mode.PWORD));
-        this.msgTarget = (Setting<String>)this.register(new Setting("MsgTarget", (T)"Target...", v -> this.mode.getValue() == Mode.PWORD && this.type.getValue() == PwordMode.MSG));
-        this.delayType = (Setting<DelayType>)this.register(new Setting("DelayType", (T)DelayType.S));
-        this.delay = (Setting<Integer>)this.register(new Setting("DelayS", (T)10, (T)1, (T)1000, v -> this.delayType.getValue() == DelayType.S));
-        this.delayDS = (Setting<Integer>)this.register(new Setting("DelayDS", (T)10, (T)1, (T)500, v -> this.delayType.getValue() == DelayType.DS));
-        this.delayMS = (Setting<Integer>)this.register(new Setting("DelayDS", (T)10, (T)1, (T)1000, v -> this.delayType.getValue() == DelayType.MS));
-        this.greentext = (Setting<Boolean>)this.register(new Setting("Greentext", (T)false, v -> this.mode.getValue() == Mode.FILE));
-        this.random = (Setting<Boolean>)this.register(new Setting("Random", (T)false, v -> this.mode.getValue() == Mode.FILE));
-        this.loadFile = (Setting<Boolean>)this.register(new Setting("LoadFile", (T)false, v -> this.mode.getValue() == Mode.FILE));
+        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.PWORD));
+        this.type = (Setting<PwordMode>)this.register(new Setting("Pword", PwordMode.CHAT,  v -> this.mode.getValue() == Mode.PWORD));
+        this.msgTarget = (Setting<String>)this.register(new Setting("MsgTarget", "Target...",  v -> this.mode.getValue() == Mode.PWORD && this.type.getValue() == PwordMode.MSG));
+        this.delayType = (Setting<DelayType>)this.register(new Setting("DelayType", DelayType.S));
+        this.delay = (Setting<Integer>)this.register(new Setting("DelayS", 10, 1, 1000,  v -> this.delayType.getValue() == DelayType.S));
+        this.delayDS = (Setting<Integer>)this.register(new Setting("DelayDS", 10, 1, 500,  v -> this.delayType.getValue() == DelayType.DS));
+        this.delayMS = (Setting<Integer>)this.register(new Setting("DelayDS", 10, 1, 1000,  v -> this.delayType.getValue() == DelayType.MS));
+        this.greentext = (Setting<Boolean>)this.register(new Setting("Greentext", false,  v -> this.mode.getValue() == Mode.FILE));
+        this.random = (Setting<Boolean>)this.register(new Setting("Random", false,  v -> this.mode.getValue() == Mode.FILE));
+        this.loadFile = (Setting<Boolean>)this.register(new Setting("LoadFile", false,  v -> this.mode.getValue() == Mode.FILE));
     }
     
     @Override
@@ -167,7 +167,7 @@ public class Spammer extends Module
             if (this.greentext.getValue()) {
                 messageOut = "> " + messageOut;
             }
-            Spammer.mc.player.connection.sendPacket((Packet)new CPacketChatMessage(messageOut.replaceAll("§", "")));
+            Spammer.mc.player.connection.sendPacket((Packet)new CPacketChatMessage(messageOut.replaceAll("§",  "")));
         }
         this.timer.reset();
     }
@@ -178,7 +178,7 @@ public class Spammer extends Module
         Spammer.spamMessages.clear();
         while (i.hasNext()) {
             final String s = i.next();
-            if (s.replaceAll("\\s", "").isEmpty()) {
+            if (s.replaceAll("\\s",  "").isEmpty()) {
                 continue;
             }
             Spammer.spamMessages.add(s);
@@ -195,21 +195,21 @@ public class Spammer extends Module
     
     public enum DelayType
     {
-        MS, 
-        DS, 
+        MS,  
+        DS,  
         S;
     }
     
     public enum PwordMode
     {
-        MSG, 
-        EVERYONE, 
+        MSG,  
+        EVERYONE,  
         CHAT;
     }
     
     public enum Mode
     {
-        FILE, 
+        FILE,  
         PWORD;
     }
 }

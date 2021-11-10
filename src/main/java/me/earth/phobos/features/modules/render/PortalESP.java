@@ -26,13 +26,13 @@ public class PortalESP extends Module
     private int cooldownTicks;
     
     public PortalESP() {
-        super("PortalESP", "Draws esp over portals.", Module.Category.RENDER, true, false, false);
+        super("PortalESP",  "Draws esp over portals.",  Module.Category.RENDER,  true,  false,  false);
         this.blockPosArrayList = new ArrayList<BlockPos>();
-        this.distance = (Setting<Integer>)this.register(new Setting("Distance", (T)256, (T)1, (T)256));
-        this.box = (Setting<Boolean>)this.register(new Setting("Box", (T)false));
-        this.boxAlpha = (Setting<Integer>)this.register(new Setting("BoxAlpha", (T)125, (T)0, (T)255, v -> this.box.getValue()));
-        this.outline = (Setting<Boolean>)this.register(new Setting("Outline", (T)true));
-        this.lineWidth = (Setting<Float>)this.register(new Setting("LineWidth", (T)1.0f, (T)0.1f, (T)5.0f, v -> this.outline.getValue()));
+        this.distance = (Setting<Integer>)this.register(new Setting("Distance", 256, 1, 256));
+        this.box = (Setting<Boolean>)this.register(new Setting("Box", false));
+        this.boxAlpha = (Setting<Integer>)this.register(new Setting("BoxAlpha", 125, 0, 255,  v -> this.box.getValue()));
+        this.outline = (Setting<Boolean>)this.register(new Setting("Outline", true));
+        this.lineWidth = (Setting<Float>)this.register(new Setting("LineWidth", 1.0f, 0.1f, 5.0f,  v -> this.outline.getValue()));
     }
     
     @SubscribeEvent
@@ -53,7 +53,7 @@ public class PortalESP extends Module
             return;
         }
         for (final BlockPos pos : this.blockPosArrayList) {
-            RenderUtil.drawBoxESP(pos, new Color(204, 0, 153, 255), false, new Color(204, 0, 153, 255), this.lineWidth.getValue(), this.outline.getValue(), this.box.getValue(), this.boxAlpha.getValue(), false);
+            RenderUtil.drawBoxESP(pos,  new Color(204,  0,  153,  255),  false,  new Color(204,  0,  153,  255),  this.lineWidth.getValue(),  this.outline.getValue(),  this.box.getValue(),  this.boxAlpha.getValue(),  false);
         }
     }
     
@@ -63,8 +63,8 @@ public class PortalESP extends Module
         }
         for (int x = (int)PortalESP.mc.player.posX - this.distance.getValue(); x <= (int)PortalESP.mc.player.posX + this.distance.getValue(); ++x) {
             for (int y = (int)PortalESP.mc.player.posY - this.distance.getValue(); y <= (int)PortalESP.mc.player.posY + this.distance.getValue(); ++y) {
-                for (int z = (int)Math.max(PortalESP.mc.player.posZ - this.distance.getValue(), 1.0); z <= Math.min(PortalESP.mc.player.posZ + this.distance.getValue(), 256.0); ++z) {
-                    final BlockPos pos = new BlockPos(x, y, z);
+                for (int z = (int)Math.max(PortalESP.mc.player.posZ - this.distance.getValue(),  1.0); z <= Math.min(PortalESP.mc.player.posZ + this.distance.getValue(),  256.0); ++z) {
+                    final BlockPos pos = new BlockPos(x,  y,  z);
                     final Block block = PortalESP.mc.world.getBlockState(pos).getBlock();
                     if (block instanceof BlockPortal) {
                         this.blockPosArrayList.add(pos);

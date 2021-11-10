@@ -36,13 +36,13 @@ public class BlockTweaks extends Module
     private boolean switched;
     
     public BlockTweaks() {
-        super("BlockTweaks", "Some tweaks for blocks.", Module.Category.PLAYER, true, false, false);
-        this.autoTool = (Setting<Boolean>)this.register(new Setting("AutoTool", (T)false));
-        this.autoWeapon = (Setting<Boolean>)this.register(new Setting("AutoWeapon", (T)false));
-        this.noFriendAttack = (Setting<Boolean>)this.register(new Setting("NoFriendAttack", (T)false));
-        this.noBlock = (Setting<Boolean>)this.register(new Setting("NoHitboxBlock", (T)true));
-        this.noGhost = (Setting<Boolean>)this.register(new Setting("NoGlitchBlocks", (T)false));
-        this.destroy = (Setting<Boolean>)this.register(new Setting("Destroy", (T)false, v -> this.noGhost.getValue()));
+        super("BlockTweaks",  "Some tweaks for blocks.",  Module.Category.PLAYER,  true,  false,  false);
+        this.autoTool = (Setting<Boolean>)this.register(new Setting("AutoTool", false));
+        this.autoWeapon = (Setting<Boolean>)this.register(new Setting("AutoWeapon", false));
+        this.noFriendAttack = (Setting<Boolean>)this.register(new Setting("NoFriendAttack", false));
+        this.noBlock = (Setting<Boolean>)this.register(new Setting("NoHitboxBlock", true));
+        this.noGhost = (Setting<Boolean>)this.register(new Setting("NoGlitchBlocks", false));
+        this.destroy = (Setting<Boolean>)this.register(new Setting("Destroy", false,  v -> this.noGhost.getValue()));
         this.lastHotbarSlot = -1;
         this.currentTargetSlot = -1;
         this.setInstance();
@@ -61,7 +61,7 @@ public class BlockTweaks extends Module
     
     public void onDisable() {
         if (this.switched) {
-            this.equip(this.lastHotbarSlot, false);
+            this.equip(this.lastHotbarSlot,  false);
         }
         this.lastHotbarSlot = -1;
         this.currentTargetSlot = -1;
@@ -110,7 +110,7 @@ public class BlockTweaks extends Module
                 this.lastHotbarSlot = BlockTweaks.mc.player.inventory.currentItem;
             }
             if (!BlockTweaks.mc.gameSettings.keyBindAttack.isKeyDown() && this.switched) {
-                this.equip(this.lastHotbarSlot, false);
+                this.equip(this.lastHotbarSlot,  false);
             }
         }
     }
@@ -119,9 +119,9 @@ public class BlockTweaks extends Module
         for (int dx = -4; dx <= 4; ++dx) {
             for (int dy = -4; dy <= 4; ++dy) {
                 for (int dz = -4; dz <= 4; ++dz) {
-                    final BlockPos blockPos = new BlockPos(pos.getX() + dx, pos.getY() + dy, pos.getZ() + dz);
+                    final BlockPos blockPos = new BlockPos(pos.getX() + dx,  pos.getY() + dy,  pos.getZ() + dz);
                     if (BlockTweaks.mc.world.getBlockState(blockPos).getBlock().equals(Blocks.AIR)) {
-                        BlockTweaks.mc.playerController.processRightClickBlock(BlockTweaks.mc.player, BlockTweaks.mc.world, blockPos, EnumFacing.DOWN, new Vec3d(0.5, 0.5, 0.5), EnumHand.MAIN_HAND);
+                        BlockTweaks.mc.playerController.processRightClickBlock(BlockTweaks.mc.player,  BlockTweaks.mc.world,  blockPos,  EnumFacing.DOWN,  new Vec3d(0.5,  0.5,  0.5),  EnumHand.MAIN_HAND);
                     }
                 }
             }
@@ -136,13 +136,13 @@ public class BlockTweaks extends Module
             float speed;
             if (!stack.isEmpty && (speed = stack.getDestroySpeed(blockState)) > 1.0f) {
                 final int eff;
-                if ((speed += (float)(((eff = EnchantmentHelper.getEnchantmentLevel(Enchantments.EFFICIENCY, stack)) > 0) ? (Math.pow(eff, 2.0) + 1.0) : 0.0)) > max) {
+                if ((speed += (float)(((eff = EnchantmentHelper.getEnchantmentLevel(Enchantments.EFFICIENCY,  stack)) > 0) ? (Math.pow(eff,  2.0) + 1.0) : 0.0)) > max) {
                     max = speed;
                     bestSlot = i;
                 }
             }
         }
-        this.equip(bestSlot, true);
+        this.equip(bestSlot,  true);
     }
     
     public void equipBestWeapon(final Entity entity) {
@@ -157,7 +157,7 @@ public class BlockTweaks extends Module
             final ItemStack stack = BlockTweaks.mc.player.inventory.getStackInSlot(i);
             if (!stack.isEmpty) {
                 if (stack.getItem() instanceof ItemTool) {
-                    final double damage = ((ItemTool)stack.getItem()).attackDamage + (double)EnchantmentHelper.getModifierForCreature(stack, creatureAttribute);
+                    final double damage = ((ItemTool)stack.getItem()).attackDamage + (double)EnchantmentHelper.getModifierForCreature(stack,  creatureAttribute);
                     if (damage > maxDamage) {
                         maxDamage = damage;
                         bestSlot = i;
@@ -165,17 +165,17 @@ public class BlockTweaks extends Module
                 }
                 else if (stack.getItem() instanceof ItemSword) {
                     final double damage;
-                    if ((damage = ((ItemSword)stack.getItem()).getAttackDamage() + (double)EnchantmentHelper.getModifierForCreature(stack, creatureAttribute)) > maxDamage) {
+                    if ((damage = ((ItemSword)stack.getItem()).getAttackDamage() + (double)EnchantmentHelper.getModifierForCreature(stack,  creatureAttribute)) > maxDamage) {
                         maxDamage = damage;
                         bestSlot = i;
                     }
                 }
             }
         }
-        this.equip(bestSlot, true);
+        this.equip(bestSlot,  true);
     }
     
-    private void equip(final int slot, final boolean equipTool) {
+    private void equip(final int slot,  final boolean equipTool) {
         if (slot != -1) {
             if (slot != BlockTweaks.mc.player.inventory.currentItem) {
                 this.lastHotbarSlot = BlockTweaks.mc.player.inventory.currentItem;

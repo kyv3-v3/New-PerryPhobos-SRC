@@ -33,14 +33,14 @@ public class Blink extends Module
     private BlockPos startPos;
     
     public Blink() {
-        super("Blink", "Fakelag.", Module.Category.PLAYER, true, false, false);
+        super("Blink",  "Fakelag.",  Module.Category.PLAYER,  true,  false,  false);
         this.timer = new TimerUtil();
         this.packets = new ConcurrentLinkedQueue<Packet<?>>();
-        this.cPacketPlayer = (Setting<Boolean>)this.register(new Setting("CPacketPlayer", (T)true));
-        this.autoOff = (Setting<Mode>)this.register(new Setting("AutoOff", (T)Mode.MANUAL));
-        this.timeLimit = (Setting<Integer>)this.register(new Setting("Time", (T)20, (T)1, (T)500, v -> this.autoOff.getValue() == Mode.TIME));
-        this.packetLimit = (Setting<Integer>)this.register(new Setting("Packets", (T)20, (T)1, (T)500, v -> this.autoOff.getValue() == Mode.PACKETS));
-        this.distance = (Setting<Float>)this.register(new Setting("Distance", (T)10.0f, (T)1.0f, (T)100.0f, v -> this.autoOff.getValue() == Mode.DISTANCE));
+        this.cPacketPlayer = (Setting<Boolean>)this.register(new Setting("CPacketPlayer", true));
+        this.autoOff = (Setting<Mode>)this.register(new Setting("AutoOff", Mode.MANUAL));
+        this.timeLimit = (Setting<Integer>)this.register(new Setting("Time", 20, 1, 500,  v -> this.autoOff.getValue() == Mode.TIME));
+        this.packetLimit = (Setting<Integer>)this.register(new Setting("Packets", 20, 1, 500,  v -> this.autoOff.getValue() == Mode.PACKETS));
+        this.distance = (Setting<Float>)this.register(new Setting("Distance", 10.0f, 1.0f, 100.0f,  v -> this.autoOff.getValue() == Mode.DISTANCE));
         this.setInstance();
     }
     
@@ -57,11 +57,11 @@ public class Blink extends Module
     
     public void onEnable() {
         if (!fullNullCheck()) {
-            (this.entity = new EntityOtherPlayerMP((World)Blink.mc.world, Blink.mc.session.getProfile())).copyLocationAndAnglesFrom((Entity)Blink.mc.player);
+            (this.entity = new EntityOtherPlayerMP((World)Blink.mc.world,  Blink.mc.session.getProfile())).copyLocationAndAnglesFrom((Entity)Blink.mc.player);
             this.entity.rotationYaw = Blink.mc.player.rotationYaw;
             this.entity.rotationYawHead = Blink.mc.player.rotationYawHead;
             this.entity.inventory.copyInventory(Blink.mc.player.inventory);
-            Blink.mc.world.addEntityToWorld(6942069, (Entity)this.entity);
+            Blink.mc.world.addEntityToWorld(6942069,  (Entity)this.entity);
             this.startPos = Blink.mc.player.getPosition();
         }
         else {
@@ -119,9 +119,9 @@ public class Blink extends Module
     
     public enum Mode
     {
-        MANUAL, 
-        TIME, 
-        DISTANCE, 
+        MANUAL,  
+        TIME,  
+        DISTANCE,  
         PACKETS;
     }
 }

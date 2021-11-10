@@ -47,22 +47,22 @@ public class Bypass extends Module
     private int swingPacket;
     
     public Bypass() {
-        super("Bypass", "Bypass's for stuff.", Category.MISC, true, false, false);
+        super("Bypass",  "Bypass's for stuff.",  Category.MISC,  true,  false,  false);
         this.timer = new TimerUtil();
-        this.illegals = (Setting<Boolean>)this.register(new Setting("Illegals", (T)false));
-        this.secretClose = (Setting<Boolean>)this.register(new Setting("SecretClose", (T)false, v -> this.illegals.getValue()));
-        this.rotation = (Setting<Boolean>)this.register(new Setting("Rotation", (T)false, v -> this.secretClose.getValue() && this.illegals.getValue()));
-        this.elytra = (Setting<Boolean>)this.register(new Setting("Elytra", (T)false));
-        this.reopen = (Setting<Boolean>)this.register(new Setting("Reopen", (T)false, v -> this.elytra.getValue()));
-        this.reopen_interval = (Setting<Integer>)this.register(new Setting("ReopenDelay", (T)1000, (T)0, (T)5000, v -> this.elytra.getValue()));
-        this.delay = (Setting<Integer>)this.register(new Setting("Delay", (T)0, (T)0, (T)1000, v -> this.elytra.getValue()));
-        this.allow_ghost = (Setting<Boolean>)this.register(new Setting("Ghost", (T)true, v -> this.elytra.getValue()));
-        this.cancel_close = (Setting<Boolean>)this.register(new Setting("Cancel", (T)true, v -> this.elytra.getValue()));
-        this.discreet = (Setting<Boolean>)this.register(new Setting("Secret", (T)true, v -> this.elytra.getValue()));
-        this.packets = (Setting<Boolean>)this.register(new Setting("Packets", (T)false));
-        this.limitSwing = (Setting<Boolean>)this.register(new Setting("LimitSwing", (T)false, v -> this.packets.getValue()));
-        this.swingPackets = (Setting<Integer>)this.register(new Setting("SwingPackets", (T)1, (T)0, (T)100, v -> this.packets.getValue()));
-        this.noLimit = (Setting<Boolean>)this.register(new Setting("NoCompression", (T)false, v -> this.packets.getValue()));
+        this.illegals = (Setting<Boolean>)this.register(new Setting("Illegals", false));
+        this.secretClose = (Setting<Boolean>)this.register(new Setting("SecretClose", false,  v -> this.illegals.getValue()));
+        this.rotation = (Setting<Boolean>)this.register(new Setting("Rotation", false,  v -> this.secretClose.getValue() && this.illegals.getValue()));
+        this.elytra = (Setting<Boolean>)this.register(new Setting("Elytra", false));
+        this.reopen = (Setting<Boolean>)this.register(new Setting("Reopen", false,  v -> this.elytra.getValue()));
+        this.reopen_interval = (Setting<Integer>)this.register(new Setting("ReopenDelay", 1000, 0, 5000,  v -> this.elytra.getValue()));
+        this.delay = (Setting<Integer>)this.register(new Setting("Delay", 0, 0, 1000,  v -> this.elytra.getValue()));
+        this.allow_ghost = (Setting<Boolean>)this.register(new Setting("Ghost", true,  v -> this.elytra.getValue()));
+        this.cancel_close = (Setting<Boolean>)this.register(new Setting("Cancel", true,  v -> this.elytra.getValue()));
+        this.discreet = (Setting<Boolean>)this.register(new Setting("Secret", true,  v -> this.elytra.getValue()));
+        this.packets = (Setting<Boolean>)this.register(new Setting("Packets", false));
+        this.limitSwing = (Setting<Boolean>)this.register(new Setting("LimitSwing", false,  v -> this.packets.getValue()));
+        this.swingPackets = (Setting<Integer>)this.register(new Setting("SwingPackets", 1, 0, 100,  v -> this.packets.getValue()));
+        this.noLimit = (Setting<Boolean>)this.register(new Setting("NoCompression", false,  v -> this.packets.getValue()));
         Bypass.instance = this;
     }
     
@@ -142,7 +142,7 @@ public class Bypass extends Module
                 for (int i = 0; i < 36; ++i) {
                     final ItemStack item = Bypass.mc.player.inventory.getStackInSlot(i);
                     if (item.getItem().equals(Items.ELYTRA)) {
-                        Bypass.mc.playerController.windowClick(0, (i < 9) ? (i + 36) : i, 0, ClickType.QUICK_MOVE, (EntityPlayer)Bypass.mc.player);
+                        Bypass.mc.playerController.windowClick(0,  (i < 9) ? (i + 36) : i,  0,  ClickType.QUICK_MOVE,  (EntityPlayer)Bypass.mc.player);
                         this.cooldown = this.delay.getValue();
                         return;
                     }
@@ -155,7 +155,7 @@ public class Bypass extends Module
     public void onUpdate() {
         this.swingPacket = 0;
         if (this.elytra.getValue() && this.timer.passedMs(this.reopen_interval.getValue()) && this.reopen.getValue() && !Bypass.mc.player.isElytraFlying() && Bypass.mc.player.fallDistance > 0.0f) {
-            Bypass.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)Bypass.mc.player, CPacketEntityAction.Action.START_FALL_FLYING));
+            Bypass.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)Bypass.mc.player,  CPacketEntityAction.Action.START_FALL_FLYING));
         }
     }
 }

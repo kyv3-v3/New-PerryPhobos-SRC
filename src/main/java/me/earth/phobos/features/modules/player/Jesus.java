@@ -27,11 +27,11 @@ public class Jesus extends Module
     private boolean grounded;
     
     public Jesus() {
-        super("Jesus", "Allows you to walk on water like the legend.", Module.Category.PLAYER, true, false, false);
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", (T)Mode.NORMAL));
-        this.cancelVehicle = (Setting<Boolean>)this.register(new Setting("NoVehicle", (T)false));
-        this.eventMode = (Setting<EventMode>)this.register(new Setting("Jump", (T)EventMode.PRE, v -> this.mode.getValue() == Mode.TRAMPOLINE));
-        this.fall = (Setting<Boolean>)this.register(new Setting("NoFall", (T)false, v -> this.mode.getValue() == Mode.TRAMPOLINE));
+        super("Jesus",  "Allows you to walk on water like the legend.",  Module.Category.PLAYER,  true,  false,  false);
+        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.NORMAL));
+        this.cancelVehicle = (Setting<Boolean>)this.register(new Setting("NoVehicle", false));
+        this.eventMode = (Setting<EventMode>)this.register(new Setting("Jump", EventMode.PRE,  v -> this.mode.getValue() == Mode.TRAMPOLINE));
+        this.fall = (Setting<Boolean>)this.register(new Setting("NoFall", false,  v -> this.mode.getValue() == Mode.TRAMPOLINE));
         Jesus.INSTANCE = this;
     }
     
@@ -79,7 +79,7 @@ public class Jesus extends Module
         }
         if (event.getStage() == 0 && (this.mode.getValue() == Mode.BOUNCE || this.mode.getValue() == Mode.VANILLA || this.mode.getValue() == Mode.NORMAL) && Jesus.mc.world != null && Jesus.mc.player != null && EntityUtil.checkCollide() && Jesus.mc.player.motionY < 0.10000000149011612 && event.getPos().getY() < Jesus.mc.player.posY - 0.05000000074505806) {
             if (Jesus.mc.player.getRidingEntity() != null) {
-                event.setBoundingBox(new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.949999988079071, 1.0));
+                event.setBoundingBox(new AxisAlignedBB(0.0,  0.0,  0.0,  1.0,  0.949999988079071,  1.0));
             }
             else {
                 event.setBoundingBox(Block.FULL_BLOCK_AABB);
@@ -148,32 +148,32 @@ public class Jesus extends Module
         if (!this.fall.getValue()) {
             Jesus.mc.player.fallDistance = 0.0f;
         }
-        if (!EntityUtil.checkForLiquid((Entity)Jesus.mc.player, true)) {
+        if (!EntityUtil.checkForLiquid((Entity)Jesus.mc.player,  true)) {
             return;
         }
-        if (EntityUtil.checkForLiquid((Entity)Jesus.mc.player, true)) {
+        if (EntityUtil.checkForLiquid((Entity)Jesus.mc.player,  true)) {
             Jesus.mc.player.motionY = 0.5;
         }
         this.grounded = true;
     }
     
     static {
-        Jesus.offset = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.9999, 1.0);
+        Jesus.offset = new AxisAlignedBB(0.0,  0.0,  0.0,  1.0,  0.9999,  1.0);
         Jesus.INSTANCE = new Jesus();
     }
     
     public enum Mode
     {
-        TRAMPOLINE, 
-        BOUNCE, 
-        VANILLA, 
+        TRAMPOLINE,  
+        BOUNCE,  
+        VANILLA,  
         NORMAL;
     }
     
     public enum EventMode
     {
-        PRE, 
-        POST, 
+        PRE,  
+        POST,  
         ALL;
     }
 }

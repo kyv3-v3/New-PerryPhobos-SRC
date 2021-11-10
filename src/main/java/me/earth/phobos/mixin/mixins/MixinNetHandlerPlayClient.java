@@ -20,8 +20,8 @@ import org.spongepowered.asm.mixin.injection.*;
 @Mixin({ NetHandlerPlayClient.class })
 public class MixinNetHandlerPlayClient
 {
-    @Inject(method = { "handleEntityMetadata" }, at = { @At("RETURN") }, cancellable = true)
-    private void handleEntityMetadataHook(final SPacketEntityMetadata packetIn, final CallbackInfo info) {
+    @Inject(method = { "handleEntityMetadata" },  at = { @At("RETURN") },  cancellable = true)
+    private void handleEntityMetadataHook(final SPacketEntityMetadata packetIn,  final CallbackInfo info) {
         final Entity entity;
         final EntityPlayer player;
         if (Util.mc.world != null && (entity = Util.mc.world.getEntityByID(packetIn.getEntityId())) instanceof EntityPlayer && (player = (EntityPlayer)entity).getHealth() <= 0.0f) {

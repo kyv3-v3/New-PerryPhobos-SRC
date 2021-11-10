@@ -19,7 +19,7 @@ public class CheckMethodAdapter extends MethodVisitor
     private boolean endCode;
     private boolean endMethod;
     private int insnCount;
-    private final Map<Label, Integer> labels;
+    private final Map<Label,  Integer> labels;
     private Set<Label> usedLabels;
     private int expandedFrames;
     private int compressedFrames;
@@ -29,82 +29,82 @@ public class CheckMethodAdapter extends MethodVisitor
     private static Field labelStatusField;
     
     public CheckMethodAdapter(final MethodVisitor mv) {
-        this(mv, new HashMap<Label, Integer>());
+        this(mv,  new HashMap<Label,  Integer>());
     }
     
-    public CheckMethodAdapter(final MethodVisitor mv, final Map<Label, Integer> labels) {
-        this(327680, mv, labels);
+    public CheckMethodAdapter(final MethodVisitor mv,  final Map<Label,  Integer> labels) {
+        this(327680,  mv,  labels);
         if (this.getClass() != CheckMethodAdapter.class) {
             throw new IllegalStateException();
         }
     }
     
-    protected CheckMethodAdapter(final int api, final MethodVisitor mv, final Map<Label, Integer> labels) {
-        super(api, mv);
+    protected CheckMethodAdapter(final int api,  final MethodVisitor mv,  final Map<Label,  Integer> labels) {
+        super(api,  mv);
         this.lastFrame = -1;
         this.labels = labels;
         this.usedLabels = new HashSet<Label>();
         this.handlers = new ArrayList<Label>();
     }
     
-    public CheckMethodAdapter(final int access, final String name, final String desc, final MethodVisitor cmv, final Map<Label, Integer> labels) {
-        this((MethodVisitor)new MethodNode(327680, access, name, desc, null, null) {
+    public CheckMethodAdapter(final int access,  final String name,  final String desc,  final MethodVisitor cmv,  final Map<Label,  Integer> labels) {
+        this((MethodVisitor)new MethodNode(327680,  access,  name,  desc,  null,  null) {
             public void visitEnd() {
                 final Analyzer<BasicValue> a = (Analyzer<BasicValue>)new Analyzer((Interpreter)new BasicVerifier());
                 try {
-                    a.analyze("dummy", (MethodNode)this);
+                    a.analyze("dummy",  (MethodNode)this);
                 }
                 catch (Exception e) {
                     if (e instanceof IndexOutOfBoundsException && this.maxLocals == 0 && this.maxStack == 0) {
-                        throw new RuntimeException("Data flow checking option requires valid, non zero maxLocals and maxStack values.");
+                        throw new RuntimeException("Data flow checking option requires valid,  non zero maxLocals and maxStack values.");
                     }
                     e.printStackTrace();
                     final StringWriter sw = new StringWriter();
-                    final PrintWriter pw = new PrintWriter(sw, true);
-                    CheckClassAdapter.printAnalyzerResult((MethodNode)this, (Analyzer)a, pw);
+                    final PrintWriter pw = new PrintWriter(sw,  true);
+                    CheckClassAdapter.printAnalyzerResult((MethodNode)this,  (Analyzer)a,  pw);
                     pw.close();
                     throw new RuntimeException(e.getMessage() + ' ' + sw.toString());
                 }
                 this.accept(cmv);
             }
-        }, labels);
+        },  labels);
         this.access = access;
     }
     
-    public void visitParameter(final String name, final int access) {
+    public void visitParameter(final String name,  final int access) {
         if (name != null) {
-            checkUnqualifiedName(this.version, name, "name");
+            checkUnqualifiedName(this.version,  name,  "name");
         }
-        CheckClassAdapter.checkAccess(access, 36880);
-        super.visitParameter(name, access);
+        CheckClassAdapter.checkAccess(access,  36880);
+        super.visitParameter(name,  access);
     }
     
-    public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
+    public AnnotationVisitor visitAnnotation(final String desc,  final boolean visible) {
         this.checkEndMethod();
-        checkDesc(desc, false);
-        return (AnnotationVisitor)new CheckAnnotationAdapter(super.visitAnnotation(desc, visible));
+        checkDesc(desc,  false);
+        return (AnnotationVisitor)new CheckAnnotationAdapter(super.visitAnnotation(desc,  visible));
     }
     
-    public AnnotationVisitor visitTypeAnnotation(final int typeRef, final TypePath typePath, final String desc, final boolean visible) {
+    public AnnotationVisitor visitTypeAnnotation(final int typeRef,  final TypePath typePath,  final String desc,  final boolean visible) {
         this.checkEndMethod();
         final int sort = typeRef >>> 24;
         if (sort != 1 && sort != 18 && sort != 20 && sort != 21 && sort != 22 && sort != 23) {
             throw new IllegalArgumentException("Invalid type reference sort 0x" + Integer.toHexString(sort));
         }
-        CheckClassAdapter.checkTypeRefAndPath(typeRef, typePath);
-        checkDesc(desc, false);
-        return (AnnotationVisitor)new CheckAnnotationAdapter(super.visitTypeAnnotation(typeRef, typePath, desc, visible));
+        CheckClassAdapter.checkTypeRefAndPath(typeRef,  typePath);
+        checkDesc(desc,  false);
+        return (AnnotationVisitor)new CheckAnnotationAdapter(super.visitTypeAnnotation(typeRef,  typePath,  desc,  visible));
     }
     
     public AnnotationVisitor visitAnnotationDefault() {
         this.checkEndMethod();
-        return (AnnotationVisitor)new CheckAnnotationAdapter(super.visitAnnotationDefault(), false);
+        return (AnnotationVisitor)new CheckAnnotationAdapter(super.visitAnnotationDefault(),  false);
     }
     
-    public AnnotationVisitor visitParameterAnnotation(final int parameter, final String desc, final boolean visible) {
+    public AnnotationVisitor visitParameterAnnotation(final int parameter,  final String desc,  final boolean visible) {
         this.checkEndMethod();
-        checkDesc(desc, false);
-        return (AnnotationVisitor)new CheckAnnotationAdapter(super.visitParameterAnnotation(parameter, desc, visible));
+        checkDesc(desc,  false);
+        return (AnnotationVisitor)new CheckAnnotationAdapter(super.visitParameterAnnotation(parameter,  desc,  visible));
     }
     
     public void visitAttribute(final Attribute attr) {
@@ -123,7 +123,7 @@ public class CheckMethodAdapter extends MethodVisitor
         super.visitCode();
     }
     
-    public void visitFrame(final int type, final int nLocal, final Object[] local, final int nStack, final Object[] stack) {
+    public void visitFrame(final int type,  final int nLocal,  final Object[] local,  final int nStack,  final Object[] stack) {
         if (this.insnCount == this.lastFrame) {
             throw new IllegalStateException("At most one frame can be visited at a given code location.");
         }
@@ -186,28 +186,28 @@ public class CheckMethodAdapter extends MethodVisitor
         if (this.expandedFrames > 0 && this.compressedFrames > 0) {
             throw new RuntimeException("Expanded and compressed frames must not be mixed.");
         }
-        super.visitFrame(type, nLocal, local, nStack, stack);
+        super.visitFrame(type,  nLocal,  local,  nStack,  stack);
     }
     
     public void visitInsn(final int opcode) {
         this.checkStartCode();
         this.checkEndCode();
-        checkOpcode(opcode, 0);
+        checkOpcode(opcode,  0);
         super.visitInsn(opcode);
         ++this.insnCount;
     }
     
-    public void visitIntInsn(final int opcode, final int operand) {
+    public void visitIntInsn(final int opcode,  final int operand) {
         this.checkStartCode();
         this.checkEndCode();
-        checkOpcode(opcode, 1);
+        checkOpcode(opcode,  1);
         switch (opcode) {
             case 16: {
-                checkSignedByte(operand, "Invalid operand");
+                checkSignedByte(operand,  "Invalid operand");
                 break;
             }
             case 17: {
-                checkSignedShort(operand, "Invalid operand");
+                checkSignedShort(operand,  "Invalid operand");
                 break;
             }
             default: {
@@ -217,67 +217,67 @@ public class CheckMethodAdapter extends MethodVisitor
                 break;
             }
         }
-        super.visitIntInsn(opcode, operand);
+        super.visitIntInsn(opcode,  operand);
         ++this.insnCount;
     }
     
-    public void visitVarInsn(final int opcode, final int var) {
+    public void visitVarInsn(final int opcode,  final int var) {
         this.checkStartCode();
         this.checkEndCode();
-        checkOpcode(opcode, 2);
-        checkUnsignedShort(var, "Invalid variable index");
-        super.visitVarInsn(opcode, var);
+        checkOpcode(opcode,  2);
+        checkUnsignedShort(var,  "Invalid variable index");
+        super.visitVarInsn(opcode,  var);
         ++this.insnCount;
     }
     
-    public void visitTypeInsn(final int opcode, final String type) {
+    public void visitTypeInsn(final int opcode,  final String type) {
         this.checkStartCode();
         this.checkEndCode();
-        checkOpcode(opcode, 3);
-        checkInternalName(type, "type");
+        checkOpcode(opcode,  3);
+        checkInternalName(type,  "type");
         if (opcode == 187 && type.charAt(0) == '[') {
             throw new IllegalArgumentException("NEW cannot be used to create arrays: " + type);
         }
-        super.visitTypeInsn(opcode, type);
+        super.visitTypeInsn(opcode,  type);
         ++this.insnCount;
     }
     
-    public void visitFieldInsn(final int opcode, final String owner, final String name, final String desc) {
+    public void visitFieldInsn(final int opcode,  final String owner,  final String name,  final String desc) {
         this.checkStartCode();
         this.checkEndCode();
-        checkOpcode(opcode, 4);
-        checkInternalName(owner, "owner");
-        checkUnqualifiedName(this.version, name, "name");
-        checkDesc(desc, false);
-        super.visitFieldInsn(opcode, owner, name, desc);
+        checkOpcode(opcode,  4);
+        checkInternalName(owner,  "owner");
+        checkUnqualifiedName(this.version,  name,  "name");
+        checkDesc(desc,  false);
+        super.visitFieldInsn(opcode,  owner,  name,  desc);
         ++this.insnCount;
     }
     
     @Deprecated
-    public void visitMethodInsn(final int opcode, final String owner, final String name, final String desc) {
+    public void visitMethodInsn(final int opcode,  final String owner,  final String name,  final String desc) {
         if (this.api >= 327680) {
-            super.visitMethodInsn(opcode, owner, name, desc);
+            super.visitMethodInsn(opcode,  owner,  name,  desc);
             return;
         }
-        this.doVisitMethodInsn(opcode, owner, name, desc, opcode == 185);
+        this.doVisitMethodInsn(opcode,  owner,  name,  desc,  opcode == 185);
     }
     
-    public void visitMethodInsn(final int opcode, final String owner, final String name, final String desc, final boolean itf) {
+    public void visitMethodInsn(final int opcode,  final String owner,  final String name,  final String desc,  final boolean itf) {
         if (this.api < 327680) {
-            super.visitMethodInsn(opcode, owner, name, desc, itf);
+            super.visitMethodInsn(opcode,  owner,  name,  desc,  itf);
             return;
         }
-        this.doVisitMethodInsn(opcode, owner, name, desc, itf);
+        this.doVisitMethodInsn(opcode,  owner,  name,  desc,  itf);
     }
     
-    private void doVisitMethodInsn(final int opcode, final String owner, final String name, final String desc, final boolean itf) {
+    private void doVisitMethodInsn(final int opcode,  final String owner,  final String name,  final String desc,  final boolean itf) {
         this.checkStartCode();
         this.checkEndCode();
-        checkOpcode(opcode, 5);
+        checkOpcode(opcode,  5);
         if (opcode != 183 || !"<init>".equals(name)) {
-            checkMethodIdentifier(this.version, name, "name");
+            checkMethodIdentifier(this.version,  name,  "name");
         }
-        checkInternalName(owner, "owner");
+        checkInternalName(owner,  "owner");
         checkMethodDesc(desc);
         if (opcode == 182 && itf) {
             throw new IllegalArgumentException("INVOKEVIRTUAL can't be used with interfaces");
@@ -289,15 +289,15 @@ public class CheckMethodAdapter extends MethodVisitor
             throw new IllegalArgumentException("INVOKESPECIAL can't be used with interfaces prior to Java 8");
         }
         if (this.mv != null) {
-            this.mv.visitMethodInsn(opcode, owner, name, desc, itf);
+            this.mv.visitMethodInsn(opcode,  owner,  name,  desc,  itf);
         }
         ++this.insnCount;
     }
     
-    public void visitInvokeDynamicInsn(final String name, final String desc, final Handle bsm, final Object... bsmArgs) {
+    public void visitInvokeDynamicInsn(final String name,  final String desc,  final Handle bsm,  final Object... bsmArgs) {
         this.checkStartCode();
         this.checkEndCode();
-        checkMethodIdentifier(this.version, name, "name");
+        checkMethodIdentifier(this.version,  name,  "name");
         checkMethodDesc(desc);
         if (bsm.getTag() != 6 && bsm.getTag() != 8) {
             throw new IllegalArgumentException("invalid handle tag " + bsm.getTag());
@@ -305,17 +305,17 @@ public class CheckMethodAdapter extends MethodVisitor
         for (int i = 0; i < bsmArgs.length; ++i) {
             this.checkLDCConstant(bsmArgs[i]);
         }
-        super.visitInvokeDynamicInsn(name, desc, bsm, bsmArgs);
+        super.visitInvokeDynamicInsn(name,  desc,  bsm,  bsmArgs);
         ++this.insnCount;
     }
     
-    public void visitJumpInsn(final int opcode, final Label label) {
+    public void visitJumpInsn(final int opcode,  final Label label) {
         this.checkStartCode();
         this.checkEndCode();
-        checkOpcode(opcode, 6);
-        this.checkLabel(label, false, "label");
+        checkOpcode(opcode,  6);
+        this.checkLabel(label,  false,  "label");
         checkNonDebugLabel(label);
-        super.visitJumpInsn(opcode, label);
+        super.visitJumpInsn(opcode,  label);
         this.usedLabels.add(label);
         ++this.insnCount;
     }
@@ -323,11 +323,11 @@ public class CheckMethodAdapter extends MethodVisitor
     public void visitLabel(final Label label) {
         this.checkStartCode();
         this.checkEndCode();
-        this.checkLabel(label, false, "label");
+        this.checkLabel(label,  false,  "label");
         if (this.labels.get(label) != null) {
             throw new IllegalArgumentException("Already visited label");
         }
-        this.labels.put(label, this.insnCount);
+        this.labels.put(label,  this.insnCount);
         super.visitLabel(label);
     }
     
@@ -339,50 +339,50 @@ public class CheckMethodAdapter extends MethodVisitor
         ++this.insnCount;
     }
     
-    public void visitIincInsn(final int var, final int increment) {
+    public void visitIincInsn(final int var,  final int increment) {
         this.checkStartCode();
         this.checkEndCode();
-        checkUnsignedShort(var, "Invalid variable index");
-        checkSignedShort(increment, "Invalid increment");
-        super.visitIincInsn(var, increment);
+        checkUnsignedShort(var,  "Invalid variable index");
+        checkSignedShort(increment,  "Invalid increment");
+        super.visitIincInsn(var,  increment);
         ++this.insnCount;
     }
     
-    public void visitTableSwitchInsn(final int min, final int max, final Label dflt, final Label... labels) {
+    public void visitTableSwitchInsn(final int min,  final int max,  final Label dflt,  final Label... labels) {
         this.checkStartCode();
         this.checkEndCode();
         if (max < min) {
             throw new IllegalArgumentException("Max = " + max + " must be greater than or equal to min = " + min);
         }
-        this.checkLabel(dflt, false, "default label");
+        this.checkLabel(dflt,  false,  "default label");
         checkNonDebugLabel(dflt);
         if (labels == null || labels.length != max - min + 1) {
             throw new IllegalArgumentException("There must be max - min + 1 labels");
         }
         for (int i = 0; i < labels.length; ++i) {
-            this.checkLabel(labels[i], false, "label at index " + i);
+            this.checkLabel(labels[i],  false,  "label at index " + i);
             checkNonDebugLabel(labels[i]);
         }
-        super.visitTableSwitchInsn(min, max, dflt, labels);
+        super.visitTableSwitchInsn(min,  max,  dflt,  labels);
         for (int i = 0; i < labels.length; ++i) {
             this.usedLabels.add(labels[i]);
         }
         ++this.insnCount;
     }
     
-    public void visitLookupSwitchInsn(final Label dflt, final int[] keys, final Label[] labels) {
+    public void visitLookupSwitchInsn(final Label dflt,  final int[] keys,  final Label[] labels) {
         this.checkEndCode();
         this.checkStartCode();
-        this.checkLabel(dflt, false, "default label");
+        this.checkLabel(dflt,  false,  "default label");
         checkNonDebugLabel(dflt);
         if (keys == null || labels == null || keys.length != labels.length) {
             throw new IllegalArgumentException("There must be the same number of keys and labels");
         }
         for (int i = 0; i < labels.length; ++i) {
-            this.checkLabel(labels[i], false, "label at index " + i);
+            this.checkLabel(labels[i],  false,  "label at index " + i);
             checkNonDebugLabel(labels[i]);
         }
-        super.visitLookupSwitchInsn(dflt, keys, labels);
+        super.visitLookupSwitchInsn(dflt,  keys,  labels);
         this.usedLabels.add(dflt);
         for (int i = 0; i < labels.length; ++i) {
             this.usedLabels.add(labels[i]);
@@ -390,10 +390,10 @@ public class CheckMethodAdapter extends MethodVisitor
         ++this.insnCount;
     }
     
-    public void visitMultiANewArrayInsn(final String desc, final int dims) {
+    public void visitMultiANewArrayInsn(final String desc,  final int dims) {
         this.checkStartCode();
         this.checkEndCode();
-        checkDesc(desc, false);
+        checkDesc(desc,  false);
         if (desc.charAt(0) != '[') {
             throw new IllegalArgumentException("Invalid descriptor (must be an array type descriptor): " + desc);
         }
@@ -403,28 +403,28 @@ public class CheckMethodAdapter extends MethodVisitor
         if (dims > desc.lastIndexOf(91) + 1) {
             throw new IllegalArgumentException("Invalid dimensions (must not be greater than dims(desc)): " + dims);
         }
-        super.visitMultiANewArrayInsn(desc, dims);
+        super.visitMultiANewArrayInsn(desc,  dims);
         ++this.insnCount;
     }
     
-    public AnnotationVisitor visitInsnAnnotation(final int typeRef, final TypePath typePath, final String desc, final boolean visible) {
+    public AnnotationVisitor visitInsnAnnotation(final int typeRef,  final TypePath typePath,  final String desc,  final boolean visible) {
         this.checkStartCode();
         this.checkEndCode();
         final int sort = typeRef >>> 24;
         if (sort != 67 && sort != 68 && sort != 69 && sort != 70 && sort != 71 && sort != 72 && sort != 73 && sort != 74 && sort != 75) {
             throw new IllegalArgumentException("Invalid type reference sort 0x" + Integer.toHexString(sort));
         }
-        CheckClassAdapter.checkTypeRefAndPath(typeRef, typePath);
-        checkDesc(desc, false);
-        return (AnnotationVisitor)new CheckAnnotationAdapter(super.visitInsnAnnotation(typeRef, typePath, desc, visible));
+        CheckClassAdapter.checkTypeRefAndPath(typeRef,  typePath);
+        checkDesc(desc,  false);
+        return (AnnotationVisitor)new CheckAnnotationAdapter(super.visitInsnAnnotation(typeRef,  typePath,  desc,  visible));
     }
     
-    public void visitTryCatchBlock(final Label start, final Label end, final Label handler, final String type) {
+    public void visitTryCatchBlock(final Label start,  final Label end,  final Label handler,  final String type) {
         this.checkStartCode();
         this.checkEndCode();
-        this.checkLabel(start, false, "start label");
-        this.checkLabel(end, false, "end label");
-        this.checkLabel(handler, false, "handler label");
+        this.checkLabel(start,  false,  "start label");
+        this.checkLabel(end,  false,  "end label");
+        this.checkLabel(handler,  false,  "handler label");
         checkNonDebugLabel(start);
         checkNonDebugLabel(end);
         checkNonDebugLabel(handler);
@@ -432,75 +432,75 @@ public class CheckMethodAdapter extends MethodVisitor
             throw new IllegalStateException("Try catch blocks must be visited before their labels");
         }
         if (type != null) {
-            checkInternalName(type, "type");
+            checkInternalName(type,  "type");
         }
-        super.visitTryCatchBlock(start, end, handler, type);
+        super.visitTryCatchBlock(start,  end,  handler,  type);
         this.handlers.add(start);
         this.handlers.add(end);
     }
     
-    public AnnotationVisitor visitTryCatchAnnotation(final int typeRef, final TypePath typePath, final String desc, final boolean visible) {
+    public AnnotationVisitor visitTryCatchAnnotation(final int typeRef,  final TypePath typePath,  final String desc,  final boolean visible) {
         this.checkStartCode();
         this.checkEndCode();
         final int sort = typeRef >>> 24;
         if (sort != 66) {
             throw new IllegalArgumentException("Invalid type reference sort 0x" + Integer.toHexString(sort));
         }
-        CheckClassAdapter.checkTypeRefAndPath(typeRef, typePath);
-        checkDesc(desc, false);
-        return (AnnotationVisitor)new CheckAnnotationAdapter(super.visitTryCatchAnnotation(typeRef, typePath, desc, visible));
+        CheckClassAdapter.checkTypeRefAndPath(typeRef,  typePath);
+        checkDesc(desc,  false);
+        return (AnnotationVisitor)new CheckAnnotationAdapter(super.visitTryCatchAnnotation(typeRef,  typePath,  desc,  visible));
     }
     
-    public void visitLocalVariable(final String name, final String desc, final String signature, final Label start, final Label end, final int index) {
+    public void visitLocalVariable(final String name,  final String desc,  final String signature,  final Label start,  final Label end,  final int index) {
         this.checkStartCode();
         this.checkEndCode();
-        checkUnqualifiedName(this.version, name, "name");
-        checkDesc(desc, false);
-        this.checkLabel(start, true, "start label");
-        this.checkLabel(end, true, "end label");
-        checkUnsignedShort(index, "Invalid variable index");
+        checkUnqualifiedName(this.version,  name,  "name");
+        checkDesc(desc,  false);
+        this.checkLabel(start,  true,  "start label");
+        this.checkLabel(end,  true,  "end label");
+        checkUnsignedShort(index,  "Invalid variable index");
         final int s = this.labels.get(start);
         final int e = this.labels.get(end);
         if (e < s) {
             throw new IllegalArgumentException("Invalid start and end labels (end must be greater than start)");
         }
-        super.visitLocalVariable(name, desc, signature, start, end, index);
+        super.visitLocalVariable(name,  desc,  signature,  start,  end,  index);
     }
     
-    public AnnotationVisitor visitLocalVariableAnnotation(final int typeRef, final TypePath typePath, final Label[] start, final Label[] end, final int[] index, final String desc, final boolean visible) {
+    public AnnotationVisitor visitLocalVariableAnnotation(final int typeRef,  final TypePath typePath,  final Label[] start,  final Label[] end,  final int[] index,  final String desc,  final boolean visible) {
         this.checkStartCode();
         this.checkEndCode();
         final int sort = typeRef >>> 24;
         if (sort != 64 && sort != 65) {
             throw new IllegalArgumentException("Invalid type reference sort 0x" + Integer.toHexString(sort));
         }
-        CheckClassAdapter.checkTypeRefAndPath(typeRef, typePath);
-        checkDesc(desc, false);
+        CheckClassAdapter.checkTypeRefAndPath(typeRef,  typePath);
+        checkDesc(desc,  false);
         if (start == null || end == null || index == null || end.length != start.length || index.length != start.length) {
-            throw new IllegalArgumentException("Invalid start, end and index arrays (must be non null and of identical length");
+            throw new IllegalArgumentException("Invalid start,  end and index arrays (must be non null and of identical length");
         }
         for (int i = 0; i < start.length; ++i) {
-            this.checkLabel(start[i], true, "start label");
-            this.checkLabel(end[i], true, "end label");
-            checkUnsignedShort(index[i], "Invalid variable index");
+            this.checkLabel(start[i],  true,  "start label");
+            this.checkLabel(end[i],  true,  "end label");
+            checkUnsignedShort(index[i],  "Invalid variable index");
             final int s = this.labels.get(start[i]);
             final int e = this.labels.get(end[i]);
             if (e < s) {
                 throw new IllegalArgumentException("Invalid start and end labels (end must be greater than start)");
             }
         }
-        return super.visitLocalVariableAnnotation(typeRef, typePath, start, end, index, desc, visible);
+        return super.visitLocalVariableAnnotation(typeRef,  typePath,  start,  end,  index,  desc,  visible);
     }
     
-    public void visitLineNumber(final int line, final Label start) {
+    public void visitLineNumber(final int line,  final Label start) {
         this.checkStartCode();
         this.checkEndCode();
-        checkUnsignedShort(line, "Invalid line number");
-        this.checkLabel(start, true, "start label");
-        super.visitLineNumber(line, start);
+        checkUnsignedShort(line,  "Invalid line number");
+        this.checkLabel(start,  true,  "start label");
+        super.visitLineNumber(line,  start);
     }
     
-    public void visitMaxs(final int maxStack, final int maxLocals) {
+    public void visitMaxs(final int maxStack,  final int maxLocals) {
         this.checkStartCode();
         this.checkEndCode();
         this.endCode = true;
@@ -520,9 +520,9 @@ public class CheckMethodAdapter extends MethodVisitor
                 throw new IllegalStateException("Emty try catch block handler range");
             }
         }
-        checkUnsignedShort(maxStack, "Invalid max stack");
-        checkUnsignedShort(maxLocals, "Invalid max locals");
-        super.visitMaxs(maxStack, maxLocals);
+        checkUnsignedShort(maxStack,  "Invalid max stack");
+        checkUnsignedShort(maxLocals,  "Invalid max locals");
+        super.visitMaxs(maxStack,  maxLocals);
     }
     
     public void visitEnd() {
@@ -554,7 +554,7 @@ public class CheckMethodAdapter extends MethodVisitor
             return;
         }
         if (value instanceof String) {
-            checkInternalName((String)value, "Invalid stack frame value");
+            checkInternalName((String)value,  "Invalid stack frame value");
             return;
         }
         if (!(value instanceof Label)) {
@@ -563,25 +563,25 @@ public class CheckMethodAdapter extends MethodVisitor
         this.usedLabels.add((Label)value);
     }
     
-    static void checkOpcode(final int opcode, final int type) {
+    static void checkOpcode(final int opcode,  final int type) {
         if (opcode < 0 || opcode > 199 || CheckMethodAdapter.TYPE[opcode] != type) {
             throw new IllegalArgumentException("Invalid opcode: " + opcode);
         }
     }
     
-    static void checkSignedByte(final int value, final String msg) {
+    static void checkSignedByte(final int value,  final String msg) {
         if (value < -128 || value > 127) {
             throw new IllegalArgumentException(msg + " (must be a signed byte): " + value);
         }
     }
     
-    static void checkSignedShort(final int value, final String msg) {
+    static void checkSignedShort(final int value,  final String msg) {
         if (value < -32768 || value > 32767) {
             throw new IllegalArgumentException(msg + " (must be a signed short): " + value);
         }
     }
     
-    static void checkUnsignedShort(final int value, final String msg) {
+    static void checkUnsignedShort(final int value,  final String msg) {
         if (value < 0 || value > 65535) {
             throw new IllegalArgumentException(msg + " (must be an unsigned short): " + value);
         }
@@ -620,9 +620,9 @@ public class CheckMethodAdapter extends MethodVisitor
         }
     }
     
-    static void checkUnqualifiedName(final int version, final String name, final String msg) {
+    static void checkUnqualifiedName(final int version,  final String name,  final String msg) {
         if ((version & 0xFFFF) < 49) {
-            checkIdentifier(name, msg);
+            checkIdentifier(name,  msg);
         }
         else {
             for (int i = 0; i < name.length(); ++i) {
@@ -633,11 +633,11 @@ public class CheckMethodAdapter extends MethodVisitor
         }
     }
     
-    static void checkIdentifier(final String name, final String msg) {
-        checkIdentifier(name, 0, -1, msg);
+    static void checkIdentifier(final String name,  final String msg) {
+        checkIdentifier(name,  0,  -1,  msg);
     }
     
-    static void checkIdentifier(final String name, final int start, final int end, final String msg) {
+    static void checkIdentifier(final String name,  final int start,  final int end,  final String msg) {
         if (name != null) {
             if (end == -1) {
                 if (name.length() <= start) {
@@ -650,7 +650,7 @@ public class CheckMethodAdapter extends MethodVisitor
             if (!Character.isJavaIdentifierStart(name.charAt(start))) {
                 throw new IllegalArgumentException("Invalid " + msg + " (must be a valid Java identifier): " + name);
             }
-            for (int max = (end == -1) ? name.length() : end, i = start + 1; i < max; ++i) {
+            for (int max = (end == -1) ? name.length() : end,  i = start + 1; i < max; ++i) {
                 if (!Character.isJavaIdentifierPart(name.charAt(i))) {
                     throw new IllegalArgumentException("Invalid " + msg + " (must be a valid Java identifier): " + name);
                 }
@@ -660,7 +660,7 @@ public class CheckMethodAdapter extends MethodVisitor
         throw new IllegalArgumentException("Invalid " + msg + " (must not be null or empty)");
     }
     
-    static void checkMethodIdentifier(final int version, final String name, final String msg) {
+    static void checkMethodIdentifier(final int version,  final String name,  final String msg) {
         if (name == null || name.length() == 0) {
             throw new IllegalArgumentException("Invalid " + msg + " (must not be null or empty)");
         }
@@ -673,7 +673,7 @@ public class CheckMethodAdapter extends MethodVisitor
             return;
         }
         if (!Character.isJavaIdentifierStart(name.charAt(0))) {
-            throw new IllegalArgumentException("Invalid " + msg + " (must be a '<init>', '<clinit>' or a valid Java identifier): " + name);
+            throw new IllegalArgumentException("Invalid " + msg + " (must be a '<init>',  '<clinit>' or a valid Java identifier): " + name);
         }
         for (int i = 1; i < name.length(); ++i) {
             if (!Character.isJavaIdentifierPart(name.charAt(i))) {
@@ -682,29 +682,29 @@ public class CheckMethodAdapter extends MethodVisitor
         }
     }
     
-    static void checkInternalName(final String name, final String msg) {
+    static void checkInternalName(final String name,  final String msg) {
         if (name == null || name.length() == 0) {
             throw new IllegalArgumentException("Invalid " + msg + " (must not be null or empty)");
         }
         if (name.charAt(0) == '[') {
-            checkDesc(name, false);
+            checkDesc(name,  false);
         }
         else {
-            checkInternalName(name, 0, -1, msg);
+            checkInternalName(name,  0,  -1,  msg);
         }
     }
     
-    static void checkInternalName(final String name, final int start, final int end, final String msg) {
+    static void checkInternalName(final String name,  final int start,  final int end,  final String msg) {
         final int max = (end == -1) ? name.length() : end;
         try {
             int begin = start;
             int slash;
             do {
-                slash = name.indexOf(47, begin + 1);
+                slash = name.indexOf(47,  begin + 1);
                 if (slash == -1 || slash > max) {
                     slash = max;
                 }
-                checkIdentifier(name, begin, slash, null);
+                checkIdentifier(name,  begin,  slash,  null);
                 begin = slash + 1;
             } while (slash != max);
         }
@@ -713,14 +713,14 @@ public class CheckMethodAdapter extends MethodVisitor
         }
     }
     
-    static void checkDesc(final String desc, final boolean canBeVoid) {
-        final int end = checkDesc(desc, 0, canBeVoid);
+    static void checkDesc(final String desc,  final boolean canBeVoid) {
+        final int end = checkDesc(desc,  0,  canBeVoid);
         if (end != desc.length()) {
             throw new IllegalArgumentException("Invalid descriptor: " + desc);
         }
     }
     
-    static int checkDesc(final String desc, final int start, final boolean canBeVoid) {
+    static int checkDesc(final String desc,  final int start,  final boolean canBeVoid) {
         if (desc == null || start >= desc.length()) {
             throw new IllegalArgumentException("Invalid type descriptor (must not be null or empty)");
         }
@@ -745,17 +745,17 @@ public class CheckMethodAdapter extends MethodVisitor
                 int index;
                 for (index = start + 1; index < desc.length() && desc.charAt(index) == '['; ++index) {}
                 if (index < desc.length()) {
-                    return checkDesc(desc, index, false);
+                    return checkDesc(desc,  index,  false);
                 }
                 throw new IllegalArgumentException("Invalid descriptor: " + desc);
             }
             case 'L': {
-                final int index = desc.indexOf(59, start);
+                final int index = desc.indexOf(59,  start);
                 if (index == -1 || index - start < 2) {
                     throw new IllegalArgumentException("Invalid descriptor: " + desc);
                 }
                 try {
-                    checkInternalName(desc, start + 1, index, null);
+                    checkInternalName(desc,  start + 1,  index,  null);
                 }
                 catch (IllegalArgumentException unused) {
                     throw new IllegalArgumentException("Invalid descriptor: " + desc);
@@ -779,7 +779,7 @@ public class CheckMethodAdapter extends MethodVisitor
         Label_0143: {
             if (desc.charAt(start) != ')') {
                 while (desc.charAt(start) != 'V') {
-                    start = checkDesc(desc, start, false);
+                    start = checkDesc(desc,  start,  false);
                     if (start >= desc.length() || desc.charAt(start) == ')') {
                         break Label_0143;
                     }
@@ -787,13 +787,13 @@ public class CheckMethodAdapter extends MethodVisitor
                 throw new IllegalArgumentException("Invalid descriptor: " + desc);
             }
         }
-        start = checkDesc(desc, start + 1, true);
+        start = checkDesc(desc,  start + 1,  true);
         if (start != desc.length()) {
             throw new IllegalArgumentException("Invalid descriptor: " + desc);
         }
     }
     
-    void checkLabel(final Label label, final boolean checkVisited, final String msg) {
+    void checkLabel(final Label label,  final boolean checkVisited,  final String msg) {
         if (label == null) {
             throw new IllegalArgumentException("Invalid " + msg + " (must not be null)");
         }

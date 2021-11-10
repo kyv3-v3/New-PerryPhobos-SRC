@@ -7,7 +7,7 @@ package org.json.simple;
 import java.util.*;
 import java.io.*;
 
-public class JSONObject extends HashMap implements Map, JSONAware, JSONStreamAware
+public class JSONObject extends HashMap implements Map,  JSONAware,  JSONStreamAware
 {
     private static final long serialVersionUID = -503443796854799292L;
     
@@ -18,7 +18,7 @@ public class JSONObject extends HashMap implements Map, JSONAware, JSONStreamAwa
         super(map);
     }
     
-    public static void writeJSONString(final Map map, final Writer out) throws IOException {
+    public static void writeJSONString(final Map map,  final Writer out) throws IOException {
         if (map == null) {
             out.write("null");
             return;
@@ -38,13 +38,13 @@ public class JSONObject extends HashMap implements Map, JSONAware, JSONStreamAwa
             out.write(escape(String.valueOf(entry.getKey())));
             out.write(34);
             out.write(58);
-            JSONValue.writeJSONString(entry.getValue(), out);
+            JSONValue.writeJSONString(entry.getValue(),  out);
         }
         out.write(125);
     }
     
     public void writeJSONString(final Writer out) throws IOException {
-        writeJSONString(this, out);
+        writeJSONString(this,  out);
     }
     
     public static String toJSONString(final Map map) {
@@ -60,10 +60,10 @@ public class JSONObject extends HashMap implements Map, JSONAware, JSONStreamAwa
                 first = false;
             }
             else {
-                sb.append(',');
+                sb.append(', ');
             }
             final Entry entry = iter.next();
-            toJSONString(String.valueOf(entry.getKey()), entry.getValue(), sb);
+            toJSONString(String.valueOf(entry.getKey()),  entry.getValue(),  sb);
         }
         sb.append('}');
         return sb.toString();
@@ -73,13 +73,13 @@ public class JSONObject extends HashMap implements Map, JSONAware, JSONStreamAwa
         return toJSONString(this);
     }
     
-    private static String toJSONString(final String key, final Object value, final StringBuffer sb) {
+    private static String toJSONString(final String key,  final Object value,  final StringBuffer sb) {
         sb.append('\"');
         if (key == null) {
             sb.append("null");
         }
         else {
-            JSONValue.escape(key, sb);
+            JSONValue.escape(key,  sb);
         }
         sb.append('\"').append(':');
         sb.append(JSONValue.toJSONString(value));
@@ -90,9 +90,9 @@ public class JSONObject extends HashMap implements Map, JSONAware, JSONStreamAwa
         return this.toJSONString();
     }
     
-    public static String toString(final String key, final Object value) {
+    public static String toString(final String key,  final Object value) {
         final StringBuffer sb = new StringBuffer();
-        toJSONString(key, value, sb);
+        toJSONString(key,  value,  sb);
         return sb.toString();
     }
     

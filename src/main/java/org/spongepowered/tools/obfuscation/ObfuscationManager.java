@@ -22,8 +22,8 @@ public class ObfuscationManager implements IObfuscationManager
         this.environments = new ArrayList<ObfuscationEnvironment>();
         this.consumers = new ArrayList<IMappingConsumer>();
         this.ap = ap;
-        this.obfs = (IObfuscationDataProvider)new ObfuscationDataProvider(ap, (List)this.environments);
-        this.refs = (IReferenceManager)new ReferenceManager(ap, this.environments);
+        this.obfs = (IObfuscationDataProvider)new ObfuscationDataProvider(ap,  (List)this.environments);
+        this.refs = (IReferenceManager)new ReferenceManager(ap,  this.environments);
     }
     
     public void init() {

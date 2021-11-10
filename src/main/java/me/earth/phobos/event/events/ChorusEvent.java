@@ -12,7 +12,7 @@ public class ChorusEvent extends EventStage
     private final double chorusY;
     private final double chorusZ;
     
-    public ChorusEvent(final double x, final double y, final double z) {
+    public ChorusEvent(final double x,  final double y,  final double z) {
         this.chorusX = x;
         this.chorusY = y;
         this.chorusZ = z;

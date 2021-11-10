@@ -36,17 +36,17 @@ public class Nuker extends Module
     private Block selected;
     
     public Nuker() {
-        super("Nuker", "Mines many blocks.", Category.MISC, true, false, false);
+        super("Nuker",  "Mines many blocks.",  Category.MISC,  true,  false,  false);
         this.timer = new TimerUtil();
-        this.autoSwitch = (Setting<Boolean>)this.register(new Setting("AutoSwitch", (T)false));
-        this.rotate = (Setting<Boolean>)this.register(new Setting("Rotate", (T)false));
-        this.distance = (Setting<Float>)this.register(new Setting("Range", (T)6.0f, (T)0.1f, (T)10.0f));
-        this.blockPerTick = (Setting<Integer>)this.register(new Setting("Blocks/Attack", (T)50, (T)1, (T)100));
-        this.delay = (Setting<Integer>)this.register(new Setting("Delay/Attack", (T)50, (T)1, (T)1000));
-        this.nuke = (Setting<Boolean>)this.register(new Setting("Nuke", (T)false));
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", (T)Mode.NUKE, v -> this.nuke.getValue()));
-        this.antiRegear = (Setting<Boolean>)this.register(new Setting("AntiRegear", (T)false));
-        this.hopperNuker = (Setting<Boolean>)this.register(new Setting("HopperAura", (T)false));
+        this.autoSwitch = (Setting<Boolean>)this.register(new Setting("AutoSwitch", false));
+        this.rotate = (Setting<Boolean>)this.register(new Setting("Rotate", false));
+        this.distance = (Setting<Float>)this.register(new Setting("Range", 6.0f, 0.1f, 10.0f));
+        this.blockPerTick = (Setting<Integer>)this.register(new Setting("Blocks/Attack", 50, 1, 100));
+        this.delay = (Setting<Integer>)this.register(new Setting("Delay/Attack", 50, 1, 1000));
+        this.nuke = (Setting<Boolean>)this.register(new Setting("Nuke", false));
+        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.NUKE,  v -> this.nuke.getValue()));
+        this.antiRegear = (Setting<Boolean>)this.register(new Setting("AntiRegear", false));
+        this.hopperNuker = (Setting<Boolean>)this.register(new Setting("HopperAura", false));
         this.oldSlot = -1;
     }
     
@@ -83,11 +83,11 @@ public class Nuker extends Module
                 if (pos != null) {
                     if (this.mode.getValue() == Mode.SELECTION || this.mode.getValue() == Mode.ALL) {
                         if (this.rotate.getValue()) {
-                            final float[] angle = MathUtil.calcAngle(Nuker.mc.player.getPositionEyes(Nuker.mc.getRenderPartialTicks()), new Vec3d((double)(pos.getX() + 0.5f), (double)(pos.getY() + 0.5f), (double)(pos.getZ() + 0.5f)));
-                            Phobos.rotationManager.setPlayerRotations(angle[0], angle[1]);
+                            final float[] angle = MathUtil.calcAngle(Nuker.mc.player.getPositionEyes(Nuker.mc.getRenderPartialTicks()),  new Vec3d((double)(pos.getX() + 0.5f),  (double)(pos.getY() + 0.5f),  (double)(pos.getZ() + 0.5f)));
+                            Phobos.rotationManager.setPlayerRotations(angle[0],  angle[1]);
                         }
                         if (this.canBreak(pos)) {
-                            Nuker.mc.playerController.onPlayerDamageBlock(pos, Nuker.mc.player.getHorizontalFacing());
+                            Nuker.mc.playerController.onPlayerDamageBlock(pos,  Nuker.mc.player.getHorizontalFacing());
                             Nuker.mc.player.swingArm(EnumHand.MAIN_HAND);
                         }
                     }
@@ -96,11 +96,11 @@ public class Nuker extends Module
                             pos = this.getClosestBlockSelection();
                             if (pos != null) {
                                 if (this.rotate.getValue()) {
-                                    final float[] angle2 = MathUtil.calcAngle(Nuker.mc.player.getPositionEyes(Nuker.mc.getRenderPartialTicks()), new Vec3d((double)(pos.getX() + 0.5f), (double)(pos.getY() + 0.5f), (double)(pos.getZ() + 0.5f)));
-                                    Phobos.rotationManager.setPlayerRotations(angle2[0], angle2[1]);
+                                    final float[] angle2 = MathUtil.calcAngle(Nuker.mc.player.getPositionEyes(Nuker.mc.getRenderPartialTicks()),  new Vec3d((double)(pos.getX() + 0.5f),  (double)(pos.getY() + 0.5f),  (double)(pos.getZ() + 0.5f)));
+                                    Phobos.rotationManager.setPlayerRotations(angle2[0],  angle2[1]);
                                 }
                                 if (this.timer.passedMs(this.delay.getValue())) {
-                                    Nuker.mc.playerController.onPlayerDamageBlock(pos, Nuker.mc.player.getHorizontalFacing());
+                                    Nuker.mc.playerController.onPlayerDamageBlock(pos,  Nuker.mc.player.getHorizontalFacing());
                                     Nuker.mc.player.swingArm(EnumHand.MAIN_HAND);
                                     this.timer.reset();
                                 }
@@ -128,8 +128,8 @@ public class Nuker extends Module
                 this.isMining = true;
             }
             if (this.rotate.getValue()) {
-                final float[] angle = MathUtil.calcAngle(Nuker.mc.player.getPositionEyes(Nuker.mc.getRenderPartialTicks()), new Vec3d((double)(pos.getX() + 0.5f), (double)(pos.getY() + 0.5f), (double)(pos.getZ() + 0.5f)));
-                Phobos.rotationManager.setPlayerRotations(angle[0], angle[1]);
+                final float[] angle = MathUtil.calcAngle(Nuker.mc.player.getPositionEyes(Nuker.mc.getRenderPartialTicks()),  new Vec3d((double)(pos.getX() + 0.5f),  (double)(pos.getY() + 0.5f),  (double)(pos.getZ() + 0.5f)));
+                Phobos.rotationManager.setPlayerRotations(angle[0],  angle[1]);
             }
             if (this.canBreak(pos)) {
                 if (this.autoSwitch.getValue()) {
@@ -145,7 +145,7 @@ public class Nuker extends Module
                         Nuker.mc.player.inventory.currentItem = newSlot;
                     }
                 }
-                Nuker.mc.playerController.onPlayerDamageBlock(pos, Nuker.mc.player.getHorizontalFacing());
+                Nuker.mc.playerController.onPlayerDamageBlock(pos,  Nuker.mc.player.getHorizontalFacing());
                 Nuker.mc.player.swingArm(EnumHand.MAIN_HAND);
             }
         }
@@ -159,7 +159,7 @@ public class Nuker extends Module
     private boolean canBreak(final BlockPos pos) {
         final IBlockState blockState = Nuker.mc.world.getBlockState(pos);
         final Block block = blockState.getBlock();
-        return block.getBlockHardness(blockState, (World)Nuker.mc.world, pos) != -1.0f;
+        return block.getBlockHardness(blockState,  (World)Nuker.mc.world,  pos) != -1.0f;
     }
     
     private BlockPos getNearestBlock(final List<Block> blocks) {
@@ -168,8 +168,8 @@ public class Nuker extends Module
         for (double x = maxDist; x >= -maxDist; --x) {
             for (double y = maxDist; y >= -maxDist; --y) {
                 for (double z = maxDist; z >= -maxDist; --z) {
-                    final BlockPos pos = new BlockPos(Nuker.mc.player.posX + x, Nuker.mc.player.posY + y, Nuker.mc.player.posZ + z);
-                    final double dist = Nuker.mc.player.getDistanceSq((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
+                    final BlockPos pos = new BlockPos(Nuker.mc.player.posX + x,  Nuker.mc.player.posY + y,  Nuker.mc.player.posZ + z);
+                    final double dist = Nuker.mc.player.getDistanceSq((double)pos.getX(),  (double)pos.getY(),  (double)pos.getZ());
                     if (dist <= maxDist && blocks.contains(Nuker.mc.world.getBlockState(pos).getBlock())) {
                         if (this.canBreak(pos)) {
                             maxDist = dist;
@@ -188,8 +188,8 @@ public class Nuker extends Module
         for (float x = maxDist; x >= -maxDist; --x) {
             for (float y = maxDist; y >= -maxDist; --y) {
                 for (float z = maxDist; z >= -maxDist; --z) {
-                    final BlockPos pos = new BlockPos(Nuker.mc.player.posX + x, Nuker.mc.player.posY + y, Nuker.mc.player.posZ + z);
-                    final double dist = Nuker.mc.player.getDistance((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
+                    final BlockPos pos = new BlockPos(Nuker.mc.player.posX + x,  Nuker.mc.player.posY + y,  Nuker.mc.player.posZ + z);
+                    final double dist = Nuker.mc.player.getDistance((double)pos.getX(),  (double)pos.getY(),  (double)pos.getZ());
                     if (dist <= maxDist && Nuker.mc.world.getBlockState(pos).getBlock() != Blocks.AIR && !(Nuker.mc.world.getBlockState(pos).getBlock() instanceof BlockLiquid) && this.canBreak(pos)) {
                         if (pos.getY() >= Nuker.mc.player.posY) {
                             maxDist = (float)dist;
@@ -208,8 +208,8 @@ public class Nuker extends Module
         for (float x = maxDist; x >= -maxDist; --x) {
             for (float y = maxDist; y >= -maxDist; --y) {
                 for (float z = maxDist; z >= -maxDist; --z) {
-                    final BlockPos pos = new BlockPos(Nuker.mc.player.posX + x, Nuker.mc.player.posY + y, Nuker.mc.player.posZ + z);
-                    final double dist = Nuker.mc.player.getDistance((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
+                    final BlockPos pos = new BlockPos(Nuker.mc.player.posX + x,  Nuker.mc.player.posY + y,  Nuker.mc.player.posZ + z);
+                    final double dist = Nuker.mc.player.getDistance((double)pos.getX(),  (double)pos.getY(),  (double)pos.getZ());
                     if (dist <= maxDist && Nuker.mc.world.getBlockState(pos).getBlock() != Blocks.AIR && !(Nuker.mc.world.getBlockState(pos).getBlock() instanceof BlockLiquid) && Nuker.mc.world.getBlockState(pos).getBlock() == this.selected && this.canBreak(pos)) {
                         if (pos.getY() >= Nuker.mc.player.posY) {
                             maxDist = (float)dist;
@@ -224,8 +224,8 @@ public class Nuker extends Module
     
     public enum Mode
     {
-        SELECTION, 
-        ALL, 
+        SELECTION,  
+        ALL,  
         NUKE;
     }
 }

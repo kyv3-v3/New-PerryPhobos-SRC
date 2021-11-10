@@ -13,13 +13,13 @@ public final class Profiler
 {
     public static final int ROOT = 1;
     public static final int FINE = 2;
-    private final Map<String, Section> sections;
+    private final Map<String,  Section> sections;
     private final List<String> phases;
     private final Deque<Section> stack;
     private boolean active;
     
     public Profiler() {
-        this.sections = new TreeMap<String, Section>();
+        this.sections = new TreeMap<String,  Section>();
         this.phases = new ArrayList<String>();
         this.stack = new LinkedList<Section>();
         this.phases.add("Initial");
@@ -45,17 +45,17 @@ public final class Profiler
     public Section get(final String name) {
         Section section = this.sections.get(name);
         if (section == null) {
-            section = (this.active ? new LiveSection(name, this.phases.size() - 1) : new Section(name));
-            this.sections.put(name, section);
+            section = (this.active ? new LiveSection(name,  this.phases.size() - 1) : new Section(name));
+            this.sections.put(name,  section);
         }
         return section;
     }
     
-    private Section getSubSection(final String name, final String baseName, final Section root) {
+    private Section getSubSection(final String name,  final String baseName,  final Section root) {
         Section section = this.sections.get(name);
         if (section == null) {
-            section = new SubSection(name, this.phases.size() - 1, baseName, root);
-            this.sections.put(name, section);
+            section = new SubSection(name,  this.phases.size() - 1,  baseName,  root);
+            this.sections.put(name,  section);
         }
         return section;
     }
@@ -65,18 +65,18 @@ public final class Profiler
     }
     
     public Section begin(final String... path) {
-        return this.begin(0, path);
+        return this.begin(0,  path);
     }
     
-    public Section begin(final int flags, final String... path) {
-        return this.begin(flags, Joiner.on('.').join((Object[])path));
+    public Section begin(final int flags,  final String... path) {
+        return this.begin(flags,  Joiner.on('.').join((Object[])path));
     }
     
     public Section begin(final String name) {
-        return this.begin(0, name);
+        return this.begin(0,  name);
     }
     
-    public Section begin(final int flags, String name) {
+    public Section begin(final int flags,  String name) {
         boolean root = (flags & 0x1) != 0x0;
         final boolean fine = (flags & 0x2) != 0x0;
         String path = name;
@@ -91,7 +91,7 @@ public final class Profiler
         }
         Section section = this.get(root ? name : path);
         if (root && head != null && this.active) {
-            section = this.getSubSection(path, head.getName(), section);
+            section = this.getSubSection(path,  head.getName(),  section);
         }
         section.setFine(fine).setRoot(root);
         this.stack.push(section);
@@ -107,7 +107,7 @@ public final class Profiler
                     if (head == null) {
                         throw new IllegalStateException("Attempted to pop " + section + " but the stack is empty");
                     }
-                    throw new IllegalStateException("Attempted to pop " + section + " which was not in the stack, head was " + head);
+                    throw new IllegalStateException("Attempted to pop " + section + " which was not in the stack,  head was " + head);
                 }
                 else {
                     next = this.stack.pop();
@@ -128,7 +128,7 @@ public final class Profiler
         }
         if (currentPhaseTime == 0L) {
             final int size = this.phases.size();
-            this.phases.set(size - 1, phase);
+            this.phases.set(size - 1,  phase);
             return;
         }
         this.phases.add(phase);
@@ -141,10 +141,10 @@ public final class Profiler
         return Collections.unmodifiableCollection((Collection<? extends Section>)this.sections.values());
     }
     
-    public PrettyPrinter printer(final boolean includeFine, final boolean group) {
+    public PrettyPrinter printer(final boolean includeFine,  final boolean group) {
         final PrettyPrinter printer = new PrettyPrinter();
         final int colCount = this.phases.size() + 4;
-        final int[] columns = { 0, 1, 2, colCount - 2, colCount - 1 };
+        final int[] columns = { 0,  1,  2,  colCount - 2,  colCount - 1 };
         final Object[] headers = new Object[colCount * 2];
         int col = 0;
         int pos = 0;
@@ -177,7 +177,7 @@ public final class Profiler
                 if (group && section.getDelegate() != section) {
                     continue;
                 }
-                this.printSectionRow(printer, colCount, columns, section, group);
+                this.printSectionRow(printer,  colCount,  columns,  section,  group);
                 if (!group) {
                     continue;
                 }
@@ -187,7 +187,7 @@ public final class Profiler
                         if (delegate == subSection) {
                             continue;
                         }
-                        this.printSectionRow(printer, colCount, columns, subSection, group);
+                        this.printSectionRow(printer,  colCount,  columns,  subSection,  group);
                     }
                 }
             }
@@ -195,7 +195,7 @@ public final class Profiler
         return printer.add();
     }
     
-    private void printSectionRow(final PrettyPrinter printer, final int colCount, final int[] columns, final Section section, final boolean group) {
+    private void printSectionRow(final PrettyPrinter printer,  final int colCount,  final int[] columns,  final Section section,  final boolean group) {
         final boolean isDelegate = section.getDelegate() != section;
         final Object[] values = new Object[colCount];
         int col = 1;
@@ -358,7 +358,7 @@ public final class Profiler
         private int count;
         private int markedCount;
         
-        LiveSection(final String name, final int cursor) {
+        LiveSection(final String name,  final int cursor) {
             super(name);
             this.cursor = 0;
             this.times = new long[0];
@@ -394,7 +394,7 @@ public final class Profiler
         @Override
         void mark() {
             if (this.cursor >= this.times.length) {
-                this.times = Arrays.copyOf(this.times, this.cursor + 4);
+                this.times = Arrays.copyOf(this.times,  this.cursor + 4);
             }
             this.times[this.cursor] = this.time;
             this.markedTime += this.time;
@@ -427,7 +427,7 @@ public final class Profiler
         @Override
         public long[] getTimes() {
             final long[] times = new long[this.cursor + 1];
-            System.arraycopy(this.times, 0, times, 0, Math.min(this.times.length, this.cursor));
+            System.arraycopy(this.times,  0,  times,  0,  Math.min(this.times.length,  this.cursor));
             times[this.cursor] = this.time;
             return times;
         }
@@ -458,8 +458,8 @@ public final class Profiler
         private final String baseName;
         private final Section root;
         
-        SubSection(final String name, final int cursor, final String baseName, final Section root) {
-            super(name, cursor);
+        SubSection(final String name,  final int cursor,  final String baseName,  final Section root) {
+            super(name,  cursor);
             this.baseName = baseName;
             this.root = root;
         }

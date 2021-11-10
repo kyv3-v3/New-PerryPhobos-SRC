@@ -11,7 +11,7 @@ public class TrueDurability extends Module
     private static TrueDurability instance;
     
     public TrueDurability() {
-        super("TrueDurability", "Shows True Durability of items.", Module.Category.PLAYER, false, false, false);
+        super("TrueDurability",  "Shows True Durability of items.",  Module.Category.PLAYER,  false,  false,  false);
         TrueDurability.instance = this;
     }
     

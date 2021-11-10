@@ -31,9 +31,9 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
     private final TargetClassContext targetClass;
     private final String sessionId;
     private final ClassInfo targetClassInfo;
-    private final BiMap<String, String> innerClasses;
+    private final BiMap<String,  String> innerClasses;
     private final List<MethodNode> shadowMethods;
-    private final Map<FieldNode, ClassInfo.Field> shadowFields;
+    private final Map<FieldNode,  ClassInfo.Field> shadowFields;
     private final List<MethodNode> mergedMethods;
     private final InjectorGroupInfo.Map injectorGroups;
     private final List<InjectionInfo> injectors;
@@ -43,10 +43,10 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
     private final SourceMap.File stratum;
     private int minRequiredClassVersion;
     
-    MixinTargetContext(final MixinInfo mixin, final ClassNode classNode, final TargetClassContext context) {
-        this.innerClasses = (BiMap<String, String>)HashBiMap.create();
+    MixinTargetContext(final MixinInfo mixin,  final ClassNode classNode,  final TargetClassContext context) {
+        this.innerClasses = (BiMap<String,  String>)HashBiMap.create();
         this.shadowMethods = new ArrayList<MethodNode>();
-        this.shadowFields = new LinkedHashMap<FieldNode, ClassInfo.Field>();
+        this.shadowFields = new LinkedHashMap<FieldNode,  ClassInfo.Field>();
         this.mergedMethods = new ArrayList<MethodNode>();
         this.injectorGroups = new InjectorGroupInfo.Map();
         this.injectors = new ArrayList<InjectionInfo>();
@@ -63,7 +63,7 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
         this.requireVersion(classNode.version);
         final InnerClassGenerator icg = (InnerClassGenerator)context.getExtensions().getGenerator((Class)InnerClassGenerator.class);
         for (final String innerClass : this.mixin.getInnerClasses()) {
-            this.innerClasses.put((Object)innerClass, (Object)icg.registerInnerClass(this.mixin, innerClass, this));
+            this.innerClasses.put((Object)innerClass,  (Object)icg.registerInnerClass(this.mixin,  innerClass,  this));
         }
     }
     
@@ -71,16 +71,16 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
         this.shadowMethods.add(method);
     }
     
-    void addShadowField(final FieldNode fieldNode, final ClassInfo.Field fieldInfo) {
-        this.shadowFields.put(fieldNode, fieldInfo);
+    void addShadowField(final FieldNode fieldNode,  final ClassInfo.Field fieldInfo) {
+        this.shadowFields.put(fieldNode,  fieldInfo);
     }
     
-    void addAccessorMethod(final MethodNode method, final Class<? extends Annotation> type) {
-        this.accessors.add(AccessorInfo.of(this, method, (Class)type));
+    void addAccessorMethod(final MethodNode method,  final Class<? extends Annotation> type) {
+        this.accessors.add(AccessorInfo.of(this,  method,  (Class)type));
     }
     
     void addMixinMethod(final MethodNode method) {
-        Annotations.setVisible(method, (Class<? extends Annotation>)MixinMerged.class, "mixin", this.getClassName());
+        Annotations.setVisible(method,  (Class<? extends Annotation>)MixinMerged.class,  "mixin",  this.getClassName());
         this.getTarget().addMixinMethod(method);
     }
     
@@ -88,7 +88,7 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
         this.mergedMethods.add(method);
         this.targetClassInfo.addMethod(method);
         this.getTarget().methodMerged(method);
-        Annotations.setVisible(method, (Class<? extends Annotation>)MixinMerged.class, "mixin", this.getClassName(), "priority", this.getPriority(), "sessionId", this.sessionId);
+        Annotations.setVisible(method,  (Class<? extends Annotation>)MixinMerged.class,  "mixin",  this.getClassName(),  "priority",  this.getPriority(),  "sessionId",  this.sessionId);
     }
     
     public String toString() {
@@ -173,7 +173,7 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
         }
         final ClassInfo type = this.targetClassInfo.findCorrespondingType(mixin);
         if (type == null) {
-            throw new InvalidMixinException((IMixinContext)this, "Resolution error: unable to find corresponding type for " + mixin + " in hierarchy of " + this.targetClassInfo);
+            throw new InvalidMixinException((IMixinContext)this,  "Resolution error: unable to find corresponding type for " + mixin + " in hierarchy of " + this.targetClassInfo);
         }
         return type;
     }
@@ -188,30 +188,30 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
         while (iter.hasNext()) {
             final AbstractInsnNode insn = iter.next();
             if (insn instanceof MethodInsnNode) {
-                this.transformMethodRef(method, iter, (MemberRef)new MemberRef.Method((MethodInsnNode)insn));
+                this.transformMethodRef(method,  iter,  (MemberRef)new MemberRef.Method((MethodInsnNode)insn));
             }
             else if (insn instanceof FieldInsnNode) {
-                this.transformFieldRef(method, iter, (MemberRef)new MemberRef.Field((FieldInsnNode)insn));
-                this.checkFinal(method, iter, (FieldInsnNode)insn);
+                this.transformFieldRef(method,  iter,  (MemberRef)new MemberRef.Field((FieldInsnNode)insn));
+                this.checkFinal(method,  iter,  (FieldInsnNode)insn);
             }
             else if (insn instanceof TypeInsnNode) {
-                this.transformTypeNode(method, iter, (TypeInsnNode)insn, lastInsn);
+                this.transformTypeNode(method,  iter,  (TypeInsnNode)insn,  lastInsn);
             }
             else if (insn instanceof LdcInsnNode) {
-                this.transformConstantNode(method, iter, (LdcInsnNode)insn);
+                this.transformConstantNode(method,  iter,  (LdcInsnNode)insn);
             }
             else if (insn instanceof InvokeDynamicInsnNode) {
-                this.transformInvokeDynamicNode(method, iter, (InvokeDynamicInsnNode)insn);
+                this.transformInvokeDynamicNode(method,  iter,  (InvokeDynamicInsnNode)insn);
             }
             lastInsn = insn;
         }
     }
     
     private void validateMethod(final MethodNode method) {
-        if (Annotations.getInvisible(method, (Class<? extends Annotation>)SoftOverride.class) != null) {
-            final ClassInfo.Method superMethod = this.targetClassInfo.findMethodInHierarchy(method.name, method.desc, ClassInfo.SearchType.SUPER_CLASSES_ONLY, ClassInfo.Traversal.SUPER);
+        if (Annotations.getInvisible(method,  (Class<? extends Annotation>)SoftOverride.class) != null) {
+            final ClassInfo.Method superMethod = this.targetClassInfo.findMethodInHierarchy(method.name,  method.desc,  ClassInfo.SearchType.SUPER_CLASSES_ONLY,  ClassInfo.Traversal.SUPER);
             if (superMethod == null || !superMethod.isInjected()) {
-                throw new InvalidMixinException((IMixinContext)this, "Mixin method " + method.name + method.desc + " is tagged with @SoftOverride but no valid method was found in superclasses of " + this.getTarget().getClassName());
+                throw new InvalidMixinException((IMixinContext)this,  "Mixin method " + method.name + method.desc + " is tagged with @SoftOverride but no valid method was found in superclasses of " + this.getTarget().getClassName());
             }
         }
     }
@@ -230,15 +230,15 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
         }
     }
     
-    private void transformMethodRef(final MethodNode method, final Iterator<AbstractInsnNode> iter, final MemberRef methodRef) {
+    private void transformMethodRef(final MethodNode method,  final Iterator<AbstractInsnNode> iter,  final MemberRef methodRef) {
         this.transformDescriptor(methodRef);
         if (methodRef.getOwner().equals(this.getClassRef())) {
             methodRef.setOwner(this.getTarget().getClassRef());
-            final ClassInfo.Method md = this.getClassInfo().findMethod(methodRef.getName(), methodRef.getDesc(), 10);
+            final ClassInfo.Method md = this.getClassInfo().findMethod(methodRef.getName(),  methodRef.getDesc(),  10);
             if (md != null && md.isRenamed() && md.getOriginalName().equals(methodRef.getName()) && md.isSynthetic()) {
                 methodRef.setName(md.getName());
             }
-            this.upgradeMethodRef(method, methodRef, md);
+            this.upgradeMethodRef(method,  methodRef,  md);
         }
         else if (this.innerClasses.containsKey((Object)methodRef.getOwner())) {
             methodRef.setOwner((String)this.innerClasses.get((Object)methodRef.getOwner()));
@@ -246,26 +246,26 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
         }
         else if (this.detachedSuper || this.inheritsFromMixin) {
             if (methodRef.getOpcode() == 183) {
-                this.updateStaticBinding(method, methodRef);
+                this.updateStaticBinding(method,  methodRef);
             }
             else if (methodRef.getOpcode() == 182 && ClassInfo.forName(methodRef.getOwner()).isMixin()) {
-                this.updateDynamicBinding(method, methodRef);
+                this.updateDynamicBinding(method,  methodRef);
             }
         }
     }
     
-    private void transformFieldRef(final MethodNode method, final Iterator<AbstractInsnNode> iter, final MemberRef fieldRef) {
+    private void transformFieldRef(final MethodNode method,  final Iterator<AbstractInsnNode> iter,  final MemberRef fieldRef) {
         if ("super$".equals(fieldRef.getName())) {
             if (!(fieldRef instanceof MemberRef.Field)) {
-                throw new InvalidMixinException((IMixinInfo)this.mixin, "Cannot call imaginary super from method handle.");
+                throw new InvalidMixinException((IMixinInfo)this.mixin,  "Cannot call imaginary super from method handle.");
             }
-            this.processImaginarySuper(method, ((MemberRef.Field)fieldRef).insn);
+            this.processImaginarySuper(method,  ((MemberRef.Field)fieldRef).insn);
             iter.remove();
         }
         this.transformDescriptor(fieldRef);
         if (fieldRef.getOwner().equals(this.getClassRef())) {
             fieldRef.setOwner(this.getTarget().getClassRef());
-            final ClassInfo.Field field = this.getClassInfo().findField(fieldRef.getName(), fieldRef.getDesc(), 10);
+            final ClassInfo.Field field = this.getClassInfo().findField(fieldRef.getName(),  fieldRef.getDesc(),  10);
             if (field != null && field.isRenamed() && field.getOriginalName().equals(fieldRef.getName()) && field.isStatic()) {
                 fieldRef.setName(field.getName());
             }
@@ -279,7 +279,7 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
         }
     }
     
-    private void checkFinal(final MethodNode method, final Iterator<AbstractInsnNode> iter, final FieldInsnNode fieldNode) {
+    private void checkFinal(final MethodNode method,  final Iterator<AbstractInsnNode> iter,  final FieldInsnNode fieldNode) {
         if (!fieldNode.owner.equals(this.getTarget().getClassRef())) {
             return;
         }
@@ -287,7 +287,7 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
         if (opcode == 180 || opcode == 178) {
             return;
         }
-        for (final Map.Entry<FieldNode, ClassInfo.Field> shadow : this.shadowFields.entrySet()) {
+        for (final Map.Entry<FieldNode,  ClassInfo.Field> shadow : this.shadowFields.entrySet()) {
             final FieldNode shadowFieldNode = shadow.getKey();
             if (shadowFieldNode.desc.equals(fieldNode.desc)) {
                 if (!shadowFieldNode.name.equals(fieldNode.name)) {
@@ -297,16 +297,16 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
                 if (shadowField.isDecoratedFinal()) {
                     if (shadowField.isDecoratedMutable()) {
                         if (this.mixin.getParent().getEnvironment().getOption(MixinEnvironment.Option.DEBUG_VERBOSE)) {
-                            MixinTargetContext.logger.warn("Write access to @Mutable @Final field {} in {}::{}", new Object[] { shadowField, this.mixin, method.name });
+                            MixinTargetContext.logger.warn("Write access to @Mutable @Final field {} in {}::{}",  new Object[] { shadowField,  this.mixin,  method.name });
                         }
                     }
                     else if ("<init>".equals(method.name) || "<clinit>".equals(method.name)) {
-                        MixinTargetContext.logger.warn("@Final field {} in {} should be final", new Object[] { shadowField, this.mixin });
+                        MixinTargetContext.logger.warn("@Final field {} in {} should be final",  new Object[] { shadowField,  this.mixin });
                     }
                     else {
-                        MixinTargetContext.logger.error("Write access detected to @Final field {} in {}::{}", new Object[] { shadowField, this.mixin, method.name });
+                        MixinTargetContext.logger.error("Write access detected to @Final field {} in {}::{}",  new Object[] { shadowField,  this.mixin,  method.name });
                         if (this.mixin.getParent().getEnvironment().getOption(MixinEnvironment.Option.DEBUG_VERIFY)) {
-                            throw new InvalidMixinException((IMixinInfo)this.mixin, "Write access detected to @Final field " + shadowField + " in " + this.mixin + "::" + method.name);
+                            throw new InvalidMixinException((IMixinInfo)this.mixin,  "Write access detected to @Final field " + shadowField + " in " + this.mixin + "::" + method.name);
                         }
                     }
                 }
@@ -314,7 +314,7 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
         }
     }
     
-    private void transformTypeNode(final MethodNode method, final Iterator<AbstractInsnNode> iter, final TypeInsnNode typeInsn, final AbstractInsnNode lastNode) {
+    private void transformTypeNode(final MethodNode method,  final Iterator<AbstractInsnNode> iter,  final TypeInsnNode typeInsn,  final AbstractInsnNode lastNode) {
         if (typeInsn.getOpcode() == 192 && typeInsn.desc.equals(this.getTarget().getClassRef()) && lastNode.getOpcode() == 25 && ((VarInsnNode)lastNode).var == 0) {
             iter.remove();
             return;
@@ -331,20 +331,20 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
         this.transformDescriptor(typeInsn);
     }
     
-    private void transformConstantNode(final MethodNode method, final Iterator<AbstractInsnNode> iter, final LdcInsnNode ldcInsn) {
-        ldcInsn.cst = this.transformConstant(method, iter, ldcInsn.cst);
+    private void transformConstantNode(final MethodNode method,  final Iterator<AbstractInsnNode> iter,  final LdcInsnNode ldcInsn) {
+        ldcInsn.cst = this.transformConstant(method,  iter,  ldcInsn.cst);
     }
     
-    private void transformInvokeDynamicNode(final MethodNode method, final Iterator<AbstractInsnNode> iter, final InvokeDynamicInsnNode dynInsn) {
+    private void transformInvokeDynamicNode(final MethodNode method,  final Iterator<AbstractInsnNode> iter,  final InvokeDynamicInsnNode dynInsn) {
         this.requireVersion(51);
         dynInsn.desc = this.transformMethodDescriptor(dynInsn.desc);
-        dynInsn.bsm = this.transformHandle(method, iter, dynInsn.bsm);
+        dynInsn.bsm = this.transformHandle(method,  iter,  dynInsn.bsm);
         for (int i = 0; i < dynInsn.bsmArgs.length; ++i) {
-            dynInsn.bsmArgs[i] = this.transformConstant(method, iter, dynInsn.bsmArgs[i]);
+            dynInsn.bsmArgs[i] = this.transformConstant(method,  iter,  dynInsn.bsmArgs[i]);
         }
     }
     
-    private Object transformConstant(final MethodNode method, final Iterator<AbstractInsnNode> iter, final Object constant) {
+    private Object transformConstant(final MethodNode method,  final Iterator<AbstractInsnNode> iter,  final Object constant) {
         if (constant instanceof Type) {
             final Type type = (Type)constant;
             final String desc = this.transformDescriptor(type);
@@ -355,36 +355,36 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
         }
         else {
             if (constant instanceof Handle) {
-                return this.transformHandle(method, iter, (Handle)constant);
+                return this.transformHandle(method,  iter,  (Handle)constant);
             }
             return constant;
         }
     }
     
-    private Handle transformHandle(final MethodNode method, final Iterator<AbstractInsnNode> iter, final Handle handle) {
+    private Handle transformHandle(final MethodNode method,  final Iterator<AbstractInsnNode> iter,  final Handle handle) {
         final MemberRef.Handle memberRef = new MemberRef.Handle(handle);
         if (memberRef.isField()) {
-            this.transformFieldRef(method, iter, (MemberRef)memberRef);
+            this.transformFieldRef(method,  iter,  (MemberRef)memberRef);
         }
         else {
-            this.transformMethodRef(method, iter, (MemberRef)memberRef);
+            this.transformMethodRef(method,  iter,  (MemberRef)memberRef);
         }
         return memberRef.getMethodHandle();
     }
     
-    private void processImaginarySuper(final MethodNode method, final FieldInsnNode fieldInsn) {
+    private void processImaginarySuper(final MethodNode method,  final FieldInsnNode fieldInsn) {
         if (fieldInsn.getOpcode() != 180) {
             if ("<init>".equals(method.name)) {
-                throw new InvalidMixinException((IMixinContext)this, "Illegal imaginary super declaration: field " + fieldInsn.name + " must not specify an initialiser");
+                throw new InvalidMixinException((IMixinContext)this,  "Illegal imaginary super declaration: field " + fieldInsn.name + " must not specify an initialiser");
             }
-            throw new InvalidMixinException((IMixinContext)this, "Illegal imaginary super access: found " + Bytecode.getOpcodeName(fieldInsn.getOpcode()) + " opcode in " + method.name + method.desc);
+            throw new InvalidMixinException((IMixinContext)this,  "Illegal imaginary super access: found " + Bytecode.getOpcodeName(fieldInsn.getOpcode()) + " opcode in " + method.name + method.desc);
         }
         else {
             if ((method.access & 0x2) != 0x0 || (method.access & 0x8) != 0x0) {
-                throw new InvalidMixinException((IMixinContext)this, "Illegal imaginary super access: method " + method.name + method.desc + " is private or static");
+                throw new InvalidMixinException((IMixinContext)this,  "Illegal imaginary super access: method " + method.name + method.desc + " is private or static");
             }
-            if (Annotations.getInvisible(method, (Class<? extends Annotation>)SoftOverride.class) == null) {
-                throw new InvalidMixinException((IMixinContext)this, "Illegal imaginary super access: method " + method.name + method.desc + " is not decorated with @SoftOverride");
+            if (Annotations.getInvisible(method,  (Class<? extends Annotation>)SoftOverride.class) == null) {
+                throw new InvalidMixinException((IMixinContext)this,  "Illegal imaginary super access: method " + method.name + method.desc + " is not decorated with @SoftOverride");
             }
             final Iterator<AbstractInsnNode> methodIter = (Iterator<AbstractInsnNode>)method.instructions.iterator(method.instructions.indexOf((AbstractInsnNode)fieldInsn));
             while (methodIter.hasNext()) {
@@ -393,32 +393,32 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
                     final MethodInsnNode methodNode = (MethodInsnNode)insn;
                     if (methodNode.owner.equals(this.getClassRef()) && methodNode.name.equals(method.name) && methodNode.desc.equals(method.desc)) {
                         methodNode.setOpcode(183);
-                        this.updateStaticBinding(method, (MemberRef)new MemberRef.Method(methodNode));
+                        this.updateStaticBinding(method,  (MemberRef)new MemberRef.Method(methodNode));
                         return;
                     }
                     continue;
                 }
             }
-            throw new InvalidMixinException((IMixinContext)this, "Illegal imaginary super access: could not find INVOKE for " + method.name + method.desc);
+            throw new InvalidMixinException((IMixinContext)this,  "Illegal imaginary super access: could not find INVOKE for " + method.name + method.desc);
         }
     }
     
-    private void updateStaticBinding(final MethodNode method, final MemberRef methodRef) {
-        this.updateBinding(method, methodRef, ClassInfo.Traversal.SUPER);
+    private void updateStaticBinding(final MethodNode method,  final MemberRef methodRef) {
+        this.updateBinding(method,  methodRef,  ClassInfo.Traversal.SUPER);
     }
     
-    private void updateDynamicBinding(final MethodNode method, final MemberRef methodRef) {
-        this.updateBinding(method, methodRef, ClassInfo.Traversal.ALL);
+    private void updateDynamicBinding(final MethodNode method,  final MemberRef methodRef) {
+        this.updateBinding(method,  methodRef,  ClassInfo.Traversal.ALL);
     }
     
-    private void updateBinding(final MethodNode method, final MemberRef methodRef, final ClassInfo.Traversal traversal) {
+    private void updateBinding(final MethodNode method,  final MemberRef methodRef,  final ClassInfo.Traversal traversal) {
         if ("<init>".equals(method.name) || methodRef.getOwner().equals(this.getTarget().getClassRef()) || this.getTarget().getClassRef().startsWith("<")) {
             return;
         }
-        final ClassInfo.Method superMethod = this.targetClassInfo.findMethodInHierarchy(methodRef.getName(), methodRef.getDesc(), traversal.getSearchType(), traversal);
+        final ClassInfo.Method superMethod = this.targetClassInfo.findMethodInHierarchy(methodRef.getName(),  methodRef.getDesc(),  traversal.getSearchType(),  traversal);
         if (superMethod != null) {
             if (superMethod.getOwner().isMixin()) {
-                throw new InvalidMixinException((IMixinContext)this, "Invalid " + methodRef + " in " + this + " resolved " + superMethod.getOwner() + " but is mixin.");
+                throw new InvalidMixinException((IMixinContext)this,  "Invalid " + methodRef + " in " + this + " resolved " + superMethod.getOwner() + " but is mixin.");
             }
             methodRef.setOwner(superMethod.getImplementor().getName());
         }
@@ -431,7 +431,7 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
         if (!this.inheritsFromMixin && this.innerClasses.size() == 0) {
             return;
         }
-        field.desc = this.transformSingleDescriptor(field.desc, false);
+        field.desc = this.transformSingleDescriptor(field.desc,  false);
     }
     
     public void transformDescriptor(final MethodNode method) {
@@ -446,7 +446,7 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
             return;
         }
         if (member.isField()) {
-            member.setDesc(this.transformSingleDescriptor(member.getDesc(), false));
+            member.setDesc(this.transformSingleDescriptor(member.getDesc(),  false));
         }
         else {
             member.setDesc(this.transformMethodDescriptor(member.getDesc()));
@@ -457,7 +457,7 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
         if (!this.inheritsFromMixin && this.innerClasses.size() == 0) {
             return;
         }
-        typeInsn.desc = this.transformSingleDescriptor(typeInsn.desc, true);
+        typeInsn.desc = this.transformSingleDescriptor(typeInsn.desc,  true);
     }
     
     private String transformDescriptor(final Type type) {
@@ -471,17 +471,17 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
         if (type.getSort() < 9) {
             return type.toString();
         }
-        return this.transformSingleDescriptor(type.toString(), false);
+        return this.transformSingleDescriptor(type.toString(),  false);
     }
     
-    private String transformSingleDescriptor(final String desc, boolean isObject) {
+    private String transformSingleDescriptor(final String desc,  boolean isObject) {
         String type = desc;
         while (type.startsWith("[") || type.startsWith("L")) {
             if (type.startsWith("[")) {
                 type = type.substring(1);
             }
             else {
-                type = type.substring(1, type.indexOf(";"));
+                type = type.substring(1,  type.indexOf(";"));
                 isObject = true;
             }
         }
@@ -490,7 +490,7 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
         }
         final String innerClassName = (String)this.innerClasses.get((Object)type);
         if (innerClassName != null) {
-            return desc.replace(type, innerClassName);
+            return desc.replace(type,  innerClassName);
         }
         if (this.innerClasses.inverse().containsKey((Object)type)) {
             return desc;
@@ -499,7 +499,7 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
         if (!typeInfo.isMixin()) {
             return desc;
         }
-        return desc.replace(type, this.findRealType(typeInfo).toString());
+        return desc.replace(type,  this.findRealType(typeInfo).toString());
     }
     
     private String transformMethodDescriptor(final String desc) {
@@ -515,56 +515,56 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
         return this.getTarget().getTargetMethod(method);
     }
     
-    MethodNode findMethod(final MethodNode method, final AnnotationNode annotation) {
+    MethodNode findMethod(final MethodNode method,  final AnnotationNode annotation) {
         final Deque<String> aliases = new LinkedList<String>();
         aliases.add(method.name);
         if (annotation != null) {
-            final List<String> aka = Annotations.getValue(annotation, "aliases");
+            final List<String> aka = Annotations.getValue(annotation,  "aliases");
             if (aka != null) {
                 aliases.addAll((Collection<?>)aka);
             }
         }
-        return this.getTarget().findMethod(aliases, method.desc);
+        return this.getTarget().findMethod(aliases,  method.desc);
     }
     
     MethodNode findRemappedMethod(final MethodNode method) {
         final RemapperChain remapperChain = this.getEnvironment().getRemappers();
-        final String remappedName = remapperChain.mapMethodName(this.getTarget().getClassRef(), method.name, method.desc);
+        final String remappedName = remapperChain.mapMethodName(this.getTarget().getClassRef(),  method.name,  method.desc);
         if (remappedName.equals(method.name)) {
             return null;
         }
         final Deque<String> aliases = new LinkedList<String>();
         aliases.add(remappedName);
-        return this.getTarget().findAliasedMethod(aliases, method.desc);
+        return this.getTarget().findAliasedMethod(aliases,  method.desc);
     }
     
-    FieldNode findField(final FieldNode field, final AnnotationNode shadow) {
+    FieldNode findField(final FieldNode field,  final AnnotationNode shadow) {
         final Deque<String> aliases = new LinkedList<String>();
         aliases.add(field.name);
         if (shadow != null) {
-            final List<String> aka = Annotations.getValue(shadow, "aliases");
+            final List<String> aka = Annotations.getValue(shadow,  "aliases");
             if (aka != null) {
                 aliases.addAll((Collection<?>)aka);
             }
         }
-        return this.getTarget().findAliasedField(aliases, field.desc);
+        return this.getTarget().findAliasedField(aliases,  field.desc);
     }
     
     FieldNode findRemappedField(final FieldNode field) {
         final RemapperChain remapperChain = this.getEnvironment().getRemappers();
-        final String remappedName = remapperChain.mapFieldName(this.getTarget().getClassRef(), field.name, field.desc);
+        final String remappedName = remapperChain.mapFieldName(this.getTarget().getClassRef(),  field.name,  field.desc);
         if (remappedName.equals(field.name)) {
             return null;
         }
         final Deque<String> aliases = new LinkedList<String>();
         aliases.add(remappedName);
-        return this.getTarget().findAliasedField(aliases, field.desc);
+        return this.getTarget().findAliasedField(aliases,  field.desc);
     }
     
     protected void requireVersion(final int version) {
-        this.minRequiredClassVersion = Math.max(this.minRequiredClassVersion, version);
+        this.minRequiredClassVersion = Math.max(this.minRequiredClassVersion,  version);
         if (version > MixinEnvironment.getCompatibilityLevel().classVersion()) {
-            throw new InvalidMixinException((IMixinContext)this, "Unsupported mixin class version " + version);
+            throw new InvalidMixinException((IMixinContext)this,  "Unsupported mixin class version " + version);
         }
     }
     
@@ -596,7 +596,7 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
         return (List<MethodNode>)this.classNode.methods;
     }
     
-    public Set<Map.Entry<FieldNode, ClassInfo.Field>> getShadowFields() {
+    public Set<Map.Entry<FieldNode,  ClassInfo.Field>> getShadowFields() {
         return this.shadowFields.entrySet();
     }
     
@@ -620,23 +620,23 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
         return this.mixin.getParent().getReferenceMapper();
     }
     
-    public void preApply(final String transformedName, final ClassNode targetClass) {
-        this.mixin.preApply(transformedName, targetClass);
+    public void preApply(final String transformedName,  final ClassNode targetClass) {
+        this.mixin.preApply(transformedName,  targetClass);
     }
     
-    public void postApply(final String transformedName, final ClassNode targetClass) {
+    public void postApply(final String transformedName,  final ClassNode targetClass) {
         try {
             this.injectorGroups.validateAll();
         }
         catch (InjectionValidationException ex) {
             final InjectorGroupInfo group = ex.getGroup();
-            throw new InjectionError(String.format("Critical injection failure: Callback group %s in %s failed injection check: %s", group, this.mixin, ex.getMessage()));
+            throw new InjectionError(String.format("Critical injection failure: Callback group %s in %s failed injection check: %s",  group,  this.mixin,  ex.getMessage()));
         }
-        this.mixin.postApply(transformedName, targetClass);
+        this.mixin.postApply(transformedName,  targetClass);
     }
     
-    public String getUniqueName(final MethodNode method, final boolean preservePrefix) {
-        return this.getTarget().getUniqueName(method, preservePrefix);
+    public String getUniqueName(final MethodNode method,  final boolean preservePrefix) {
+        return this.getTarget().getUniqueName(method,  preservePrefix);
     }
     
     public String getUniqueName(final FieldNode field) {
@@ -646,7 +646,7 @@ public class MixinTargetContext extends ClassContext implements IMixinContext
     public void prepareInjections() {
         this.injectors.clear();
         for (final MethodNode method : this.mergedMethods) {
-            final InjectionInfo injectInfo = InjectionInfo.parse(this, method);
+            final InjectionInfo injectInfo = InjectionInfo.parse(this,  method);
             if (injectInfo == null) {
                 continue;
             }

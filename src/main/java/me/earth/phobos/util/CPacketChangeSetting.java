@@ -18,11 +18,11 @@ public class CPacketChangeSetting implements Packet<INetHandlerPlayServer>
 {
     public String setting;
     
-    public CPacketChangeSetting(final String module, final String setting, final String value) {
+    public CPacketChangeSetting(final String module,  final String setting,  final String value) {
         this.setting = setting + "-" + module + "-" + value;
     }
     
-    public CPacketChangeSetting(final Module module, final Setting setting, final String value) {
+    public CPacketChangeSetting(final Module module,  final Setting setting,  final String value) {
         this.setting = setting.getName() + "-" + module.getName() + "-" + value;
     }
     
@@ -37,6 +37,6 @@ public class CPacketChangeSetting implements Packet<INetHandlerPlayServer>
     public void processPacket(final INetHandlerPlayServer handler) {
         final Module module = Phobos.moduleManager.getModuleByName(this.setting.split("-")[1]);
         final Setting setting1 = module.getSettingByName(this.setting.split("-")[0]);
-        MinecraftForge.EVENT_BUS.post((Event)new ValueChangeEvent(setting1, (Object)this.setting.split("-")[2]));
+        MinecraftForge.EVENT_BUS.post((Event)new ValueChangeEvent(setting1,  (Object)this.setting.split("-")[2]));
     }
 }

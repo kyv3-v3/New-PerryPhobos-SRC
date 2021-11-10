@@ -15,7 +15,7 @@ public class ClientEvent extends EventStage
     private Feature feature;
     private Setting setting;
     
-    public ClientEvent(final int stage, final Feature feature) {
+    public ClientEvent(final int stage,  final Feature feature) {
         super(stage);
         this.feature = feature;
     }

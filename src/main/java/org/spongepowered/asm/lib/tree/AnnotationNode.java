@@ -13,13 +13,13 @@ public class AnnotationNode extends AnnotationVisitor
     public List<Object> values;
     
     public AnnotationNode(final String desc) {
-        this(327680, desc);
+        this(327680,  desc);
         if (this.getClass() != AnnotationNode.class) {
             throw new IllegalStateException();
         }
     }
     
-    public AnnotationNode(final int api, final String desc) {
+    public AnnotationNode(final int api,  final String desc) {
         super(api);
         this.desc = desc;
     }
@@ -29,7 +29,7 @@ public class AnnotationNode extends AnnotationVisitor
         this.values = values;
     }
     
-    public void visit(final String name, final Object value) {
+    public void visit(final String name,  final Object value) {
         if (this.values == null) {
             this.values = new ArrayList<Object>((this.desc != null) ? 2 : 1);
         }
@@ -105,17 +105,17 @@ public class AnnotationNode extends AnnotationVisitor
         }
     }
     
-    public void visitEnum(final String name, final String desc, final String value) {
+    public void visitEnum(final String name,  final String desc,  final String value) {
         if (this.values == null) {
             this.values = new ArrayList<Object>((this.desc != null) ? 2 : 1);
         }
         if (this.desc != null) {
             this.values.add(name);
         }
-        this.values.add(new String[] { desc, value });
+        this.values.add(new String[] { desc,  value });
     }
     
-    public AnnotationVisitor visitAnnotation(final String name, final String desc) {
+    public AnnotationVisitor visitAnnotation(final String name,  final String desc) {
         if (this.values == null) {
             this.values = new ArrayList<Object>((this.desc != null) ? 2 : 1);
         }
@@ -151,35 +151,35 @@ public class AnnotationNode extends AnnotationVisitor
                 for (int i = 0; i < this.values.size(); i += 2) {
                     final String name = this.values.get(i);
                     final Object value = this.values.get(i + 1);
-                    accept(av, name, value);
+                    accept(av,  name,  value);
                 }
             }
             av.visitEnd();
         }
     }
     
-    static void accept(final AnnotationVisitor av, final String name, final Object value) {
+    static void accept(final AnnotationVisitor av,  final String name,  final Object value) {
         if (av != null) {
             if (value instanceof String[]) {
                 final String[] typeconst = (String[])value;
-                av.visitEnum(name, typeconst[0], typeconst[1]);
+                av.visitEnum(name,  typeconst[0],  typeconst[1]);
             }
             else if (value instanceof AnnotationNode) {
                 final AnnotationNode an = (AnnotationNode)value;
-                an.accept(av.visitAnnotation(name, an.desc));
+                an.accept(av.visitAnnotation(name,  an.desc));
             }
             else if (value instanceof List) {
                 final AnnotationVisitor v = av.visitArray(name);
                 if (v != null) {
                     final List<?> array = (List<?>)value;
                     for (int j = 0; j < array.size(); ++j) {
-                        accept(v, null, array.get(j));
+                        accept(v,  null,  array.get(j));
                     }
                     v.visitEnd();
                 }
             }
             else {
-                av.visit(name, value);
+                av.visit(name,  value);
             }
         }
     }

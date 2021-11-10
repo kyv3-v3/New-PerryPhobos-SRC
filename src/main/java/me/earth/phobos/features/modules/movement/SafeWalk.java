@@ -13,7 +13,7 @@ import net.minecraft.client.entity.*;
 public class SafeWalk extends Module
 {
     public SafeWalk() {
-        super("SafeWalk", "Prevents u from walking off the sides of blocks.", Module.Category.MOVEMENT, true, false, false);
+        super("SafeWalk",  "Prevents u from walking off the sides of blocks.",  Module.Category.MOVEMENT,  true,  false,  false);
     }
     
     @SubscribeEvent
@@ -24,7 +24,7 @@ public class SafeWalk extends Module
             double z = event.getZ();
             if (SafeWalk.mc.player.onGround) {
                 final double increment = 0.05;
-                while (x != 0.0 && this.isOffsetBBEmpty(x, -1.0, 0.0)) {
+                while (x != 0.0 && this.isOffsetBBEmpty(x,  -1.0,  0.0)) {
                     if (x < increment && x >= -increment) {
                         x = 0.0;
                     }
@@ -35,7 +35,7 @@ public class SafeWalk extends Module
                         x += increment;
                     }
                 }
-                while (z != 0.0 && this.isOffsetBBEmpty(0.0, -1.0, z)) {
+                while (z != 0.0 && this.isOffsetBBEmpty(0.0,  -1.0,  z)) {
                     if (z < increment && z >= -increment) {
                         z = 0.0;
                     }
@@ -46,7 +46,7 @@ public class SafeWalk extends Module
                         z += increment;
                     }
                 }
-                while (x != 0.0 && z != 0.0 && this.isOffsetBBEmpty(x, -1.0, z)) {
+                while (x != 0.0 && z != 0.0 && this.isOffsetBBEmpty(x,  -1.0,  z)) {
                     x = ((x < increment && x >= -increment) ? 0.0 : ((x > 0.0) ? (x - increment) : (x + increment)));
                     if (z < increment && z >= -increment) {
                         z = 0.0;
@@ -65,8 +65,8 @@ public class SafeWalk extends Module
         }
     }
     
-    public boolean isOffsetBBEmpty(final double offsetX, final double offsetY, final double offsetZ) {
+    public boolean isOffsetBBEmpty(final double offsetX,  final double offsetY,  final double offsetZ) {
         final EntityPlayerSP playerSP = SafeWalk.mc.player;
-        return SafeWalk.mc.world.getCollisionBoxes((Entity)playerSP, playerSP.getEntityBoundingBox().offset(offsetX, offsetY, offsetZ)).isEmpty();
+        return SafeWalk.mc.world.getCollisionBoxes((Entity)playerSP,  playerSP.getEntityBoundingBox().offset(offsetX,  offsetY,  offsetZ)).isEmpty();
     }
 }

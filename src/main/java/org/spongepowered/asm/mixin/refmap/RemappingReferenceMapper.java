@@ -16,17 +16,17 @@ public final class RemappingReferenceMapper implements IReferenceMapper
     private static final String DEFAULT_RESOURCE_PATH_PROPERTY = "net.minecraftforge.gradle.GradleStart.srg.srg-mcp";
     private static final String DEFAULT_MAPPING_ENV = "searge";
     private static final Logger logger;
-    private static final Map<String, Map<String, String>> srgs;
+    private static final Map<String,  Map<String,  String>> srgs;
     private final IReferenceMapper refMap;
-    private final Map<String, String> mappings;
-    private final Map<String, Map<String, String>> cache;
+    private final Map<String,  String> mappings;
+    private final Map<String,  Map<String,  String>> cache;
     
-    private RemappingReferenceMapper(final MixinEnvironment env, final IReferenceMapper refMap) {
-        this.cache = new HashMap<String, Map<String, String>>();
+    private RemappingReferenceMapper(final MixinEnvironment env,  final IReferenceMapper refMap) {
+        this.cache = new HashMap<String,  Map<String,  String>>();
         (this.refMap = refMap).setContext(getMappingEnv(env));
         final String resource = getResource(env);
         this.mappings = loadSrgs(resource);
-        RemappingReferenceMapper.logger.info("Remapping refMap {} using {}", new Object[] { refMap.getResourceName(), resource });
+        RemappingReferenceMapper.logger.info("Remapping refMap {} using {}",  new Object[] { refMap.getResourceName(),  resource });
     }
     
     public boolean isDefault() {
@@ -48,44 +48,44 @@ public final class RemappingReferenceMapper implements IReferenceMapper
     public void setContext(final String context) {
     }
     
-    public String remap(final String className, final String reference) {
-        final Map<String, String> classCache = this.getCache(className);
+    public String remap(final String className,  final String reference) {
+        final Map<String,  String> classCache = this.getCache(className);
         String remapped = classCache.get(reference);
         if (remapped == null) {
-            remapped = this.refMap.remap(className, reference);
-            for (final Map.Entry<String, String> entry : this.mappings.entrySet()) {
-                remapped = remapped.replace(entry.getKey(), entry.getValue());
+            remapped = this.refMap.remap(className,  reference);
+            for (final Map.Entry<String,  String> entry : this.mappings.entrySet()) {
+                remapped = remapped.replace(entry.getKey(),  entry.getValue());
             }
-            classCache.put(reference, remapped);
+            classCache.put(reference,  remapped);
         }
         return remapped;
     }
     
-    private Map<String, String> getCache(final String className) {
-        Map<String, String> classCache = this.cache.get(className);
+    private Map<String,  String> getCache(final String className) {
+        Map<String,  String> classCache = this.cache.get(className);
         if (classCache == null) {
-            classCache = new HashMap<String, String>();
-            this.cache.put(className, classCache);
+            classCache = new HashMap<String,  String>();
+            this.cache.put(className,  classCache);
         }
         return classCache;
     }
     
-    public String remapWithContext(final String context, final String className, final String reference) {
-        return this.refMap.remapWithContext(context, className, reference);
+    public String remapWithContext(final String context,  final String className,  final String reference) {
+        return this.refMap.remapWithContext(context,  className,  reference);
     }
     
-    private static Map<String, String> loadSrgs(final String fileName) {
+    private static Map<String,  String> loadSrgs(final String fileName) {
         if (RemappingReferenceMapper.srgs.containsKey(fileName)) {
             return RemappingReferenceMapper.srgs.get(fileName);
         }
-        final Map<String, String> map = new HashMap<String, String>();
-        RemappingReferenceMapper.srgs.put(fileName, map);
+        final Map<String,  String> map = new HashMap<String,  String>();
+        RemappingReferenceMapper.srgs.put(fileName,  map);
         final File file = new File(fileName);
         if (!file.isFile()) {
             return map;
         }
         try {
-            Files.readLines(file, Charsets.UTF_8, (LineProcessor)new LineProcessor<Object>() {
+            Files.readLines(file,  Charsets.UTF_8,  (LineProcessor)new LineProcessor<Object>() {
                 public Object getResult() {
                     return null;
                 }
@@ -100,23 +100,23 @@ public final class RemappingReferenceMapper implements IReferenceMapper
                     final int n = line.startsWith("MD: ") ? (n2 = 2) : (line.startsWith("FD: ") ? (n2 = 1) : (n2 = 0));
                     toPos = n2;
                     if (n > 0) {
-                        final String[] entries = line.substring(4).split(" ", 4);
-                        map.put(entries[fromPos].substring(entries[fromPos].lastIndexOf(47) + 1), entries[toPos].substring(entries[toPos].lastIndexOf(47) + 1));
+                        final String[] entries = line.substring(4).split(" ",  4);
+                        map.put(entries[fromPos].substring(entries[fromPos].lastIndexOf(47) + 1),  entries[toPos].substring(entries[toPos].lastIndexOf(47) + 1));
                     }
                     return true;
                 }
             });
         }
         catch (IOException ex) {
-            RemappingReferenceMapper.logger.warn("Could not read input SRG file: {}", new Object[] { fileName });
+            RemappingReferenceMapper.logger.warn("Could not read input SRG file: {}",  new Object[] { fileName });
             RemappingReferenceMapper.logger.catching((Throwable)ex);
         }
         return map;
     }
     
-    public static IReferenceMapper of(final MixinEnvironment env, final IReferenceMapper refMap) {
+    public static IReferenceMapper of(final MixinEnvironment env,  final IReferenceMapper refMap) {
         if (!refMap.isDefault() && hasData(env)) {
-            return (IReferenceMapper)new RemappingReferenceMapper(env, refMap);
+            return (IReferenceMapper)new RemappingReferenceMapper(env,  refMap);
         }
         return refMap;
     }
@@ -138,6 +138,6 @@ public final class RemappingReferenceMapper implements IReferenceMapper
     
     static {
         logger = LogManager.getLogger("mixin");
-        srgs = new HashMap<String, Map<String, String>>();
+        srgs = new HashMap<String,  Map<String,  String>>();
     }
 }

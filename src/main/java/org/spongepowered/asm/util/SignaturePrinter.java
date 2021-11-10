@@ -19,24 +19,24 @@ public class SignaturePrinter
     private boolean fullyQualified;
     
     public SignaturePrinter(final MethodNode method) {
-        this(method.name, Type.VOID_TYPE, Type.getArgumentTypes(method.desc));
+        this(method.name,  Type.VOID_TYPE,  Type.getArgumentTypes(method.desc));
         this.setModifiers(method);
     }
     
-    public SignaturePrinter(final MethodNode method, final String[] argNames) {
-        this(method.name, Type.VOID_TYPE, Type.getArgumentTypes(method.desc), argNames);
+    public SignaturePrinter(final MethodNode method,  final String[] argNames) {
+        this(method.name,  Type.VOID_TYPE,  Type.getArgumentTypes(method.desc),  argNames);
         this.setModifiers(method);
     }
     
     public SignaturePrinter(final MemberInfo member) {
-        this(member.name, member.desc);
+        this(member.name,  member.desc);
     }
     
-    public SignaturePrinter(final String name, final String desc) {
-        this(name, Type.getReturnType(desc), Type.getArgumentTypes(desc));
+    public SignaturePrinter(final String name,  final String desc) {
+        this(name,  Type.getReturnType(desc),  Type.getArgumentTypes(desc));
     }
     
-    public SignaturePrinter(final String name, final Type returnType, final Type[] args) {
+    public SignaturePrinter(final String name,  final Type returnType,  final Type[] args) {
         this.modifiers = "private void";
         this.name = name;
         this.returnType = returnType;
@@ -53,7 +53,7 @@ public class SignaturePrinter
         }
     }
     
-    public SignaturePrinter(final String name, final Type returnType, final LocalVariableNode[] args) {
+    public SignaturePrinter(final String name,  final Type returnType,  final LocalVariableNode[] args) {
         this.modifiers = "private void";
         this.name = name;
         this.returnType = returnType;
@@ -67,27 +67,27 @@ public class SignaturePrinter
         }
     }
     
-    public SignaturePrinter(final String name, final Type returnType, final Type[] argTypes, final String[] argNames) {
+    public SignaturePrinter(final String name,  final Type returnType,  final Type[] argTypes,  final String[] argNames) {
         this.modifiers = "private void";
         this.name = name;
         this.returnType = returnType;
         this.argTypes = argTypes;
         this.argNames = argNames;
         if (this.argTypes.length > this.argNames.length) {
-            throw new IllegalArgumentException(String.format("Types array length must not exceed names array length! (names=%d, types=%d)", this.argNames.length, this.argTypes.length));
+            throw new IllegalArgumentException(String.format("Types array length must not exceed names array length! (names=%d,  types=%d)",  this.argNames.length,  this.argTypes.length));
         }
     }
     
     public String getFormattedArgs() {
-        return this.appendArgs(new StringBuilder(), true, true).toString();
+        return this.appendArgs(new StringBuilder(),  true,  true).toString();
     }
     
     public String getReturnType() {
-        return getTypeName(this.returnType, false, this.fullyQualified);
+        return getTypeName(this.returnType,  false,  this.fullyQualified);
     }
     
     public void setModifiers(final MethodNode method) {
-        final String returnType = getTypeName(Type.getReturnType(method.desc), false, this.fullyQualified);
+        final String returnType = getTypeName(Type.getReturnType(method.desc),  false,  this.fullyQualified);
         if ((method.access & 0x1) != 0x0) {
             this.setModifiers("public " + returnType);
         }
@@ -103,7 +103,7 @@ public class SignaturePrinter
     }
     
     public SignaturePrinter setModifiers(final String modifiers) {
-        this.modifiers = modifiers.replace("${returnType}", this.getReturnType());
+        this.modifiers = modifiers.replace("${returnType}",  this.getReturnType());
         return this;
     }
     
@@ -118,27 +118,27 @@ public class SignaturePrinter
     
     @Override
     public String toString() {
-        return this.appendArgs(new StringBuilder().append(this.modifiers).append(" ").append(this.name), false, true).toString();
+        return this.appendArgs(new StringBuilder().append(this.modifiers).append(" ").append(this.name),  false,  true).toString();
     }
     
     public String toDescriptor() {
-        final StringBuilder args = this.appendArgs(new StringBuilder(), true, false);
-        return args.append(getTypeName(this.returnType, false, this.fullyQualified)).toString();
+        final StringBuilder args = this.appendArgs(new StringBuilder(),  true,  false);
+        return args.append(getTypeName(this.returnType,  false,  this.fullyQualified)).toString();
     }
     
-    private StringBuilder appendArgs(final StringBuilder sb, final boolean typesOnly, final boolean pretty) {
+    private StringBuilder appendArgs(final StringBuilder sb,  final boolean typesOnly,  final boolean pretty) {
         sb.append('(');
         for (int var = 0; var < this.argTypes.length; ++var) {
             if (this.argTypes[var] != null) {
                 if (var > 0) {
-                    sb.append(',');
+                    sb.append(', ');
                     if (pretty) {
                         sb.append(' ');
                     }
                 }
                 try {
                     final String name = typesOnly ? null : (Strings.isNullOrEmpty(this.argNames[var]) ? ("unnamed" + var) : this.argNames[var]);
-                    this.appendType(sb, this.argTypes[var], name);
+                    this.appendType(sb,  this.argTypes[var],  name);
                 }
                 catch (Exception ex) {
                     throw new RuntimeException(ex);
@@ -148,16 +148,16 @@ public class SignaturePrinter
         return sb.append(")");
     }
     
-    private StringBuilder appendType(final StringBuilder sb, final Type type, final String name) {
+    private StringBuilder appendType(final StringBuilder sb,  final Type type,  final String name) {
         switch (type.getSort()) {
             case 9: {
-                return appendArraySuffix(this.appendType(sb, type.getElementType(), name), type);
+                return appendArraySuffix(this.appendType(sb,  type.getElementType(),  name),  type);
             }
             case 10: {
-                return this.appendType(sb, type.getClassName(), name);
+                return this.appendType(sb,  type.getClassName(),  name);
             }
             default: {
-                sb.append(getTypeName(type, false, this.fullyQualified));
+                sb.append(getTypeName(type,  false,  this.fullyQualified));
                 if (name != null) {
                     sb.append(' ').append(name);
                 }
@@ -166,13 +166,13 @@ public class SignaturePrinter
         }
     }
     
-    private StringBuilder appendType(final StringBuilder sb, String typeName, final String name) {
+    private StringBuilder appendType(final StringBuilder sb,  String typeName,  final String name) {
         if (!this.fullyQualified) {
             typeName = typeName.substring(typeName.lastIndexOf(46) + 1);
         }
         sb.append(typeName);
         if (typeName.endsWith("CallbackInfoReturnable")) {
-            sb.append('<').append(getTypeName(this.returnType, true, this.fullyQualified)).append('>');
+            sb.append('<').append(getTypeName(this.returnType,  true,  this.fullyQualified)).append('>');
         }
         if (name != null) {
             sb.append(' ').append(name);
@@ -180,11 +180,11 @@ public class SignaturePrinter
         return sb;
     }
     
-    public static String getTypeName(final Type type, final boolean box) {
-        return getTypeName(type, box, false);
+    public static String getTypeName(final Type type,  final boolean box) {
+        return getTypeName(type,  box,  false);
     }
     
-    public static String getTypeName(final Type type, final boolean box, final boolean fullyQualified) {
+    public static String getTypeName(final Type type,  final boolean box,  final boolean fullyQualified) {
         switch (type.getSort()) {
             case 0: {
                 return box ? "Void" : "void";
@@ -214,7 +214,7 @@ public class SignaturePrinter
                 return box ? "Double" : "double";
             }
             case 9: {
-                return getTypeName(type.getElementType(), box, fullyQualified) + arraySuffix(type);
+                return getTypeName(type.getElementType(),  box,  fullyQualified) + arraySuffix(type);
             }
             case 10: {
                 String typeName = type.getClassName();
@@ -230,10 +230,10 @@ public class SignaturePrinter
     }
     
     private static String arraySuffix(final Type type) {
-        return Strings.repeat("[]", type.getDimensions());
+        return Strings.repeat("[]",  type.getDimensions());
     }
     
-    private static StringBuilder appendArraySuffix(final StringBuilder sb, final Type type) {
+    private static StringBuilder appendArraySuffix(final StringBuilder sb,  final Type type) {
         for (int i = 0; i < type.getDimensions(); ++i) {
             sb.append("[]");
         }

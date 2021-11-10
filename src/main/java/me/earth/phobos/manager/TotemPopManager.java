@@ -17,11 +17,11 @@ public class TotemPopManager extends Feature
 {
     private final Set<EntityPlayer> toAnnounce;
     private Notifications notifications;
-    private Map<EntityPlayer, Integer> poplist;
+    private Map<EntityPlayer,  Integer> poplist;
     
     public TotemPopManager() {
         this.toAnnounce = new HashSet<EntityPlayer>();
-        this.poplist = new ConcurrentHashMap<EntityPlayer, Integer>();
+        this.poplist = new ConcurrentHashMap<EntityPlayer,  Integer>();
     }
     
     public void onUpdate() {
@@ -35,7 +35,7 @@ public class TotemPopManager extends Feature
                     playerNumber += character;
                     playerNumber *= 10;
                 }
-                Command.sendOverwriteMessage("§c" + player.getName() + " popped §a" + this.getTotemPops(player) + "§c Totem" + ((this.getTotemPops(player) == 1) ? "" : "s") + ".", playerNumber, (boolean)this.notifications.totemNoti.getValue());
+                Command.sendOverwriteMessage("§c" + player.getName() + " popped §a" + this.getTotemPops(player) + "§c Totem" + ((this.getTotemPops(player) == 1) ? "" : "s") + ".",  playerNumber,  (boolean)this.notifications.totemNoti.getValue());
                 this.toAnnounce.remove(player);
                 this.notifications.totemAnnounce.reset();
                 break;
@@ -66,13 +66,13 @@ public class TotemPopManager extends Feature
                 playerNumber += character;
                 playerNumber *= 10;
             }
-            Command.sendOverwriteMessage("§c" + player.getName() + " died after popping §a" + this.getTotemPops(player) + "§c Totem" + ((this.getTotemPops(player) == 1) ? "" : "s") + ".", playerNumber, (boolean)this.notifications.totemNoti.getValue());
+            Command.sendOverwriteMessage("§c" + player.getName() + " died after popping §a" + this.getTotemPops(player) + "§c Totem" + ((this.getTotemPops(player) == 1) ? "" : "s") + ".",  playerNumber,  (boolean)this.notifications.totemNoti.getValue());
             this.toAnnounce.remove(player);
         }
         this.resetPops(player);
     }
     
-    public void onLogout(final EntityPlayer player, final boolean clearOnLogout) {
+    public void onLogout(final EntityPlayer player,  final boolean clearOnLogout) {
         if (clearOnLogout) {
             this.resetPops(player);
         }
@@ -85,19 +85,19 @@ public class TotemPopManager extends Feature
     }
     
     public void clearList() {
-        this.poplist = new ConcurrentHashMap<EntityPlayer, Integer>();
+        this.poplist = new ConcurrentHashMap<EntityPlayer,  Integer>();
     }
     
     public void resetPops(final EntityPlayer player) {
-        this.setTotemPops(player, 0);
+        this.setTotemPops(player,  0);
     }
     
     public void popTotem(final EntityPlayer player) {
-        this.poplist.merge(player, 1, Integer::sum);
+        this.poplist.merge(player,  1,  Integer::sum);
     }
     
-    public void setTotemPops(final EntityPlayer player, final int amount) {
-        this.poplist.put(player, amount);
+    public void setTotemPops(final EntityPlayer player,  final int amount) {
+        this.poplist.put(player,  amount);
     }
     
     public int getTotemPops(final EntityPlayer player) {

@@ -16,7 +16,7 @@ public class ObfuscationDataProvider implements IObfuscationDataProvider
     private final IMixinAnnotationProcessor ap;
     private final List<ObfuscationEnvironment> environments;
     
-    public ObfuscationDataProvider(final IMixinAnnotationProcessor ap, final List<ObfuscationEnvironment> environments) {
+    public ObfuscationDataProvider(final IMixinAnnotationProcessor ap,  final List<ObfuscationEnvironment> environments) {
         this.ap = ap;
         this.environments = environments;
     }
@@ -32,14 +32,14 @@ public class ObfuscationDataProvider implements IObfuscationDataProvider
                     return obfData;
                 }
                 final TypeHandle superClass = targetType.getSuperclass();
-                obfData = this.getObfEntryUsing(currentTarget, superClass);
+                obfData = this.getObfEntryUsing(currentTarget,  superClass);
                 if (!obfData.isEmpty()) {
-                    return applyParents(obfTargetNames, obfData);
+                    return applyParents(obfTargetNames,  obfData);
                 }
                 for (final TypeHandle iface : targetType.getInterfaces()) {
-                    obfData = this.getObfEntryUsing(currentTarget, iface);
+                    obfData = this.getObfEntryUsing(currentTarget,  iface);
                     if (!obfData.isEmpty()) {
-                        return applyParents(obfTargetNames, obfData);
+                        return applyParents(obfTargetNames,  obfData);
                     }
                 }
                 if (superClass == null) {
@@ -55,7 +55,7 @@ public class ObfuscationDataProvider implements IObfuscationDataProvider
         return obfData;
     }
     
-    private <T> ObfuscationData<T> getObfEntryUsing(final MemberInfo targetMember, final TypeHandle targetClass) {
+    private <T> ObfuscationData<T> getObfEntryUsing(final MemberInfo targetMember,  final TypeHandle targetClass) {
         return (ObfuscationData<T>)((targetClass == null) ? new ObfuscationData() : this.getObfEntry(targetMember.move(targetClass.getName())));
     }
     
@@ -83,54 +83,54 @@ public class ObfuscationDataProvider implements IObfuscationDataProvider
     }
     
     public ObfuscationData<MappingMethod> getObfMethod(final MemberInfo method) {
-        return this.getRemappedMethod(method, method.isConstructor());
+        return this.getRemappedMethod(method,  method.isConstructor());
     }
     
     public ObfuscationData<MappingMethod> getRemappedMethod(final MemberInfo method) {
-        return this.getRemappedMethod(method, true);
+        return this.getRemappedMethod(method,  true);
     }
     
-    private ObfuscationData<MappingMethod> getRemappedMethod(final MemberInfo method, final boolean remapDescriptor) {
+    private ObfuscationData<MappingMethod> getRemappedMethod(final MemberInfo method,  final boolean remapDescriptor) {
         final ObfuscationData<MappingMethod> data = (ObfuscationData<MappingMethod>)new ObfuscationData();
         for (final ObfuscationEnvironment env : this.environments) {
             final MappingMethod obfMethod = env.getObfMethod(method);
             if (obfMethod != null) {
-                data.put(env.getType(), (Object)obfMethod);
+                data.put(env.getType(),  (Object)obfMethod);
             }
         }
         if (!data.isEmpty() || !remapDescriptor) {
             return data;
         }
-        return this.remapDescriptor(data, method);
+        return this.remapDescriptor(data,  method);
     }
     
     public ObfuscationData<MappingMethod> getObfMethod(final MappingMethod method) {
-        return this.getRemappedMethod(method, method.isConstructor());
+        return this.getRemappedMethod(method,  method.isConstructor());
     }
     
     public ObfuscationData<MappingMethod> getRemappedMethod(final MappingMethod method) {
-        return this.getRemappedMethod(method, true);
+        return this.getRemappedMethod(method,  true);
     }
     
-    private ObfuscationData<MappingMethod> getRemappedMethod(final MappingMethod method, final boolean remapDescriptor) {
+    private ObfuscationData<MappingMethod> getRemappedMethod(final MappingMethod method,  final boolean remapDescriptor) {
         final ObfuscationData<MappingMethod> data = (ObfuscationData<MappingMethod>)new ObfuscationData();
         for (final ObfuscationEnvironment env : this.environments) {
             final MappingMethod obfMethod = env.getObfMethod(method);
             if (obfMethod != null) {
-                data.put(env.getType(), (Object)obfMethod);
+                data.put(env.getType(),  (Object)obfMethod);
             }
         }
         if (!data.isEmpty() || !remapDescriptor) {
             return data;
         }
-        return this.remapDescriptor(data, new MemberInfo((IMapping)method));
+        return this.remapDescriptor(data,  new MemberInfo((IMapping)method));
     }
     
-    public ObfuscationData<MappingMethod> remapDescriptor(final ObfuscationData<MappingMethod> data, final MemberInfo method) {
+    public ObfuscationData<MappingMethod> remapDescriptor(final ObfuscationData<MappingMethod> data,  final MemberInfo method) {
         for (final ObfuscationEnvironment env : this.environments) {
             final MemberInfo obfMethod = env.remapDescriptor(method);
             if (obfMethod != null) {
-                data.put(env.getType(), (Object)obfMethod.asMethodMapping());
+                data.put(env.getType(),  (Object)obfMethod.asMethodMapping());
             }
         }
         return data;
@@ -152,7 +152,7 @@ public class ObfuscationDataProvider implements IObfuscationDataProvider
                 if (obfField.getDesc() == null && field.getDesc() != null) {
                     obfField = obfField.transform(env.remapDescriptor(field.getDesc()));
                 }
-                data.put(env.getType(), (Object)obfField);
+                data.put(env.getType(),  (Object)obfField);
             }
         }
         return data;
@@ -167,17 +167,17 @@ public class ObfuscationDataProvider implements IObfuscationDataProvider
         for (final ObfuscationEnvironment env : this.environments) {
             final String obfClass = env.getObfClass(className);
             if (obfClass != null) {
-                data.put(env.getType(), (Object)obfClass);
+                data.put(env.getType(),  (Object)obfClass);
             }
         }
         return data;
     }
     
-    private static <T> ObfuscationData<T> applyParents(final ObfuscationData<String> parents, final ObfuscationData<T> members) {
+    private static <T> ObfuscationData<T> applyParents(final ObfuscationData<String> parents,  final ObfuscationData<T> members) {
         for (final ObfuscationType type : members) {
             final String obfClass = (String)parents.get(type);
             final T obfMember = (T)members.get(type);
-            members.put(type, (Object)MemberInfo.fromMapping((IMapping)obfMember).move(obfClass).asMapping());
+            members.put(type,  (Object)MemberInfo.fromMapping((IMapping)obfMember).move(obfClass).asMapping());
         }
         return members;
     }

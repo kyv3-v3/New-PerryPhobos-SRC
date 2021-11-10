@@ -16,7 +16,7 @@ import java.util.*;
 public class ModuleCommand extends Command
 {
     public ModuleCommand() {
-        super("module", new String[] { "<module>", "<set/reset>", "<setting>", "<value>" });
+        super("module",  new String[] { "<module>",  "<set/reset>",  "<setting>",  "<value>" });
     }
     
     public void execute(final String[] commands) {
@@ -25,7 +25,7 @@ public class ModuleCommand extends Command
             for (final Module.Category category : Phobos.moduleManager.getCategories()) {
                 final StringBuilder modules = new StringBuilder(category.getName() + ": ");
                 for (final Module module : Phobos.moduleManager.getModulesByCategory(category)) {
-                    modules.append(module.isEnabled() ? "§a" : "§c").append(module.getName()).append("§r").append(", ");
+                    modules.append(module.isEnabled() ? "§a" : "§c").append(module.getName()).append("§r").append(",  ");
                 }
                 sendMessage(modules.toString());
             }
@@ -44,7 +44,7 @@ public class ModuleCommand extends Command
             if (commands.length == 2) {
                 sendMessage(module2.getDisplayName() + " : " + module2.getDescription());
                 for (final Setting setting2 : module2.getSettings()) {
-                    sendMessage(setting2.getName() + " : " + setting2.getValue() + ", " + setting2.getDescription());
+                    sendMessage(setting2.getName() + " : " + setting2.getValue() + ",  " + setting2.getDescription());
                 }
                 return;
             }
@@ -83,7 +83,7 @@ public class ModuleCommand extends Command
                             module2.disable();
                         }
                     }
-                    ConfigManager.setValueFromJson(module2, setting4, jp.parse(commands[3]));
+                    ConfigManager.setValueFromJson(module2,  setting4,  jp.parse(commands[3]));
                 }
                 catch (Exception e) {
                     sendMessage("§cBad Value! This setting requires a: " + setting4.getType() + " value.");

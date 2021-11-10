@@ -16,8 +16,8 @@ import org.spongepowered.asm.mixin.injection.*;
 @Mixin({ ServerPinger.class })
 public class MixinServerPinger
 {
-    @Inject(method = { "ping" }, at = { @At("HEAD") }, cancellable = true)
-    public void pingHook(final ServerData server, final CallbackInfo info) {
+    @Inject(method = { "ping" },  at = { @At("HEAD") },  cancellable = true)
+    public void pingHook(final ServerData server,  final CallbackInfo info) {
         if (server.serverIP.equalsIgnoreCase((String)PingBypass.getInstance().ip.getValue())) {
             info.cancel();
         }
@@ -27,8 +27,8 @@ public class MixinServerPinger
         }
     }
     
-    @Inject(method = { "tryCompatibilityPing" }, at = { @At("HEAD") }, cancellable = true)
-    public void tryCompatibilityPingHook(final ServerData server, final CallbackInfo info) {
+    @Inject(method = { "tryCompatibilityPing" },  at = { @At("HEAD") },  cancellable = true)
+    public void tryCompatibilityPingHook(final ServerData server,  final CallbackInfo info) {
         if (server.serverIP.equalsIgnoreCase((String)PingBypass.getInstance().ip.getValue())) {
             info.cancel();
         }

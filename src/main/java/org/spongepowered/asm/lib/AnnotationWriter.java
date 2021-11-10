@@ -15,7 +15,7 @@ final class AnnotationWriter extends AnnotationVisitor
     AnnotationWriter next;
     AnnotationWriter prev;
     
-    AnnotationWriter(final ClassWriter cw, final boolean named, final ByteVector bv, final ByteVector parent, final int offset) {
+    AnnotationWriter(final ClassWriter cw,  final boolean named,  final ByteVector bv,  final ByteVector parent,  final int offset) {
         super(327680);
         this.cw = cw;
         this.named = named;
@@ -24,107 +24,107 @@ final class AnnotationWriter extends AnnotationVisitor
         this.offset = offset;
     }
     
-    public void visit(final String name, final Object value) {
+    public void visit(final String name,  final Object value) {
         ++this.size;
         if (this.named) {
             this.bv.putShort(this.cw.newUTF8(name));
         }
         if (value instanceof String) {
-            this.bv.put12(115, this.cw.newUTF8((String)value));
+            this.bv.put12(115,  this.cw.newUTF8((String)value));
         }
         else if (value instanceof Byte) {
-            this.bv.put12(66, this.cw.newInteger((byte)value).index);
+            this.bv.put12(66,  this.cw.newInteger((byte)value).index);
         }
         else if (value instanceof Boolean) {
             final int v = ((boolean)value) ? 1 : 0;
-            this.bv.put12(90, this.cw.newInteger(v).index);
+            this.bv.put12(90,  this.cw.newInteger(v).index);
         }
         else if (value instanceof Character) {
-            this.bv.put12(67, this.cw.newInteger((char)value).index);
+            this.bv.put12(67,  this.cw.newInteger((char)value).index);
         }
         else if (value instanceof Short) {
-            this.bv.put12(83, this.cw.newInteger((short)value).index);
+            this.bv.put12(83,  this.cw.newInteger((short)value).index);
         }
         else if (value instanceof Type) {
-            this.bv.put12(99, this.cw.newUTF8(((Type)value).getDescriptor()));
+            this.bv.put12(99,  this.cw.newUTF8(((Type)value).getDescriptor()));
         }
         else if (value instanceof byte[]) {
             final byte[] v2 = (byte[])value;
-            this.bv.put12(91, v2.length);
+            this.bv.put12(91,  v2.length);
             for (int i = 0; i < v2.length; ++i) {
-                this.bv.put12(66, this.cw.newInteger(v2[i]).index);
+                this.bv.put12(66,  this.cw.newInteger(v2[i]).index);
             }
         }
         else if (value instanceof boolean[]) {
             final boolean[] v3 = (boolean[])value;
-            this.bv.put12(91, v3.length);
+            this.bv.put12(91,  v3.length);
             for (int i = 0; i < v3.length; ++i) {
-                this.bv.put12(90, this.cw.newInteger(v3[i] ? 1 : 0).index);
+                this.bv.put12(90,  this.cw.newInteger(v3[i] ? 1 : 0).index);
             }
         }
         else if (value instanceof short[]) {
             final short[] v4 = (short[])value;
-            this.bv.put12(91, v4.length);
+            this.bv.put12(91,  v4.length);
             for (int i = 0; i < v4.length; ++i) {
-                this.bv.put12(83, this.cw.newInteger(v4[i]).index);
+                this.bv.put12(83,  this.cw.newInteger(v4[i]).index);
             }
         }
         else if (value instanceof char[]) {
             final char[] v5 = (char[])value;
-            this.bv.put12(91, v5.length);
+            this.bv.put12(91,  v5.length);
             for (int i = 0; i < v5.length; ++i) {
-                this.bv.put12(67, this.cw.newInteger(v5[i]).index);
+                this.bv.put12(67,  this.cw.newInteger(v5[i]).index);
             }
         }
         else if (value instanceof int[]) {
             final int[] v6 = (int[])value;
-            this.bv.put12(91, v6.length);
+            this.bv.put12(91,  v6.length);
             for (int i = 0; i < v6.length; ++i) {
-                this.bv.put12(73, this.cw.newInteger(v6[i]).index);
+                this.bv.put12(73,  this.cw.newInteger(v6[i]).index);
             }
         }
         else if (value instanceof long[]) {
             final long[] v7 = (long[])value;
-            this.bv.put12(91, v7.length);
+            this.bv.put12(91,  v7.length);
             for (int i = 0; i < v7.length; ++i) {
-                this.bv.put12(74, this.cw.newLong(v7[i]).index);
+                this.bv.put12(74,  this.cw.newLong(v7[i]).index);
             }
         }
         else if (value instanceof float[]) {
             final float[] v8 = (float[])value;
-            this.bv.put12(91, v8.length);
+            this.bv.put12(91,  v8.length);
             for (int i = 0; i < v8.length; ++i) {
-                this.bv.put12(70, this.cw.newFloat(v8[i]).index);
+                this.bv.put12(70,  this.cw.newFloat(v8[i]).index);
             }
         }
         else if (value instanceof double[]) {
             final double[] v9 = (double[])value;
-            this.bv.put12(91, v9.length);
+            this.bv.put12(91,  v9.length);
             for (int i = 0; i < v9.length; ++i) {
-                this.bv.put12(68, this.cw.newDouble(v9[i]).index);
+                this.bv.put12(68,  this.cw.newDouble(v9[i]).index);
             }
         }
         else {
             final Item j = this.cw.newConstItem(value);
-            this.bv.put12(".s.IFJDCS".charAt(j.type), j.index);
+            this.bv.put12(".s.IFJDCS".charAt(j.type),  j.index);
         }
     }
     
-    public void visitEnum(final String name, final String desc, final String value) {
+    public void visitEnum(final String name,  final String desc,  final String value) {
         ++this.size;
         if (this.named) {
             this.bv.putShort(this.cw.newUTF8(name));
         }
-        this.bv.put12(101, this.cw.newUTF8(desc)).putShort(this.cw.newUTF8(value));
+        this.bv.put12(101,  this.cw.newUTF8(desc)).putShort(this.cw.newUTF8(value));
     }
     
-    public AnnotationVisitor visitAnnotation(final String name, final String desc) {
+    public AnnotationVisitor visitAnnotation(final String name,  final String desc) {
         ++this.size;
         if (this.named) {
             this.bv.putShort(this.cw.newUTF8(name));
         }
-        this.bv.put12(64, this.cw.newUTF8(desc)).putShort(0);
-        return new AnnotationWriter(this.cw, true, this.bv, this.bv, this.bv.length - 2);
+        this.bv.put12(64,  this.cw.newUTF8(desc)).putShort(0);
+        return new AnnotationWriter(this.cw,  true,  this.bv,  this.bv,  this.bv.length - 2);
     }
     
     public AnnotationVisitor visitArray(final String name) {
@@ -132,8 +132,8 @@ final class AnnotationWriter extends AnnotationVisitor
         if (this.named) {
             this.bv.putShort(this.cw.newUTF8(name));
         }
-        this.bv.put12(91, 0);
-        return new AnnotationWriter(this.cw, false, this.bv, this.bv, this.bv.length - 2);
+        this.bv.put12(91,  0);
+        return new AnnotationWriter(this.cw,  false,  this.bv,  this.bv,  this.bv.length - 2);
     }
     
     public void visitEnd() {
@@ -168,11 +168,11 @@ final class AnnotationWriter extends AnnotationVisitor
         out.putInt(size);
         out.putShort(n);
         for (aw = last; aw != null; aw = aw.prev) {
-            out.putByteArray(aw.bv.data, 0, aw.bv.length);
+            out.putByteArray(aw.bv.data,  0,  aw.bv.length);
         }
     }
     
-    static void put(final AnnotationWriter[] panns, final int off, final ByteVector out) {
+    static void put(final AnnotationWriter[] panns,  final int off,  final ByteVector out) {
         int size = 1 + 2 * (panns.length - off);
         for (int i = off; i < panns.length; ++i) {
             size += ((panns[i] == null) ? 0 : panns[i].getSize());
@@ -191,12 +191,12 @@ final class AnnotationWriter extends AnnotationVisitor
             }
             out.putShort(n);
             for (aw = last; aw != null; aw = aw.prev) {
-                out.putByteArray(aw.bv.data, 0, aw.bv.length);
+                out.putByteArray(aw.bv.data,  0,  aw.bv.length);
             }
         }
     }
     
-    static void putTarget(final int typeRef, final TypePath typePath, final ByteVector out) {
+    static void putTarget(final int typeRef,  final TypePath typePath,  final ByteVector out) {
         switch (typeRef >>> 24) {
             case 0:
             case 1:
@@ -219,7 +219,7 @@ final class AnnotationWriter extends AnnotationVisitor
                 break;
             }
             default: {
-                out.put12(typeRef >>> 24, (typeRef & 0xFFFF00) >> 8);
+                out.put12(typeRef >>> 24,  (typeRef & 0xFFFF00) >> 8);
                 break;
             }
         }
@@ -228,7 +228,7 @@ final class AnnotationWriter extends AnnotationVisitor
         }
         else {
             final int length = typePath.b[typePath.offset] * 2 + 1;
-            out.putByteArray(typePath.b, typePath.offset, length);
+            out.putByteArray(typePath.b,  typePath.offset,  length);
         }
     }
 }

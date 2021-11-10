@@ -12,5 +12,5 @@ public interface IEnvironmentTokenProvider
     
     int getPriority();
     
-    Integer getToken(final String p0, final MixinEnvironment p1);
+    Integer getToken(final String p0,  final MixinEnvironment p1);
 }

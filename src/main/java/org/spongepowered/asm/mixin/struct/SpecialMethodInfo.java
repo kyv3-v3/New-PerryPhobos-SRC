@@ -16,7 +16,7 @@ public abstract class SpecialMethodInfo implements IInjectionPointContext
     protected final MethodNode method;
     protected final MixinTargetContext mixin;
     
-    public SpecialMethodInfo(final MixinTargetContext mixin, final MethodNode method, final AnnotationNode annotation) {
+    public SpecialMethodInfo(final MixinTargetContext mixin,  final MethodNode method,  final AnnotationNode annotation) {
         this.mixin = mixin;
         this.method = method;
         this.annotation = annotation;

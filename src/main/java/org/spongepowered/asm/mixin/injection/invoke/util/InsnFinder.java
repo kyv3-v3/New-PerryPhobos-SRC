@@ -13,9 +13,9 @@ public class InsnFinder
 {
     private static final Logger logger;
     
-    public AbstractInsnNode findPopInsn(final Target target, final AbstractInsnNode node) {
+    public AbstractInsnNode findPopInsn(final Target target,  final AbstractInsnNode node) {
         try {
-            new PopAnalyzer(node).analyze(target.classNode.name, target.method);
+            new PopAnalyzer(node).analyze(target.classNode.name,  target.method);
         }
         catch (AnalyzerException ex) {
             if (ex.getCause() instanceof AnalysisResultException) {
@@ -46,8 +46,8 @@ public class InsnFinder
     
     enum AnalyzerState
     {
-        SEARCH, 
-        ANALYSE, 
+        SEARCH,  
+        ANALYSE,  
         COMPLETE;
     }
     
@@ -60,8 +60,8 @@ public class InsnFinder
             this.node = node;
         }
         
-        protected Frame<BasicValue> newFrame(final int locals, final int stack) {
-            return new PopFrame(locals, stack);
+        protected Frame<BasicValue> newFrame(final int locals,  final int stack) {
+            return new PopFrame(locals,  stack);
         }
         
         class PopFrame extends Frame<BasicValue>
@@ -70,14 +70,14 @@ public class InsnFinder
             private AnalyzerState state;
             private int depth;
             
-            public PopFrame(final int locals, final int stack) {
-                super(locals, stack);
+            public PopFrame(final int locals,  final int stack) {
+                super(locals,  stack);
                 this.state = AnalyzerState.SEARCH;
                 this.depth = 0;
             }
             
-            public void execute(final AbstractInsnNode insn, final Interpreter<BasicValue> interpreter) throws AnalyzerException {
-                super.execute(this.current = insn, (Interpreter)interpreter);
+            public void execute(final AbstractInsnNode insn,  final Interpreter<BasicValue> interpreter) throws AnalyzerException {
+                super.execute(this.current = insn,  (Interpreter)interpreter);
             }
             
             public void push(final BasicValue value) throws IndexOutOfBoundsException {

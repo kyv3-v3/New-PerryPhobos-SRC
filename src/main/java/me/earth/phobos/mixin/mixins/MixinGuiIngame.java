@@ -22,27 +22,27 @@ public class MixinGuiIngame extends Gui
     @Final
     public GuiNewChat persistantChatGUI;
     
-    @Inject(method = { "<init>" }, at = { @At("RETURN") })
-    public void init(final Minecraft mcIn, final CallbackInfo ci) {
+    @Inject(method = { "<init>" },  at = { @At("RETURN") })
+    public void init(final Minecraft mcIn,  final CallbackInfo ci) {
         this.persistantChatGUI = (GuiNewChat)new GuiCustomNewChat(mcIn);
     }
     
-    @Inject(method = { "renderPortal" }, at = { @At("HEAD") }, cancellable = true)
-    protected void renderPortalHook(final float n, final ScaledResolution scaledResolution, final CallbackInfo info) {
+    @Inject(method = { "renderPortal" },  at = { @At("HEAD") },  cancellable = true)
+    protected void renderPortalHook(final float n,  final ScaledResolution scaledResolution,  final CallbackInfo info) {
         if (NoRender.getInstance().isOn() && (boolean)NoRender.getInstance().portal.getValue()) {
             info.cancel();
         }
     }
     
-    @Inject(method = { "renderPumpkinOverlay" }, at = { @At("HEAD") }, cancellable = true)
-    protected void renderPumpkinOverlayHook(final ScaledResolution scaledRes, final CallbackInfo info) {
+    @Inject(method = { "renderPumpkinOverlay" },  at = { @At("HEAD") },  cancellable = true)
+    protected void renderPumpkinOverlayHook(final ScaledResolution scaledRes,  final CallbackInfo info) {
         if (NoRender.getInstance().isOn() && (boolean)NoRender.getInstance().pumpkin.getValue()) {
             info.cancel();
         }
     }
     
-    @Inject(method = { "renderPotionEffects" }, at = { @At("HEAD") }, cancellable = true)
-    protected void renderPotionEffectsHook(final ScaledResolution scaledRes, final CallbackInfo info) {
+    @Inject(method = { "renderPotionEffects" },  at = { @At("HEAD") },  cancellable = true)
+    protected void renderPotionEffectsHook(final ScaledResolution scaledRes,  final CallbackInfo info) {
         if (Phobos.moduleManager != null && !(boolean)HUD.getInstance().potionIcons.getValue()) {
             info.cancel();
         }

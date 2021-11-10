@@ -20,8 +20,8 @@ public class NoRotate extends Module
     private boolean timerReset;
     
     public NoRotate() {
-        super("NoRotate", "Dangerous to use might desync you.", Category.MISC, true, false, false);
-        this.waitDelay = (Setting<Integer>)this.register(new Setting("Delay", (T)2500, (T)0, (T)10000));
+        super("NoRotate",  "Dangerous to use might desync you.",  Category.MISC,  true,  false,  false);
+        this.waitDelay = (Setting<Integer>)this.register(new Setting("Delay", 2500, 0, 10000));
         this.timer = new TimerUtil();
         this.cancelPackets = true;
     }

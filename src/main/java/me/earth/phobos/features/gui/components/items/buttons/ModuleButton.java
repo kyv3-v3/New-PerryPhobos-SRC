@@ -32,18 +32,18 @@ public class ModuleButton extends Button
         this.initSettings();
     }
     
-    public static void drawCompleteImage(final float posX, final float posY, final int width, final int height) {
+    public static void drawCompleteImage(final float posX,  final float posY,  final int width,  final int height) {
         GL11.glPushMatrix();
-        GL11.glTranslatef(posX, posY, 0.0f);
+        GL11.glTranslatef(posX,  posY,  0.0f);
         GL11.glBegin(7);
-        GL11.glTexCoord2f(0.0f, 0.0f);
-        GL11.glVertex3f(0.0f, 0.0f, 0.0f);
-        GL11.glTexCoord2f(0.0f, 1.0f);
-        GL11.glVertex3f(0.0f, (float)height, 0.0f);
-        GL11.glTexCoord2f(1.0f, 1.0f);
-        GL11.glVertex3f((float)width, (float)height, 0.0f);
-        GL11.glTexCoord2f(1.0f, 0.0f);
-        GL11.glVertex3f((float)width, 0.0f, 0.0f);
+        GL11.glTexCoord2f(0.0f,  0.0f);
+        GL11.glVertex3f(0.0f,  0.0f,  0.0f);
+        GL11.glTexCoord2f(0.0f,  1.0f);
+        GL11.glVertex3f(0.0f,  (float)height,  0.0f);
+        GL11.glTexCoord2f(1.0f,  1.0f);
+        GL11.glVertex3f((float)width,  (float)height,  0.0f);
+        GL11.glTexCoord2f(1.0f,  0.0f);
+        GL11.glVertex3f((float)width,  0.0f,  0.0f);
         GL11.glEnd();
         GL11.glPopMatrix();
     }
@@ -77,19 +77,19 @@ public class ModuleButton extends Button
         this.items = newItems;
     }
     
-    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
+    public void drawScreen(final int mouseX,  final int mouseY,  final float partialTicks) {
+        super.drawScreen(mouseX,  mouseY,  partialTicks);
         if (!this.items.isEmpty()) {
             final ClickGui gui = Phobos.moduleManager.getModuleByClass(ClickGui.class);
-            Phobos.textManager.drawStringWithShadow(((boolean)gui.openCloseChange.getValue()) ? (this.subOpen ? gui.close.getValue() : gui.open.getValue()) : gui.moduleButton.getValue(), this.x - 1.5f + this.width - 7.4f, this.y - 2.0f - PhobosGui.getClickGui().getTextOffset(), -1);
+            Phobos.textManager.drawStringWithShadow(((boolean)gui.openCloseChange.getValue()) ? (this.subOpen ? gui.close.getValue() : gui.open.getValue()) : gui.moduleButton.getValue(),  this.x - 1.5f + this.width - 7.4f,  this.y - 2.0f - PhobosGui.getClickGui().getTextOffset(),  -1);
             if (this.subOpen) {
                 float height = 1.0f;
                 for (final Item item : this.items) {
                     if (!item.isHidden()) {
-                        item.setLocation(this.x + 1.0f, this.y + (height += 15.0f));
+                        item.setLocation(this.x + 1.0f,  this.y + (height += 15.0f));
                         item.setHeight(15);
                         item.setWidth(this.width - 9);
-                        item.drawScreen(mouseX, mouseY, partialTicks);
+                        item.drawScreen(mouseX,  mouseY,  partialTicks);
                     }
                     item.update();
                 }
@@ -97,41 +97,41 @@ public class ModuleButton extends Button
         }
         if (ClickGui.getInstance().gear.getValue()) {
             ModuleButton.mc.getTextureManager().bindTexture(this.logo);
-            drawCompleteImage(this.x - 1.5f + this.width - 7.4f, this.y - 2.2f - PhobosGui.getClickGui().getTextOffset(), 9, 9);
+            drawCompleteImage(this.x - 1.5f + this.width - 7.4f,  this.y - 2.2f - PhobosGui.getClickGui().getTextOffset(),  9,  9);
         }
-        if (ClickGui.getInstance().desc.getValue() && this.isHovering(mouseX, mouseY)) {
-            GlStateManager.translate(0.0f, 0.0f, 1.0f);
-            this.renderer.drawStringWithShadow(this.module.getDescription(), (float)(mouseX + 6), (float)mouseY, -1);
-            GlStateManager.translate(0.0f, 0.0f, -1.0f);
+        if (ClickGui.getInstance().desc.getValue() && this.isHovering(mouseX,  mouseY)) {
+            GlStateManager.translate(0.0f,  0.0f,  1.0f);
+            this.renderer.drawStringWithShadow(this.module.getDescription(),  (float)(mouseX + 6),  (float)mouseY,  -1);
+            GlStateManager.translate(0.0f,  0.0f,  -1.0f);
         }
     }
     
-    public void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
+    public void mouseClicked(final int mouseX,  final int mouseY,  final int mouseButton) {
+        super.mouseClicked(mouseX,  mouseY,  mouseButton);
         if (!this.items.isEmpty()) {
-            if (mouseButton == 1 && this.isHovering(mouseX, mouseY)) {
+            if (mouseButton == 1 && this.isHovering(mouseX,  mouseY)) {
                 this.subOpen = !this.subOpen;
-                ModuleButton.mc.getSoundHandler().playSound((ISound)PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0f));
+                ModuleButton.mc.getSoundHandler().playSound((ISound)PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK,  1.0f));
             }
             if (this.subOpen) {
                 for (final Item item : this.items) {
                     if (item.isHidden()) {
                         continue;
                     }
-                    item.mouseClicked(mouseX, mouseY, mouseButton);
+                    item.mouseClicked(mouseX,  mouseY,  mouseButton);
                 }
             }
         }
     }
     
-    public void onKeyTyped(final char typedChar, final int keyCode) {
-        super.onKeyTyped(typedChar, keyCode);
+    public void onKeyTyped(final char typedChar,  final int keyCode) {
+        super.onKeyTyped(typedChar,  keyCode);
         if (!this.items.isEmpty() && this.subOpen) {
             for (final Item item : this.items) {
                 if (item.isHidden()) {
                     continue;
                 }
-                item.onKeyTyped(typedChar, keyCode);
+                item.onKeyTyped(typedChar,  keyCode);
             }
         }
     }

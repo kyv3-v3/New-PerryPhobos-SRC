@@ -12,21 +12,21 @@ import javax.lang.model.element.*;
 import javax.tools.*;
 import java.util.*;
 
-@SupportedAnnotationTypes({ "org.spongepowered.asm.mixin.injection.Inject", "org.spongepowered.asm.mixin.injection.ModifyArg", "org.spongepowered.asm.mixin.injection.ModifyArgs", "org.spongepowered.asm.mixin.injection.Redirect", "org.spongepowered.asm.mixin.injection.At" })
+@SupportedAnnotationTypes({ "org.spongepowered.asm.mixin.injection.Inject",  "org.spongepowered.asm.mixin.injection.ModifyArg",  "org.spongepowered.asm.mixin.injection.ModifyArgs",  "org.spongepowered.asm.mixin.injection.Redirect",  "org.spongepowered.asm.mixin.injection.At" })
 public class MixinObfuscationProcessorInjection extends MixinObfuscationProcessor
 {
-    public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
+    public boolean process(final Set<? extends TypeElement> annotations,  final RoundEnvironment roundEnv) {
         if (roundEnv.processingOver()) {
             this.postProcess(roundEnv);
             return true;
         }
         this.processMixins(roundEnv);
-        this.processInjectors(roundEnv, (Class<? extends Annotation>)Inject.class);
-        this.processInjectors(roundEnv, (Class<? extends Annotation>)ModifyArg.class);
-        this.processInjectors(roundEnv, (Class<? extends Annotation>)ModifyArgs.class);
-        this.processInjectors(roundEnv, (Class<? extends Annotation>)Redirect.class);
-        this.processInjectors(roundEnv, (Class<? extends Annotation>)ModifyVariable.class);
-        this.processInjectors(roundEnv, (Class<? extends Annotation>)ModifyConstant.class);
+        this.processInjectors(roundEnv,  (Class<? extends Annotation>)Inject.class);
+        this.processInjectors(roundEnv,  (Class<? extends Annotation>)ModifyArg.class);
+        this.processInjectors(roundEnv,  (Class<? extends Annotation>)ModifyArgs.class);
+        this.processInjectors(roundEnv,  (Class<? extends Annotation>)Redirect.class);
+        this.processInjectors(roundEnv,  (Class<? extends Annotation>)ModifyVariable.class);
+        this.processInjectors(roundEnv,  (Class<? extends Annotation>)ModifyConstant.class);
         this.postProcess(roundEnv);
         return true;
     }
@@ -41,18 +41,18 @@ public class MixinObfuscationProcessorInjection extends MixinObfuscationProcesso
         }
     }
     
-    private void processInjectors(final RoundEnvironment roundEnv, final Class<? extends Annotation> injectorClass) {
+    private void processInjectors(final RoundEnvironment roundEnv,  final Class<? extends Annotation> injectorClass) {
         for (final Element elem : roundEnv.getElementsAnnotatedWith(injectorClass)) {
             final Element parent = elem.getEnclosingElement();
             if (!(parent instanceof TypeElement)) {
                 throw new IllegalStateException("@" + injectorClass.getSimpleName() + " element has unexpected parent with type " + TypeUtils.getElementType(parent));
             }
-            final AnnotationHandle inject = AnnotationHandle.of(elem, (Class)injectorClass);
+            final AnnotationHandle inject = AnnotationHandle.of(elem,  (Class)injectorClass);
             if (elem.getKind() == ElementKind.METHOD) {
-                this.mixins.registerInjector((TypeElement)parent, (ExecutableElement)elem, inject);
+                this.mixins.registerInjector((TypeElement)parent,  (ExecutableElement)elem,  inject);
             }
             else {
-                this.mixins.printMessage(Diagnostic.Kind.WARNING, (CharSequence)("Found an @" + injectorClass.getSimpleName() + " annotation on an element which is not a method: " + elem.toString()));
+                this.mixins.printMessage(Diagnostic.Kind.WARNING,  (CharSequence)("Found an @" + injectorClass.getSimpleName() + " annotation on an element which is not a method: " + elem.toString()));
             }
         }
     }

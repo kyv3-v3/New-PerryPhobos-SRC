@@ -19,15 +19,15 @@ public class ModifyConstantInjectionInfo extends InjectionInfo
 {
     private static final String CONSTANT_ANNOTATION_CLASS;
     
-    public ModifyConstantInjectionInfo(final MixinTargetContext mixin, final MethodNode method, final AnnotationNode annotation) {
-        super(mixin, method, annotation, "constant");
+    public ModifyConstantInjectionInfo(final MixinTargetContext mixin,  final MethodNode method,  final AnnotationNode annotation) {
+        super(mixin,  method,  annotation,  "constant");
     }
     
     protected List<AnnotationNode> readInjectionPoints(final String type) {
         List<AnnotationNode> ats = (List<AnnotationNode>)super.readInjectionPoints(type);
         if (ats.isEmpty()) {
             final AnnotationNode c = new AnnotationNode(ModifyConstantInjectionInfo.CONSTANT_ANNOTATION_CLASS);
-            c.visit("log", (Object)Boolean.TRUE);
+            c.visit("log",  (Object)Boolean.TRUE);
             ats = (List<AnnotationNode>)ImmutableList.of((Object)c);
         }
         return ats;
@@ -36,7 +36,7 @@ public class ModifyConstantInjectionInfo extends InjectionInfo
     protected void parseInjectionPoints(final List<AnnotationNode> ats) {
         final Type returnType = Type.getReturnType(this.method.desc);
         for (final AnnotationNode at : ats) {
-            this.injectionPoints.add(new BeforeConstant(this.getContext(), at, returnType.getDescriptor()));
+            this.injectionPoints.add(new BeforeConstant(this.getContext(),  at,  returnType.getDescriptor()));
         }
     }
     
@@ -53,6 +53,6 @@ public class ModifyConstantInjectionInfo extends InjectionInfo
     }
     
     static {
-        CONSTANT_ANNOTATION_CLASS = Constant.class.getName().replace('.', '/');
+        CONSTANT_ANNOTATION_CLASS = Constant.class.getName().replace('.',  '/');
     }
 }

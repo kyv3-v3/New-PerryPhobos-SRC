@@ -12,6 +12,6 @@ public class AlreadyLoggedInException extends Exception
     
     @Override
     public String getLocalizedMessage() {
-        return I18n.format("ias.alreadyloggedin", new Object[0]);
+        return I18n.format("ias.alreadyloggedin",  new Object[0]);
     }
 }

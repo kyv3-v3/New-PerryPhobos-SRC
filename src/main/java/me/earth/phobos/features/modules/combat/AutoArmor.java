@@ -44,20 +44,20 @@ public class AutoArmor extends Module
     private boolean elytraOn;
     
     public AutoArmor() {
-        super("AutoArmor", "Puts Armor on for you.", Category.COMBAT, true, false, false);
-        this.delay = (Setting<Integer>)this.register(new Setting("Delay", (T)50, (T)0, (T)500));
-        this.mendingTakeOff = (Setting<Boolean>)this.register(new Setting("AutoMend", (T)false));
-        this.closestEnemy = (Setting<Integer>)this.register(new Setting("Enemy", (T)8, (T)1, (T)20, v -> this.mendingTakeOff.getValue()));
-        this.helmetThreshold = (Setting<Integer>)this.register(new Setting("Helmet%", (T)80, (T)1, (T)100, v -> this.mendingTakeOff.getValue()));
-        this.chestThreshold = (Setting<Integer>)this.register(new Setting("Chest%", (T)80, (T)1, (T)100, v -> this.mendingTakeOff.getValue()));
-        this.legThreshold = (Setting<Integer>)this.register(new Setting("Legs%", (T)80, (T)1, (T)100, v -> this.mendingTakeOff.getValue()));
-        this.bootsThreshold = (Setting<Integer>)this.register(new Setting("Boots%", (T)80, (T)1, (T)100, v -> this.mendingTakeOff.getValue()));
-        this.curse = (Setting<Boolean>)this.register(new Setting("CurseOfBinding", (T)false));
-        this.actions = (Setting<Integer>)this.register(new Setting("Actions", (T)3, (T)1, (T)12));
-        this.elytraBind = (Setting<Bind>)this.register(new Setting("Elytra", (T)new Bind(-1)));
-        this.tps = (Setting<Boolean>)this.register(new Setting("TpsSync", (T)true));
-        this.updateController = (Setting<Boolean>)this.register(new Setting("Update", (T)true));
-        this.shiftClick = (Setting<Boolean>)this.register(new Setting("ShiftClick", (T)false));
+        super("AutoArmor",  "Puts Armor on for you.",  Category.COMBAT,  true,  false,  false);
+        this.delay = (Setting<Integer>)this.register(new Setting("Delay", 50, 0, 500));
+        this.mendingTakeOff = (Setting<Boolean>)this.register(new Setting("AutoMend", false));
+        this.closestEnemy = (Setting<Integer>)this.register(new Setting("Enemy", 8, 1, 20,  v -> this.mendingTakeOff.getValue()));
+        this.helmetThreshold = (Setting<Integer>)this.register(new Setting("Helmet%", 80, 1, 100,  v -> this.mendingTakeOff.getValue()));
+        this.chestThreshold = (Setting<Integer>)this.register(new Setting("Chest%", 80, 1, 100,  v -> this.mendingTakeOff.getValue()));
+        this.legThreshold = (Setting<Integer>)this.register(new Setting("Legs%", 80, 1, 100,  v -> this.mendingTakeOff.getValue()));
+        this.bootsThreshold = (Setting<Integer>)this.register(new Setting("Boots%", 80, 1, 100,  v -> this.mendingTakeOff.getValue()));
+        this.curse = (Setting<Boolean>)this.register(new Setting("CurseOfBinding", false));
+        this.actions = (Setting<Integer>)this.register(new Setting("Actions", 3, 1, 12));
+        this.elytraBind = (Setting<Bind>)this.register(new Setting("Elytra", new Bind(-1)));
+        this.tps = (Setting<Boolean>)this.register(new Setting("TpsSync", true));
+        this.updateController = (Setting<Boolean>)this.register(new Setting("Update", true));
+        this.shiftClick = (Setting<Boolean>)this.register(new Setting("ShiftClick", false));
         this.timer = new TimerUtil();
         this.elytraTimer = new TimerUtil();
         this.taskList = new ConcurrentLinkedQueue<InventoryUtil.Task>();
@@ -96,7 +96,7 @@ public class AutoArmor extends Module
             return;
         }
         if (this.taskList.isEmpty()) {
-            if (this.mendingTakeOff.getValue() && InventoryUtil.holdingItem(ItemExpBottle.class) && AutoArmor.mc.gameSettings.keyBindUseItem.isKeyDown() && (this.isSafe() || EntityUtil.isSafe((Entity)AutoArmor.mc.player, 1, false, true))) {
+            if (this.mendingTakeOff.getValue() && InventoryUtil.holdingItem(ItemExpBottle.class) && AutoArmor.mc.gameSettings.keyBindUseItem.isKeyDown() && (this.isSafe() || EntityUtil.isSafe((Entity)AutoArmor.mc.player,  1,  false,  true))) {
                 final ItemStack helm = AutoArmor.mc.player.inventoryContainer.getSlot(5).getStack();
                 if (!helm.isEmpty && DamageUtil.getRoundedDamage(helm) >= this.helmetThreshold.getValue()) {
                     this.takeOffSlot(5);
@@ -117,21 +117,21 @@ public class AutoArmor extends Module
             }
             final ItemStack helm = AutoArmor.mc.player.inventoryContainer.getSlot(5).getStack();
             final int slot4;
-            if (helm.getItem() == Items.AIR && (slot4 = InventoryUtil.findArmorSlot(EntityEquipmentSlot.HEAD, this.curse.getValue(), XCarry.getInstance().isOn())) != -1) {
-                this.getSlotOn(5, slot4);
+            if (helm.getItem() == Items.AIR && (slot4 = InventoryUtil.findArmorSlot(EntityEquipmentSlot.HEAD,  this.curse.getValue(),  XCarry.getInstance().isOn())) != -1) {
+                this.getSlotOn(5,  slot4);
             }
             final ItemStack chest3;
             if ((chest3 = AutoArmor.mc.player.inventoryContainer.getSlot(6).getStack()).getItem() == Items.AIR) {
                 if (this.taskList.isEmpty()) {
                     if (this.elytraOn && this.elytraTimer.passedMs(500L)) {
-                        final int elytraSlot = InventoryUtil.findItemInventorySlot(Items.ELYTRA, false, XCarry.getInstance().isOn());
+                        final int elytraSlot = InventoryUtil.findItemInventorySlot(Items.ELYTRA,  false,  XCarry.getInstance().isOn());
                         if (elytraSlot != -1) {
                             if ((elytraSlot < 5 && elytraSlot > 1) || !this.shiftClick.getValue()) {
                                 this.taskList.add(new InventoryUtil.Task(elytraSlot));
                                 this.taskList.add(new InventoryUtil.Task(6));
                             }
                             else {
-                                this.taskList.add(new InventoryUtil.Task(elytraSlot, true));
+                                this.taskList.add(new InventoryUtil.Task(elytraSlot,  true));
                             }
                             if (this.updateController.getValue()) {
                                 this.taskList.add(new InventoryUtil.Task());
@@ -141,15 +141,15 @@ public class AutoArmor extends Module
                     }
                     else {
                         final int slot5;
-                        if (!this.elytraOn && (slot5 = InventoryUtil.findArmorSlot(EntityEquipmentSlot.CHEST, this.curse.getValue(), XCarry.getInstance().isOn())) != -1) {
-                            this.getSlotOn(6, slot5);
+                        if (!this.elytraOn && (slot5 = InventoryUtil.findArmorSlot(EntityEquipmentSlot.CHEST,  this.curse.getValue(),  XCarry.getInstance().isOn())) != -1) {
+                            this.getSlotOn(6,  slot5);
                         }
                     }
                 }
             }
             else if (this.elytraOn && chest3.getItem() != Items.ELYTRA && this.elytraTimer.passedMs(500L)) {
                 if (this.taskList.isEmpty()) {
-                    final int slot5 = InventoryUtil.findItemInventorySlot(Items.ELYTRA, false, XCarry.getInstance().isOn());
+                    final int slot5 = InventoryUtil.findItemInventorySlot(Items.ELYTRA,  false,  XCarry.getInstance().isOn());
                     if (slot5 != -1) {
                         this.taskList.add(new InventoryUtil.Task(slot5));
                         this.taskList.add(new InventoryUtil.Task(6));
@@ -162,9 +162,9 @@ public class AutoArmor extends Module
                 }
             }
             else if (!this.elytraOn && chest3.getItem() == Items.ELYTRA && this.elytraTimer.passedMs(500L) && this.taskList.isEmpty()) {
-                int slot5 = InventoryUtil.findItemInventorySlot((Item)Items.DIAMOND_CHESTPLATE, false, XCarry.getInstance().isOn());
-                if (slot5 == -1 && (slot5 = InventoryUtil.findItemInventorySlot((Item)Items.IRON_CHESTPLATE, false, XCarry.getInstance().isOn())) == -1 && (slot5 = InventoryUtil.findItemInventorySlot((Item)Items.GOLDEN_CHESTPLATE, false, XCarry.getInstance().isOn())) == -1 && (slot5 = InventoryUtil.findItemInventorySlot((Item)Items.CHAINMAIL_CHESTPLATE, false, XCarry.getInstance().isOn())) == -1) {
-                    slot5 = InventoryUtil.findItemInventorySlot((Item)Items.LEATHER_CHESTPLATE, false, XCarry.getInstance().isOn());
+                int slot5 = InventoryUtil.findItemInventorySlot((Item)Items.DIAMOND_CHESTPLATE,  false,  XCarry.getInstance().isOn());
+                if (slot5 == -1 && (slot5 = InventoryUtil.findItemInventorySlot((Item)Items.IRON_CHESTPLATE,  false,  XCarry.getInstance().isOn())) == -1 && (slot5 = InventoryUtil.findItemInventorySlot((Item)Items.GOLDEN_CHESTPLATE,  false,  XCarry.getInstance().isOn())) == -1 && (slot5 = InventoryUtil.findItemInventorySlot((Item)Items.CHAINMAIL_CHESTPLATE,  false,  XCarry.getInstance().isOn())) == -1) {
+                    slot5 = InventoryUtil.findItemInventorySlot((Item)Items.LEATHER_CHESTPLATE,  false,  XCarry.getInstance().isOn());
                 }
                 if (slot5 != -1) {
                     this.taskList.add(new InventoryUtil.Task(slot5));
@@ -177,12 +177,12 @@ public class AutoArmor extends Module
                 this.elytraTimer.reset();
             }
             final int slot6;
-            if (AutoArmor.mc.player.inventoryContainer.getSlot(7).getStack().getItem() == Items.AIR && (slot6 = InventoryUtil.findArmorSlot(EntityEquipmentSlot.LEGS, this.curse.getValue(), XCarry.getInstance().isOn())) != -1) {
-                this.getSlotOn(7, slot6);
+            if (AutoArmor.mc.player.inventoryContainer.getSlot(7).getStack().getItem() == Items.AIR && (slot6 = InventoryUtil.findArmorSlot(EntityEquipmentSlot.LEGS,  this.curse.getValue(),  XCarry.getInstance().isOn())) != -1) {
+                this.getSlotOn(7,  slot6);
             }
             final int slot7;
-            if (AutoArmor.mc.player.inventoryContainer.getSlot(8).getStack().getItem() == Items.AIR && (slot7 = InventoryUtil.findArmorSlot(EntityEquipmentSlot.FEET, this.curse.getValue(), XCarry.getInstance().isOn())) != -1) {
-                this.getSlotOn(8, slot7);
+            if (AutoArmor.mc.player.inventoryContainer.getSlot(8).getStack().getItem() == Items.AIR && (slot7 = InventoryUtil.findArmorSlot(EntityEquipmentSlot.FEET,  this.curse.getValue(),  XCarry.getInstance().isOn())) != -1) {
+                this.getSlotOn(8,  slot7);
             }
         }
         if (this.timer.passedMs((int)(this.delay.getValue() * (this.tps.getValue() ? Phobos.serverManager.getTpsFactor() : 1.0f)))) {
@@ -222,7 +222,7 @@ public class AutoArmor extends Module
                     this.taskList.add(new InventoryUtil.Task(target));
                 }
                 else {
-                    this.taskList.add(new InventoryUtil.Task(slot, true));
+                    this.taskList.add(new InventoryUtil.Task(slot,  true));
                 }
                 if (this.updateController.getValue()) {
                     this.taskList.add(new InventoryUtil.Task());
@@ -231,7 +231,7 @@ public class AutoArmor extends Module
         }
     }
     
-    private void getSlotOn(final int slot, final int target) {
+    private void getSlotOn(final int slot,  final int target) {
         if (this.taskList.isEmpty()) {
             this.doneSlots.remove((Object)target);
             if ((target < 5 && target > 0) || !this.shiftClick.getValue()) {
@@ -239,7 +239,7 @@ public class AutoArmor extends Module
                 this.taskList.add(new InventoryUtil.Task(slot));
             }
             else {
-                this.taskList.add(new InventoryUtil.Task(target, true));
+                this.taskList.add(new InventoryUtil.Task(target,  true));
             }
             if (this.updateController.getValue()) {
                 this.taskList.add(new InventoryUtil.Task());

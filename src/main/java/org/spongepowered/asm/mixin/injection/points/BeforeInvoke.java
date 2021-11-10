@@ -29,7 +29,7 @@ public class BeforeInvoke extends InjectionPoint
         this.log = false;
         this.target = data.getTarget();
         this.ordinal = data.getOrdinal();
-        this.log = data.get("log", false);
+        this.log = data.get("log",  false);
         this.className = this.getClassName();
         this.context = data.getContext();
         this.allowPermissive = (this.context.getOption(MixinEnvironment.Option.REFMAP_REMAP) && this.context.getOption(MixinEnvironment.Option.REFMAP_REMAP_ALLOW_PERMISSIVE) && !this.context.getReferenceMapper().isDefault());
@@ -37,7 +37,7 @@ public class BeforeInvoke extends InjectionPoint
     
     private String getClassName() {
         final InjectionPoint.AtCode atCode = this.getClass().getAnnotation(InjectionPoint.AtCode.class);
-        return String.format("@At(%s)", (atCode != null) ? atCode.value() : this.getClass().getSimpleName().toUpperCase());
+        return String.format("@At(%s)",  (atCode != null) ? atCode.value() : this.getClass().getSimpleName().toUpperCase());
     }
     
     public BeforeInvoke setLogging(final boolean logging) {
@@ -45,16 +45,16 @@ public class BeforeInvoke extends InjectionPoint
         return this;
     }
     
-    public boolean find(final String desc, final InsnList insns, final Collection<AbstractInsnNode> nodes) {
-        this.log("{} is searching for an injection point in method with descriptor {}", this.className, desc);
-        if (!this.find(desc, insns, nodes, this.target, SearchType.STRICT) && this.target.desc != null && this.allowPermissive) {
-            this.logger.warn("STRICT match for {} using \"{}\" in {} returned 0 results, attempting permissive search. To inhibit permissive search set mixin.env.allowPermissiveMatch=false", new Object[] { this.className, this.target, this.context });
-            return this.find(desc, insns, nodes, this.target, SearchType.PERMISSIVE);
+    public boolean find(final String desc,  final InsnList insns,  final Collection<AbstractInsnNode> nodes) {
+        this.log("{} is searching for an injection point in method with descriptor {}",  this.className,  desc);
+        if (!this.find(desc,  insns,  nodes,  this.target,  SearchType.STRICT) && this.target.desc != null && this.allowPermissive) {
+            this.logger.warn("STRICT match for {} using \"{}\" in {} returned 0 results,  attempting permissive search. To inhibit permissive search set mixin.env.allowPermissiveMatch=false",  new Object[] { this.className,  this.target,  this.context });
+            return this.find(desc,  insns,  nodes,  this.target,  SearchType.PERMISSIVE);
         }
         return true;
     }
     
-    protected boolean find(final String desc, final InsnList insns, final Collection<AbstractInsnNode> nodes, final MemberInfo member, final SearchType searchType) {
+    protected boolean find(final String desc,  final InsnList insns,  final Collection<AbstractInsnNode> nodes,  final MemberInfo member,  final SearchType searchType) {
         if (member == null) {
             return false;
         }
@@ -64,12 +64,12 @@ public class BeforeInvoke extends InjectionPoint
         for (final AbstractInsnNode insn : insns) {
             if (this.matchesInsn(insn)) {
                 final MemberInfo nodeInfo = new MemberInfo(insn);
-                this.log("{} is considering insn {}", this.className, nodeInfo);
-                if (target.matches(nodeInfo.owner, nodeInfo.name, nodeInfo.desc)) {
-                    this.log("{} > found a matching insn, checking preconditions...", this.className);
-                    if (this.matchesInsn(nodeInfo, ordinal)) {
-                        this.log("{} > > > found a matching insn at ordinal {}", this.className, ordinal);
-                        if (this.addInsn(insns, nodes, insn)) {
+                this.log("{} is considering insn {}",  this.className,  nodeInfo);
+                if (target.matches(nodeInfo.owner,  nodeInfo.name,  nodeInfo.desc)) {
+                    this.log("{} > found a matching insn,  checking preconditions...",  this.className);
+                    if (this.matchesInsn(nodeInfo,  ordinal)) {
+                        this.log("{} > > > found a matching insn at ordinal {}",  this.className,  ordinal);
+                        if (this.addInsn(insns,  nodes,  insn)) {
                             ++found;
                         }
                         if (this.ordinal == ordinal) {
@@ -79,15 +79,15 @@ public class BeforeInvoke extends InjectionPoint
                     ++ordinal;
                 }
             }
-            this.inspectInsn(desc, insns, insn);
+            this.inspectInsn(desc,  insns,  insn);
         }
         if (searchType == SearchType.PERMISSIVE && found > 1) {
-            this.logger.warn("A permissive match for {} using \"{}\" in {} matched {} instructions, this may cause unexpected behaviour. To inhibit permissive search set mixin.env.allowPermissiveMatch=false", new Object[] { this.className, member, this.context, found });
+            this.logger.warn("A permissive match for {} using \"{}\" in {} matched {} instructions,  this may cause unexpected behaviour. To inhibit permissive search set mixin.env.allowPermissiveMatch=false",  new Object[] { this.className,  member,  this.context,  found });
         }
         return found > 0;
     }
     
-    protected boolean addInsn(final InsnList insns, final Collection<AbstractInsnNode> nodes, final AbstractInsnNode insn) {
+    protected boolean addInsn(final InsnList insns,  final Collection<AbstractInsnNode> nodes,  final AbstractInsnNode insn) {
         nodes.add(insn);
         return true;
     }
@@ -96,23 +96,23 @@ public class BeforeInvoke extends InjectionPoint
         return insn instanceof MethodInsnNode;
     }
     
-    protected void inspectInsn(final String desc, final InsnList insns, final AbstractInsnNode insn) {
+    protected void inspectInsn(final String desc,  final InsnList insns,  final AbstractInsnNode insn) {
     }
     
-    protected boolean matchesInsn(final MemberInfo nodeInfo, final int ordinal) {
-        this.log("{} > > comparing target ordinal {} with current ordinal {}", this.className, this.ordinal, ordinal);
+    protected boolean matchesInsn(final MemberInfo nodeInfo,  final int ordinal) {
+        this.log("{} > > comparing target ordinal {} with current ordinal {}",  this.className,  this.ordinal,  ordinal);
         return this.ordinal == -1 || this.ordinal == ordinal;
     }
     
-    protected void log(final String message, final Object... params) {
+    protected void log(final String message,  final Object... params) {
         if (this.log) {
-            this.logger.info(message, params);
+            this.logger.info(message,  params);
         }
     }
     
     public enum SearchType
     {
-        STRICT, 
+        STRICT,  
         PERMISSIVE;
     }
 }

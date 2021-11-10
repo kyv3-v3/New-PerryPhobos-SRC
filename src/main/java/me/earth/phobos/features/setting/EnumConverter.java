@@ -8,7 +8,7 @@ import com.google.common.base.*;
 import me.earth.phobos.features.modules.combat.*;
 import com.google.gson.*;
 
-public class EnumConverter extends Converter<Enum, JsonElement>
+public class EnumConverter extends Converter<Enum,  JsonElement>
 {
     private final Class<? extends Enum> clazz;
     
@@ -47,7 +47,7 @@ public class EnumConverter extends Converter<Enum, JsonElement>
     
     public Enum doBackward(final JsonElement jsonElement) {
         try {
-            return (Enum)Enum.valueOf(this.clazz, jsonElement.getAsString());
+            return (Enum)Enum.valueOf(this.clazz,  jsonElement.getAsString());
         }
         catch (IllegalArgumentException e) {
             return null;

@@ -22,11 +22,11 @@ public class Logger extends Module
     public Setting<Boolean> noPing;
     
     public Logger() {
-        super("Logger", "Logs packets.", Category.MISC, true, false, false);
-        this.packets = (Setting<Packets>)this.register(new Setting("Packets", (T)Packets.OUTGOING));
-        this.chat = (Setting<Boolean>)this.register(new Setting("Chat", (T)false));
-        this.fullInfo = (Setting<Boolean>)this.register(new Setting("FullInfo", (T)false));
-        this.noPing = (Setting<Boolean>)this.register(new Setting("NoPing", (T)false));
+        super("Logger",  "Logs packets.",  Category.MISC,  true,  false,  false);
+        this.packets = (Setting<Packets>)this.register(new Setting("Packets", Packets.OUTGOING));
+        this.chat = (Setting<Boolean>)this.register(new Setting("Chat", false));
+        this.fullInfo = (Setting<Boolean>)this.register(new Setting("FullInfo", false));
+        this.noPing = (Setting<Boolean>)this.register(new Setting("NoPing", false));
     }
     
     @SubscribeEvent(receiveCanceled = true)
@@ -39,7 +39,7 @@ public class Logger extends Module
                 Command.sendMessage(event.getPacket().toString());
             }
             else {
-                this.writePacketOnConsole((Packet<?>)event.getPacket(), false);
+                this.writePacketOnConsole((Packet<?>)event.getPacket(),  false);
             }
         }
     }
@@ -54,12 +54,12 @@ public class Logger extends Module
                 Command.sendMessage(event.getPacket().toString());
             }
             else {
-                this.writePacketOnConsole((Packet<?>)event.getPacket(), true);
+                this.writePacketOnConsole((Packet<?>)event.getPacket(),  true);
             }
         }
     }
     
-    private void writePacketOnConsole(final Packet<?> packet, final boolean in) {
+    private void writePacketOnConsole(final Packet<?> packet,  final boolean in) {
         if (this.fullInfo.getValue()) {
             System.out.println((in ? "In: " : "Send: ") + packet.getClass().getSimpleName() + " {");
             try {
@@ -86,9 +86,9 @@ public class Logger extends Module
     
     public enum Packets
     {
-        NONE, 
-        INCOMING, 
-        OUTGOING, 
+        NONE,  
+        INCOMING,  
+        OUTGOING,  
         ALL;
     }
 }

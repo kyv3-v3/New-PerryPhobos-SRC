@@ -21,26 +21,26 @@ public final class Mixins
     public static void addConfigurations(final String... configFiles) {
         final MixinEnvironment fallback = MixinEnvironment.getDefaultEnvironment();
         for (final String configFile : configFiles) {
-            createConfiguration(configFile, fallback);
+            createConfiguration(configFile,  fallback);
         }
     }
     
     public static void addConfiguration(final String configFile) {
-        createConfiguration(configFile, MixinEnvironment.getDefaultEnvironment());
+        createConfiguration(configFile,  MixinEnvironment.getDefaultEnvironment());
     }
     
     @Deprecated
-    static void addConfiguration(final String configFile, final MixinEnvironment fallback) {
-        createConfiguration(configFile, fallback);
+    static void addConfiguration(final String configFile,  final MixinEnvironment fallback) {
+        createConfiguration(configFile,  fallback);
     }
     
-    private static void createConfiguration(final String configFile, final MixinEnvironment fallback) {
+    private static void createConfiguration(final String configFile,  final MixinEnvironment fallback) {
         Config config = null;
         try {
-            config = Config.create(configFile, fallback);
+            config = Config.create(configFile,  fallback);
         }
         catch (Exception ex) {
-            Mixins.logger.error("Error encountered reading mixin config " + configFile + ": " + ex.getClass().getName() + " " + ex.getMessage(), (Throwable)ex);
+            Mixins.logger.error("Error encountered reading mixin config " + configFile + ": " + ex.getClass().getName() + " " + ex.getMessage(),  (Throwable)ex);
         }
         registerConfiguration(config);
     }
@@ -70,7 +70,7 @@ public final class Mixins
         Set<Config> mixinConfigs = (Set<Config>)GlobalProperties.get("mixin.configs.queue");
         if (mixinConfigs == null) {
             mixinConfigs = new LinkedHashSet<Config>();
-            GlobalProperties.put("mixin.configs.queue", (Object)mixinConfigs);
+            GlobalProperties.put("mixin.configs.queue",  (Object)mixinConfigs);
         }
         return mixinConfigs;
     }

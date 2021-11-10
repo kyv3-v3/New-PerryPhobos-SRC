@@ -14,14 +14,14 @@ import net.minecraft.entity.player.*;
 
 public class MobOwner extends Module
 {
-    private final Map<Entity, String> owners;
-    private final Map<Entity, UUID> toLookUp;
+    private final Map<Entity,  String> owners;
+    private final Map<Entity,  UUID> toLookUp;
     private final List<Entity> lookedUp;
     
     public MobOwner() {
-        super("MobOwner", "Shows you who owns mobs.", Category.MISC, false, false, false);
-        this.owners = new HashMap<Entity, String>();
-        this.toLookUp = new ConcurrentHashMap<Entity, UUID>();
+        super("MobOwner",  "Shows you who owns mobs.",  Category.MISC,  false,  false,  false);
+        this.owners = new HashMap<Entity,  String>();
+        this.toLookUp = new ConcurrentHashMap<Entity,  UUID>();
         this.lookedUp = new ArrayList<Entity>();
     }
     
@@ -31,7 +31,7 @@ public class MobOwner extends Module
             return;
         }
         if (PlayerUtil.timer.passedS(5.0)) {
-            for (final Map.Entry<Entity, UUID> entry : this.toLookUp.entrySet()) {
+            for (final Map.Entry<Entity,  UUID> entry : this.toLookUp.entrySet()) {
                 final Entity entity = entry.getKey();
                 final UUID uuid = entry.getValue();
                 if (uuid != null) {
@@ -40,7 +40,7 @@ public class MobOwner extends Module
                         try {
                             final String name = PlayerUtil.getNameFromUUID(uuid);
                             if (name != null) {
-                                this.owners.put(entity, name);
+                                this.owners.put(entity,  name);
                                 this.lookedUp.add(entity);
                             }
                         }
@@ -51,7 +51,7 @@ public class MobOwner extends Module
                         PlayerUtil.timer.reset();
                         break;
                     }
-                    this.owners.put(entity, owner.getName());
+                    this.owners.put(entity,  owner.getName());
                     this.lookedUp.add(entity);
                 }
                 else {
@@ -78,7 +78,7 @@ public class MobOwner extends Module
                         if (this.lookedUp.contains(entity2)) {
                             continue;
                         }
-                        this.toLookUp.put((Entity)tameableEntity, tameableEntity.getOwnerId());
+                        this.toLookUp.put((Entity)tameableEntity,  tameableEntity.getOwnerId());
                     }
                 }
                 else {
@@ -100,7 +100,7 @@ public class MobOwner extends Module
                         if (this.lookedUp.contains(entity2)) {
                             continue;
                         }
-                        this.toLookUp.put((Entity)tameableEntity2, tameableEntity2.getOwnerUniqueId());
+                        this.toLookUp.put((Entity)tameableEntity2,  tameableEntity2.getOwnerUniqueId());
                     }
                 }
             }

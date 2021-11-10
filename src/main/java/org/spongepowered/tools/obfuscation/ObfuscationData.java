@@ -8,7 +8,7 @@ import java.util.*;
 
 public class ObfuscationData<T> implements Iterable<ObfuscationType>
 {
-    private final Map<ObfuscationType, T> data;
+    private final Map<ObfuscationType,  T> data;
     private final T defaultValue;
     
     public ObfuscationData() {
@@ -16,17 +16,17 @@ public class ObfuscationData<T> implements Iterable<ObfuscationType>
     }
     
     public ObfuscationData(final T defaultValue) {
-        this.data = new HashMap<ObfuscationType, T>();
+        this.data = new HashMap<ObfuscationType,  T>();
         this.defaultValue = defaultValue;
     }
     
     @Deprecated
-    public void add(final ObfuscationType type, final T value) {
-        this.put(type, value);
+    public void add(final ObfuscationType type,  final T value) {
+        this.put(type,  value);
     }
     
-    public void put(final ObfuscationType type, final T value) {
-        this.data.put(type, value);
+    public void put(final ObfuscationType type,  final T value) {
+        this.data.put(type,  value);
     }
     
     public boolean isEmpty() {
@@ -45,7 +45,7 @@ public class ObfuscationData<T> implements Iterable<ObfuscationType>
     
     @Override
     public String toString() {
-        return String.format("ObfuscationData[%s,DEFAULT=%s]", this.listValues(), this.defaultValue);
+        return String.format("ObfuscationData[%s, DEFAULT=%s]",  this.listValues(),  this.defaultValue);
     }
     
     public String values() {
@@ -57,7 +57,7 @@ public class ObfuscationData<T> implements Iterable<ObfuscationType>
         boolean delim = false;
         for (final ObfuscationType type : this.data.keySet()) {
             if (delim) {
-                sb.append(',');
+                sb.append(', ');
             }
             sb.append(type.getKey()).append('=').append(this.data.get(type));
             delim = true;

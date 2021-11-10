@@ -11,5 +11,5 @@ public interface ITypeHandleProvider
 {
     TypeHandle getTypeHandle(final String p0);
     
-    TypeHandle getSimulatedHandle(final String p0, final TypeMirror p1);
+    TypeHandle getSimulatedHandle(final String p0,  final TypeMirror p1);
 }

@@ -27,7 +27,7 @@ public class RenderItemEvent extends EventStage
     double offHandScaleY;
     double offHandScaleZ;
     
-    public RenderItemEvent(final double mainX, final double mainY, final double mainZ, final double offX, final double offY, final double offZ, final double mainRotX, final double mainRotY, final double mainRotZ, final double offRotX, final double offRotY, final double offRotZ, final double mainHandScaleX, final double mainHandScaleY, final double mainHandScaleZ, final double offHandScaleX, final double offHandScaleY, final double offHandScaleZ) {
+    public RenderItemEvent(final double mainX,  final double mainY,  final double mainZ,  final double offX,  final double offY,  final double offZ,  final double mainRotX,  final double mainRotY,  final double mainRotZ,  final double offRotX,  final double offRotY,  final double offRotZ,  final double mainHandScaleX,  final double mainHandScaleY,  final double mainHandScaleZ,  final double offHandScaleX,  final double offHandScaleY,  final double offHandScaleZ) {
         this.mainX = mainX;
         this.mainY = mainY;
         this.mainZ = mainZ;

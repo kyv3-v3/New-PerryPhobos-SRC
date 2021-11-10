@@ -44,32 +44,32 @@ public class Scaffold extends Module
     private boolean teleported;
     
     public Scaffold() {
-        super("Scaffold", "Places Blocks underneath you.", Module.Category.PLAYER, true, false, false);
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", (T)Mode.New));
-        this.swing = (Setting<Boolean>)this.register(new Setting("Swing Arm", (T)true, bl -> this.mode.getValue() == Mode.New));
-        this.bSwitch = (Setting<Boolean>)this.register(new Setting("Switch", (T)true, bl -> this.mode.getValue() == Mode.New));
-        this.center = (Setting<Boolean>)this.register(new Setting("Center", (T)false, bl -> this.mode.getValue() == Mode.New));
-        this.tower = (Setting<Boolean>)this.register(new Setting("Tower", (T)true, bl -> this.mode.getValue() == Mode.New));
-        this.keepY = (Setting<Boolean>)this.register(new Setting("KeepYLevel", (T)false, bl -> this.mode.getValue() == Mode.New));
-        this.sprint = (Setting<Boolean>)this.register(new Setting("UseSprint", (T)true, bl -> this.mode.getValue() == Mode.New));
-        this.replenishBlocks = (Setting<Boolean>)this.register(new Setting("ReplenishBlocks", (T)true, bl -> this.mode.getValue() == Mode.New));
-        this.down = (Setting<Boolean>)this.register(new Setting("Down", (T)true, bl -> this.mode.getValue() == Mode.New));
-        this.expand = (Setting<Float>)this.register(new Setting("Expand", (T)0.0f, (T)0.0f, (T)6.0f, f -> this.mode.getValue() == Mode.New));
-        this.invalid = Arrays.asList(Blocks.ENCHANTING_TABLE, Blocks.FURNACE, Blocks.CARPET, Blocks.CRAFTING_TABLE, Blocks.TRAPPED_CHEST, (Block)Blocks.CHEST, Blocks.DISPENSER, Blocks.AIR, (Block)Blocks.WATER, (Block)Blocks.LAVA, (Block)Blocks.FLOWING_WATER, (Block)Blocks.FLOWING_LAVA, Blocks.SNOW_LAYER, Blocks.TORCH, Blocks.ANVIL, Blocks.JUKEBOX, Blocks.STONE_BUTTON, Blocks.WOODEN_BUTTON, Blocks.LEVER, Blocks.NOTEBLOCK, Blocks.STONE_PRESSURE_PLATE, Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE, Blocks.WOODEN_PRESSURE_PLATE, Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE, (Block)Blocks.RED_MUSHROOM, (Block)Blocks.BROWN_MUSHROOM, (Block)Blocks.YELLOW_FLOWER, (Block)Blocks.RED_FLOWER, Blocks.ANVIL, (Block)Blocks.CACTUS, Blocks.LADDER, Blocks.ENDER_CHEST);
+        super("Scaffold",  "Places Blocks underneath you.",  Module.Category.PLAYER,  true,  false,  false);
+        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.New));
+        this.swing = (Setting<Boolean>)this.register(new Setting("Swing Arm", true,  bl -> this.mode.getValue() == Mode.New));
+        this.bSwitch = (Setting<Boolean>)this.register(new Setting("Switch", true,  bl -> this.mode.getValue() == Mode.New));
+        this.center = (Setting<Boolean>)this.register(new Setting("Center", false,  bl -> this.mode.getValue() == Mode.New));
+        this.tower = (Setting<Boolean>)this.register(new Setting("Tower", true,  bl -> this.mode.getValue() == Mode.New));
+        this.keepY = (Setting<Boolean>)this.register(new Setting("KeepYLevel", false,  bl -> this.mode.getValue() == Mode.New));
+        this.sprint = (Setting<Boolean>)this.register(new Setting("UseSprint", true,  bl -> this.mode.getValue() == Mode.New));
+        this.replenishBlocks = (Setting<Boolean>)this.register(new Setting("ReplenishBlocks", true,  bl -> this.mode.getValue() == Mode.New));
+        this.down = (Setting<Boolean>)this.register(new Setting("Down", true,  bl -> this.mode.getValue() == Mode.New));
+        this.expand = (Setting<Float>)this.register(new Setting("Expand", 0.0f, 0.0f, 6.0f,  f -> this.mode.getValue() == Mode.New));
+        this.invalid = Arrays.asList(Blocks.ENCHANTING_TABLE,  Blocks.FURNACE,  Blocks.CARPET,  Blocks.CRAFTING_TABLE,  Blocks.TRAPPED_CHEST,  (Block)Blocks.CHEST,  Blocks.DISPENSER,  Blocks.AIR,  (Block)Blocks.WATER,  (Block)Blocks.LAVA,  (Block)Blocks.FLOWING_WATER,  (Block)Blocks.FLOWING_LAVA,  Blocks.SNOW_LAYER,  Blocks.TORCH,  Blocks.ANVIL,  Blocks.JUKEBOX,  Blocks.STONE_BUTTON,  Blocks.WOODEN_BUTTON,  Blocks.LEVER,  Blocks.NOTEBLOCK,  Blocks.STONE_PRESSURE_PLATE,  Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE,  Blocks.WOODEN_PRESSURE_PLATE,  Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE,  (Block)Blocks.RED_MUSHROOM,  (Block)Blocks.BROWN_MUSHROOM,  (Block)Blocks.YELLOW_FLOWER,  (Block)Blocks.RED_FLOWER,  Blocks.ANVIL,  (Block)Blocks.CACTUS,  Blocks.LADDER,  Blocks.ENDER_CHEST);
         this.timerMotion = new TimerUtil();
         this.itemTimer = new TimerUtil();
         this.timer = new TimerUtil();
-        this.rotation = (Setting<Boolean>)this.register(new Setting("Rotate", (T)false, bl -> this.mode.getValue() == Mode.Old));
+        this.rotation = (Setting<Boolean>)this.register(new Setting("Rotate", false,  bl -> this.mode.getValue() == Mode.Old));
     }
     
-    public static void swap(final int n, final int n2) {
-        Scaffold.mc.playerController.windowClick(Scaffold.mc.player.inventoryContainer.windowId, n, 0, ClickType.PICKUP, (EntityPlayer)Scaffold.mc.player);
-        Scaffold.mc.playerController.windowClick(Scaffold.mc.player.inventoryContainer.windowId, n2, 0, ClickType.PICKUP, (EntityPlayer)Scaffold.mc.player);
-        Scaffold.mc.playerController.windowClick(Scaffold.mc.player.inventoryContainer.windowId, n, 0, ClickType.PICKUP, (EntityPlayer)Scaffold.mc.player);
+    public static void swap(final int n,  final int n2) {
+        Scaffold.mc.playerController.windowClick(Scaffold.mc.player.inventoryContainer.windowId,  n,  0,  ClickType.PICKUP,  (EntityPlayer)Scaffold.mc.player);
+        Scaffold.mc.playerController.windowClick(Scaffold.mc.player.inventoryContainer.windowId,  n2,  0,  ClickType.PICKUP,  (EntityPlayer)Scaffold.mc.player);
+        Scaffold.mc.playerController.windowClick(Scaffold.mc.player.inventoryContainer.windowId,  n,  0,  ClickType.PICKUP,  (EntityPlayer)Scaffold.mc.player);
         Scaffold.mc.playerController.updateController();
     }
     
-    public static int getItemSlot(final Container container, final Item item) {
+    public static int getItemSlot(final Container container,  final Item item) {
         int n = 0;
         for (int i = 9; i < 45; ++i) {
             if (container.getSlot(i).getHasStack()) {
@@ -99,45 +99,45 @@ public class Scaffold extends Module
                 this.timer.reset();
             }
             final BlockPos blockPos;
-            if (BlockUtil.isScaffoldPos((blockPos = EntityUtil.getPlayerPosWithEntity()).add(0, -1, 0))) {
-                if (BlockUtil.isValidBlock(blockPos.add(0, -2, 0))) {
-                    this.place(blockPos.add(0, -1, 0), EnumFacing.UP);
+            if (BlockUtil.isScaffoldPos((blockPos = EntityUtil.getPlayerPosWithEntity()).add(0,  -1,  0))) {
+                if (BlockUtil.isValidBlock(blockPos.add(0,  -2,  0))) {
+                    this.place(blockPos.add(0,  -1,  0),  EnumFacing.UP);
                 }
-                else if (BlockUtil.isValidBlock(blockPos.add(-1, -1, 0))) {
-                    this.place(blockPos.add(0, -1, 0), EnumFacing.EAST);
+                else if (BlockUtil.isValidBlock(blockPos.add(-1,  -1,  0))) {
+                    this.place(blockPos.add(0,  -1,  0),  EnumFacing.EAST);
                 }
-                else if (BlockUtil.isValidBlock(blockPos.add(1, -1, 0))) {
-                    this.place(blockPos.add(0, -1, 0), EnumFacing.WEST);
+                else if (BlockUtil.isValidBlock(blockPos.add(1,  -1,  0))) {
+                    this.place(blockPos.add(0,  -1,  0),  EnumFacing.WEST);
                 }
-                else if (BlockUtil.isValidBlock(blockPos.add(0, -1, -1))) {
-                    this.place(blockPos.add(0, -1, 0), EnumFacing.SOUTH);
+                else if (BlockUtil.isValidBlock(blockPos.add(0,  -1,  -1))) {
+                    this.place(blockPos.add(0,  -1,  0),  EnumFacing.SOUTH);
                 }
-                else if (BlockUtil.isValidBlock(blockPos.add(0, -1, 1))) {
-                    this.place(blockPos.add(0, -1, 0), EnumFacing.NORTH);
+                else if (BlockUtil.isValidBlock(blockPos.add(0,  -1,  1))) {
+                    this.place(blockPos.add(0,  -1,  0),  EnumFacing.NORTH);
                 }
-                else if (BlockUtil.isValidBlock(blockPos.add(1, -1, 1))) {
-                    if (BlockUtil.isValidBlock(blockPos.add(0, -1, 1))) {
-                        this.place(blockPos.add(0, -1, 1), EnumFacing.NORTH);
+                else if (BlockUtil.isValidBlock(blockPos.add(1,  -1,  1))) {
+                    if (BlockUtil.isValidBlock(blockPos.add(0,  -1,  1))) {
+                        this.place(blockPos.add(0,  -1,  1),  EnumFacing.NORTH);
                     }
-                    this.place(blockPos.add(1, -1, 1), EnumFacing.EAST);
+                    this.place(blockPos.add(1,  -1,  1),  EnumFacing.EAST);
                 }
-                else if (BlockUtil.isValidBlock(blockPos.add(-1, -1, 1))) {
-                    if (BlockUtil.isValidBlock(blockPos.add(-1, -1, 0))) {
-                        this.place(blockPos.add(0, -1, 1), EnumFacing.WEST);
+                else if (BlockUtil.isValidBlock(blockPos.add(-1,  -1,  1))) {
+                    if (BlockUtil.isValidBlock(blockPos.add(-1,  -1,  0))) {
+                        this.place(blockPos.add(0,  -1,  1),  EnumFacing.WEST);
                     }
-                    this.place(blockPos.add(-1, -1, 1), EnumFacing.SOUTH);
+                    this.place(blockPos.add(-1,  -1,  1),  EnumFacing.SOUTH);
                 }
-                else if (BlockUtil.isValidBlock(blockPos.add(1, -1, 1))) {
-                    if (BlockUtil.isValidBlock(blockPos.add(0, -1, 1))) {
-                        this.place(blockPos.add(0, -1, 1), EnumFacing.SOUTH);
+                else if (BlockUtil.isValidBlock(blockPos.add(1,  -1,  1))) {
+                    if (BlockUtil.isValidBlock(blockPos.add(0,  -1,  1))) {
+                        this.place(blockPos.add(0,  -1,  1),  EnumFacing.SOUTH);
                     }
-                    this.place(blockPos.add(1, -1, 1), EnumFacing.WEST);
+                    this.place(blockPos.add(1,  -1,  1),  EnumFacing.WEST);
                 }
-                else if (BlockUtil.isValidBlock(blockPos.add(1, -1, 1))) {
-                    if (BlockUtil.isValidBlock(blockPos.add(0, -1, 1))) {
-                        this.place(blockPos.add(0, -1, 1), EnumFacing.EAST);
+                else if (BlockUtil.isValidBlock(blockPos.add(1,  -1,  1))) {
+                    if (BlockUtil.isValidBlock(blockPos.add(0,  -1,  1))) {
+                        this.place(blockPos.add(0,  -1,  1),  EnumFacing.EAST);
                     }
-                    this.place(blockPos.add(1, -1, 1), EnumFacing.NORTH);
+                    this.place(blockPos.add(1,  -1,  1),  EnumFacing.NORTH);
                 }
             }
         }
@@ -153,7 +153,7 @@ public class Scaffold extends Module
                     final ItemStack itemStack;
                     if (Scaffold.mc.player.inventoryContainer.getSlot(i).getHasStack() && (itemStack = Scaffold.mc.player.inventoryContainer.getSlot(i).getStack()).getItem() instanceof ItemBlock && !this.invalid.contains(Block.getBlockFromItem(itemStack.getItem()))) {
                         if (i < 36) {
-                            swap(getItemSlot(Scaffold.mc.player.inventoryContainer, itemStack.getItem()), 44);
+                            swap(getItemSlot(Scaffold.mc.player.inventoryContainer,  itemStack.getItem()),  44);
                         }
                     }
                 }
@@ -174,17 +174,17 @@ public class Scaffold extends Module
             final double d5 = Scaffold.mc.player.movementInput.moveStrafe;
             final float f = Scaffold.mc.player.rotationYaw;
             if (!Scaffold.mc.player.collidedHorizontally) {
-                final double[] object2 = this.getExpandCoords(d, d2, d4, d5, f);
+                final double[] object2 = this.getExpandCoords(d,  d2,  d4,  d5,  f);
                 d = object2[0];
                 d2 = object2[1];
             }
-            if (this.canPlace(Scaffold.mc.world.getBlockState(new BlockPos(Scaffold.mc.player.posX, Scaffold.mc.player.posY - ((Scaffold.mc.gameSettings.keyBindSneak.isKeyDown() && this.down.getValue()) ? 2 : 1), Scaffold.mc.player.posZ)).getBlock())) {
+            if (this.canPlace(Scaffold.mc.world.getBlockState(new BlockPos(Scaffold.mc.player.posX,  Scaffold.mc.player.posY - ((Scaffold.mc.gameSettings.keyBindSneak.isKeyDown() && this.down.getValue()) ? 2 : 1),  Scaffold.mc.player.posZ)).getBlock())) {
                 d = Scaffold.mc.player.posX;
                 d2 = Scaffold.mc.player.posZ;
             }
-            BlockPos object3 = new BlockPos(d, d3 - 1.0, d2);
+            BlockPos object3 = new BlockPos(d,  d3 - 1.0,  d2);
             if (Scaffold.mc.gameSettings.keyBindSneak.isKeyDown() && this.down.getValue()) {
-                object3 = new BlockPos(d, d3 - 2.0, d2);
+                object3 = new BlockPos(d,  d3 - 2.0,  d2);
             }
             this.pos = object3;
             if (Scaffold.mc.world.getBlockState(object3).getBlock() == Blocks.AIR) {
@@ -208,8 +208,8 @@ public class Scaffold extends Module
                     if (Scaffold.mc.gameSettings.keyBindJump.isKeyDown() && Scaffold.mc.player.moveForward == 0.0f && Scaffold.mc.player.moveStrafing == 0.0f && !Scaffold.mc.player.isPotionActive(MobEffects.JUMP_BOOST)) {
                         if (!this.teleported && this.center.getValue()) {
                             this.teleported = true;
-                            final BlockPos blockPos = new BlockPos(Scaffold.mc.player.posX, Scaffold.mc.player.posY, Scaffold.mc.player.posZ);
-                            Scaffold.mc.player.setPosition(blockPos.getX() + 0.5, (double)blockPos.getY(), blockPos.getZ() + 0.5);
+                            final BlockPos blockPos = new BlockPos(Scaffold.mc.player.posX,  Scaffold.mc.player.posY,  Scaffold.mc.player.posZ);
+                            Scaffold.mc.player.setPosition(blockPos.getX() + 0.5,  (double)blockPos.getY(),  blockPos.getZ() + 0.5);
                         }
                         if (this.center.getValue() && !this.teleported) {
                             return;
@@ -228,7 +228,7 @@ public class Scaffold extends Module
                         }
                     }
                 }
-                if (Scaffold.mc.playerController.processRightClickBlock(Scaffold.mc.player, Scaffold.mc.world, blockData.position, blockData.face, new Vec3d(blockData.position.getX() + Math.random(), blockData.position.getY() + Math.random(), blockData.position.getZ() + Math.random()), EnumHand.MAIN_HAND) != EnumActionResult.FAIL) {
+                if (Scaffold.mc.playerController.processRightClickBlock(Scaffold.mc.player,  Scaffold.mc.world,  blockData.position,  blockData.face,  new Vec3d(blockData.position.getX() + Math.random(),  blockData.position.getY() + Math.random(),  blockData.position.getZ() + Math.random()),  EnumHand.MAIN_HAND) != EnumActionResult.FAIL) {
                     if (this.swing.getValue()) {
                         Scaffold.mc.player.swingArm(EnumHand.MAIN_HAND);
                     }
@@ -241,8 +241,8 @@ public class Scaffold extends Module
         }
     }
     
-    public double[] getExpandCoords(final double d, final double d2, final double d3, final double d4, final float f) {
-        BlockPos blockPos = new BlockPos(d, Scaffold.mc.player.posY - ((Scaffold.mc.gameSettings.keyBindSneak.isKeyDown() && this.down.getValue()) ? 2 : 1), d2);
+    public double[] getExpandCoords(final double d,  final double d2,  final double d3,  final double d4,  final float f) {
+        BlockPos blockPos = new BlockPos(d,  Scaffold.mc.player.posY - ((Scaffold.mc.gameSettings.keyBindSneak.isKeyDown() && this.down.getValue()) ? 2 : 1),  d2);
         Block block = Scaffold.mc.world.getBlockState(blockPos).getBlock();
         double d5 = -999.0;
         double d6 = -999.0;
@@ -259,14 +259,14 @@ public class Scaffold extends Module
             if (d7 == d8) {
                 break;
             }
-            blockPos = new BlockPos(d5, Scaffold.mc.player.posY - ((Scaffold.mc.gameSettings.keyBindSneak.isKeyDown() && this.down.getValue()) ? 2 : 1), d6);
+            blockPos = new BlockPos(d5,  Scaffold.mc.player.posY - ((Scaffold.mc.gameSettings.keyBindSneak.isKeyDown() && this.down.getValue()) ? 2 : 1),  d6);
             block = Scaffold.mc.world.getBlockState(blockPos).getBlock();
         }
-        return new double[] { d5, d6 };
+        return new double[] { d5,  d6 };
     }
     
     public boolean canPlace(final Block block) {
-        return (block instanceof BlockAir || block instanceof BlockLiquid) && Scaffold.mc.world != null && Scaffold.mc.player != null && this.pos != null && Scaffold.mc.world.getEntitiesWithinAABBExcludingEntity((Entity)null, new AxisAlignedBB(this.pos)).isEmpty();
+        return (block instanceof BlockAir || block instanceof BlockLiquid) && Scaffold.mc.world != null && Scaffold.mc.player != null && this.pos != null && Scaffold.mc.world.getEntitiesWithinAABBExcludingEntity((Entity)null,  new AxisAlignedBB(this.pos)).isEmpty();
     }
     
     private int getBlockCountHotbar() {
@@ -286,286 +286,286 @@ public class Scaffold extends Module
     }
     
     private BlockData getBlockData2(final BlockPos blockPos) {
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos.add(0, -1, 0)).getBlock())) {
-            return new BlockData(blockPos.add(0, -1, 0), EnumFacing.UP);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos.add(0,  -1,  0)).getBlock())) {
+            return new BlockData(blockPos.add(0,  -1,  0),  EnumFacing.UP);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos.add(-1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos.add(-1, 0, 0), EnumFacing.EAST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos.add(-1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos.add(-1,  0,  0),  EnumFacing.EAST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos.add(1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos.add(1, 0, 0), EnumFacing.WEST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos.add(1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos.add(1,  0,  0),  EnumFacing.WEST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos.add(0, 0, 1)).getBlock())) {
-            return new BlockData(blockPos.add(0, 0, 1), EnumFacing.NORTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos.add(0,  0,  1)).getBlock())) {
+            return new BlockData(blockPos.add(0,  0,  1),  EnumFacing.NORTH);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos.add(0, 0, -1)).getBlock())) {
-            return new BlockData(blockPos.add(0, 0, -1), EnumFacing.SOUTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos.add(0,  0,  -1)).getBlock())) {
+            return new BlockData(blockPos.add(0,  0,  -1),  EnumFacing.SOUTH);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos.add(0, 1, 0)).getBlock())) {
-            return new BlockData(blockPos.add(0, 1, 0), EnumFacing.DOWN);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos.add(0,  1,  0)).getBlock())) {
+            return new BlockData(blockPos.add(0,  1,  0),  EnumFacing.DOWN);
         }
-        final BlockPos blockPos2 = blockPos.add(-1, 0, 0);
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(0, -1, 0)).getBlock())) {
-            return new BlockData(blockPos2.add(0, -1, 0), EnumFacing.UP);
+        final BlockPos blockPos2 = blockPos.add(-1,  0,  0);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(0,  -1,  0)).getBlock())) {
+            return new BlockData(blockPos2.add(0,  -1,  0),  EnumFacing.UP);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(0, 1, 0)).getBlock())) {
-            return new BlockData(blockPos2.add(0, 1, 0), EnumFacing.DOWN);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(0,  1,  0)).getBlock())) {
+            return new BlockData(blockPos2.add(0,  1,  0),  EnumFacing.DOWN);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(-1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos2.add(-1, 0, 0), EnumFacing.EAST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(-1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos2.add(-1,  0,  0),  EnumFacing.EAST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos2.add(1, 0, 0), EnumFacing.WEST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos2.add(1,  0,  0),  EnumFacing.WEST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(0, 0, 1)).getBlock())) {
-            return new BlockData(blockPos2.add(0, 0, 1), EnumFacing.NORTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(0,  0,  1)).getBlock())) {
+            return new BlockData(blockPos2.add(0,  0,  1),  EnumFacing.NORTH);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(0, 0, -1)).getBlock())) {
-            return new BlockData(blockPos2.add(0, 0, -1), EnumFacing.SOUTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(0,  0,  -1)).getBlock())) {
+            return new BlockData(blockPos2.add(0,  0,  -1),  EnumFacing.SOUTH);
         }
-        final BlockPos blockPos3 = blockPos.add(1, 0, 0);
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(0, -1, 0)).getBlock())) {
-            return new BlockData(blockPos3.add(0, -1, 0), EnumFacing.UP);
+        final BlockPos blockPos3 = blockPos.add(1,  0,  0);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(0,  -1,  0)).getBlock())) {
+            return new BlockData(blockPos3.add(0,  -1,  0),  EnumFacing.UP);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(0, 1, 0)).getBlock())) {
-            return new BlockData(blockPos3.add(0, 1, 0), EnumFacing.DOWN);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(0,  1,  0)).getBlock())) {
+            return new BlockData(blockPos3.add(0,  1,  0),  EnumFacing.DOWN);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(-1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos3.add(-1, 0, 0), EnumFacing.EAST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(-1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos3.add(-1,  0,  0),  EnumFacing.EAST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos3.add(1, 0, 0), EnumFacing.WEST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos3.add(1,  0,  0),  EnumFacing.WEST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(0, 0, 1)).getBlock())) {
-            return new BlockData(blockPos3.add(0, 0, 1), EnumFacing.NORTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(0,  0,  1)).getBlock())) {
+            return new BlockData(blockPos3.add(0,  0,  1),  EnumFacing.NORTH);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(0, 0, -1)).getBlock())) {
-            return new BlockData(blockPos3.add(0, 0, -1), EnumFacing.SOUTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(0,  0,  -1)).getBlock())) {
+            return new BlockData(blockPos3.add(0,  0,  -1),  EnumFacing.SOUTH);
         }
-        final BlockPos blockPos4 = blockPos.add(0, 0, 1);
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(0, -1, 0)).getBlock())) {
-            return new BlockData(blockPos4.add(0, -1, 0), EnumFacing.UP);
+        final BlockPos blockPos4 = blockPos.add(0,  0,  1);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(0,  -1,  0)).getBlock())) {
+            return new BlockData(blockPos4.add(0,  -1,  0),  EnumFacing.UP);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(0, 1, 0)).getBlock())) {
-            return new BlockData(blockPos4.add(0, 1, 0), EnumFacing.DOWN);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(0,  1,  0)).getBlock())) {
+            return new BlockData(blockPos4.add(0,  1,  0),  EnumFacing.DOWN);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(-1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos4.add(-1, 0, 0), EnumFacing.EAST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(-1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos4.add(-1,  0,  0),  EnumFacing.EAST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos4.add(1, 0, 0), EnumFacing.WEST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos4.add(1,  0,  0),  EnumFacing.WEST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(0, 0, 1)).getBlock())) {
-            return new BlockData(blockPos4.add(0, 0, 1), EnumFacing.NORTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(0,  0,  1)).getBlock())) {
+            return new BlockData(blockPos4.add(0,  0,  1),  EnumFacing.NORTH);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(0, 0, -1)).getBlock())) {
-            return new BlockData(blockPos4.add(0, 0, -1), EnumFacing.SOUTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(0,  0,  -1)).getBlock())) {
+            return new BlockData(blockPos4.add(0,  0,  -1),  EnumFacing.SOUTH);
         }
-        final BlockPos blockPos5 = blockPos.add(0, 0, -1);
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(0, -1, 0)).getBlock())) {
-            return new BlockData(blockPos5.add(0, -1, 0), EnumFacing.UP);
+        final BlockPos blockPos5 = blockPos.add(0,  0,  -1);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(0,  -1,  0)).getBlock())) {
+            return new BlockData(blockPos5.add(0,  -1,  0),  EnumFacing.UP);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(0, 1, 0)).getBlock())) {
-            return new BlockData(blockPos5.add(0, 1, 0), EnumFacing.DOWN);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(0,  1,  0)).getBlock())) {
+            return new BlockData(blockPos5.add(0,  1,  0),  EnumFacing.DOWN);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(-1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos5.add(-1, 0, 0), EnumFacing.EAST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(-1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos5.add(-1,  0,  0),  EnumFacing.EAST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos5.add(1, 0, 0), EnumFacing.WEST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos5.add(1,  0,  0),  EnumFacing.WEST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(0, 0, 1)).getBlock())) {
-            return new BlockData(blockPos5.add(0, 0, 1), EnumFacing.NORTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(0,  0,  1)).getBlock())) {
+            return new BlockData(blockPos5.add(0,  0,  1),  EnumFacing.NORTH);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(0, 0, -1)).getBlock())) {
-            return new BlockData(blockPos5.add(0, 0, -1), EnumFacing.SOUTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(0,  0,  -1)).getBlock())) {
+            return new BlockData(blockPos5.add(0,  0,  -1),  EnumFacing.SOUTH);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(0, -1, 0)).getBlock())) {
-            return new BlockData(blockPos2.add(0, -1, 0), EnumFacing.UP);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(0,  -1,  0)).getBlock())) {
+            return new BlockData(blockPos2.add(0,  -1,  0),  EnumFacing.UP);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(0, 1, 0)).getBlock())) {
-            return new BlockData(blockPos2.add(0, 1, 0), EnumFacing.DOWN);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(0,  1,  0)).getBlock())) {
+            return new BlockData(blockPos2.add(0,  1,  0),  EnumFacing.DOWN);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(-1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos2.add(-1, 0, 0), EnumFacing.EAST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(-1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos2.add(-1,  0,  0),  EnumFacing.EAST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos2.add(1, 0, 0), EnumFacing.WEST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos2.add(1,  0,  0),  EnumFacing.WEST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(0, 0, 1)).getBlock())) {
-            return new BlockData(blockPos2.add(0, 0, 1), EnumFacing.NORTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(0,  0,  1)).getBlock())) {
+            return new BlockData(blockPos2.add(0,  0,  1),  EnumFacing.NORTH);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(0, 0, -1)).getBlock())) {
-            return new BlockData(blockPos2.add(0, 0, -1), EnumFacing.SOUTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos2.add(0,  0,  -1)).getBlock())) {
+            return new BlockData(blockPos2.add(0,  0,  -1),  EnumFacing.SOUTH);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(0, -1, 0)).getBlock())) {
-            return new BlockData(blockPos3.add(0, -1, 0), EnumFacing.UP);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(0,  -1,  0)).getBlock())) {
+            return new BlockData(blockPos3.add(0,  -1,  0),  EnumFacing.UP);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(0, 1, 0)).getBlock())) {
-            return new BlockData(blockPos3.add(0, 1, 0), EnumFacing.DOWN);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(0,  1,  0)).getBlock())) {
+            return new BlockData(blockPos3.add(0,  1,  0),  EnumFacing.DOWN);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(-1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos3.add(-1, 0, 0), EnumFacing.EAST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(-1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos3.add(-1,  0,  0),  EnumFacing.EAST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos3.add(1, 0, 0), EnumFacing.WEST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos3.add(1,  0,  0),  EnumFacing.WEST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(0, 0, 1)).getBlock())) {
-            return new BlockData(blockPos3.add(0, 0, 1), EnumFacing.NORTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(0,  0,  1)).getBlock())) {
+            return new BlockData(blockPos3.add(0,  0,  1),  EnumFacing.NORTH);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(0, 0, -1)).getBlock())) {
-            return new BlockData(blockPos3.add(0, 0, -1), EnumFacing.SOUTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos3.add(0,  0,  -1)).getBlock())) {
+            return new BlockData(blockPos3.add(0,  0,  -1),  EnumFacing.SOUTH);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(0, -1, 0)).getBlock())) {
-            return new BlockData(blockPos4.add(0, -1, 0), EnumFacing.UP);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(0,  -1,  0)).getBlock())) {
+            return new BlockData(blockPos4.add(0,  -1,  0),  EnumFacing.UP);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(0, 1, 0)).getBlock())) {
-            return new BlockData(blockPos4.add(0, 1, 0), EnumFacing.DOWN);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(0,  1,  0)).getBlock())) {
+            return new BlockData(blockPos4.add(0,  1,  0),  EnumFacing.DOWN);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(-1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos4.add(-1, 0, 0), EnumFacing.EAST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(-1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos4.add(-1,  0,  0),  EnumFacing.EAST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos4.add(1, 0, 0), EnumFacing.WEST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos4.add(1,  0,  0),  EnumFacing.WEST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(0, 0, 1)).getBlock())) {
-            return new BlockData(blockPos4.add(0, 0, 1), EnumFacing.NORTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(0,  0,  1)).getBlock())) {
+            return new BlockData(blockPos4.add(0,  0,  1),  EnumFacing.NORTH);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(0, 0, -1)).getBlock())) {
-            return new BlockData(blockPos4.add(0, 0, -1), EnumFacing.SOUTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos4.add(0,  0,  -1)).getBlock())) {
+            return new BlockData(blockPos4.add(0,  0,  -1),  EnumFacing.SOUTH);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(0, -1, 0)).getBlock())) {
-            return new BlockData(blockPos5.add(0, -1, 0), EnumFacing.UP);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(0,  -1,  0)).getBlock())) {
+            return new BlockData(blockPos5.add(0,  -1,  0),  EnumFacing.UP);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(0, 1, 0)).getBlock())) {
-            return new BlockData(blockPos5.add(0, 1, 0), EnumFacing.DOWN);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(0,  1,  0)).getBlock())) {
+            return new BlockData(blockPos5.add(0,  1,  0),  EnumFacing.DOWN);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(-1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos5.add(-1, 0, 0), EnumFacing.EAST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(-1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos5.add(-1,  0,  0),  EnumFacing.EAST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos5.add(1, 0, 0), EnumFacing.WEST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos5.add(1,  0,  0),  EnumFacing.WEST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(0, 0, 1)).getBlock())) {
-            return new BlockData(blockPos5.add(0, 0, 1), EnumFacing.NORTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(0,  0,  1)).getBlock())) {
+            return new BlockData(blockPos5.add(0,  0,  1),  EnumFacing.NORTH);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(0, 0, -1)).getBlock())) {
-            return new BlockData(blockPos5.add(0, 0, -1), EnumFacing.SOUTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos5.add(0,  0,  -1)).getBlock())) {
+            return new BlockData(blockPos5.add(0,  0,  -1),  EnumFacing.SOUTH);
         }
-        final BlockPos blockPos6 = blockPos.add(0, -1, 0);
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos6.add(0, -1, 0)).getBlock())) {
-            return new BlockData(blockPos6.add(0, -1, 0), EnumFacing.UP);
+        final BlockPos blockPos6 = blockPos.add(0,  -1,  0);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos6.add(0,  -1,  0)).getBlock())) {
+            return new BlockData(blockPos6.add(0,  -1,  0),  EnumFacing.UP);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos6.add(0, 1, 0)).getBlock())) {
-            return new BlockData(blockPos6.add(0, 1, 0), EnumFacing.DOWN);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos6.add(0,  1,  0)).getBlock())) {
+            return new BlockData(blockPos6.add(0,  1,  0),  EnumFacing.DOWN);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos6.add(-1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos6.add(-1, 0, 0), EnumFacing.EAST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos6.add(-1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos6.add(-1,  0,  0),  EnumFacing.EAST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos6.add(1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos6.add(1, 0, 0), EnumFacing.WEST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos6.add(1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos6.add(1,  0,  0),  EnumFacing.WEST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos6.add(0, 0, 1)).getBlock())) {
-            return new BlockData(blockPos6.add(0, 0, 1), EnumFacing.NORTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos6.add(0,  0,  1)).getBlock())) {
+            return new BlockData(blockPos6.add(0,  0,  1),  EnumFacing.NORTH);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos6.add(0, 0, -1)).getBlock())) {
-            return new BlockData(blockPos6.add(0, 0, -1), EnumFacing.SOUTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos6.add(0,  0,  -1)).getBlock())) {
+            return new BlockData(blockPos6.add(0,  0,  -1),  EnumFacing.SOUTH);
         }
-        final BlockPos blockPos7 = blockPos6.add(1, 0, 0);
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos7.add(0, -1, 0)).getBlock())) {
-            return new BlockData(blockPos7.add(0, -1, 0), EnumFacing.UP);
+        final BlockPos blockPos7 = blockPos6.add(1,  0,  0);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos7.add(0,  -1,  0)).getBlock())) {
+            return new BlockData(blockPos7.add(0,  -1,  0),  EnumFacing.UP);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos7.add(0, 1, 0)).getBlock())) {
-            return new BlockData(blockPos7.add(0, 1, 0), EnumFacing.DOWN);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos7.add(0,  1,  0)).getBlock())) {
+            return new BlockData(blockPos7.add(0,  1,  0),  EnumFacing.DOWN);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos7.add(-1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos7.add(-1, 0, 0), EnumFacing.EAST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos7.add(-1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos7.add(-1,  0,  0),  EnumFacing.EAST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos7.add(1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos7.add(1, 0, 0), EnumFacing.WEST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos7.add(1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos7.add(1,  0,  0),  EnumFacing.WEST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos7.add(0, 0, 1)).getBlock())) {
-            return new BlockData(blockPos7.add(0, 0, 1), EnumFacing.NORTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos7.add(0,  0,  1)).getBlock())) {
+            return new BlockData(blockPos7.add(0,  0,  1),  EnumFacing.NORTH);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos7.add(0, 0, -1)).getBlock())) {
-            return new BlockData(blockPos7.add(0, 0, -1), EnumFacing.SOUTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos7.add(0,  0,  -1)).getBlock())) {
+            return new BlockData(blockPos7.add(0,  0,  -1),  EnumFacing.SOUTH);
         }
-        final BlockPos blockPos8 = blockPos6.add(-1, 0, 0);
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos8.add(0, -1, 0)).getBlock())) {
-            return new BlockData(blockPos8.add(0, -1, 0), EnumFacing.UP);
+        final BlockPos blockPos8 = blockPos6.add(-1,  0,  0);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos8.add(0,  -1,  0)).getBlock())) {
+            return new BlockData(blockPos8.add(0,  -1,  0),  EnumFacing.UP);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos8.add(0, 1, 0)).getBlock())) {
-            return new BlockData(blockPos8.add(0, 1, 0), EnumFacing.DOWN);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos8.add(0,  1,  0)).getBlock())) {
+            return new BlockData(blockPos8.add(0,  1,  0),  EnumFacing.DOWN);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos8.add(-1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos8.add(-1, 0, 0), EnumFacing.EAST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos8.add(-1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos8.add(-1,  0,  0),  EnumFacing.EAST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos8.add(1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos8.add(1, 0, 0), EnumFacing.WEST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos8.add(1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos8.add(1,  0,  0),  EnumFacing.WEST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos8.add(0, 0, 1)).getBlock())) {
-            return new BlockData(blockPos8.add(0, 0, 1), EnumFacing.NORTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos8.add(0,  0,  1)).getBlock())) {
+            return new BlockData(blockPos8.add(0,  0,  1),  EnumFacing.NORTH);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos8.add(0, 0, -1)).getBlock())) {
-            return new BlockData(blockPos8.add(0, 0, -1), EnumFacing.SOUTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos8.add(0,  0,  -1)).getBlock())) {
+            return new BlockData(blockPos8.add(0,  0,  -1),  EnumFacing.SOUTH);
         }
-        final BlockPos blockPos9 = blockPos6.add(0, 0, 1);
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos9.add(0, -1, 0)).getBlock())) {
-            return new BlockData(blockPos9.add(0, -1, 0), EnumFacing.UP);
+        final BlockPos blockPos9 = blockPos6.add(0,  0,  1);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos9.add(0,  -1,  0)).getBlock())) {
+            return new BlockData(blockPos9.add(0,  -1,  0),  EnumFacing.UP);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos9.add(-1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos9.add(-1, 0, 0), EnumFacing.EAST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos9.add(-1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos9.add(-1,  0,  0),  EnumFacing.EAST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos9.add(0, 1, 0)).getBlock())) {
-            return new BlockData(blockPos9.add(0, 1, 0), EnumFacing.DOWN);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos9.add(0,  1,  0)).getBlock())) {
+            return new BlockData(blockPos9.add(0,  1,  0),  EnumFacing.DOWN);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos9.add(1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos9.add(1, 0, 0), EnumFacing.WEST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos9.add(1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos9.add(1,  0,  0),  EnumFacing.WEST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos9.add(0, 0, 1)).getBlock())) {
-            return new BlockData(blockPos9.add(0, 0, 1), EnumFacing.NORTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos9.add(0,  0,  1)).getBlock())) {
+            return new BlockData(blockPos9.add(0,  0,  1),  EnumFacing.NORTH);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos9.add(0, 0, -1)).getBlock())) {
-            return new BlockData(blockPos9.add(0, 0, -1), EnumFacing.SOUTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos9.add(0,  0,  -1)).getBlock())) {
+            return new BlockData(blockPos9.add(0,  0,  -1),  EnumFacing.SOUTH);
         }
-        final BlockPos blockPos10 = blockPos6.add(0, 0, -1);
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos10.add(0, -1, 0)).getBlock())) {
-            return new BlockData(blockPos10.add(0, -1, 0), EnumFacing.UP);
+        final BlockPos blockPos10 = blockPos6.add(0,  0,  -1);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos10.add(0,  -1,  0)).getBlock())) {
+            return new BlockData(blockPos10.add(0,  -1,  0),  EnumFacing.UP);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos10.add(0, 1, 0)).getBlock())) {
-            return new BlockData(blockPos10.add(0, 1, 0), EnumFacing.DOWN);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos10.add(0,  1,  0)).getBlock())) {
+            return new BlockData(blockPos10.add(0,  1,  0),  EnumFacing.DOWN);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos10.add(-1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos10.add(-1, 0, 0), EnumFacing.EAST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos10.add(-1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos10.add(-1,  0,  0),  EnumFacing.EAST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos10.add(1, 0, 0)).getBlock())) {
-            return new BlockData(blockPos10.add(1, 0, 0), EnumFacing.WEST);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos10.add(1,  0,  0)).getBlock())) {
+            return new BlockData(blockPos10.add(1,  0,  0),  EnumFacing.WEST);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos10.add(0, 0, 1)).getBlock())) {
-            return new BlockData(blockPos10.add(0, 0, 1), EnumFacing.NORTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos10.add(0,  0,  1)).getBlock())) {
+            return new BlockData(blockPos10.add(0,  0,  1),  EnumFacing.NORTH);
         }
-        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos10.add(0, 0, -1)).getBlock())) {
-            return new BlockData(blockPos10.add(0, 0, -1), EnumFacing.SOUTH);
+        if (!this.invalid.contains(Scaffold.mc.world.getBlockState(blockPos10.add(0,  0,  -1)).getBlock())) {
+            return new BlockData(blockPos10.add(0,  0,  -1),  EnumFacing.SOUTH);
         }
         return null;
     }
     
-    public void place(final BlockPos blockPos, final EnumFacing enumFacing) {
+    public void place(final BlockPos blockPos,  final EnumFacing enumFacing) {
         BlockPos blockPos2 = blockPos;
         if (enumFacing == EnumFacing.UP) {
-            blockPos2 = blockPos2.add(0, -1, 0);
+            blockPos2 = blockPos2.add(0,  -1,  0);
         }
         else if (enumFacing == EnumFacing.NORTH) {
-            blockPos2 = blockPos2.add(0, 0, 1);
+            blockPos2 = blockPos2.add(0,  0,  1);
         }
         else if (enumFacing == EnumFacing.SOUTH) {
-            blockPos2 = blockPos2.add(0, 0, -1);
+            blockPos2 = blockPos2.add(0,  0,  -1);
         }
         else if (enumFacing == EnumFacing.EAST) {
-            blockPos2 = blockPos2.add(-1, 0, 0);
+            blockPos2 = blockPos2.add(-1,  0,  0);
         }
         else if (enumFacing == EnumFacing.WEST) {
-            blockPos2 = blockPos2.add(1, 0, 0);
+            blockPos2 = blockPos2.add(1,  0,  0);
         }
         final int n2 = Scaffold.mc.player.inventory.currentItem;
         int n3 = -1;
@@ -581,7 +581,7 @@ public class Scaffold extends Module
         }
         int n4 = 0;
         if (!Scaffold.mc.player.isSneaking() && BlockUtil.blackList.contains(Scaffold.mc.world.getBlockState(blockPos2).getBlock())) {
-            Scaffold.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)Scaffold.mc.player, CPacketEntityAction.Action.START_SNEAKING));
+            Scaffold.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)Scaffold.mc.player,  CPacketEntityAction.Action.START_SNEAKING));
             n4 = 1;
         }
         if (!(Scaffold.mc.player.getHeldItemMainhand().getItem() instanceof ItemBlock)) {
@@ -601,22 +601,22 @@ public class Scaffold extends Module
             }
         }
         if (this.rotation.getValue()) {
-            final float[] angle = MathUtil.calcAngle(Scaffold.mc.player.getPositionEyes(Scaffold.mc.getRenderPartialTicks()), new Vec3d((double)(this.pos.getX() + 0.5f), (double)(this.pos.getY() - 0.5f), (double)(this.pos.getZ() + 0.5f)));
-            Scaffold.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Rotation(angle[0], (float)MathHelper.normalizeAngle((int)angle[1], 360), Scaffold.mc.player.onGround));
+            final float[] angle = MathUtil.calcAngle(Scaffold.mc.player.getPositionEyes(Scaffold.mc.getRenderPartialTicks()),  new Vec3d((double)(this.pos.getX() + 0.5f),  (double)(this.pos.getY() - 0.5f),  (double)(this.pos.getZ() + 0.5f)));
+            Scaffold.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Rotation(angle[0],  (float)MathHelper.normalizeAngle((int)angle[1],  360),  Scaffold.mc.player.onGround));
         }
-        Scaffold.mc.playerController.processRightClickBlock(Scaffold.mc.player, Scaffold.mc.world, blockPos2, enumFacing, new Vec3d(0.5, 0.5, 0.5), EnumHand.MAIN_HAND);
+        Scaffold.mc.playerController.processRightClickBlock(Scaffold.mc.player,  Scaffold.mc.world,  blockPos2,  enumFacing,  new Vec3d(0.5,  0.5,  0.5),  EnumHand.MAIN_HAND);
         Scaffold.mc.player.swingArm(EnumHand.MAIN_HAND);
         Scaffold.mc.player.connection.sendPacket((Packet)new CPacketHeldItemChange(n2));
         Scaffold.mc.player.inventory.currentItem = n2;
         Scaffold.mc.playerController.updateController();
         if (n4 != 0) {
-            Scaffold.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)Scaffold.mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
+            Scaffold.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)Scaffold.mc.player,  CPacketEntityAction.Action.STOP_SNEAKING));
         }
     }
     
     public enum Mode
     {
-        New, 
+        New,  
         Old;
     }
     
@@ -625,7 +625,7 @@ public class Scaffold extends Module
         public BlockPos position;
         public EnumFacing face;
         
-        public BlockData(final BlockPos blockPos, final EnumFacing enumFacing) {
+        public BlockData(final BlockPos blockPos,  final EnumFacing enumFacing) {
             this.position = blockPos;
             this.face = enumFacing;
         }

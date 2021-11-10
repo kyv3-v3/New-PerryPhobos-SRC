@@ -14,7 +14,7 @@ public class InvalidImplicitDiscriminatorException extends MixinException
         super(message);
     }
     
-    public InvalidImplicitDiscriminatorException(final String message, final Throwable cause) {
-        super(message, cause);
+    public InvalidImplicitDiscriminatorException(final String message,  final Throwable cause) {
+        super(message,  cause);
     }
 }

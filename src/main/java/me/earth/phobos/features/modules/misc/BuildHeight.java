@@ -16,8 +16,8 @@ public class BuildHeight extends Module
     private final Setting<Integer> height;
     
     public BuildHeight() {
-        super("BuildHeight", "Allows you to place/interact at build height.", Category.MISC, true, false, false);
-        this.height = (Setting<Integer>)this.register(new Setting("Height", (T)255, (T)0, (T)255));
+        super("BuildHeight",  "Allows you to place/interact at build height.",  Category.MISC,  true,  false,  false);
+        this.height = (Setting<Integer>)this.register(new Setting("Height", 255, 0, 255));
     }
     
     @SubscribeEvent

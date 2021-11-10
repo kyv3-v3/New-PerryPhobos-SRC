@@ -23,11 +23,11 @@ public class ObfuscationServiceMCP implements IObfuscationService
     
     @Override
     public Set<String> getSupportedOptions() {
-        return (Set<String>)ImmutableSet.of((Object)"reobfSrgFile", (Object)"reobfSrgFiles", (Object)"reobfNotchSrgFile", (Object)"reobfNotchSrgFiles", (Object)"outSrgFile", (Object)"outNotchSrgFile", (Object[])new String[] { "outRefMapFile" });
+        return (Set<String>)ImmutableSet.of((Object)"reobfSrgFile",  (Object)"reobfSrgFiles",  (Object)"reobfNotchSrgFile",  (Object)"reobfNotchSrgFiles",  (Object)"outSrgFile",  (Object)"outNotchSrgFile",  (Object[])new String[] { "outRefMapFile" });
     }
     
     @Override
     public Collection<ObfuscationTypeDescriptor> getObfuscationTypes() {
-        return (Collection<ObfuscationTypeDescriptor>)ImmutableList.of((Object)new ObfuscationTypeDescriptor("searge", "reobfSrgFile", "reobfSrgFiles", "outSrgFile", (Class<? extends ObfuscationEnvironment>)ObfuscationEnvironmentMCP.class), (Object)new ObfuscationTypeDescriptor("notch", "reobfNotchSrgFile", "reobfNotchSrgFiles", "outNotchSrgFile", (Class<? extends ObfuscationEnvironment>)ObfuscationEnvironmentMCP.class));
+        return (Collection<ObfuscationTypeDescriptor>)ImmutableList.of((Object)new ObfuscationTypeDescriptor("searge",  "reobfSrgFile",  "reobfSrgFiles",  "outSrgFile",  (Class<? extends ObfuscationEnvironment>)ObfuscationEnvironmentMCP.class),  (Object)new ObfuscationTypeDescriptor("notch",  "reobfNotchSrgFile",  "reobfNotchSrgFiles",  "outNotchSrgFile",  (Class<? extends ObfuscationEnvironment>)ObfuscationEnvironmentMCP.class));
     }
 }

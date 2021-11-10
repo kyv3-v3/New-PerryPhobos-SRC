@@ -29,7 +29,7 @@ public abstract class MixinObfuscationProcessor extends AbstractProcessor
                 this.mixins.registerMixin((TypeElement)elem);
             }
             else {
-                this.mixins.printMessage(Diagnostic.Kind.ERROR, (CharSequence)"Found an @Mixin annotation on an element which is not a class or interface", elem);
+                this.mixins.printMessage(Diagnostic.Kind.ERROR,  (CharSequence)"Found an @Mixin annotation on an element which is not a class or interface",  elem);
             }
         }
     }

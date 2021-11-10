@@ -22,7 +22,7 @@ public class SkinTools
     public static void buildSkin(final String name) {
         BufferedImage skin;
         try {
-            skin = ImageIO.read(new File(SkinTools.cachedir, name + ".png"));
+            skin = ImageIO.read(new File(SkinTools.cachedir,  name + ".png"));
         }
         catch (IOException e2) {
             if (SkinTools.skinOut.exists()) {
@@ -30,20 +30,20 @@ public class SkinTools
             }
             return;
         }
-        final BufferedImage drawing = new BufferedImage(16, 32, 2);
+        final BufferedImage drawing = new BufferedImage(16,  32,  2);
         if (skin.getHeight() == 64) {
-            final int[] head = skin.getRGB(8, 8, 8, 8, null, 0, 8);
-            final int[] torso = skin.getRGB(20, 20, 8, 12, null, 0, 8);
-            final int[] larm = skin.getRGB(44, 20, 4, 12, null, 0, 4);
-            final int[] rarm = skin.getRGB(36, 52, 4, 12, null, 0, 4);
-            final int[] lleg = skin.getRGB(4, 20, 4, 12, null, 0, 4);
-            final int[] rleg = skin.getRGB(20, 52, 4, 12, null, 0, 4);
-            final int[] hat = skin.getRGB(40, 8, 8, 8, null, 0, 8);
-            final int[] jacket = skin.getRGB(20, 36, 8, 12, null, 0, 8);
-            final int[] larm2 = skin.getRGB(44, 36, 4, 12, null, 0, 4);
-            final int[] rarm2 = skin.getRGB(52, 52, 4, 12, null, 0, 4);
-            final int[] lleg2 = skin.getRGB(4, 36, 4, 12, null, 0, 4);
-            final int[] rleg2 = skin.getRGB(4, 52, 4, 12, null, 0, 4);
+            final int[] head = skin.getRGB(8,  8,  8,  8,  null,  0,  8);
+            final int[] torso = skin.getRGB(20,  20,  8,  12,  null,  0,  8);
+            final int[] larm = skin.getRGB(44,  20,  4,  12,  null,  0,  4);
+            final int[] rarm = skin.getRGB(36,  52,  4,  12,  null,  0,  4);
+            final int[] lleg = skin.getRGB(4,  20,  4,  12,  null,  0,  4);
+            final int[] rleg = skin.getRGB(20,  52,  4,  12,  null,  0,  4);
+            final int[] hat = skin.getRGB(40,  8,  8,  8,  null,  0,  8);
+            final int[] jacket = skin.getRGB(20,  36,  8,  12,  null,  0,  8);
+            final int[] larm2 = skin.getRGB(44,  36,  4,  12,  null,  0,  4);
+            final int[] rarm2 = skin.getRGB(52,  52,  4,  12,  null,  0,  4);
+            final int[] lleg2 = skin.getRGB(4,  36,  4,  12,  null,  0,  4);
+            final int[] rleg2 = skin.getRGB(4,  52,  4,  12,  null,  0,  4);
             for (int i = 0; i < hat.length; ++i) {
                 if (hat[i] == 0) {
                     hat[i] = head[i];
@@ -74,45 +74,45 @@ public class SkinTools
                     rleg2[i] = rleg[i];
                 }
             }
-            drawing.setRGB(4, 0, 8, 8, hat, 0, 8);
-            drawing.setRGB(4, 8, 8, 12, jacket, 0, 8);
-            drawing.setRGB(0, 8, 4, 12, larm2, 0, 4);
-            drawing.setRGB(12, 8, 4, 12, rarm2, 0, 4);
-            drawing.setRGB(4, 20, 4, 12, lleg2, 0, 4);
-            drawing.setRGB(8, 20, 4, 12, rleg2, 0, 4);
+            drawing.setRGB(4,  0,  8,  8,  hat,  0,  8);
+            drawing.setRGB(4,  8,  8,  12,  jacket,  0,  8);
+            drawing.setRGB(0,  8,  4,  12,  larm2,  0,  4);
+            drawing.setRGB(12,  8,  4,  12,  rarm2,  0,  4);
+            drawing.setRGB(4,  20,  4,  12,  lleg2,  0,  4);
+            drawing.setRGB(8,  20,  4,  12,  rleg2,  0,  4);
         }
         else {
-            final int[] head = skin.getRGB(8, 8, 8, 8, null, 0, 8);
-            final int[] torso = skin.getRGB(20, 20, 8, 12, null, 0, 8);
-            final int[] arm = skin.getRGB(44, 20, 4, 12, null, 0, 4);
-            final int[] leg = skin.getRGB(4, 20, 4, 12, null, 0, 4);
-            final int[] hat2 = skin.getRGB(40, 8, 8, 8, null, 0, 8);
+            final int[] head = skin.getRGB(8,  8,  8,  8,  null,  0,  8);
+            final int[] torso = skin.getRGB(20,  20,  8,  12,  null,  0,  8);
+            final int[] arm = skin.getRGB(44,  20,  4,  12,  null,  0,  4);
+            final int[] leg = skin.getRGB(4,  20,  4,  12,  null,  0,  4);
+            final int[] hat2 = skin.getRGB(40,  8,  8,  8,  null,  0,  8);
             for (int j = 0; j < hat2.length; ++j) {
                 if (hat2[j] == 0) {
                     hat2[j] = head[j];
                 }
             }
-            drawing.setRGB(4, 0, 8, 8, hat2, 0, 8);
-            drawing.setRGB(4, 8, 8, 12, torso, 0, 8);
-            drawing.setRGB(0, 8, 4, 12, arm, 0, 4);
-            drawing.setRGB(12, 8, 4, 12, arm, 0, 4);
-            drawing.setRGB(4, 20, 4, 12, leg, 0, 4);
-            drawing.setRGB(8, 20, 4, 12, leg, 0, 4);
+            drawing.setRGB(4,  0,  8,  8,  hat2,  0,  8);
+            drawing.setRGB(4,  8,  8,  12,  torso,  0,  8);
+            drawing.setRGB(0,  8,  4,  12,  arm,  0,  4);
+            drawing.setRGB(12,  8,  4,  12,  arm,  0,  4);
+            drawing.setRGB(4,  20,  4,  12,  leg,  0,  4);
+            drawing.setRGB(8,  20,  4,  12,  leg,  0,  4);
         }
         try {
-            ImageIO.write(drawing, "png", SkinTools.skinOut);
+            ImageIO.write(drawing,  "png",  SkinTools.skinOut);
         }
         catch (IOException e) {
             e.printStackTrace();
         }
     }
     
-    public static void javDrawSkin(final int x, final int y, final int width, final int height) {
+    public static void javDrawSkin(final int x,  final int y,  final int width,  final int height) {
         if (!SkinTools.skinOut.exists()) {
             return;
         }
-        final SkinRender r = new SkinRender(Minecraft.getMinecraft().getTextureManager(), SkinTools.skinOut);
-        r.drawImage(x, y, width, height);
+        final SkinRender r = new SkinRender(Minecraft.getMinecraft().getTextureManager(),  SkinTools.skinOut);
+        r.drawImage(x,  y,  width,  height);
     }
     
     public static void cacheSkins() {
@@ -120,9 +120,9 @@ public class SkinTools
             System.out.println("Skin cache directory creation failed.");
         }
         for (final AccountData data : AltDatabase.getInstance().getAlts()) {
-            final File file = new File(SkinTools.cachedir, data.alias + ".png");
+            final File file = new File(SkinTools.cachedir,  data.alias + ".png");
             try {
-                final URL url = new URL(String.format("https://skins.minecraft.net/MinecraftSkins/%s.png", data.alias));
+                final URL url = new URL(String.format("https://skins.minecraft.net/MinecraftSkins/%s.png",  data.alias));
                 final InputStream is = url.openStream();
                 if (file.exists()) {
                     file.delete();
@@ -132,7 +132,7 @@ public class SkinTools
                 final byte[] b = new byte[2048];
                 int length;
                 while ((length = is.read(b)) != -1) {
-                    os.write(b, 0, length);
+                    os.write(b,  0,  length);
                 }
                 is.close();
                 os.close();
@@ -149,7 +149,7 @@ public class SkinTools
                     final byte[] b2 = new byte[2048];
                     int length2;
                     while ((length2 = is2.read(b2)) != -1) {
-                        os2.write(b2, 0, length2);
+                        os2.write(b2,  0,  length2);
                     }
                     is2.close();
                     os2.close();
@@ -160,7 +160,7 @@ public class SkinTools
     }
     
     static {
-        cachedir = new File(Minecraft.getMinecraft().gameDir, "cachedImages/skins/");
-        skinOut = new File(SkinTools.cachedir, "temp.png");
+        cachedir = new File(Minecraft.getMinecraft().gameDir,  "cachedImages/skins/");
+        skinOut = new File(SkinTools.cachedir,  "temp.png");
     }
 }

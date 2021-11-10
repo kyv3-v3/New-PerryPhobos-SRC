@@ -10,7 +10,7 @@ import me.earth.phobos.*;
 public class BaritoneNoStop extends Command
 {
     public BaritoneNoStop() {
-        super("noStop", new String[] { "<prefix>", "<x>", "<y>", "<z>" });
+        super("noStop",  new String[] { "<prefix>",  "<x>",  "<y>",  "<z>" });
     }
     
     public void execute(final String[] commands) {
@@ -25,11 +25,11 @@ public class BaritoneNoStop extends Command
                 z = Integer.parseInt(commands[3]);
             }
             catch (NumberFormatException e) {
-                sendMessage("Invalid Input for x, y or z!");
+                sendMessage("Invalid Input for x,  y or z!");
                 Phobos.baritoneManager.stop();
                 return;
             }
-            Phobos.baritoneManager.start(x, y, z);
+            Phobos.baritoneManager.start(x,  y,  z);
             return;
         }
         sendMessage("Stoping Baritone-Nostop.");

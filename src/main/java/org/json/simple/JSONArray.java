@@ -7,11 +7,11 @@ package org.json.simple;
 import java.util.*;
 import java.io.*;
 
-public class JSONArray extends ArrayList implements List, JSONAware, JSONStreamAware
+public class JSONArray extends ArrayList implements List,  JSONAware,  JSONStreamAware
 {
     private static final long serialVersionUID = 3957988303675231981L;
     
-    public static void writeJSONString(final List list, final Writer out) throws IOException {
+    public static void writeJSONString(final List list,  final Writer out) throws IOException {
         if (list == null) {
             out.write("null");
             return;
@@ -31,14 +31,14 @@ public class JSONArray extends ArrayList implements List, JSONAware, JSONStreamA
                 out.write("null");
             }
             else {
-                JSONValue.writeJSONString(value, out);
+                JSONValue.writeJSONString(value,  out);
             }
         }
         out.write(93);
     }
     
     public void writeJSONString(final Writer out) throws IOException {
-        writeJSONString(this, out);
+        writeJSONString(this,  out);
     }
     
     public static String toJSONString(final List list) {
@@ -54,7 +54,7 @@ public class JSONArray extends ArrayList implements List, JSONAware, JSONStreamA
                 first = false;
             }
             else {
-                sb.append(',');
+                sb.append(', ');
             }
             final Object value = iter.next();
             if (value == null) {

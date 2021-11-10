@@ -18,9 +18,9 @@ public class Rubberband extends Module
     private final Setting<Integer> Ym;
     
     public Rubberband() {
-        super("Rubberband", "Teleports u to the latest ground pos.", Module.Category.PLAYER, true, false, false);
-        this.mode = (Setting<RubberMode>)this.register(new Setting("Mode", (T)RubberMode.Motion));
-        this.Ym = (Setting<Integer>)this.register(new Setting("Motion", (T)1, (T)(-15), (T)15, v -> this.mode.getValue() == RubberMode.Motion));
+        super("Rubberband",  "Teleports u to the latest ground pos.",  Module.Category.PLAYER,  true,  false,  false);
+        this.mode = (Setting<RubberMode>)this.register(new Setting("Mode", RubberMode.Motion));
+        this.Ym = (Setting<Integer>)this.register(new Setting("Motion", 1, (-15), 15,  v -> this.mode.getValue() == RubberMode.Motion));
     }
     
     public void onUpdate() {
@@ -30,11 +30,11 @@ public class Rubberband extends Module
                 break;
             }
             case Packet: {
-                Objects.requireNonNull(Rubberband.mc.getConnection()).sendPacket((Packet)new CPacketPlayer.Position(Rubberband.mc.player.posX, Rubberband.mc.player.posY + this.Ym.getValue(), Rubberband.mc.player.posZ, true));
+                Objects.requireNonNull(Rubberband.mc.getConnection()).sendPacket((Packet)new CPacketPlayer.Position(Rubberband.mc.player.posX,  Rubberband.mc.player.posY + this.Ym.getValue(),  Rubberband.mc.player.posZ,  true));
                 break;
             }
             case Teleport: {
-                Rubberband.mc.player.setPositionAndUpdate(Rubberband.mc.player.posX, Rubberband.mc.player.posY + this.Ym.getValue(), Rubberband.mc.player.posZ);
+                Rubberband.mc.player.setPositionAndUpdate(Rubberband.mc.player.posX,  Rubberband.mc.player.posY + this.Ym.getValue(),  Rubberband.mc.player.posZ);
                 break;
             }
         }
@@ -43,8 +43,8 @@ public class Rubberband extends Module
     
     public enum RubberMode
     {
-        Motion, 
-        Teleport, 
+        Motion,  
+        Teleport,  
         Packet;
     }
 }

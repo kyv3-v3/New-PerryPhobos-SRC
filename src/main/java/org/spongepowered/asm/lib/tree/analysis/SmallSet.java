@@ -12,17 +12,17 @@ class SmallSet<E> extends AbstractSet<E> implements Iterator<E>
     E e2;
     
     static final <T> Set<T> emptySet() {
-        return new SmallSet<T>(null, null);
+        return new SmallSet<T>(null,  null);
     }
     
-    SmallSet(final E e1, final E e2) {
+    SmallSet(final E e1,  final E e2) {
         this.e1 = e1;
         this.e2 = e2;
     }
     
     @Override
     public Iterator<E> iterator() {
-        return new SmallSet<E>(this.e1, this.e2);
+        return new SmallSet<E>(this.e1,  this.e2);
     }
     
     @Override
@@ -59,7 +59,7 @@ class SmallSet<E> extends AbstractSet<E> implements Iterator<E>
         }
         if (s.e2 == null) {
             if (this.e2 == null) {
-                return new SmallSet<E>(this.e1, s.e1);
+                return new SmallSet<E>(this.e1,  s.e1);
             }
             if (s.e1 == this.e1 || s.e1 == this.e2) {
                 return this;

@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.*;
 @Mixin({ AbstractHorse.class })
 public class MixinAbstractHorse
 {
-    @Inject(method = { "isHorseSaddled" }, at = { @At("HEAD") }, cancellable = true)
+    @Inject(method = { "isHorseSaddled" },  at = { @At("HEAD") },  cancellable = true)
     public void isHorseSaddled(final CallbackInfoReturnable<Boolean> cir) {
         if (EntityControl.INSTANCE.isEnabled()) {
             cir.setReturnValue((Object)true);

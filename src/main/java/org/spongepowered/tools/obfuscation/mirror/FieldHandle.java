@@ -14,28 +14,28 @@ public class FieldHandle extends MemberHandle<MappingField>
     private final VariableElement element;
     private final boolean rawType;
     
-    public FieldHandle(final TypeElement owner, final VariableElement element) {
-        this(TypeUtils.getInternalName(owner), element);
+    public FieldHandle(final TypeElement owner,  final VariableElement element) {
+        this(TypeUtils.getInternalName(owner),  element);
     }
     
-    public FieldHandle(final String owner, final VariableElement element) {
-        this(owner, element, false);
+    public FieldHandle(final String owner,  final VariableElement element) {
+        this(owner,  element,  false);
     }
     
-    public FieldHandle(final TypeElement owner, final VariableElement element, final boolean rawType) {
-        this(TypeUtils.getInternalName(owner), element, rawType);
+    public FieldHandle(final TypeElement owner,  final VariableElement element,  final boolean rawType) {
+        this(TypeUtils.getInternalName(owner),  element,  rawType);
     }
     
-    public FieldHandle(final String owner, final VariableElement element, final boolean rawType) {
-        this(owner, element, rawType, TypeUtils.getName(element), TypeUtils.getInternalName(element));
+    public FieldHandle(final String owner,  final VariableElement element,  final boolean rawType) {
+        this(owner,  element,  rawType,  TypeUtils.getName(element),  TypeUtils.getInternalName(element));
     }
     
-    public FieldHandle(final String owner, final String name, final String desc) {
-        this(owner, null, false, name, desc);
+    public FieldHandle(final String owner,  final String name,  final String desc) {
+        this(owner,  null,  false,  name,  desc);
     }
     
-    private FieldHandle(final String owner, final VariableElement element, final boolean rawType, final String name, final String desc) {
-        super(owner, name, desc);
+    private FieldHandle(final String owner,  final VariableElement element,  final boolean rawType,  final String name,  final String desc) {
+        super(owner,  name,  desc);
         this.element = element;
         this.rawType = rawType;
     }
@@ -59,7 +59,7 @@ public class FieldHandle extends MemberHandle<MappingField>
     
     @Override
     public MappingField asMapping(final boolean includeOwner) {
-        return new MappingField(includeOwner ? this.getOwner() : null, this.getName(), this.getDesc());
+        return new MappingField(includeOwner ? this.getOwner() : null,  this.getName(),  this.getDesc());
     }
     
     @Override
@@ -67,6 +67,6 @@ public class FieldHandle extends MemberHandle<MappingField>
         final String owner = (this.getOwner() != null) ? ("L" + this.getOwner() + ";") : "";
         final String name = Strings.nullToEmpty(this.getName());
         final String desc = Strings.nullToEmpty(this.getDesc());
-        return String.format("%s%s:%s", owner, name, desc);
+        return String.format("%s%s:%s",  owner,  name,  desc);
     }
 }

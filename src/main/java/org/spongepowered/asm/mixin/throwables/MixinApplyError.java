@@ -16,7 +16,7 @@ public class MixinApplyError extends Error
         super(cause);
     }
     
-    public MixinApplyError(final String message, final Throwable cause) {
-        super(message, cause);
+    public MixinApplyError(final String message,  final Throwable cause) {
+        super(message,  cause);
     }
 }

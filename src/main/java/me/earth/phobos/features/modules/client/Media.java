@@ -14,9 +14,9 @@ public class Media extends Module
     public final Setting<String> ownName;
     
     public Media() {
-        super("Media", "Helps with creating Media by hiding ur username.", Category.CLIENT, false, false, false);
-        this.changeOwn = (Setting<Boolean>)this.register(new Setting("MyName", (T)true));
-        this.ownName = (Setting<String>)this.register(new Setting("Name", (T)"Name here...", v -> this.changeOwn.getValue()));
+        super("Media",  "Helps with creating Media by hiding ur username.",  Category.CLIENT,  false,  false,  false);
+        this.changeOwn = (Setting<Boolean>)this.register(new Setting("MyName", true));
+        this.ownName = (Setting<String>)this.register(new Setting("Name", "Name here...",  v -> this.changeOwn.getValue()));
         Media.instance = this;
     }
     

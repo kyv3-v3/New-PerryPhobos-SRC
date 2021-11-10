@@ -68,7 +68,7 @@ public abstract class Remapper
             if (newType != null && newTypes == null) {
                 newTypes = new String[types.length];
                 if (i > 0) {
-                    System.arraycopy(types, 0, newTypes, 0, i);
+                    System.arraycopy(types,  0,  newTypes,  0,  i);
                 }
                 needMapping = true;
             }
@@ -103,12 +103,12 @@ public abstract class Remapper
         }
         if (value instanceof Handle) {
             final Handle h = (Handle)value;
-            return new Handle(h.getTag(), this.mapType(h.getOwner()), this.mapMethodName(h.getOwner(), h.getName(), h.getDesc()), this.mapMethodDesc(h.getDesc()), h.isInterface());
+            return new Handle(h.getTag(),  this.mapType(h.getOwner()),  this.mapMethodName(h.getOwner(),  h.getName(),  h.getDesc()),  this.mapMethodDesc(h.getDesc()),  h.isInterface());
         }
         return value;
     }
     
-    public String mapSignature(final String signature, final boolean typeSignature) {
+    public String mapSignature(final String signature,  final boolean typeSignature) {
         if (signature == null) {
             return null;
         }
@@ -126,22 +126,22 @@ public abstract class Remapper
     
     @Deprecated
     protected SignatureVisitor createRemappingSignatureAdapter(final SignatureVisitor v) {
-        return new SignatureRemapper(v, this);
+        return new SignatureRemapper(v,  this);
     }
     
     protected SignatureVisitor createSignatureRemapper(final SignatureVisitor v) {
         return this.createRemappingSignatureAdapter(v);
     }
     
-    public String mapMethodName(final String owner, final String name, final String desc) {
+    public String mapMethodName(final String owner,  final String name,  final String desc) {
         return name;
     }
     
-    public String mapInvokeDynamicMethodName(final String name, final String desc) {
+    public String mapInvokeDynamicMethodName(final String name,  final String desc) {
         return name;
     }
     
-    public String mapFieldName(final String owner, final String name, final String desc) {
+    public String mapFieldName(final String owner,  final String name,  final String desc) {
         return name;
     }
     

@@ -22,14 +22,14 @@ public abstract class MixinAbstractClientPlayer
     @Nullable
     protected abstract NetworkPlayerInfo getPlayerInfo();
     
-    @Inject(method = { "getLocationSkin()Lnet/minecraft/util/ResourceLocation;" }, at = { @At("HEAD") }, cancellable = true)
+    @Inject(method = { "getLocationSkin()Lnet/minecraft/util/ResourceLocation;" },  at = { @At("HEAD") },  cancellable = true)
     public void getLocationSkin(final CallbackInfoReturnable<ResourceLocation> callbackInfoReturnable) {
         if ((boolean)Chams.getInstance().textured.getValue() && Chams.getInstance().isEnabled()) {
             callbackInfoReturnable.setReturnValue((Object)new ResourceLocation("textures/shinechams3.png"));
         }
     }
     
-    @Inject(method = { "getLocationCape" }, at = { @At("HEAD") }, cancellable = true)
+    @Inject(method = { "getLocationCape" },  at = { @At("HEAD") },  cancellable = true)
     public void getLocationCape(final CallbackInfoReturnable<ResourceLocation> callbackInfoReturnable) {
         if (Capes.getInstance().isEnabled()) {
             final NetworkPlayerInfo info = this.getPlayerInfo();

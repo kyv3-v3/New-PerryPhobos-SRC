@@ -20,8 +20,8 @@ public class BeforeNew extends InjectionPoint
     public BeforeNew(final InjectionPointData data) {
         super(data);
         this.ordinal = data.getOrdinal();
-        final String target = Strings.emptyToNull(data.get("class", data.get("target", "")).replace('.', '/'));
-        final MemberInfo member = MemberInfo.parseAndValidate(target, data.getContext());
+        final String target = Strings.emptyToNull(data.get("class",  data.get("target",  "")).replace('.',  '/'));
+        final MemberInfo member = MemberInfo.parseAndValidate(target,  data.getContext());
         this.target = member.toCtorType();
         this.desc = member.toCtorDesc();
     }
@@ -30,7 +30,7 @@ public class BeforeNew extends InjectionPoint
         return this.desc != null;
     }
     
-    public boolean find(final String desc, final InsnList insns, final Collection<AbstractInsnNode> nodes) {
+    public boolean find(final String desc,  final InsnList insns,  final Collection<AbstractInsnNode> nodes) {
         boolean found = false;
         int ordinal = 0;
         final Collection<TypeInsnNode> newNodes = new ArrayList<TypeInsnNode>();
@@ -46,7 +46,7 @@ public class BeforeNew extends InjectionPoint
         }
         if (this.desc != null) {
             for (final TypeInsnNode newNode : newNodes) {
-                if (this.findCtor(insns, newNode)) {
+                if (this.findCtor(insns,  newNode)) {
                     nodes.add((AbstractInsnNode)newNode);
                     found = true;
                 }
@@ -55,7 +55,7 @@ public class BeforeNew extends InjectionPoint
         return found;
     }
     
-    protected boolean findCtor(final InsnList insns, final TypeInsnNode newNode) {
+    protected boolean findCtor(final InsnList insns,  final TypeInsnNode newNode) {
         final int indexOf = insns.indexOf((AbstractInsnNode)newNode);
         final Iterator<AbstractInsnNode> iter = (Iterator<AbstractInsnNode>)insns.iterator(indexOf);
         while (iter.hasNext()) {

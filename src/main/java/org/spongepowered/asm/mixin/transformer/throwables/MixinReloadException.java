@@ -12,7 +12,7 @@ public class MixinReloadException extends MixinException
     private static final long serialVersionUID = 2L;
     private final IMixinInfo mixinInfo;
     
-    public MixinReloadException(final IMixinInfo mixinInfo, final String message) {
+    public MixinReloadException(final IMixinInfo mixinInfo,  final String message) {
         super(message);
         this.mixinInfo = mixinInfo;
     }

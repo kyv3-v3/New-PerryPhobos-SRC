@@ -26,20 +26,20 @@ public class Replenish extends Module
     private final TimerUtil timer;
     private final TimerUtil replenishTimer;
     private final Queue<InventoryUtil.Task> taskList;
-    private Map<Integer, ItemStack> hotbar;
+    private Map<Integer,  ItemStack> hotbar;
     
     public Replenish() {
-        super("Replenish", "Replenishes your hotbar.", Module.Category.PLAYER, false, false, false);
-        this.threshold = (Setting<Integer>)this.register(new Setting("Threshold", (T)0, (T)0, (T)63));
-        this.replenishments = (Setting<Integer>)this.register(new Setting("RUpdates", (T)0, (T)0, (T)1000));
-        this.updates = (Setting<Integer>)this.register(new Setting("HBUpdates", (T)100, (T)0, (T)1000));
-        this.actions = (Setting<Integer>)this.register(new Setting("Actions", (T)2, (T)1, (T)30));
-        this.pauseInv = (Setting<Boolean>)this.register(new Setting("PauseInv", (T)true));
-        this.putBack = (Setting<Boolean>)this.register(new Setting("PutBack", (T)true));
+        super("Replenish",  "Replenishes your hotbar.",  Module.Category.PLAYER,  false,  false,  false);
+        this.threshold = (Setting<Integer>)this.register(new Setting("Threshold", 0, 0, 63));
+        this.replenishments = (Setting<Integer>)this.register(new Setting("RUpdates", 0, 0, 1000));
+        this.updates = (Setting<Integer>)this.register(new Setting("HBUpdates", 100, 0, 1000));
+        this.actions = (Setting<Integer>)this.register(new Setting("Actions", 2, 1, 30));
+        this.pauseInv = (Setting<Boolean>)this.register(new Setting("PauseInv", true));
+        this.putBack = (Setting<Boolean>)this.register(new Setting("PutBack", true));
         this.timer = new TimerUtil();
         this.replenishTimer = new TimerUtil();
         this.taskList = new ConcurrentLinkedQueue<InventoryUtil.Task>();
-        this.hotbar = new ConcurrentHashMap<Integer, ItemStack>();
+        this.hotbar = new ConcurrentHashMap<Integer,  ItemStack>();
     }
     
     public void onUpdate() {
@@ -72,17 +72,17 @@ public class Replenish extends Module
     }
     
     private void mapHotbar() {
-        final ConcurrentHashMap<Integer, ItemStack> map = new ConcurrentHashMap<Integer, ItemStack>();
+        final ConcurrentHashMap<Integer,  ItemStack> map = new ConcurrentHashMap<Integer,  ItemStack>();
         for (int i = 0; i < 9; ++i) {
             final ItemStack stack = Replenish.mc.player.inventory.getStackInSlot(i);
-            map.put(i, stack);
+            map.put(i,  stack);
         }
         if (this.hotbar.isEmpty()) {
             this.hotbar = map;
             return;
         }
-        final ConcurrentHashMap<Integer, Integer> fromTo = new ConcurrentHashMap<Integer, Integer>();
-        for (final Map.Entry<Integer, ItemStack> hotbarItem : map.entrySet()) {
+        final ConcurrentHashMap<Integer,  Integer> fromTo = new ConcurrentHashMap<Integer,  Integer>();
+        for (final Map.Entry<Integer,  ItemStack> hotbarItem : map.entrySet()) {
             final ItemStack stack2 = hotbarItem.getValue();
             final Integer slotKey = hotbarItem.getKey();
             if (slotKey != null && stack2 != null) {
@@ -105,11 +105,11 @@ public class Replenish extends Module
                 if ((replenishSlot = this.getReplenishSlot(previousStack)) == -1) {
                     continue;
                 }
-                fromTo.put(replenishSlot, InventoryUtil.convertHotbarToInv(slotKey));
+                fromTo.put(replenishSlot,  InventoryUtil.convertHotbarToInv(slotKey));
             }
         }
         if (!fromTo.isEmpty()) {
-            for (final Map.Entry<Integer, Integer> slotMove : fromTo.entrySet()) {
+            for (final Map.Entry<Integer,  Integer> slotMove : fromTo.entrySet()) {
                 this.taskList.add(new InventoryUtil.Task(slotMove.getKey()));
                 this.taskList.add(new InventoryUtil.Task(slotMove.getValue()));
                 this.taskList.add(new InventoryUtil.Task(slotMove.getKey()));
@@ -122,9 +122,9 @@ public class Replenish extends Module
     private int getReplenishSlot(final ItemStack stack) {
         final AtomicInteger slot = new AtomicInteger();
         slot.set(-1);
-        for (final Map.Entry<Integer, ItemStack> entry : InventoryUtil.getInventoryAndHotbarSlots().entrySet()) {
+        for (final Map.Entry<Integer,  ItemStack> entry : InventoryUtil.getInventoryAndHotbarSlots().entrySet()) {
             if (entry.getKey() < 36) {
-                if (!InventoryUtil.areStacksCompatible(stack, entry.getValue())) {
+                if (!InventoryUtil.areStacksCompatible(stack,  entry.getValue())) {
                     continue;
                 }
                 slot.set(entry.getKey());

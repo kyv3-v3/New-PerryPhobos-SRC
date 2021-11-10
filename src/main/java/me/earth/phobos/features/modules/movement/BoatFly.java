@@ -27,13 +27,13 @@ public class BoatFly extends Module
     private int teleportID;
     
     public BoatFly() {
-        super("BoatFly", "Boatfly for 2b.", Module.Category.MOVEMENT, true, false, false);
-        this.speed = (Setting<Double>)this.register(new Setting("Speed", (T)3.0, (T)1.0, (T)10.0));
-        this.verticalSpeed = (Setting<Double>)this.register(new Setting("VerticalSpeed", (T)3.0, (T)1.0, (T)10.0));
-        this.noKick = (Setting<Boolean>)this.register(new Setting("No-Kick", (T)true));
-        this.packet = (Setting<Boolean>)this.register(new Setting("Packet", (T)true));
-        this.packets = (Setting<Integer>)this.register(new Setting("Packets", (T)3, (T)1, (T)5, v -> this.packet.getValue()));
-        this.interact = (Setting<Integer>)this.register(new Setting("Delay", (T)2, (T)1, (T)20));
+        super("BoatFly",  "Boatfly for 2b.",  Module.Category.MOVEMENT,  true,  false,  false);
+        this.speed = (Setting<Double>)this.register(new Setting("Speed", 3.0, 1.0, 10.0));
+        this.verticalSpeed = (Setting<Double>)this.register(new Setting("VerticalSpeed", 3.0, 1.0, 10.0));
+        this.noKick = (Setting<Boolean>)this.register(new Setting("No-Kick", true));
+        this.packet = (Setting<Boolean>)this.register(new Setting("Packet", true));
+        this.packets = (Setting<Integer>)this.register(new Setting("Packets", 3, 1, 5,  v -> this.packet.getValue()));
+        this.interact = (Setting<Integer>)this.register(new Setting("Delay", 2, 1, 20));
         BoatFly.INSTANCE = this;
     }
     
@@ -74,17 +74,17 @@ public class BoatFly extends Module
                 BoatFly.mc.player.getRidingEntity().motionY = -0.07999999821186066;
             }
         }
-        this.handlePackets(BoatFly.mc.player.getRidingEntity().motionX, BoatFly.mc.player.getRidingEntity().motionY, BoatFly.mc.player.getRidingEntity().motionZ);
+        this.handlePackets(BoatFly.mc.player.getRidingEntity().motionX,  BoatFly.mc.player.getRidingEntity().motionY,  BoatFly.mc.player.getRidingEntity().motionZ);
     }
     
-    public void handlePackets(final double x, final double y, final double z) {
+    public void handlePackets(final double x,  final double y,  final double z) {
         if (this.packet.getValue()) {
-            final Vec3d vec = new Vec3d(x, y, z);
+            final Vec3d vec = new Vec3d(x,  y,  z);
             if (BoatFly.mc.player.getRidingEntity() == null) {
                 return;
             }
             final Vec3d position = BoatFly.mc.player.getRidingEntity().getPositionVector().add(vec);
-            BoatFly.mc.player.getRidingEntity().setPosition(position.x, position.y, position.z);
+            BoatFly.mc.player.getRidingEntity().setPosition(position.x,  position.y,  position.z);
             BoatFly.mc.player.connection.sendPacket((Packet)new CPacketVehicleMove(BoatFly.mc.player.getRidingEntity()));
             for (int i = 0; i < this.packets.getValue(); ++i) {
                 BoatFly.mc.player.connection.sendPacket((Packet)new CPacketConfirmTeleport(this.teleportID++));
@@ -95,7 +95,7 @@ public class BoatFly extends Module
     @SubscribeEvent
     public void onSendPacket(final PacketEvent.Send event) {
         if (event.getPacket() instanceof CPacketVehicleMove && BoatFly.mc.player.isRiding() && BoatFly.mc.player.ticksExisted % this.interact.getValue() == 0) {
-            BoatFly.mc.playerController.interactWithEntity((EntityPlayer)BoatFly.mc.player, BoatFly.mc.player.ridingEntity, EnumHand.OFF_HAND);
+            BoatFly.mc.playerController.interactWithEntity((EntityPlayer)BoatFly.mc.player,  BoatFly.mc.player.ridingEntity,  EnumHand.OFF_HAND);
         }
         if ((event.getPacket() instanceof CPacketPlayer.Rotation || event.getPacket() instanceof CPacketInput) && BoatFly.mc.player.isRiding()) {
             event.setCanceled(true);
@@ -135,6 +135,6 @@ public class BoatFly extends Module
         final double cos = Math.cos(Math.toRadians(yaw + 90.0f));
         final double posX = forward * speed * cos + side * speed * sin;
         final double posZ = forward * speed * sin - side * speed * cos;
-        return new double[] { posX, posZ };
+        return new double[] { posX,  posZ };
     }
 }

@@ -9,7 +9,7 @@ import me.earth.phobos.features.modules.*;
 public class StairSpeed extends Module
 {
     public StairSpeed() {
-        super("StairSpeed", "Makes u automatically jump up stairs to go faster.", Module.Category.MOVEMENT, true, false, false);
+        super("StairSpeed",  "Makes u automatically jump up stairs to go faster.",  Module.Category.MOVEMENT,  true,  false,  false);
     }
     
     public void onUpdate() {

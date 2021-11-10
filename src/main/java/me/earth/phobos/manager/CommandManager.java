@@ -41,7 +41,7 @@ public class CommandManager extends Feature
         this.commands.add((Command)new IRCCommand());
     }
     
-    public static String[] removeElement(final String[] input, final int indexToDelete) {
+    public static String[] removeElement(final String[] input,  final int indexToDelete) {
         final LinkedList<String> result = new LinkedList<String>();
         for (int i = 0; i < input.length; ++i) {
             if (i != indexToDelete) {
@@ -53,7 +53,7 @@ public class CommandManager extends Feature
     
     private static String strip(final String str) {
         if (str.startsWith("\"") && str.endsWith("\"")) {
-            return str.substring("\"".length(), str.length() - "\"".length());
+            return str.substring("\"".length(),  str.length() - "\"".length());
         }
         return str;
     }
@@ -61,7 +61,7 @@ public class CommandManager extends Feature
     public void executeCommand(final String command) {
         final String[] parts = command.split(" (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
         final String name = parts[0].substring(1);
-        final String[] args = removeElement(parts, 0);
+        final String[] args = removeElement(parts,  0);
         for (int i = 0; i < args.length; ++i) {
             if (args[i] != null) {
                 args[i] = strip(args[i]);

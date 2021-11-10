@@ -12,13 +12,13 @@ import java.util.*;
 
 public final class ObfuscationType
 {
-    private static final Map<String, ObfuscationType> types;
+    private static final Map<String,  ObfuscationType> types;
     private final String key;
     private final ObfuscationTypeDescriptor descriptor;
     private final IMixinAnnotationProcessor ap;
     private final IOptionProvider options;
     
-    private ObfuscationType(final ObfuscationTypeDescriptor descriptor, final IMixinAnnotationProcessor ap) {
+    private ObfuscationType(final ObfuscationTypeDescriptor descriptor,  final IMixinAnnotationProcessor ap) {
         this.key = descriptor.getKey();
         this.descriptor = descriptor;
         this.ap = ap;
@@ -86,13 +86,13 @@ public final class ObfuscationType
         return ObfuscationType.types.values();
     }
     
-    public static ObfuscationType create(final ObfuscationTypeDescriptor descriptor, final IMixinAnnotationProcessor ap) {
+    public static ObfuscationType create(final ObfuscationTypeDescriptor descriptor,  final IMixinAnnotationProcessor ap) {
         final String key = descriptor.getKey();
         if (ObfuscationType.types.containsKey(key)) {
             throw new IllegalArgumentException("Obfuscation type with key " + key + " was already registered");
         }
-        final ObfuscationType type = new ObfuscationType(descriptor, ap);
-        ObfuscationType.types.put(key, type);
+        final ObfuscationType type = new ObfuscationType(descriptor,  ap);
+        ObfuscationType.types.put(key,  type);
         return type;
     }
     
@@ -105,6 +105,6 @@ public final class ObfuscationType
     }
     
     static {
-        types = new LinkedHashMap<String, ObfuscationType>();
+        types = new LinkedHashMap<String,  ObfuscationType>();
     }
 }

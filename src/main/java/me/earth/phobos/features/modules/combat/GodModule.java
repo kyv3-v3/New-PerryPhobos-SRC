@@ -42,17 +42,17 @@ public class GodModule extends Module
     private int highestID;
     
     public GodModule() {
-        super("GodModule", "Predicts the entity id to make ur ca insane (Only works on a few servers).", Category.COMBAT, true, false, false);
-        this.rotations = this.register(new Setting("Spoofs", (T)1, (T)1, (T)20));
-        this.rotate = this.register(new Setting("Rotate", (T)false));
-        this.render = this.register(new Setting("Render", (T)false));
-        this.antiIllegal = this.register(new Setting("AntiIllegal", (T)true));
-        this.checkPos = this.register(new Setting("CheckPos", (T)false));
-        this.oneDot15 = this.register(new Setting("1.15", (T)false));
-        this.entitycheck = this.register(new Setting("EntityCheck", (T)false));
-        this.attacks = this.register(new Setting("Attacks", (T)1, (T)1, (T)10));
-        this.offset = this.register(new Setting("Offset", (T)0, (T)0, (T)2));
-        this.delay = this.register(new Setting("Delay", (T)0, (T)0, (T)250));
+        super("GodModule",  "Predicts the entity id to make ur ca insane (Only works on a few servers).",  Category.COMBAT,  true,  false,  false);
+        this.rotations = this.register(new Setting("Spoofs", 1, 1, 20));
+        this.rotate = this.register(new Setting("Rotate", false));
+        this.render = this.register(new Setting("Render", false));
+        this.antiIllegal = this.register(new Setting("AntiIllegal", true));
+        this.checkPos = this.register(new Setting("CheckPos", false));
+        this.oneDot15 = this.register(new Setting("1.15", false));
+        this.entitycheck = this.register(new Setting("EntityCheck", false));
+        this.attacks = this.register(new Setting("Attacks", 1, 1, 10));
+        this.offset = this.register(new Setting("Offset", 0, 0, 2));
+        this.delay = this.register(new Setting("Delay", 0, 0, 250));
         this.highestID = -100000;
     }
     
@@ -93,12 +93,12 @@ public class GodModule extends Module
         if (event.getStage() == 0 && event.getPacket() instanceof CPacketPlayerTryUseItemOnBlock) {
             final CPacketPlayerTryUseItemOnBlock packet = (CPacketPlayerTryUseItemOnBlock)event.getPacket();
             if (GodModule.mc.player.getHeldItem(packet.hand).getItem() instanceof ItemEndCrystal) {
-                if ((this.checkPos.getValue() && !BlockUtil.canPlaceCrystal(packet.position, this.entitycheck.getValue(), this.oneDot15.getValue(), false)) || this.checkPlayers()) {
+                if ((this.checkPos.getValue() && !BlockUtil.canPlaceCrystal(packet.position,  this.entitycheck.getValue(),  this.oneDot15.getValue(),  false)) || this.checkPlayers()) {
                     return;
                 }
                 this.updateEntityID();
                 for (int i = 1 - this.offset.getValue(); i <= this.attacks.getValue(); ++i) {
-                    this.attackID(packet.position, this.highestID + i);
+                    this.attackID(packet.position,  this.highestID + i);
                 }
             }
         }
@@ -114,7 +114,7 @@ public class GodModule extends Module
         }
     }
     
-    private void attackID(final BlockPos pos, final int id) {
+    private void attackID(final BlockPos pos,  final int id) {
         final Entity entity = GodModule.mc.world.getEntityByID(id);
         if (entity instanceof EntityItem) {
             return;
@@ -123,7 +123,7 @@ public class GodModule extends Module
             return;
         }
         if (entity == null || entity instanceof EntityEnderCrystal) {
-            final AttackThread attackThread = new AttackThread(id, pos, this.delay.getValue(), this);
+            final AttackThread attackThread = new AttackThread(id,  pos,  this.delay.getValue(),  this);
             if (this.delay.getValue() == 0) {
                 attackThread.run();
             }
@@ -193,7 +193,7 @@ public class GodModule extends Module
     }
     
     public void rotateTo(final BlockPos pos) {
-        final float[] angle = MathUtil.calcAngle(GodModule.mc.player.getPositionEyes(GodModule.mc.getRenderPartialTicks()), new Vec3d((Vec3i)pos));
+        final float[] angle = MathUtil.calcAngle(GodModule.mc.player.getPositionEyes(GodModule.mc.getRenderPartialTicks()),  new Vec3d((Vec3i)pos));
         this.yaw = angle[0];
         this.pitch = angle[1];
         this.rotating = true;
@@ -211,7 +211,7 @@ public class GodModule extends Module
         private final int delay;
         private final GodModule godModule;
         
-        public AttackThread(final int idIn, final BlockPos posIn, final int delayIn, final GodModule godModuleIn) {
+        public AttackThread(final int idIn,  final BlockPos posIn,  final int delayIn,  final GodModule godModuleIn) {
             this.id = idIn;
             this.pos = posIn;
             this.delay = delayIn;

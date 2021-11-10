@@ -52,7 +52,7 @@ public class PhobosGui extends GuiScreen
             final ArrayList<Component> components2 = this.components;
             final String name = category.getName();
             x += 90;
-            components2.add(new Component(name, x, 4, true) {
+            components2.add(new Component(name,  x,  4,  true) {
                 public void setupItems() {
                     Phobos.moduleManager.getModulesByCategory(category).forEach(module -> {
                         if (!module.hidden) {
@@ -62,7 +62,7 @@ public class PhobosGui extends GuiScreen
                 }
             });
         }
-        this.components.forEach(components -> components.getItems().sort(Comparator.comparing((Function<? super E, ? extends Comparable>)Feature::getName)));
+        this.components.forEach(components -> components.getItems().sort(Comparator.comparing((Function<? super E,  ? extends Comparable>)Feature::getName)));
     }
     
     public void updateModule(final Module module) {
@@ -85,20 +85,20 @@ public class PhobosGui extends GuiScreen
         }
     }
     
-    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
+    public void drawScreen(final int mouseX,  final int mouseY,  final float partialTicks) {
         this.checkMouseWheel();
         if (ClickGui.getInstance().bg.getValue()) {
-            RenderUtil.drawRect(0.0f, 0.0f, (float)Display.getWidth(), (float)Display.getHeight(), new Color(0, 0, 0, ClickGui.getInstance().bgtint.getValue()).getRGB());
+            RenderUtil.drawRect(0.0f,  0.0f,  (float)Display.getWidth(),  (float)Display.getHeight(),  new Color(0,  0,  0,  ClickGui.getInstance().bgtint.getValue()).getRGB());
         }
-        this.components.forEach(components -> components.drawScreen(mouseX, mouseY, partialTicks));
+        this.components.forEach(components -> components.drawScreen(mouseX,  mouseY,  partialTicks));
     }
     
-    public void mouseClicked(final int mouseX, final int mouseY, final int clickedButton) {
-        this.components.forEach(components -> components.mouseClicked(mouseX, mouseY, clickedButton));
+    public void mouseClicked(final int mouseX,  final int mouseY,  final int clickedButton) {
+        this.components.forEach(components -> components.mouseClicked(mouseX,  mouseY,  clickedButton));
     }
     
-    public void mouseReleased(final int mouseX, final int mouseY, final int releaseButton) {
-        this.components.forEach(components -> components.mouseReleased(mouseX, mouseY, releaseButton));
+    public void mouseReleased(final int mouseX,  final int mouseY,  final int releaseButton) {
+        this.components.forEach(components -> components.mouseReleased(mouseX,  mouseY,  releaseButton));
     }
     
     public boolean doesGuiPauseGame() {
@@ -135,9 +135,9 @@ public class PhobosGui extends GuiScreen
         return null;
     }
     
-    public void keyTyped(final char typedChar, final int keyCode) throws IOException {
-        super.keyTyped(typedChar, keyCode);
-        this.components.forEach(component -> component.onKeyTyped(typedChar, keyCode));
+    public void keyTyped(final char typedChar,  final int keyCode) throws IOException {
+        super.keyTyped(typedChar,  keyCode);
+        this.components.forEach(component -> component.onKeyTyped(typedChar,  keyCode));
     }
     
     static {

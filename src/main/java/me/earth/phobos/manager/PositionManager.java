@@ -29,23 +29,23 @@ public class PositionManager extends Feature
         PositionManager.mc.player.onGround = this.onground;
     }
     
-    public void setPlayerPosition(final double x, final double y, final double z) {
+    public void setPlayerPosition(final double x,  final double y,  final double z) {
         PositionManager.mc.player.posX = x;
         PositionManager.mc.player.posY = y;
         PositionManager.mc.player.posZ = z;
     }
     
-    public void setPlayerPosition(final double x, final double y, final double z, final boolean onground) {
+    public void setPlayerPosition(final double x,  final double y,  final double z,  final boolean onground) {
         PositionManager.mc.player.posX = x;
         PositionManager.mc.player.posY = y;
         PositionManager.mc.player.posZ = z;
         PositionManager.mc.player.onGround = onground;
     }
     
-    public void setPositionPacket(final double x, final double y, final double z, final boolean onGround, final boolean setPos, final boolean noLagBack) {
-        PositionManager.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(x, y, z, onGround));
+    public void setPositionPacket(final double x,  final double y,  final double z,  final boolean onGround,  final boolean setPos,  final boolean noLagBack) {
+        PositionManager.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(x,  y,  z,  onGround));
         if (setPos) {
-            PositionManager.mc.player.setPosition(x, y, z);
+            PositionManager.mc.player.setPosition(x,  y,  z);
             if (noLagBack) {
                 this.updatePosition();
             }

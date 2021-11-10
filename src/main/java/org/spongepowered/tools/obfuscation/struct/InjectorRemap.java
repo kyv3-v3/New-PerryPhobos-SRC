@@ -28,8 +28,8 @@ public class InjectorRemap
         this.clearMessage();
     }
     
-    public void addMessage(final Diagnostic.Kind kind, final CharSequence msg, final Element element, final AnnotationHandle annotation) {
-        this.message = new Message(kind, msg, element, annotation);
+    public void addMessage(final Diagnostic.Kind kind,  final CharSequence msg,  final Element element,  final AnnotationHandle annotation) {
+        this.message = new Message(kind,  msg,  element,  annotation);
     }
     
     public void clearMessage() {

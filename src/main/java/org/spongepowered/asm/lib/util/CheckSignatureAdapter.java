@@ -25,11 +25,11 @@ public class CheckSignatureAdapter extends SignatureVisitor
     private boolean canBeVoid;
     private final SignatureVisitor sv;
     
-    public CheckSignatureAdapter(final int type, final SignatureVisitor sv) {
-        this(327680, type, sv);
+    public CheckSignatureAdapter(final int type,  final SignatureVisitor sv) {
+        this(327680,  type,  sv);
     }
     
-    protected CheckSignatureAdapter(final int api, final int type, final SignatureVisitor sv) {
+    protected CheckSignatureAdapter(final int api,  final int type,  final SignatureVisitor sv) {
         super(api);
         this.type = type;
         this.state = 1;
@@ -40,7 +40,7 @@ public class CheckSignatureAdapter extends SignatureVisitor
         if (this.type == 2 || (this.state != 1 && this.state != 2 && this.state != 4)) {
             throw new IllegalStateException();
         }
-        CheckMethodAdapter.checkIdentifier(name, "formal type parameter");
+        CheckMethodAdapter.checkIdentifier(name,  "formal type parameter");
         this.state = 2;
         if (this.sv != null) {
             this.sv.visitFormalTypeParameter(name);
@@ -53,7 +53,7 @@ public class CheckSignatureAdapter extends SignatureVisitor
         }
         this.state = 4;
         final SignatureVisitor v = (this.sv == null) ? null : this.sv.visitClassBound();
-        return new CheckSignatureAdapter(2, v);
+        return new CheckSignatureAdapter(2,  v);
     }
     
     public SignatureVisitor visitInterfaceBound() {
@@ -61,7 +61,7 @@ public class CheckSignatureAdapter extends SignatureVisitor
             throw new IllegalArgumentException();
         }
         final SignatureVisitor v = (this.sv == null) ? null : this.sv.visitInterfaceBound();
-        return new CheckSignatureAdapter(2, v);
+        return new CheckSignatureAdapter(2,  v);
     }
     
     public SignatureVisitor visitSuperclass() {
@@ -70,7 +70,7 @@ public class CheckSignatureAdapter extends SignatureVisitor
         }
         this.state = 8;
         final SignatureVisitor v = (this.sv == null) ? null : this.sv.visitSuperclass();
-        return new CheckSignatureAdapter(2, v);
+        return new CheckSignatureAdapter(2,  v);
     }
     
     public SignatureVisitor visitInterface() {
@@ -78,7 +78,7 @@ public class CheckSignatureAdapter extends SignatureVisitor
             throw new IllegalStateException();
         }
         final SignatureVisitor v = (this.sv == null) ? null : this.sv.visitInterface();
-        return new CheckSignatureAdapter(2, v);
+        return new CheckSignatureAdapter(2,  v);
     }
     
     public SignatureVisitor visitParameterType() {
@@ -87,7 +87,7 @@ public class CheckSignatureAdapter extends SignatureVisitor
         }
         this.state = 16;
         final SignatureVisitor v = (this.sv == null) ? null : this.sv.visitParameterType();
-        return new CheckSignatureAdapter(2, v);
+        return new CheckSignatureAdapter(2,  v);
     }
     
     public SignatureVisitor visitReturnType() {
@@ -96,7 +96,7 @@ public class CheckSignatureAdapter extends SignatureVisitor
         }
         this.state = 32;
         final SignatureVisitor v = (this.sv == null) ? null : this.sv.visitReturnType();
-        final CheckSignatureAdapter cv = new CheckSignatureAdapter(2, v);
+        final CheckSignatureAdapter cv = new CheckSignatureAdapter(2,  v);
         cv.canBeVoid = true;
         return cv;
     }
@@ -106,7 +106,7 @@ public class CheckSignatureAdapter extends SignatureVisitor
             throw new IllegalStateException();
         }
         final SignatureVisitor v = (this.sv == null) ? null : this.sv.visitExceptionType();
-        return new CheckSignatureAdapter(2, v);
+        return new CheckSignatureAdapter(2,  v);
     }
     
     public void visitBaseType(final char descriptor) {
@@ -131,7 +131,7 @@ public class CheckSignatureAdapter extends SignatureVisitor
         if (this.type != 2 || this.state != 1) {
             throw new IllegalStateException();
         }
-        CheckMethodAdapter.checkIdentifier(name, "type variable");
+        CheckMethodAdapter.checkIdentifier(name,  "type variable");
         this.state = 64;
         if (this.sv != null) {
             this.sv.visitTypeVariable(name);
@@ -144,14 +144,14 @@ public class CheckSignatureAdapter extends SignatureVisitor
         }
         this.state = 64;
         final SignatureVisitor v = (this.sv == null) ? null : this.sv.visitArrayType();
-        return new CheckSignatureAdapter(2, v);
+        return new CheckSignatureAdapter(2,  v);
     }
     
     public void visitClassType(final String name) {
         if (this.type != 2 || this.state != 1) {
             throw new IllegalStateException();
         }
-        CheckMethodAdapter.checkInternalName(name, "class name");
+        CheckMethodAdapter.checkInternalName(name,  "class name");
         this.state = 128;
         if (this.sv != null) {
             this.sv.visitClassType(name);
@@ -162,7 +162,7 @@ public class CheckSignatureAdapter extends SignatureVisitor
         if (this.state != 128) {
             throw new IllegalStateException();
         }
-        CheckMethodAdapter.checkIdentifier(name, "inner class name");
+        CheckMethodAdapter.checkIdentifier(name,  "inner class name");
         if (this.sv != null) {
             this.sv.visitInnerClassType(name);
         }
@@ -185,7 +185,7 @@ public class CheckSignatureAdapter extends SignatureVisitor
             throw new IllegalArgumentException();
         }
         final SignatureVisitor v = (this.sv == null) ? null : this.sv.visitTypeArgument(wildcard);
-        return new CheckSignatureAdapter(2, v);
+        return new CheckSignatureAdapter(2,  v);
     }
     
     public void visitEnd() {

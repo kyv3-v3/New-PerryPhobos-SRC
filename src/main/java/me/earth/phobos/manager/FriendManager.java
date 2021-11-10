@@ -12,11 +12,11 @@ import me.earth.phobos.util.*;
 
 public class FriendManager extends Feature
 {
-    private final Map<String, UUID> friends;
+    private final Map<String,  UUID> friends;
     
     public FriendManager() {
         super("Friends");
-        this.friends = new HashMap<String, UUID>();
+        this.friends = new HashMap<String,  UUID>();
     }
     
     public boolean isFriend(final String name) {
@@ -30,7 +30,7 @@ public class FriendManager extends Feature
     public void addFriend(final String name) {
         final Friend friend = this.getFriendByName(name);
         if (friend != null) {
-            this.friends.put(friend.getUsername(), friend.getUuid());
+            this.friends.put(friend.getUsername(),  friend.getUuid());
         }
     }
     
@@ -45,25 +45,25 @@ public class FriendManager extends Feature
     
     public void saveFriends() {
         this.clearSettings();
-        for (final Map.Entry<String, UUID> entry : this.friends.entrySet()) {
-            this.register(new Setting(entry.getValue().toString(), (Object)entry.getKey()));
+        for (final Map.Entry<String,  UUID> entry : this.friends.entrySet()) {
+            this.register(new Setting(entry.getValue().toString(),  (Object)entry.getKey()));
         }
     }
     
-    public Map<String, UUID> getFriends() {
+    public Map<String,  UUID> getFriends() {
         return this.friends;
     }
     
     public Friend getFriendByName(final String input) {
         final UUID uuid = PlayerUtil.getUUIDFromName(input);
         if (uuid != null) {
-            return new Friend(input, uuid);
+            return new Friend(input,  uuid);
         }
         return null;
     }
     
     public void addFriend(final Friend friend) {
-        this.friends.put(friend.getUsername(), friend.getUuid());
+        this.friends.put(friend.getUsername(),  friend.getUuid());
     }
     
     public static class Friend
@@ -71,7 +71,7 @@ public class FriendManager extends Feature
         private final String username;
         private final UUID uuid;
         
-        public Friend(final String username, final UUID uuid) {
+        public Friend(final String username,  final UUID uuid) {
             this.username = username;
             this.uuid = uuid;
         }

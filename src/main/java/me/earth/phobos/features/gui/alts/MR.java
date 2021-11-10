@@ -22,14 +22,14 @@ public class MR
             for (final Field f : mc.getDeclaredFields()) {
                 if (f.getType().isInstance(s)) {
                     session = f;
-                    System.out.println("Found field " + f + ", injecting...");
+                    System.out.println("Found field " + f + ",  injecting...");
                 }
             }
             if (session == null) {
                 throw new IllegalStateException("No field of type " + Session.class.getCanonicalName() + " declared.");
             }
             session.setAccessible(true);
-            session.set(Minecraft.getMinecraft(), s);
+            session.set(Minecraft.getMinecraft(),  s);
             session.setAccessible(false);
         }
         catch (Exception e) {

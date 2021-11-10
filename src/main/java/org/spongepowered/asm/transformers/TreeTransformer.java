@@ -14,23 +14,23 @@ public abstract class TreeTransformer implements ILegacyClassTransformer
     private ClassNode classNode;
     
     protected final ClassNode readClass(final byte[] basicClass) {
-        return this.readClass(basicClass, true);
+        return this.readClass(basicClass,  true);
     }
     
-    protected final ClassNode readClass(final byte[] basicClass, final boolean cacheReader) {
+    protected final ClassNode readClass(final byte[] basicClass,  final boolean cacheReader) {
         final ClassReader classReader = new ClassReader(basicClass);
         if (cacheReader) {
             this.classReader = classReader;
         }
         final ClassNode classNode = new ClassNode();
-        classReader.accept((ClassVisitor)classNode, 8);
+        classReader.accept((ClassVisitor)classNode,  8);
         return classNode;
     }
     
     protected final byte[] writeClass(final ClassNode classNode) {
         if (this.classReader != null && this.classNode == classNode) {
             this.classNode = null;
-            final ClassWriter writer = (ClassWriter)new MixinClassWriter(this.classReader, 3);
+            final ClassWriter writer = (ClassWriter)new MixinClassWriter(this.classReader,  3);
             this.classReader = null;
             classNode.accept((ClassVisitor)writer);
             return writer.toByteArray();

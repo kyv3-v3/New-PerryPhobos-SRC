@@ -11,7 +11,7 @@ import java.util.*;
 public class FriendCommand extends Command
 {
     public FriendCommand() {
-        super("friend", new String[] { "<add/del/name/clear>", "<name>" });
+        super("friend",  new String[] { "<add/del/name/clear>",  "<name>" });
     }
     
     public void execute(final String[] commands) {
@@ -21,7 +21,7 @@ public class FriendCommand extends Command
             }
             else {
                 sendMessage("Friends: ");
-                for (final Map.Entry<String, UUID> entry : Phobos.friendManager.getFriends().entrySet()) {
+                for (final Map.Entry<String,  UUID> entry : Phobos.friendManager.getFriends().entrySet()) {
                     sendMessage((String)entry.getKey());
                 }
             }
@@ -51,7 +51,7 @@ public class FriendCommand extends Command
                     break;
                 }
                 default: {
-                    sendMessage("§cBad Command, try: friend <add/del/name> <name>.");
+                    sendMessage("§cBad Command,  try: friend <add/del/name> <name>.");
                     break;
                 }
             }

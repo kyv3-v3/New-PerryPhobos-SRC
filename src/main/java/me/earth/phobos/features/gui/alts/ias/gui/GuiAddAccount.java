@@ -14,6 +14,6 @@ public class GuiAddAccount extends AbstractAccountGui
     }
     
     public void complete() {
-        AltDatabase.getInstance().getAlts().add((AccountData)new ExtendedAccountData(this.getUsername(), this.getPassword(), this.getUsername()));
+        AltDatabase.getInstance().getAlts().add((AccountData)new ExtendedAccountData(this.getUsername(),  this.getPassword(),  this.getUsername()));
     }
 }

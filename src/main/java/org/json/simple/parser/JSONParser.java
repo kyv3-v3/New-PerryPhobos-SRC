@@ -53,24 +53,24 @@ public class JSONParser
     }
     
     public Object parse(final String s) throws ParseException {
-        return this.parse(s, (ContainerFactory)null);
+        return this.parse(s,  (ContainerFactory)null);
     }
     
-    public Object parse(final String s, final ContainerFactory containerFactory) throws ParseException {
+    public Object parse(final String s,  final ContainerFactory containerFactory) throws ParseException {
         final StringReader in = new StringReader(s);
         try {
-            return this.parse(in, containerFactory);
+            return this.parse(in,  containerFactory);
         }
         catch (IOException ie) {
-            throw new ParseException(-1, 2, ie);
+            throw new ParseException(-1,  2,  ie);
         }
     }
     
-    public Object parse(final Reader in) throws IOException, ParseException {
-        return this.parse(in, (ContainerFactory)null);
+    public Object parse(final Reader in) throws IOException,  ParseException {
+        return this.parse(in,  (ContainerFactory)null);
     }
     
-    public Object parse(final Reader in, final ContainerFactory containerFactory) throws IOException, ParseException {
+    public Object parse(final Reader in,  final ContainerFactory containerFactory) throws IOException,  ParseException {
         this.reset(in);
         final LinkedList statusStack = new LinkedList();
         final LinkedList valueStack = new LinkedList();
@@ -110,7 +110,7 @@ public class JSONParser
                             if (this.token.type == -1) {
                                 return valueStack.removeFirst();
                             }
-                            throw new ParseException(this.getPosition(), 1, this.token);
+                            throw new ParseException(this.getPosition(),  1,  this.token);
                         }
                         case 2: {
                             switch (this.token.type) {
@@ -154,7 +154,7 @@ public class JSONParser
                                     statusStack.removeFirst();
                                     final String key = valueStack.removeFirst();
                                     final Map parent = valueStack.getFirst();
-                                    parent.put(key, this.token.value);
+                                    parent.put(key,  this.token.value);
                                     this.status = this.peekStatus(statusStack);
                                     break;
                                 }
@@ -163,7 +163,7 @@ public class JSONParser
                                     final String key = valueStack.removeFirst();
                                     final Map parent = valueStack.getFirst();
                                     final List newArray = this.createArrayContainer(containerFactory);
-                                    parent.put(key, newArray);
+                                    parent.put(key,  newArray);
                                     this.status = 3;
                                     statusStack.addFirst(new Integer(this.status));
                                     valueStack.addFirst(newArray);
@@ -174,7 +174,7 @@ public class JSONParser
                                     final String key = valueStack.removeFirst();
                                     final Map parent = valueStack.getFirst();
                                     final Map newObject = this.createObjectContainer(containerFactory);
-                                    parent.put(key, newObject);
+                                    parent.put(key,  newObject);
                                     this.status = 2;
                                     statusStack.addFirst(new Integer(this.status));
                                     valueStack.addFirst(newObject);
@@ -233,25 +233,25 @@ public class JSONParser
                             break;
                         }
                         case -1: {
-                            throw new ParseException(this.getPosition(), 1, this.token);
+                            throw new ParseException(this.getPosition(),  1,  this.token);
                         }
                     }
                 }
                 if (this.status == -1) {
-                    throw new ParseException(this.getPosition(), 1, this.token);
+                    throw new ParseException(this.getPosition(),  1,  this.token);
                 }
             } while (this.token.type != -1);
         }
         catch (IOException ie) {
             throw ie;
         }
-        throw new ParseException(this.getPosition(), 1, this.token);
+        throw new ParseException(this.getPosition(),  1,  this.token);
     }
     
-    private void nextToken() throws ParseException, IOException {
+    private void nextToken() throws ParseException,  IOException {
         this.token = this.lexer.yylex();
         if (this.token == null) {
-            this.token = new Yytoken(-1, null);
+            this.token = new Yytoken(-1,  null);
         }
     }
     
@@ -277,25 +277,25 @@ public class JSONParser
         return l;
     }
     
-    public void parse(final String s, final ContentHandler contentHandler) throws ParseException {
-        this.parse(s, contentHandler, false);
+    public void parse(final String s,  final ContentHandler contentHandler) throws ParseException {
+        this.parse(s,  contentHandler,  false);
     }
     
-    public void parse(final String s, final ContentHandler contentHandler, final boolean isResume) throws ParseException {
+    public void parse(final String s,  final ContentHandler contentHandler,  final boolean isResume) throws ParseException {
         final StringReader in = new StringReader(s);
         try {
-            this.parse(in, contentHandler, isResume);
+            this.parse(in,  contentHandler,  isResume);
         }
         catch (IOException ie) {
-            throw new ParseException(-1, 2, ie);
+            throw new ParseException(-1,  2,  ie);
         }
     }
     
-    public void parse(final Reader in, final ContentHandler contentHandler) throws IOException, ParseException {
-        this.parse(in, contentHandler, false);
+    public void parse(final Reader in,  final ContentHandler contentHandler) throws IOException,  ParseException {
+        this.parse(in,  contentHandler,  false);
     }
     
-    public void parse(final Reader in, final ContentHandler contentHandler, boolean isResume) throws IOException, ParseException {
+    public void parse(final Reader in,  final ContentHandler contentHandler,  boolean isResume) throws IOException,  ParseException {
         if (!isResume) {
             this.reset(in);
             this.handlerStatusStack = new LinkedList();
@@ -353,7 +353,7 @@ public class JSONParser
                                 return;
                             }
                             this.status = -1;
-                            throw new ParseException(this.getPosition(), 1, this.token);
+                            throw new ParseException(this.getPosition(),  1,  this.token);
                         }
                         case 2: {
                             this.nextToken();
@@ -498,12 +498,12 @@ public class JSONParser
                             return;
                         }
                         case -1: {
-                            throw new ParseException(this.getPosition(), 1, this.token);
+                            throw new ParseException(this.getPosition(),  1,  this.token);
                         }
                     }
                 }
                 if (this.status == -1) {
-                    throw new ParseException(this.getPosition(), 1, this.token);
+                    throw new ParseException(this.getPosition(),  1,  this.token);
                 }
             } while (this.token.type != -1);
         }
@@ -524,6 +524,6 @@ public class JSONParser
             throw e;
         }
         this.status = -1;
-        throw new ParseException(this.getPosition(), 1, this.token);
+        throw new ParseException(this.getPosition(),  1,  this.token);
     }
 }

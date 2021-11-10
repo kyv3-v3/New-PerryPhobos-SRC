@@ -17,7 +17,7 @@ public class PushEvent extends EventStage
     public double z;
     public boolean airbone;
     
-    public PushEvent(final Entity entity, final double x, final double y, final double z, final boolean airbone) {
+    public PushEvent(final Entity entity,  final double x,  final double y,  final double z,  final boolean airbone) {
         super(0);
         this.entity = entity;
         this.x = x;
@@ -30,7 +30,7 @@ public class PushEvent extends EventStage
         super(stage);
     }
     
-    public PushEvent(final int stage, final Entity entity) {
+    public PushEvent(final int stage,  final Entity entity) {
         super(stage);
         this.entity = entity;
     }

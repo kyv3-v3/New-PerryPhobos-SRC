@@ -70,7 +70,7 @@ public class PlayerUtil implements Util
             final URL url = new URL("https://api.mojang.com/profiles/minecraft");
             final HttpURLConnection conn = (HttpURLConnection)url.openConnection();
             conn.setConnectTimeout(5000);
-            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            conn.setRequestProperty("Content-Type",  "application/json; charset=UTF-8");
             conn.setDoOutput(true);
             conn.setDoInput(true);
             conn.setRequestMethod("POST");
@@ -95,7 +95,7 @@ public class PlayerUtil implements Util
     
     public static List<String> getHistoryOfNames(final UUID id) {
         try {
-            final JsonArray array = getResources(new URL("https://api.mojang.com/user/profiles/" + getIdNoHyphens(id) + "/names"), "GET").getAsJsonArray();
+            final JsonArray array = getResources(new URL("https://api.mojang.com/user/profiles/" + getIdNoHyphens(id) + "/names"),  "GET").getAsJsonArray();
             final ArrayList temp = Lists.newArrayList();
             for (final JsonElement e : array) {
                 final JsonObject node = e.getAsJsonObject();
@@ -112,20 +112,20 @@ public class PlayerUtil implements Util
     }
     
     public static String getIdNoHyphens(final UUID uuid) {
-        return uuid.toString().replaceAll("-", "");
+        return uuid.toString().replaceAll("-",  "");
     }
     
-    private static JsonElement getResources(final URL url, final String request) throws Exception {
-        return getResources(url, request, null);
+    private static JsonElement getResources(final URL url,  final String request) throws Exception {
+        return getResources(url,  request,  null);
     }
     
-    private static JsonElement getResources(final URL url, final String request, final JsonElement element) throws Exception {
+    private static JsonElement getResources(final URL url,  final String request,  final JsonElement element) throws Exception {
         HttpsURLConnection connection = null;
         try {
             connection = (HttpsURLConnection)url.openConnection();
             connection.setDoOutput(true);
             connection.setRequestMethod(request);
-            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Content-Type",  "application/json");
             if (element != null) {
                 final DataOutputStream output = new DataOutputStream(connection.getOutputStream());
                 output.writeBytes(AdvancementManager.GSON.toJson(element));
@@ -235,7 +235,7 @@ public class PlayerUtil implements Util
                 player = Util.mc.world.getPlayerEntityByUUID(this.uuidID);
             }
             if (player == null) {
-                final String url = "https://api.mojang.com/user/profiles/" + this.uuid.replace("-", "") + "/names";
+                final String url = "https://api.mojang.com/user/profiles/" + this.uuid.replace("-",  "") + "/names";
                 try {
                     final String nameJson = IOUtils.toString(new URL(url));
                     final JSONArray nameValue = (JSONArray)JSONValue.parseWithException(nameJson);

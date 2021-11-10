@@ -24,11 +24,11 @@ public class AutoLog extends Module
     private final Setting<Boolean> logout;
     
     public AutoLog() {
-        super("AutoLog", "Logs when in danger.", Category.MISC, false, false, false);
-        this.health = (Setting<Float>)this.register(new Setting("Health", (T)16.0f, (T)0.1f, (T)36.0f));
-        this.bed = (Setting<Boolean>)this.register(new Setting("Beds", (T)true));
-        this.range = (Setting<Float>)this.register(new Setting("BedRange", (T)6.0f, (T)0.1f, (T)36.0f, v -> this.bed.getValue()));
-        this.logout = (Setting<Boolean>)this.register(new Setting("LogoutOff", (T)true));
+        super("AutoLog",  "Logs when in danger.",  Category.MISC,  false,  false,  false);
+        this.health = (Setting<Float>)this.register(new Setting("Health", 16.0f, 0.1f, 36.0f));
+        this.bed = (Setting<Boolean>)this.register(new Setting("Beds", true));
+        this.range = (Setting<Float>)this.register(new Setting("BedRange", 6.0f, 0.1f, 36.0f,  v -> this.bed.getValue()));
+        this.logout = (Setting<Boolean>)this.register(new Setting("LogoutOff", true));
         this.setInstance();
     }
     

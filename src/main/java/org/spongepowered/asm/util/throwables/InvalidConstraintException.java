@@ -19,7 +19,7 @@ public class InvalidConstraintException extends IllegalArgumentException
         super(cause);
     }
     
-    public InvalidConstraintException(final String message, final Throwable cause) {
-        super(message, cause);
+    public InvalidConstraintException(final String message,  final Throwable cause) {
+        super(message,  cause);
     }
 }

@@ -14,7 +14,7 @@ public class TableSwitchInsnNode extends AbstractInsnNode
     public LabelNode dflt;
     public List<LabelNode> labels;
     
-    public TableSwitchInsnNode(final int min, final int max, final LabelNode dflt, final LabelNode... labels) {
+    public TableSwitchInsnNode(final int min,  final int max,  final LabelNode dflt,  final LabelNode... labels) {
         super(170);
         this.min = min;
         this.max = max;
@@ -34,11 +34,11 @@ public class TableSwitchInsnNode extends AbstractInsnNode
         for (int i = 0; i < labels.length; ++i) {
             labels[i] = this.labels.get(i).getLabel();
         }
-        mv.visitTableSwitchInsn(this.min, this.max, this.dflt.getLabel(), labels);
+        mv.visitTableSwitchInsn(this.min,  this.max,  this.dflt.getLabel(),  labels);
         this.acceptAnnotations(mv);
     }
     
-    public AbstractInsnNode clone(final Map<LabelNode, LabelNode> labels) {
-        return new TableSwitchInsnNode(this.min, this.max, clone(this.dflt, (Map)labels), clone((List)this.labels, (Map)labels)).cloneAnnotations((AbstractInsnNode)this);
+    public AbstractInsnNode clone(final Map<LabelNode,  LabelNode> labels) {
+        return new TableSwitchInsnNode(this.min,  this.max,  clone(this.dflt,  (Map)labels),  clone((List)this.labels,  (Map)labels)).cloneAnnotations((AbstractInsnNode)this);
     }
 }

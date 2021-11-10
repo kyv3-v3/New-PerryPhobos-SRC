@@ -13,7 +13,7 @@ public class TypePath
     byte[] b;
     int offset;
     
-    TypePath(final byte[] b, final int offset) {
+    TypePath(final byte[] b,  final int offset) {
         this.b = b;
         this.offset = offset;
     }
@@ -41,13 +41,13 @@ public class TypePath
         while (i < n) {
             char c = typePath.charAt(i++);
             if (c == '[') {
-                out.put11(0, 0);
+                out.put11(0,  0);
             }
             else if (c == '.') {
-                out.put11(1, 0);
+                out.put11(1,  0);
             }
             else if (c == '*') {
-                out.put11(2, 0);
+                out.put11(2,  0);
             }
             else {
                 if (c < '0' || c > '9') {
@@ -61,11 +61,11 @@ public class TypePath
                 if (i < n && typePath.charAt(i) == ';') {
                     ++i;
                 }
-                out.put11(3, typeArg);
+                out.put11(3,  typeArg);
             }
         }
         out.data[0] = (byte)(out.length / 2);
-        return new TypePath(out.data, 0);
+        return new TypePath(out.data,  0);
     }
     
     @Override

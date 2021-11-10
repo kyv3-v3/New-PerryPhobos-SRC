@@ -42,11 +42,11 @@ public class DiscordRichPresence extends Structure
             return false;
         }
         final DiscordRichPresence presence = (DiscordRichPresence)o;
-        return this.startTimestamp == presence.startTimestamp && this.endTimestamp == presence.endTimestamp && this.partySize == presence.partySize && this.partyMax == presence.partyMax && this.instance == presence.instance && Objects.equals(this.state, presence.state) && Objects.equals(this.details, presence.details) && Objects.equals(this.largeImageKey, presence.largeImageKey) && Objects.equals(this.largeImageText, presence.largeImageText) && Objects.equals(this.smallImageKey, presence.smallImageKey) && Objects.equals(this.smallImageText, presence.smallImageText) && Objects.equals(this.partyId, presence.partyId) && Objects.equals(this.matchSecret, presence.matchSecret) && Objects.equals(this.joinSecret, presence.joinSecret) && Objects.equals(this.spectateSecret, presence.spectateSecret);
+        return this.startTimestamp == presence.startTimestamp && this.endTimestamp == presence.endTimestamp && this.partySize == presence.partySize && this.partyMax == presence.partyMax && this.instance == presence.instance && Objects.equals(this.state,  presence.state) && Objects.equals(this.details,  presence.details) && Objects.equals(this.largeImageKey,  presence.largeImageKey) && Objects.equals(this.largeImageText,  presence.largeImageText) && Objects.equals(this.smallImageKey,  presence.smallImageKey) && Objects.equals(this.smallImageText,  presence.smallImageText) && Objects.equals(this.partyId,  presence.partyId) && Objects.equals(this.matchSecret,  presence.matchSecret) && Objects.equals(this.joinSecret,  presence.joinSecret) && Objects.equals(this.spectateSecret,  presence.spectateSecret);
     }
     
     public int hashCode() {
-        return Objects.hash(this.state, this.details, this.startTimestamp, this.endTimestamp, this.largeImageKey, this.largeImageText, this.smallImageKey, this.smallImageText, this.partyId, this.partySize, this.partyMax, this.matchSecret, this.joinSecret, this.spectateSecret, this.instance);
+        return Objects.hash(this.state,  this.details,  this.startTimestamp,  this.endTimestamp,  this.largeImageKey,  this.largeImageText,  this.smallImageKey,  this.smallImageText,  this.partyId,  this.partySize,  this.partyMax,  this.matchSecret,  this.joinSecret,  this.spectateSecret,  this.instance);
     }
     
     protected List<String> getFieldOrder() {
@@ -54,6 +54,6 @@ public class DiscordRichPresence extends Structure
     }
     
     static {
-        FIELD_ORDER = Collections.unmodifiableList((List<? extends String>)Arrays.asList("state", "details", "startTimestamp", "endTimestamp", "largeImageKey", "largeImageText", "smallImageKey", "smallImageText", "partyId", "partySize", "partyMax", "matchSecret", "joinSecret", "spectateSecret", "instance"));
+        FIELD_ORDER = Collections.unmodifiableList((List<? extends String>)Arrays.asList("state",  "details",  "startTimestamp",  "endTimestamp",  "largeImageKey",  "largeImageText",  "smallImageKey",  "smallImageText",  "partyId",  "partySize",  "partyMax",  "matchSecret",  "joinSecret",  "spectateSecret",  "instance"));
     }
 }

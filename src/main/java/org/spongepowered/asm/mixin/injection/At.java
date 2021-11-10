@@ -30,9 +30,9 @@ public @interface At {
     
     public enum Shift
     {
-        NONE, 
-        BEFORE, 
-        AFTER, 
+        NONE,  
+        BEFORE,  
+        AFTER,  
         BY;
     }
 }

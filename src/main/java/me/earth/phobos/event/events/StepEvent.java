@@ -14,7 +14,7 @@ public class StepEvent extends EventStage
     private final Entity entity;
     private float height;
     
-    public StepEvent(final int stage, final Entity entity) {
+    public StepEvent(final int stage,  final Entity entity) {
         super(stage);
         this.entity = entity;
         this.height = entity.stepHeight;

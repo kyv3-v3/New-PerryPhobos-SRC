@@ -25,11 +25,11 @@ public class SilentXP extends Module
     private boolean on;
     
     public SilentXP() {
-        super("SilentXP", "Silent XP.", Module.Category.PLAYER, false, false, false);
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", (T)Mode.MIDDLECLICK));
-        this.antiFriend = (Setting<Boolean>)this.register(new Setting("AntiFriend", (T)true));
-        this.key = (Setting<Bind>)this.register(new Setting("Key", (T)new Bind(-1), v -> this.mode.getValue() != Mode.MIDDLECLICK));
-        this.groundOnly = (Setting<Boolean>)this.register(new Setting("BelowHorizon", (T)false));
+        super("SilentXP",  "Silent XP.",  Module.Category.PLAYER,  false,  false,  false);
+        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.MIDDLECLICK));
+        this.antiFriend = (Setting<Boolean>)this.register(new Setting("AntiFriend", true));
+        this.key = (Setting<Bind>)this.register(new Setting("Key", new Bind(-1),  v -> this.mode.getValue() != Mode.MIDDLECLICK));
+        this.groundOnly = (Setting<Boolean>)this.register(new Setting("BelowHorizon", false));
     }
     
     public void onUpdate() {
@@ -94,19 +94,19 @@ public class SilentXP extends Module
         if (xpSlot != -1 || offhand) {
             final int oldslot = SilentXP.mc.player.inventory.currentItem;
             if (!offhand) {
-                InventoryUtil.switchToHotbarSlot(xpSlot, false);
+                InventoryUtil.switchToHotbarSlot(xpSlot,  false);
             }
-            SilentXP.mc.playerController.processRightClick((EntityPlayer)SilentXP.mc.player, (World)SilentXP.mc.world, offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND);
+            SilentXP.mc.playerController.processRightClick((EntityPlayer)SilentXP.mc.player,  (World)SilentXP.mc.world,  offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND);
             if (!offhand) {
-                InventoryUtil.switchToHotbarSlot(oldslot, false);
+                InventoryUtil.switchToHotbarSlot(oldslot,  false);
             }
         }
     }
     
     public enum Mode
     {
-        MIDDLECLICK, 
-        TOGGLE, 
+        MIDDLECLICK,  
+        TOGGLE,  
         PRESS;
     }
 }

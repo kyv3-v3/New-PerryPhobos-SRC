@@ -20,8 +20,8 @@ public class AutoReconnect extends Module
     private final Setting<Integer> delay;
     
     public AutoReconnect() {
-        super("AutoReconnect", "Reconnects you if you disconnect.", Category.MISC, true, false, false);
-        this.delay = (Setting<Integer>)this.register(new Setting("Delay", (T)5));
+        super("AutoReconnect",  "Reconnects you if you disconnect.",  Category.MISC,  true,  false,  false);
+        this.delay = (Setting<Integer>)this.register(new Setting("Delay", 5));
         this.setInstance();
     }
     
@@ -68,20 +68,20 @@ public class AutoReconnect extends Module
         private final TimerUtil timer;
         
         public GuiDisconnectedHook(final GuiDisconnected disconnected) {
-            super(disconnected.parentScreen, disconnected.reason, disconnected.message);
+            super(disconnected.parentScreen,  disconnected.reason,  disconnected.message);
             (this.timer = new TimerUtil()).reset();
         }
         
         public void updateScreen() {
             if (this.timer.passedS(AutoReconnect.this.delay.getValue())) {
-                this.mc.displayGuiScreen((GuiScreen)new GuiConnecting(this.parentScreen, this.mc, (AutoReconnect.serverData == null) ? this.mc.currentServerData : AutoReconnect.serverData));
+                this.mc.displayGuiScreen((GuiScreen)new GuiConnecting(this.parentScreen,  this.mc,  (AutoReconnect.serverData == null) ? this.mc.currentServerData : AutoReconnect.serverData));
             }
         }
         
-        public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
-            super.drawScreen(mouseX, mouseY, partialTicks);
-            final String s = "Reconnecting in " + MathUtil.round((AutoReconnect.this.delay.getValue() * 1000 - this.timer.getPassedTimeMs()) / 1000.0, 1);
-            AutoReconnect.this.renderer.drawString(s, (float)(this.width / 2 - AutoReconnect.this.renderer.getStringWidth(s) / 2), (float)(this.height - 16), 16777215, true);
+        public void drawScreen(final int mouseX,  final int mouseY,  final float partialTicks) {
+            super.drawScreen(mouseX,  mouseY,  partialTicks);
+            final String s = "Reconnecting in " + MathUtil.round((AutoReconnect.this.delay.getValue() * 1000 - this.timer.getPassedTimeMs()) / 1000.0,  1);
+            AutoReconnect.this.renderer.drawString(s,  (float)(this.width / 2 - AutoReconnect.this.renderer.getStringWidth(s) / 2),  (float)(this.height - 16),  16777215,  true);
         }
     }
 }

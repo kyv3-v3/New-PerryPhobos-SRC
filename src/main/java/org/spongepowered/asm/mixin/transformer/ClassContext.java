@@ -45,12 +45,12 @@ abstract class ClassContext
             if (!methodRef.getOwner().equals(this.getClassRef())) {
                 continue;
             }
-            final ClassInfo.Method md = this.getClassInfo().findMethod(methodRef.getName(), methodRef.getDesc(), 10);
-            this.upgradeMethodRef(method, methodRef, md);
+            final ClassInfo.Method md = this.getClassInfo().findMethod(methodRef.getName(),  methodRef.getDesc(),  10);
+            this.upgradeMethodRef(method,  methodRef,  md);
         }
     }
     
-    protected void upgradeMethodRef(final MethodNode containingMethod, final MemberRef methodRef, final ClassInfo.Method method) {
+    protected void upgradeMethodRef(final MethodNode containingMethod,  final MemberRef methodRef,  final ClassInfo.Method method) {
         if (methodRef.getOpcode() != 183) {
             return;
         }

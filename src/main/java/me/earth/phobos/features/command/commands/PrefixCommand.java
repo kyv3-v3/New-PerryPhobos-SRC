@@ -11,7 +11,7 @@ import me.earth.phobos.*;
 public class PrefixCommand extends Command
 {
     public PrefixCommand() {
-        super("prefix", new String[] { "<char>" });
+        super("prefix",  new String[] { "<char>" });
     }
     
     public void execute(final String[] commands) {

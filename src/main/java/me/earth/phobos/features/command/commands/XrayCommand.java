@@ -13,7 +13,7 @@ import java.util.*;
 public class XrayCommand extends Command
 {
     public XrayCommand() {
-        super("xray", new String[] { "<add/del>", "<block>" });
+        super("xray",  new String[] { "<add/del>",  "<block>" });
     }
     
     public void execute(final String[] commands) {
@@ -26,7 +26,7 @@ public class XrayCommand extends Command
                         if (setting.equals(module.showBlocks)) {
                             continue;
                         }
-                        blocks.append(setting.getName()).append(", ");
+                        blocks.append(setting.getName()).append(",  ");
                     }
                 }
                 Command.sendMessage(blocks.toString());
@@ -50,12 +50,12 @@ public class XrayCommand extends Command
             }
             else if (addRemove.equalsIgnoreCase("add")) {
                 if (!module.shouldRender(blockName)) {
-                    module.register(new Setting(blockName, (T)true, v -> module.showBlocks.getValue()));
+                    module.register(new Setting(blockName, true,  v -> module.showBlocks.getValue()));
                     sendMessage("<Xray> Added new Block: " + blockName);
                 }
             }
             else {
-                sendMessage("§cAn error occured, block either exists or wrong use of command: .xray <add/del(remove)> <block>");
+                sendMessage("§cAn error occured,  block either exists or wrong use of command: .xray <add/del(remove)> <block>");
             }
         }
     }

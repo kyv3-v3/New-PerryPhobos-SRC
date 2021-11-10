@@ -24,11 +24,11 @@ public class MCP extends Module
     private boolean clicked;
     
     public MCP() {
-        super("MCP", "Throws a pearl.", Module.Category.PLAYER, false, false, false);
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", (T)Mode.MIDDLECLICK));
-        this.antiFriend = (Setting<Boolean>)this.register(new Setting("AntiFriend", (T)true));
-        this.skyonly = (Setting<Boolean>)this.register(new Setting("AboveHorizon", (T)false));
-        this.skyonly2 = (Setting<Boolean>)this.register(new Setting("Skyonly", (T)false));
+        super("MCP",  "Throws a pearl.",  Module.Category.PLAYER,  false,  false,  false);
+        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.MIDDLECLICK));
+        this.antiFriend = (Setting<Boolean>)this.register(new Setting("AntiFriend", true));
+        this.skyonly = (Setting<Boolean>)this.register(new Setting("AboveHorizon", false));
+        this.skyonly2 = (Setting<Boolean>)this.register(new Setting("Skyonly", false));
     }
     
     public void onEnable() {
@@ -68,18 +68,18 @@ public class MCP extends Module
         if (pearlSlot != -1 || offhand) {
             final int oldslot = MCP.mc.player.inventory.currentItem;
             if (!offhand) {
-                InventoryUtil.switchToHotbarSlot(pearlSlot, false);
+                InventoryUtil.switchToHotbarSlot(pearlSlot,  false);
             }
-            MCP.mc.playerController.processRightClick((EntityPlayer)MCP.mc.player, (World)MCP.mc.world, offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND);
+            MCP.mc.playerController.processRightClick((EntityPlayer)MCP.mc.player,  (World)MCP.mc.world,  offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND);
             if (!offhand) {
-                InventoryUtil.switchToHotbarSlot(oldslot, false);
+                InventoryUtil.switchToHotbarSlot(oldslot,  false);
             }
         }
     }
     
     public enum Mode
     {
-        TOGGLE, 
+        TOGGLE,  
         MIDDLECLICK;
     }
 }

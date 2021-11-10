@@ -24,8 +24,8 @@ public class NotificationManager
         }
     }
     
-    public void addNotification(final String text, final long duration) {
-        this.getNotifications().add(new Notifications(text, duration));
+    public void addNotification(final String text,  final long duration) {
+        this.getNotifications().add(new Notifications(text,  duration));
     }
     
     public ArrayList<Notifications> getNotifications() {

@@ -13,31 +13,31 @@ public class InvalidMixinException extends MixinException
     private static final long serialVersionUID = 2L;
     private final IMixinInfo mixin;
     
-    public InvalidMixinException(final IMixinInfo mixin, final String message) {
+    public InvalidMixinException(final IMixinInfo mixin,  final String message) {
         super(message);
         this.mixin = mixin;
     }
     
-    public InvalidMixinException(final IMixinContext context, final String message) {
-        this(context.getMixin(), message);
+    public InvalidMixinException(final IMixinContext context,  final String message) {
+        this(context.getMixin(),  message);
     }
     
-    public InvalidMixinException(final IMixinInfo mixin, final Throwable cause) {
+    public InvalidMixinException(final IMixinInfo mixin,  final Throwable cause) {
         super(cause);
         this.mixin = mixin;
     }
     
-    public InvalidMixinException(final IMixinContext context, final Throwable cause) {
-        this(context.getMixin(), cause);
+    public InvalidMixinException(final IMixinContext context,  final Throwable cause) {
+        this(context.getMixin(),  cause);
     }
     
-    public InvalidMixinException(final IMixinInfo mixin, final String message, final Throwable cause) {
-        super(message, cause);
+    public InvalidMixinException(final IMixinInfo mixin,  final String message,  final Throwable cause) {
+        super(message,  cause);
         this.mixin = mixin;
     }
     
-    public InvalidMixinException(final IMixinContext context, final String message, final Throwable cause) {
-        super(message, cause);
+    public InvalidMixinException(final IMixinContext context,  final String message,  final Throwable cause) {
+        super(message,  cause);
         this.mixin = context.getMixin();
     }
     

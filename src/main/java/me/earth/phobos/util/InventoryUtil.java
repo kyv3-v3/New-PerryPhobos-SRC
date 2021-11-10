@@ -21,7 +21,7 @@ import net.minecraft.entity.player.*;
 
 public class InventoryUtil implements Util
 {
-    public static void switchToHotbarSlot(final int slot, final boolean silent) {
+    public static void switchToHotbarSlot(final int slot,  final boolean silent) {
         if (InventoryUtil.mc.player.inventory.currentItem == slot || slot < 0) {
             return;
         }
@@ -36,10 +36,10 @@ public class InventoryUtil implements Util
         }
     }
     
-    public static void switchToHotbarSlot(final Class clazz, final boolean silent) {
+    public static void switchToHotbarSlot(final Class clazz,  final boolean silent) {
         final int slot = findHotbarBlock(clazz);
         if (slot > -1) {
-            switchToHotbarSlot(slot, silent);
+            switchToHotbarSlot(slot,  silent);
         }
     }
     
@@ -95,10 +95,10 @@ public class InventoryUtil implements Util
     }
     
     public static int findStackInventory(final Item input) {
-        return findStackInventory(input, false);
+        return findStackInventory(input,  false);
     }
     
-    public static int findStackInventory(final Item input, final boolean withHotbar) {
+    public static int findStackInventory(final Item input,  final boolean withHotbar) {
         for (int i = withHotbar ? 0 : 9; i < 36; ++i) {
             final Item item = InventoryUtil.mc.player.inventory.getStackInSlot(i).getItem();
             if (Item.getIdFromItem(input) == Item.getIdFromItem(item)) {
@@ -108,10 +108,10 @@ public class InventoryUtil implements Util
         return -1;
     }
     
-    public static int findItemInventorySlot(final Item item, final boolean offHand) {
+    public static int findItemInventorySlot(final Item item,  final boolean offHand) {
         final AtomicInteger slot = new AtomicInteger();
         slot.set(-1);
-        for (final Map.Entry<Integer, ItemStack> entry : getInventoryAndHotbarSlots().entrySet()) {
+        for (final Map.Entry<Integer,  ItemStack> entry : getInventoryAndHotbarSlots().entrySet()) {
             if (entry.getValue().getItem() == item) {
                 if (entry.getKey() == 45 && !offHand) {
                     continue;
@@ -125,7 +125,7 @@ public class InventoryUtil implements Util
     
     public static List<Integer> findEmptySlots(final boolean withXCarry) {
         final ArrayList<Integer> outPut = new ArrayList<Integer>();
-        for (final Map.Entry<Integer, ItemStack> entry : getInventoryAndHotbarSlots().entrySet()) {
+        for (final Map.Entry<Integer,  ItemStack> entry : getInventoryAndHotbarSlots().entrySet()) {
             if (!entry.getValue().isEmpty && entry.getValue().getItem() != Items.AIR) {
                 continue;
             }
@@ -143,11 +143,11 @@ public class InventoryUtil implements Util
         return outPut;
     }
     
-    public static int findInventoryBlock(final Class clazz, final boolean offHand) {
+    public static int findInventoryBlock(final Class clazz,  final boolean offHand) {
         final AtomicInteger slot = new AtomicInteger();
         slot.set(-1);
-        for (final Map.Entry<Integer, ItemStack> entry : getInventoryAndHotbarSlots().entrySet()) {
-            if (isBlock(entry.getValue().getItem(), clazz)) {
+        for (final Map.Entry<Integer,  ItemStack> entry : getInventoryAndHotbarSlots().entrySet()) {
+            if (isBlock(entry.getValue().getItem(),  clazz)) {
                 if (entry.getKey() == 45 && !offHand) {
                     continue;
                 }
@@ -161,7 +161,7 @@ public class InventoryUtil implements Util
     public static int findInventoryWool(final boolean offHand) {
         final AtomicInteger slot = new AtomicInteger();
         slot.set(-1);
-        for (final Map.Entry<Integer, ItemStack> entry : getInventoryAndHotbarSlots().entrySet()) {
+        for (final Map.Entry<Integer,  ItemStack> entry : getInventoryAndHotbarSlots().entrySet()) {
             if (!(entry.getValue().getItem() instanceof ItemBlock)) {
                 continue;
             }
@@ -181,7 +181,7 @@ public class InventoryUtil implements Util
     public static int findEmptySlot() {
         final AtomicInteger slot = new AtomicInteger();
         slot.set(-1);
-        for (final Map.Entry<Integer, ItemStack> entry : getInventoryAndHotbarSlots().entrySet()) {
+        for (final Map.Entry<Integer,  ItemStack> entry : getInventoryAndHotbarSlots().entrySet()) {
             if (!entry.getValue().isEmpty()) {
                 continue;
             }
@@ -191,7 +191,7 @@ public class InventoryUtil implements Util
         return slot.get();
     }
     
-    public static boolean isBlock(final Item item, final Class clazz) {
+    public static boolean isBlock(final Item item,  final Class clazz) {
         if (item instanceof ItemBlock) {
             final Block block = ((ItemBlock)item).getBlock();
             return clazz.isInstance(block);
@@ -205,39 +205,39 @@ public class InventoryUtil implements Util
         InventoryUtil.mc.playerController.updateController();
     }
     
-    public static Map<Integer, ItemStack> getInventoryAndHotbarSlots() {
+    public static Map<Integer,  ItemStack> getInventoryAndHotbarSlots() {
         if (InventoryUtil.mc.currentScreen instanceof GuiCrafting) {
-            return fuckYou3arthqu4kev2(10, 45);
+            return fuckYou3arthqu4kev2(10,  45);
         }
-        return getInventorySlots(9, 44);
+        return getInventorySlots(9,  44);
     }
     
-    private static Map<Integer, ItemStack> getInventorySlots(final int currentI, final int last) {
-        final HashMap<Integer, ItemStack> fullInventorySlots = new HashMap<Integer, ItemStack>();
+    private static Map<Integer,  ItemStack> getInventorySlots(final int currentI,  final int last) {
+        final HashMap<Integer,  ItemStack> fullInventorySlots = new HashMap<Integer,  ItemStack>();
         for (int current = currentI; current <= last; ++current) {
-            fullInventorySlots.put(current, (ItemStack)InventoryUtil.mc.player.inventoryContainer.getInventory().get(current));
+            fullInventorySlots.put(current,  (ItemStack)InventoryUtil.mc.player.inventoryContainer.getInventory().get(current));
         }
         return fullInventorySlots;
     }
     
-    private static Map<Integer, ItemStack> fuckYou3arthqu4kev2(final int currentI, final int last) {
-        final HashMap<Integer, ItemStack> fullInventorySlots = new HashMap<Integer, ItemStack>();
+    private static Map<Integer,  ItemStack> fuckYou3arthqu4kev2(final int currentI,  final int last) {
+        final HashMap<Integer,  ItemStack> fullInventorySlots = new HashMap<Integer,  ItemStack>();
         for (int current = currentI; current <= last; ++current) {
-            fullInventorySlots.put(current, (ItemStack)InventoryUtil.mc.player.openContainer.getInventory().get(current));
+            fullInventorySlots.put(current,  (ItemStack)InventoryUtil.mc.player.openContainer.getInventory().get(current));
         }
         return fullInventorySlots;
     }
     
-    public static boolean[] switchItem(final boolean back, final int lastHotbarSlot, final boolean switchedItem, final Switch mode, final Class clazz) {
-        final boolean[] switchedItemSwitched = { switchedItem, false };
+    public static boolean[] switchItem(final boolean back,  final int lastHotbarSlot,  final boolean switchedItem,  final Switch mode,  final Class clazz) {
+        final boolean[] switchedItemSwitched = { switchedItem,  false };
         switch (mode) {
             case NORMAL: {
                 if (!back && !switchedItem) {
-                    switchToHotbarSlot(findHotbarBlock(clazz), false);
+                    switchToHotbarSlot(findHotbarBlock(clazz),  false);
                     switchedItemSwitched[0] = true;
                 }
                 else if (back && switchedItem) {
-                    switchToHotbarSlot(lastHotbarSlot, false);
+                    switchToHotbarSlot(lastHotbarSlot,  false);
                     switchedItemSwitched[0] = false;
                 }
                 switchedItemSwitched[1] = true;
@@ -245,7 +245,7 @@ public class InventoryUtil implements Util
             }
             case SILENT: {
                 if (!back && !switchedItem) {
-                    switchToHotbarSlot(findHotbarBlock(clazz), true);
+                    switchToHotbarSlot(findHotbarBlock(clazz),  true);
                     switchedItemSwitched[0] = true;
                 }
                 else if (back && switchedItem) {
@@ -263,16 +263,16 @@ public class InventoryUtil implements Util
         return switchedItemSwitched;
     }
     
-    public static boolean[] switchItemToItem(final boolean back, final int lastHotbarSlot, final boolean switchedItem, final Switch mode, final Item item) {
-        final boolean[] switchedItemSwitched = { switchedItem, false };
+    public static boolean[] switchItemToItem(final boolean back,  final int lastHotbarSlot,  final boolean switchedItem,  final Switch mode,  final Item item) {
+        final boolean[] switchedItemSwitched = { switchedItem,  false };
         switch (mode) {
             case NORMAL: {
                 if (!back && !switchedItem) {
-                    switchToHotbarSlot(getItemHotbar(item), false);
+                    switchToHotbarSlot(getItemHotbar(item),  false);
                     switchedItemSwitched[0] = true;
                 }
                 else if (back && switchedItem) {
-                    switchToHotbarSlot(lastHotbarSlot, false);
+                    switchToHotbarSlot(lastHotbarSlot,  false);
                     switchedItemSwitched[0] = false;
                 }
                 switchedItemSwitched[1] = true;
@@ -280,7 +280,7 @@ public class InventoryUtil implements Util
             }
             case SILENT: {
                 if (!back && !switchedItem) {
-                    switchToHotbarSlot(getItemHotbar(item), true);
+                    switchToHotbarSlot(getItemHotbar(item),  true);
                     switchedItemSwitched[0] = true;
                 }
                 else if (back && switchedItem) {
@@ -300,15 +300,15 @@ public class InventoryUtil implements Util
     
     public static boolean holdingItem(final Class clazz) {
         final ItemStack stack = InventoryUtil.mc.player.getHeldItemMainhand();
-        boolean result = isInstanceOf(stack, clazz);
+        boolean result = isInstanceOf(stack,  clazz);
         if (!result) {
             InventoryUtil.mc.player.getHeldItemOffhand();
-            result = isInstanceOf(stack, clazz);
+            result = isInstanceOf(stack,  clazz);
         }
         return result;
     }
     
-    public static boolean isInstanceOf(final ItemStack stack, final Class clazz) {
+    public static boolean isInstanceOf(final ItemStack stack,  final Class clazz) {
         if (stack == null) {
             return false;
         }
@@ -344,7 +344,7 @@ public class InventoryUtil implements Util
         return 36 + input;
     }
     
-    public static boolean areStacksCompatible(final ItemStack stack1, final ItemStack stack2) {
+    public static boolean areStacksCompatible(final ItemStack stack1,  final ItemStack stack2) {
         if (!stack1.getItem().equals(stack2.getItem())) {
             return false;
         }
@@ -371,7 +371,7 @@ public class InventoryUtil implements Util
         return EntityEquipmentSlot.FEET;
     }
     
-    public static int findArmorSlot(final EntityEquipmentSlot type, final boolean binding) {
+    public static int findArmorSlot(final EntityEquipmentSlot type,  final boolean binding) {
         int slot = -1;
         float damage = 0.0f;
         for (int i = 9; i < 45; ++i) {
@@ -380,7 +380,7 @@ public class InventoryUtil implements Util
                 if (s.getItem() instanceof ItemArmor) {
                     final ItemArmor armor = (ItemArmor)s.getItem();
                     if (armor.armorType == type) {
-                        final float currentDamage = (float)(armor.damageReduceAmount + EnchantmentHelper.getEnchantmentLevel(Enchantments.PROTECTION, s));
+                        final float currentDamage = (float)(armor.damageReduceAmount + EnchantmentHelper.getEnchantmentLevel(Enchantments.PROTECTION,  s));
                         final boolean cursed = binding && EnchantmentHelper.hasBindingCurse(s);
                         if (currentDamage > damage) {
                             if (!cursed) {
@@ -395,8 +395,8 @@ public class InventoryUtil implements Util
         return slot;
     }
     
-    public static int findArmorSlot(final EntityEquipmentSlot type, final boolean binding, final boolean withXCarry) {
-        int slot = findArmorSlot(type, binding);
+    public static int findArmorSlot(final EntityEquipmentSlot type,  final boolean binding,  final boolean withXCarry) {
+        int slot = findArmorSlot(type,  binding);
         if (slot == -1 && withXCarry) {
             float damage = 0.0f;
             for (int i = 1; i < 5; ++i) {
@@ -406,7 +406,7 @@ public class InventoryUtil implements Util
                     if (craftingStack.getItem() instanceof ItemArmor) {
                         final ItemArmor armor = (ItemArmor)craftingStack.getItem();
                         if (armor.armorType == type) {
-                            final float currentDamage = (float)(armor.damageReduceAmount + EnchantmentHelper.getEnchantmentLevel(Enchantments.PROTECTION, craftingStack));
+                            final float currentDamage = (float)(armor.damageReduceAmount + EnchantmentHelper.getEnchantmentLevel(Enchantments.PROTECTION,  craftingStack));
                             final boolean cursed = binding && EnchantmentHelper.hasBindingCurse(craftingStack);
                             if (currentDamage > damage) {
                                 if (!cursed) {
@@ -422,8 +422,8 @@ public class InventoryUtil implements Util
         return slot;
     }
     
-    public static int findItemInventorySlot(final Item item, final boolean offHand, final boolean withXCarry) {
-        int slot = findItemInventorySlot(item, offHand);
+    public static int findItemInventorySlot(final Item item,  final boolean offHand,  final boolean withXCarry) {
+        int slot = findItemInventorySlot(item,  offHand);
         if (slot == -1 && withXCarry) {
             for (int i = 1; i < 5; ++i) {
                 final Slot craftingSlot = InventoryUtil.mc.player.inventoryContainer.inventorySlots.get(i);
@@ -438,8 +438,8 @@ public class InventoryUtil implements Util
         return slot;
     }
     
-    public static int findBlockSlotInventory(final Class<BlockShulkerBox> clazz, final boolean offHand, final boolean withXCarry) {
-        int slot = findInventoryBlock(clazz, offHand);
+    public static int findBlockSlotInventory(final Class<BlockShulkerBox> clazz,  final boolean offHand,  final boolean withXCarry) {
+        int slot = findInventoryBlock(clazz,  offHand);
         if (slot == -1 && withXCarry) {
             for (int i = 1; i < 5; ++i) {
                 final Slot craftingSlot = InventoryUtil.mc.player.inventoryContainer.inventorySlots.get(i);
@@ -462,8 +462,8 @@ public class InventoryUtil implements Util
     
     public enum Switch
     {
-        NORMAL, 
-        SILENT, 
+        NORMAL,  
+        SILENT,  
         NONE;
     }
     
@@ -485,7 +485,7 @@ public class InventoryUtil implements Util
             this.update = false;
         }
         
-        public Task(final int slot, final boolean quickClick) {
+        public Task(final int slot,  final boolean quickClick) {
             this.slot = slot;
             this.quickClick = quickClick;
             this.update = false;
@@ -496,7 +496,7 @@ public class InventoryUtil implements Util
                 Util.mc.playerController.updateController();
             }
             if (this.slot != -1) {
-                Util.mc.playerController.windowClick(Util.mc.player.inventoryContainer.windowId, this.slot, 0, this.quickClick ? ClickType.QUICK_MOVE : ClickType.PICKUP, (EntityPlayer)Util.mc.player);
+                Util.mc.playerController.windowClick(Util.mc.player.inventoryContainer.windowId,  this.slot,  0,  this.quickClick ? ClickType.QUICK_MOVE : ClickType.PICKUP,  (EntityPlayer)Util.mc.player);
             }
         }
         

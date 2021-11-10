@@ -24,7 +24,7 @@ class LegacyTransformerHandle implements ILegacyClassTransformer
         return this.transformer.getClass().getAnnotation(Resource.class) != null;
     }
     
-    public byte[] transformClassBytes(final String name, final String transformedName, final byte[] basicClass) {
-        return this.transformer.transform(name, transformedName, basicClass);
+    public byte[] transformClassBytes(final String name,  final String transformedName,  final byte[] basicClass) {
+        return this.transformer.transform(name,  transformedName,  basicClass);
     }
 }

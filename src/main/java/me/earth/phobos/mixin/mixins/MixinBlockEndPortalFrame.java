@@ -20,10 +20,10 @@ public class MixinBlockEndPortalFrame
     @Final
     protected static AxisAlignedBB AABB_BLOCK;
     
-    @Inject(method = { "getBoundingBox" }, at = { @At("HEAD") }, cancellable = true)
-    public void getBoundingBox(final IBlockState state, final IBlockAccess source, final BlockPos pos, final CallbackInfoReturnable<AxisAlignedBB> info) {
+    @Inject(method = { "getBoundingBox" },  at = { @At("HEAD") },  cancellable = true)
+    public void getBoundingBox(final IBlockState state,  final IBlockAccess source,  final BlockPos pos,  final CallbackInfoReturnable<AxisAlignedBB> info) {
         if (NoSlowDown.getInstance().isOn() && (boolean)NoSlowDown.getInstance().endPortal.getValue()) {
-            info.setReturnValue((Object)new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0));
+            info.setReturnValue((Object)new AxisAlignedBB(0.0,  0.0,  0.0,  1.0,  1.0,  1.0));
         }
     }
 }

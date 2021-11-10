@@ -18,7 +18,7 @@ public class SkinRender
     private DynamicTexture previewTexture;
     private ResourceLocation resourceLocation;
     
-    public SkinRender(final TextureManager textureManager, final File file) {
+    public SkinRender(final TextureManager textureManager,  final File file) {
         this.textureManager = textureManager;
         this.file = file;
     }
@@ -27,7 +27,7 @@ public class SkinRender
         try {
             final BufferedImage image = ImageIO.read(this.file);
             this.previewTexture = new DynamicTexture(image);
-            this.resourceLocation = this.textureManager.getDynamicTextureLocation("ias", this.previewTexture);
+            this.resourceLocation = this.textureManager.getDynamicTextureLocation("ias",  this.previewTexture);
             return true;
         }
         catch (IOException e) {
@@ -36,7 +36,7 @@ public class SkinRender
         }
     }
     
-    public void drawImage(final int xPos, final int yPos, final int width, final int height) {
+    public void drawImage(final int xPos,  final int yPos,  final int width,  final int height) {
         if (this.previewTexture == null) {
             final boolean successful = this.loadPreview();
             if (!successful) {
@@ -46,6 +46,6 @@ public class SkinRender
         }
         this.previewTexture.updateDynamicTexture();
         this.textureManager.bindTexture(this.resourceLocation);
-        Gui.drawModalRectWithCustomSizedTexture(xPos, yPos, 0.0f, 0.0f, width, height, 64.0f, 128.0f);
+        Gui.drawModalRectWithCustomSizedTexture(xPos,  yPos,  0.0f,  0.0f,  width,  height,  64.0f,  128.0f);
     }
 }

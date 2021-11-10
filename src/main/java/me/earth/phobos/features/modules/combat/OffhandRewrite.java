@@ -79,27 +79,27 @@ public class OffhandRewrite extends Module
     private boolean switchedForHealthReason;
     
     public OffhandRewrite() {
-        super("OffhandRewrite", "Allows you to switch up your Offhand.", Category.COMBAT, true, false, false);
-        this.pageSetting = (Setting<page>)this.register(new Setting("Page", (T)page.MAIN));
-        this.offhandmode = (Setting<Mode2>)this.register(new Setting("Offhand", (T)Mode2.TOTEMS, v -> this.pageSetting.getValue() == page.MAIN));
-        this.rightGap = (Setting<Boolean>)this.register(new Setting("Right Click Gap", (T)true, v -> this.pageSetting.getValue() == page.MAIN));
-        this.swordgap = (Setting<Boolean>)this.register(new Setting("Sword Gap", (T)false, v -> this.pageSetting.getValue() == page.MAIN));
-        this.maxSwitch = (Setting<Integer>)this.register(new Setting("Max Switch", (T)10, (T)0, (T)10, v -> this.pageSetting.getValue() == page.MAIN));
-        this.switchmode = (Setting<Boolean>)this.register(new Setting("KeyMode", (T)false, v -> this.pageSetting.getValue() == page.MAIN));
-        this.SwitchBind = (Setting<Bind>)this.register(new Setting("SwitchKey", (T)new Bind(-1), v -> this.switchmode.getValue() && this.pageSetting.getValue() == page.MAIN));
-        this.switchHp = (Setting<Float>)this.register(new Setting("SwitchHP", (T)16.5f, (T)0.1f, (T)36.0f, v -> this.pageSetting.getValue() == page.MAIN));
-        this.holeHP = (Setting<Float>)this.register(new Setting("HoleHP", (T)8.0f, (T)0.1f, (T)36.0f, v -> this.pageSetting.getValue() == page.MAIN));
-        this.armorCheck = (Setting<Boolean>)this.register(new Setting("ArmorCheck", (T)false, v -> this.pageSetting.getValue() == page.MAIN));
-        this.actions = (Setting<Integer>)this.register(new Setting("Packets", (T)4, (T)1, (T)4, v -> this.pageSetting.getValue() == page.MAIN));
-        this.crystalCheck = (Setting<Boolean>)this.register(new Setting("Crystal-Check", (T)true, v -> this.pageSetting.getValue() == page.MAIN));
-        this.totemElytra = (Setting<Boolean>)this.register(new Setting("TotemElytra", (T)false, v -> this.pageSetting.getValue() == page.MISC));
-        this.notfromhotbar = (Setting<Boolean>)this.register(new Setting("NoHotbar", (T)false, v -> this.pageSetting.getValue() == page.MISC));
-        this.fallcheck = (Setting<Boolean>)this.register(new Setting("FallCheck", (T)true, v -> this.pageSetting.getValue() == page.MISC));
-        this.falldistance = (Setting<Integer>)this.register(new Setting("FallDistance", (T)100, (T)1, (T)100, v -> this.fallcheck.getValue() && this.pageSetting.getValue() == page.MISC));
-        this.antiPing = (Setting<Boolean>)this.register(new Setting("Ping Predict", (T)false, v -> this.pageSetting.getValue() == page.MISC));
-        this.pingvalue = (Setting<Integer>)this.register(new Setting("Ping Value", (T)200, (T)0, (T)1000, v -> this.antiPing.getValue() && this.pageSetting.getValue() == page.MISC));
-        this.lagSwitch = (Setting<Boolean>)this.register(new Setting("Anti Lag", (T)false, v -> this.pageSetting.getValue() == page.MISC));
-        this.debug = (Setting<Boolean>)this.register(new Setting("Messages", (T)false, v -> this.pageSetting.getValue() == page.MISC));
+        super("OffhandRewrite",  "Allows you to switch up your Offhand.",  Category.COMBAT,  true,  false,  false);
+        this.pageSetting = (Setting<page>)this.register(new Setting("Page", page.MAIN));
+        this.offhandmode = (Setting<Mode2>)this.register(new Setting("Offhand", Mode2.TOTEMS,  v -> this.pageSetting.getValue() == page.MAIN));
+        this.rightGap = (Setting<Boolean>)this.register(new Setting("Right Click Gap", true,  v -> this.pageSetting.getValue() == page.MAIN));
+        this.swordgap = (Setting<Boolean>)this.register(new Setting("Sword Gap", false,  v -> this.pageSetting.getValue() == page.MAIN));
+        this.maxSwitch = (Setting<Integer>)this.register(new Setting("Max Switch", 10, 0, 10,  v -> this.pageSetting.getValue() == page.MAIN));
+        this.switchmode = (Setting<Boolean>)this.register(new Setting("KeyMode", false,  v -> this.pageSetting.getValue() == page.MAIN));
+        this.SwitchBind = (Setting<Bind>)this.register(new Setting("SwitchKey", new Bind(-1),  v -> this.switchmode.getValue() && this.pageSetting.getValue() == page.MAIN));
+        this.switchHp = (Setting<Float>)this.register(new Setting("SwitchHP", 16.5f, 0.1f, 36.0f,  v -> this.pageSetting.getValue() == page.MAIN));
+        this.holeHP = (Setting<Float>)this.register(new Setting("HoleHP", 8.0f, 0.1f, 36.0f,  v -> this.pageSetting.getValue() == page.MAIN));
+        this.armorCheck = (Setting<Boolean>)this.register(new Setting("ArmorCheck", false,  v -> this.pageSetting.getValue() == page.MAIN));
+        this.actions = (Setting<Integer>)this.register(new Setting("Packets", 4, 1, 4,  v -> this.pageSetting.getValue() == page.MAIN));
+        this.crystalCheck = (Setting<Boolean>)this.register(new Setting("Crystal-Check", true,  v -> this.pageSetting.getValue() == page.MAIN));
+        this.totemElytra = (Setting<Boolean>)this.register(new Setting("TotemElytra", false,  v -> this.pageSetting.getValue() == page.MISC));
+        this.notfromhotbar = (Setting<Boolean>)this.register(new Setting("NoHotbar", false,  v -> this.pageSetting.getValue() == page.MISC));
+        this.fallcheck = (Setting<Boolean>)this.register(new Setting("FallCheck", true,  v -> this.pageSetting.getValue() == page.MISC));
+        this.falldistance = (Setting<Integer>)this.register(new Setting("FallDistance", 100, 1, 100,  v -> this.fallcheck.getValue() && this.pageSetting.getValue() == page.MISC));
+        this.antiPing = (Setting<Boolean>)this.register(new Setting("Ping Predict", false,  v -> this.pageSetting.getValue() == page.MISC));
+        this.pingvalue = (Setting<Integer>)this.register(new Setting("Ping Value", 200, 0, 1000,  v -> this.antiPing.getValue() && this.pageSetting.getValue() == page.MISC));
+        this.lagSwitch = (Setting<Boolean>)this.register(new Setting("Anti Lag", false,  v -> this.pageSetting.getValue() == page.MISC));
+        this.debug = (Setting<Boolean>)this.register(new Setting("Messages", false,  v -> this.pageSetting.getValue() == page.MISC));
         this.s = "OffhandRewrite";
         OffhandRewrite.instance = this;
         this.taskList = new ConcurrentLinkedQueue<InventoryUtil.Task>();
@@ -136,11 +136,11 @@ public class OffhandRewrite extends Module
         if (event.hand == EnumHand.MAIN_HAND && event.stack.getItem() == Items.END_CRYSTAL && OffhandRewrite.mc.player.getHeldItemOffhand().getItem() == Items.GOLDEN_APPLE && OffhandRewrite.mc.objectMouseOver != null && event.pos == OffhandRewrite.mc.objectMouseOver.getBlockPos()) {
             event.setCanceled(true);
             OffhandRewrite.mc.player.setActiveHand(EnumHand.OFF_HAND);
-            OffhandRewrite.mc.playerController.processRightClick((EntityPlayer)OffhandRewrite.mc.player, (World)OffhandRewrite.mc.world, EnumHand.OFF_HAND);
+            OffhandRewrite.mc.playerController.processRightClick((EntityPlayer)OffhandRewrite.mc.player,  (World)OffhandRewrite.mc.world,  EnumHand.OFF_HAND);
         }
     }
     
-    @SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = true)
+    @SubscribeEvent(priority = EventPriority.NORMAL,  receiveCanceled = true)
     public void onKeyInput(final InputEvent.KeyInputEvent event) {
         if (Keyboard.getEventKeyState() && this.switchmode.getValue() && this.SwitchBind.getValue().getKey() == Keyboard.getEventKey()) {
             if (this.switchval < this.maxSwitch.getValue()) {
@@ -149,7 +149,7 @@ public class OffhandRewrite extends Module
                 this.setMode(newMode);
                 if (this.debug.getValue()) {
                     final TextComponentString textComponentString = new TextComponentString(Phobos.commandManager.getClientMessage() + " §r§aSwitched offhand to " + newMode.toString());
-                    Notifications.mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion((ITextComponent)textComponentString, this.s.length() * 10);
+                    Notifications.mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion((ITextComponent)textComponentString,  this.s.length() * 10);
                 }
                 this.doSwitch();
             }
@@ -248,10 +248,10 @@ public class OffhandRewrite extends Module
         else if (this.rightGap.getValue() && OffhandRewrite.mc.player.getHealth() > this.switchHp.getValue() && OffhandRewrite.mc.gameSettings.keyBindUseItem.isKeyDown() && OffhandRewrite.mc.player.getHeldItemMainhand().getItem() instanceof ItemSword && !(OffhandRewrite.mc.currentScreen instanceof GuiContainer) && !(OffhandRewrite.mc.currentScreen instanceof GuiChat) && !(OffhandRewrite.mc.currentScreen instanceof PhobosGui)) {
             this.currentMode = Mode2.GAPPLES;
         }
-        else if (this.currentMode != Mode2.CRYSTALS && this.offhandmode.getValue() == Mode2.CRYSTALS && ((EntityUtil.isSafe((Entity)OffhandRewrite.mc.player) && EntityUtil.getHealth((Entity)OffhandRewrite.mc.player, true) > this.holeHP.getValue()) || EntityUtil.getHealth((Entity)OffhandRewrite.mc.player, true) > this.switchHp.getValue())) {
+        else if (this.currentMode != Mode2.CRYSTALS && this.offhandmode.getValue() == Mode2.CRYSTALS && ((EntityUtil.isSafe((Entity)OffhandRewrite.mc.player) && EntityUtil.getHealth((Entity)OffhandRewrite.mc.player,  true) > this.holeHP.getValue()) || EntityUtil.getHealth((Entity)OffhandRewrite.mc.player,  true) > this.switchHp.getValue())) {
             this.currentMode = Mode2.CRYSTALS;
         }
-        else if (this.currentMode != Mode2.GAPPLES && this.offhandmode.getValue() == Mode2.GAPPLES && ((EntityUtil.isSafe((Entity)OffhandRewrite.mc.player) && EntityUtil.getHealth((Entity)OffhandRewrite.mc.player, true) > this.holeHP.getValue()) || EntityUtil.getHealth((Entity)OffhandRewrite.mc.player, true) > this.switchHp.getValue())) {
+        else if (this.currentMode != Mode2.GAPPLES && this.offhandmode.getValue() == Mode2.GAPPLES && ((EntityUtil.isSafe((Entity)OffhandRewrite.mc.player) && EntityUtil.getHealth((Entity)OffhandRewrite.mc.player,  true) > this.holeHP.getValue()) || EntityUtil.getHealth((Entity)OffhandRewrite.mc.player,  true) > this.switchHp.getValue())) {
             this.currentMode = Mode2.GAPPLES;
         }
         if (this.currentMode == Mode2.CRYSTALS && this.crystals == 0) {
@@ -260,13 +260,13 @@ public class OffhandRewrite extends Module
             }
             this.setMode(Mode2.TOTEMS);
         }
-        if (this.currentMode == Mode2.CRYSTALS && ((!EntityUtil.isSafe((Entity)OffhandRewrite.mc.player) && EntityUtil.getHealth((Entity)OffhandRewrite.mc.player, true) <= this.switchHp.getValue()) || EntityUtil.getHealth((Entity)OffhandRewrite.mc.player, true) <= this.holeHP.getValue())) {
+        if (this.currentMode == Mode2.CRYSTALS && ((!EntityUtil.isSafe((Entity)OffhandRewrite.mc.player) && EntityUtil.getHealth((Entity)OffhandRewrite.mc.player,  true) <= this.switchHp.getValue()) || EntityUtil.getHealth((Entity)OffhandRewrite.mc.player,  true) <= this.holeHP.getValue())) {
             if (this.currentMode == Mode2.CRYSTALS) {
                 this.switchedForHealthReason = true;
             }
             this.setMode(Mode2.TOTEMS);
         }
-        if (this.currentMode == Mode2.CRYSTALS && ((!EntityUtil.isSafe((Entity)OffhandRewrite.mc.player) && EntityUtil.getHealth((Entity)OffhandRewrite.mc.player, true) <= this.switchHp.getValue()) || EntityUtil.getHealth((Entity)OffhandRewrite.mc.player, true) <= this.holeHP.getValue())) {
+        if (this.currentMode == Mode2.CRYSTALS && ((!EntityUtil.isSafe((Entity)OffhandRewrite.mc.player) && EntityUtil.getHealth((Entity)OffhandRewrite.mc.player,  true) <= this.switchHp.getValue()) || EntityUtil.getHealth((Entity)OffhandRewrite.mc.player,  true) <= this.holeHP.getValue())) {
             if (this.currentMode == Mode2.CRYSTALS) {
                 this.switchedForHealthReason = true;
             }
@@ -278,7 +278,7 @@ public class OffhandRewrite extends Module
         if (OffhandRewrite.mc.player.fallDistance > this.falldistance.getValue() && this.fallcheck.getValue()) {
             this.setMode(Mode2.TOTEMS);
         }
-        if (this.switchedForHealthReason && ((EntityUtil.isSafe((Entity)OffhandRewrite.mc.player) && EntityUtil.getHealth((Entity)OffhandRewrite.mc.player, true) > this.holeHP.getValue()) || EntityUtil.getHealth((Entity)OffhandRewrite.mc.player, true) > this.switchHp.getValue())) {
+        if (this.switchedForHealthReason && ((EntityUtil.isSafe((Entity)OffhandRewrite.mc.player) && EntityUtil.getHealth((Entity)OffhandRewrite.mc.player,  true) > this.holeHP.getValue()) || EntityUtil.getHealth((Entity)OffhandRewrite.mc.player,  true) > this.switchHp.getValue())) {
             this.setMode(this.currentMode);
             this.switchedForHealthReason = false;
         }
@@ -289,7 +289,7 @@ public class OffhandRewrite extends Module
             if (this.calcCrystal()) {
                 if (this.debug.getValue()) {
                     final TextComponentString textComponentString = new TextComponentString(Phobos.commandManager.getClientMessage() + " §r§aSwitched to totem because lethal crystal");
-                    Notifications.mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion((ITextComponent)textComponentString, this.s.length() * 10);
+                    Notifications.mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion((ITextComponent)textComponentString,  this.s.length() * 10);
                 }
                 this.switchedForHealthReason = true;
                 this.currentMode = Mode2.TOTEMS;
@@ -313,9 +313,9 @@ public class OffhandRewrite extends Module
                 if (this.holdingTotem) {
                     break;
                 }
-                this.lastTotemSlot = InventoryUtil.findItemInventorySlot(Items.TOTEM_OF_UNDYING, false);
-                final int lastSlot = this.getLastSlot(currentOffhandItem, this.lastTotemSlot);
-                this.putItemInOffhand(this.lastTotemSlot, lastSlot);
+                this.lastTotemSlot = InventoryUtil.findItemInventorySlot(Items.TOTEM_OF_UNDYING,  false);
+                final int lastSlot = this.getLastSlot(currentOffhandItem,  this.lastTotemSlot);
+                this.putItemInOffhand(this.lastTotemSlot,  lastSlot);
                 break;
             }
             case GAPPLES: {
@@ -325,9 +325,9 @@ public class OffhandRewrite extends Module
                 if (this.holdingGapple) {
                     break;
                 }
-                this.lastGappleSlot = InventoryUtil.findItemInventorySlot(Items.GOLDEN_APPLE, false);
-                final int lastSlot = this.getLastSlot(currentOffhandItem, this.lastGappleSlot);
-                this.putItemInOffhand(this.lastGappleSlot, lastSlot);
+                this.lastGappleSlot = InventoryUtil.findItemInventorySlot(Items.GOLDEN_APPLE,  false);
+                final int lastSlot = this.getLastSlot(currentOffhandItem,  this.lastGappleSlot);
+                this.putItemInOffhand(this.lastGappleSlot,  lastSlot);
                 break;
             }
             default: {
@@ -337,9 +337,9 @@ public class OffhandRewrite extends Module
                 if (this.holdingCrystal) {
                     break;
                 }
-                this.lastCrystalSlot = InventoryUtil.findItemInventorySlot(Items.END_CRYSTAL, false);
-                final int lastSlot = this.getLastSlot(currentOffhandItem, this.lastCrystalSlot);
-                this.putItemInOffhand(this.lastCrystalSlot, lastSlot);
+                this.lastCrystalSlot = InventoryUtil.findItemInventorySlot(Items.END_CRYSTAL,  false);
+                final int lastSlot = this.getLastSlot(currentOffhandItem,  this.lastCrystalSlot);
+                this.putItemInOffhand(this.lastCrystalSlot,  lastSlot);
                 break;
             }
         }
@@ -354,7 +354,7 @@ public class OffhandRewrite extends Module
         }
     }
     
-    private int getLastSlot(final Item item, final int slotIn) {
+    private int getLastSlot(final Item item,  final int slotIn) {
         if (item == Items.END_CRYSTAL) {
             return this.lastCrystalSlot;
         }
@@ -364,10 +364,10 @@ public class OffhandRewrite extends Module
         if (item == Items.TOTEM_OF_UNDYING) {
             return this.lastTotemSlot;
         }
-        if (InventoryUtil.isBlock(item, BlockObsidian.class)) {
+        if (InventoryUtil.isBlock(item,  BlockObsidian.class)) {
             return this.lastObbySlot;
         }
-        if (InventoryUtil.isBlock(item, BlockWeb.class)) {
+        if (InventoryUtil.isBlock(item,  BlockWeb.class)) {
             return this.lastWebSlot;
         }
         if (item == Items.AIR) {
@@ -376,7 +376,7 @@ public class OffhandRewrite extends Module
         return slotIn;
     }
     
-    private void putItemInOffhand(final int slotIn, final int slotOut) {
+    private void putItemInOffhand(final int slotIn,  final int slotOut) {
         if (slotIn != -1 && this.taskList.isEmpty()) {
             this.taskList.add(new InventoryUtil.Task(slotIn));
             this.taskList.add(new InventoryUtil.Task(45));
@@ -391,7 +391,7 @@ public class OffhandRewrite extends Module
     
     public boolean calcCrystal() {
         for (final Entity t : OffhandRewrite.mc.world.loadedEntityList) {
-            if (t instanceof EntityEnderCrystal && OffhandRewrite.mc.player.getDistanceSq(t.getPosition()) <= 36.0 && DamageUtil.calculateDamage(t, (Entity)OffhandRewrite.mc.player) >= OffhandRewrite.mc.player.getHealth()) {
+            if (t instanceof EntityEnderCrystal && OffhandRewrite.mc.player.getDistanceSq(t.getPosition()) <= 36.0 && DamageUtil.calculateDamage(t,  (Entity)OffhandRewrite.mc.player) >= OffhandRewrite.mc.player.getHealth()) {
                 return true;
             }
         }
@@ -400,14 +400,14 @@ public class OffhandRewrite extends Module
     
     public enum Mode2
     {
-        TOTEMS, 
-        GAPPLES, 
+        TOTEMS,  
+        GAPPLES,  
         CRYSTALS;
     }
     
     public enum page
     {
-        MAIN, 
+        MAIN,  
         MISC;
     }
 }

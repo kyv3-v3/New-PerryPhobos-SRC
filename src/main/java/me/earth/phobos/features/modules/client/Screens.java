@@ -13,8 +13,8 @@ public class Screens extends Module
     public Setting<Boolean> mainScreen;
     
     public Screens() {
-        super("Screens", "Controls custom screens used by the client.", Category.CLIENT, true, false, false);
-        this.mainScreen = (Setting<Boolean>)this.register(new Setting("MainScreen", (T)false));
+        super("Screens",  "Controls custom screens used by the client.",  Category.CLIENT,  true,  false,  false);
+        this.mainScreen = (Setting<Boolean>)this.register(new Setting("MainScreen", false));
         Screens.INSTANCE = this;
     }
     

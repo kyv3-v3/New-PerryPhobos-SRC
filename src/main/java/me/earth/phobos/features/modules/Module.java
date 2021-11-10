@@ -33,12 +33,12 @@ public class Module extends Feature
     public boolean sliding;
     public Animation animation;
     
-    public Module(final String name, final String description, final Category category, final boolean hasListener, final boolean hidden, final boolean alwaysListening) {
+    public Module(final String name,  final String description,  final Category category,  final boolean hasListener,  final boolean hidden,  final boolean alwaysListening) {
         super(name);
-        this.enabled = (Setting<Boolean>)this.register(new Setting("Enabled", (T)false));
-        this.drawn = (Setting<Boolean>)this.register(new Setting("Drawn", (T)true));
-        this.bind = (Setting<Bind>)this.register(new Setting("Bind", (T)new Bind(-1)));
-        this.displayName = (Setting<String>)this.register(new Setting("DisplayName", (T)name));
+        this.enabled = (Setting<Boolean>)this.register(new Setting("Enabled", false));
+        this.drawn = (Setting<Boolean>)this.register(new Setting("Drawn", true));
+        this.bind = (Setting<Bind>)this.register(new Setting("Bind", new Bind(-1)));
+        this.displayName = (Setting<String>)this.register(new Setting("DisplayName", name));
         this.description = description;
         this.category = category;
         this.hasListener = hasListener;
@@ -120,7 +120,7 @@ public class Module extends Feature
     }
     
     public void toggle() {
-        final ClientEvent event = new ClientEvent((int)(this.isEnabled() ? 0 : 1), (Feature)this);
+        final ClientEvent event = new ClientEvent((int)(this.isEnabled() ? 0 : 1),  (Feature)this);
         MinecraftForge.EVENT_BUS.post((Event)event);
         if (!event.isCanceled()) {
             this.setEnabled(!this.isEnabled());
@@ -135,7 +135,7 @@ public class Module extends Feature
         final Module module = Phobos.moduleManager.getModuleByDisplayName(name);
         final Module originalModule = Phobos.moduleManager.getModuleByName(name);
         if (module == null && originalModule == null) {
-            Command.sendMessage(this.getDisplayName() + ", Original name: " + this.getName() + ", has been renamed to: " + name);
+            Command.sendMessage(this.getDisplayName() + ",  Original name: " + this.getName() + ",  has been renamed to: " + name);
             this.displayName.setValue(name);
             return;
         }
@@ -184,11 +184,11 @@ public class Module extends Feature
     
     public enum Category
     {
-        COMBAT("Combat"), 
-        MISC("Misc"), 
-        RENDER("Render"), 
-        MOVEMENT("Movement"), 
-        PLAYER("Player"), 
+        COMBAT("Combat"),  
+        MISC("Misc"),  
+        RENDER("Render"),  
+        MOVEMENT("Movement"),  
+        PLAYER("Player"),  
         CLIENT("Client");
         
         private final String name;
@@ -243,7 +243,7 @@ public class Module extends Feature
         
         @Override
         public void start() {
-            this.service.scheduleAtFixedRate(this, 0L, 1L, TimeUnit.MILLISECONDS);
+            this.service.scheduleAtFixedRate(this,  0L,  1L,  TimeUnit.MILLISECONDS);
         }
     }
 }

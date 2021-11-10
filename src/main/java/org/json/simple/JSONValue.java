@@ -25,7 +25,7 @@ public class JSONValue
         return parse(in);
     }
     
-    public static Object parseWithException(final Reader in) throws IOException, ParseException {
+    public static Object parseWithException(final Reader in) throws IOException,  ParseException {
         final JSONParser parser = new JSONParser();
         return parser.parse(in);
     }
@@ -35,7 +35,7 @@ public class JSONValue
         return parser.parse(s);
     }
     
-    public static void writeJSONString(final Object value, final Writer out) throws IOException {
+    public static void writeJSONString(final Object value,  final Writer out) throws IOException {
         if (value == null) {
             out.write("null");
             return;
@@ -81,11 +81,11 @@ public class JSONValue
             return;
         }
         if (value instanceof Map) {
-            JSONObject.writeJSONString((Map)value, out);
+            JSONObject.writeJSONString((Map)value,  out);
             return;
         }
         if (value instanceof List) {
-            JSONArray.writeJSONString((List)value, out);
+            JSONArray.writeJSONString((List)value,  out);
             return;
         }
         out.write(value.toString());
@@ -135,11 +135,11 @@ public class JSONValue
             return null;
         }
         final StringBuffer sb = new StringBuffer();
-        escape(s, sb);
+        escape(s,  sb);
         return sb.toString();
     }
     
-    static void escape(final String s, final StringBuffer sb) {
+    static void escape(final String s,  final StringBuffer sb) {
         for (int i = 0; i < s.length(); ++i) {
             final char ch = s.charAt(i);
             switch (ch) {

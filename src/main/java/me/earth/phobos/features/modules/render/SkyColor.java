@@ -17,10 +17,10 @@ public class SkyColor extends Module
     private final Setting<Integer> blue;
     
     public SkyColor() {
-        super("SkyColor", "Change the sky color.", Module.Category.RENDER, false, false, false);
-        this.red = (Setting<Integer>)this.register(new Setting("Red", (T)255, (T)0, (T)255));
-        this.green = (Setting<Integer>)this.register(new Setting("Green", (T)255, (T)0, (T)255));
-        this.blue = (Setting<Integer>)this.register(new Setting("Blue", (T)255, (T)0, (T)255));
+        super("SkyColor",  "Change the sky color.",  Module.Category.RENDER,  false,  false,  false);
+        this.red = (Setting<Integer>)this.register(new Setting("Red", 255, 0, 255));
+        this.green = (Setting<Integer>)this.register(new Setting("Green", 255, 0, 255));
+        this.blue = (Setting<Integer>)this.register(new Setting("Blue", 255, 0, 255));
     }
     
     @SubscribeEvent

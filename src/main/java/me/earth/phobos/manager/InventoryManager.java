@@ -12,11 +12,11 @@ import net.minecraft.network.*;
 
 public class InventoryManager implements Util
 {
-    public Map<String, List<ItemStack>> inventories;
+    public Map<String,  List<ItemStack>> inventories;
     private int recoverySlot;
     
     public InventoryManager() {
-        this.inventories = new HashMap<String, List<ItemStack>>();
+        this.inventories = new HashMap<String,  List<ItemStack>>();
         this.recoverySlot = -1;
     }
     

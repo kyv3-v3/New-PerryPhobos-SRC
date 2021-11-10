@@ -21,12 +21,12 @@ public class Static extends Module
     private final Setting<Float> height;
     
     public Static() {
-        super("Static", "Stops any movement. Glitches you up.", Module.Category.MOVEMENT, false, false, false);
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", (T)Mode.ROOF));
-        this.disabler = (Setting<Boolean>)this.register(new Setting("Disable", (T)true, v -> this.mode.getValue() == Mode.ROOF));
-        this.ySpeed = (Setting<Boolean>)this.register(new Setting("YSpeed", (T)false, v -> this.mode.getValue() == Mode.STATIC));
-        this.speed = (Setting<Float>)this.register(new Setting("Speed", (T)0.1f, (T)0.0f, (T)10.0f, v -> this.ySpeed.getValue() && this.mode.getValue() == Mode.STATIC));
-        this.height = (Setting<Float>)this.register(new Setting("Height", (T)3.0f, (T)0.0f, (T)256.0f, v -> this.mode.getValue() == Mode.NOVOID));
+        super("Static",  "Stops any movement. Glitches you up.",  Module.Category.MOVEMENT,  false,  false,  false);
+        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.ROOF));
+        this.disabler = (Setting<Boolean>)this.register(new Setting("Disable", true,  v -> this.mode.getValue() == Mode.ROOF));
+        this.ySpeed = (Setting<Boolean>)this.register(new Setting("YSpeed", false,  v -> this.mode.getValue() == Mode.STATIC));
+        this.speed = (Setting<Float>)this.register(new Setting("Speed", 0.1f, 0.0f, 10.0f,  v -> this.ySpeed.getValue() && this.mode.getValue() == Mode.STATIC));
+        this.height = (Setting<Float>)this.register(new Setting("Height", 3.0f, 0.0f, 256.0f,  v -> this.mode.getValue() == Mode.NOVOID));
     }
     
     public void onUpdate() {
@@ -55,7 +55,7 @@ public class Static extends Module
                 break;
             }
             case ROOF: {
-                Static.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Static.mc.player.posX, 10000.0, Static.mc.player.posZ, Static.mc.player.onGround));
+                Static.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Static.mc.player.posX,  10000.0,  Static.mc.player.posZ,  Static.mc.player.onGround));
                 if (!this.disabler.getValue()) {
                     break;
                 }
@@ -69,18 +69,18 @@ public class Static extends Module
                 if (Static.mc.player.posY > this.height.getValue()) {
                     break;
                 }
-                final RayTraceResult trace = Static.mc.world.rayTraceBlocks(Static.mc.player.getPositionVector(), new Vec3d(Static.mc.player.posX, 0.0, Static.mc.player.posZ), false, false, false);
+                final RayTraceResult trace = Static.mc.world.rayTraceBlocks(Static.mc.player.getPositionVector(),  new Vec3d(Static.mc.player.posX,  0.0,  Static.mc.player.posZ),  false,  false,  false);
                 if (trace != null && trace.typeOfHit == RayTraceResult.Type.BLOCK) {
                     return;
                 }
                 if (Phobos.moduleManager.isModuleEnabled((Class<? extends Module>)Phase.class) || Phobos.moduleManager.isModuleEnabled((Class<? extends Module>)Flight.class)) {
                     return;
                 }
-                Static.mc.player.setVelocity(0.0, 0.0, 0.0);
+                Static.mc.player.setVelocity(0.0,  0.0,  0.0);
                 if (Static.mc.player.getRidingEntity() == null) {
                     break;
                 }
-                Static.mc.player.getRidingEntity().setVelocity(0.0, 0.0, 0.0);
+                Static.mc.player.getRidingEntity().setVelocity(0.0,  0.0,  0.0);
                 break;
             }
         }
@@ -98,8 +98,8 @@ public class Static extends Module
     
     public enum Mode
     {
-        STATIC, 
-        ROOF, 
+        STATIC,  
+        ROOF,  
         NOVOID;
     }
 }

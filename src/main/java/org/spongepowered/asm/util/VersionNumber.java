@@ -7,7 +7,7 @@ package org.spongepowered.asm.util;
 import java.io.*;
 import java.util.regex.*;
 
-public final class VersionNumber implements Comparable<VersionNumber>, Serializable
+public final class VersionNumber implements Comparable<VersionNumber>,  Serializable
 {
     private static final long serialVersionUID = 1L;
     public static final VersionNumber NONE;
@@ -21,27 +21,27 @@ public final class VersionNumber implements Comparable<VersionNumber>, Serializa
     }
     
     private VersionNumber(final short[] parts) {
-        this(parts, null);
+        this(parts,  null);
     }
     
-    private VersionNumber(final short[] parts, final String suffix) {
+    private VersionNumber(final short[] parts,  final String suffix) {
         this.value = pack(parts);
         this.suffix = ((suffix != null) ? suffix : "");
     }
     
-    private VersionNumber(final short major, final short minor, final short revision, final short build) {
-        this(major, minor, revision, build, null);
+    private VersionNumber(final short major,  final short minor,  final short revision,  final short build) {
+        this(major,  minor,  revision,  build,  null);
     }
     
-    private VersionNumber(final short major, final short minor, final short revision, final short build, final String suffix) {
-        this.value = pack(major, minor, revision, build);
+    private VersionNumber(final short major,  final short minor,  final short revision,  final short build,  final String suffix) {
+        this.value = pack(major,  minor,  revision,  build);
         this.suffix = ((suffix != null) ? suffix : "");
     }
     
     @Override
     public String toString() {
         final short[] parts = unpack(this.value);
-        return String.format("%d.%d%3$s%4$s%5$s", parts[0], parts[1], ((this.value & 0x7FFFFFFFL) > 0L) ? String.format(".%d", parts[2]) : "", ((this.value & 0x7FFFL) > 0L) ? String.format(".%d", parts[3]) : "", this.suffix);
+        return String.format("%d.%d%3$s%4$s%5$s",  parts[0],  parts[1],  ((this.value & 0x7FFFFFFFL) > 0L) ? String.format(".%d",  parts[2]) : "",  ((this.value & 0x7FFFL) > 0L) ? String.format(".%d",  parts[3]) : "",  this.suffix);
     }
     
     @Override
@@ -68,18 +68,18 @@ public final class VersionNumber implements Comparable<VersionNumber>, Serializa
     }
     
     private static short[] unpack(final long along) {
-        return new short[] { (short)(along >> 48), (short)(along >> 32 & 0x7FFFL), (short)(along >> 16 & 0x7FFFL), (short)(along & 0x7FFFL) };
+        return new short[] { (short)(along >> 48),  (short)(along >> 32 & 0x7FFFL),  (short)(along >> 16 & 0x7FFFL),  (short)(along & 0x7FFFL) };
     }
     
     public static VersionNumber parse(final String version) {
-        return parse(version, VersionNumber.NONE);
+        return parse(version,  VersionNumber.NONE);
     }
     
-    public static VersionNumber parse(final String version, final String defaultVersion) {
-        return parse(version, parse(defaultVersion));
+    public static VersionNumber parse(final String version,  final String defaultVersion) {
+        return parse(version,  parse(defaultVersion));
     }
     
-    private static VersionNumber parse(final String version, final VersionNumber defaultVersion) {
+    private static VersionNumber parse(final String version,  final VersionNumber defaultVersion) {
         if (version == null) {
             return defaultVersion;
         }
@@ -93,16 +93,16 @@ public final class VersionNumber implements Comparable<VersionNumber>, Serializa
             if (part != null) {
                 final int value = Integer.parseInt(part);
                 if (value > 32767) {
-                    throw new IllegalArgumentException("Version parts cannot exceed 32767, found " + value);
+                    throw new IllegalArgumentException("Version parts cannot exceed 32767,  found " + value);
                 }
                 parts[pos] = (short)value;
             }
         }
-        return new VersionNumber(parts, versionNumberPatternMatcher.group(5));
+        return new VersionNumber(parts,  versionNumberPatternMatcher.group(5));
     }
     
     static {
         NONE = new VersionNumber();
-        PATTERN = Pattern.compile("^(\\d{1,5})(?:\\.(\\d{1,5})(?:\\.(\\d{1,5})(?:\\.(\\d{1,5}))?)?)?(-[a-zA-Z0-9_\\-]+)?$");
+        PATTERN = Pattern.compile("^(\\d{1, 5})(?:\\.(\\d{1, 5})(?:\\.(\\d{1, 5})(?:\\.(\\d{1, 5}))?)?)?(-[a-zA-Z0-9_\\-]+)?$");
     }
 }

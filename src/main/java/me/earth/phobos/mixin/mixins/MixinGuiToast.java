@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.*;
 @Mixin({ GuiToast.class })
 public class MixinGuiToast
 {
-    @Inject(method = { "drawToast" }, at = { @At("HEAD") }, cancellable = true)
-    public void drawToastHook(final ScaledResolution resolution, final CallbackInfo info) {
+    @Inject(method = { "drawToast" },  at = { @At("HEAD") },  cancellable = true)
+    public void drawToastHook(final ScaledResolution resolution,  final CallbackInfo info) {
         if (NoRender.getInstance().isOn() && (boolean)NoRender.getInstance().advancements.getValue()) {
             info.cancel();
         }

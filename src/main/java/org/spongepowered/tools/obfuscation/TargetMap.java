@@ -11,7 +11,7 @@ import java.nio.charset.*;
 import com.google.common.io.*;
 import java.io.*;
 
-public final class TargetMap extends HashMap<TypeReference, Set<TypeReference>>
+public final class TargetMap extends HashMap<TypeReference,  Set<TypeReference>>
 {
     private static final long serialVersionUID = 1L;
     private final String sessionId;
@@ -29,24 +29,24 @@ public final class TargetMap extends HashMap<TypeReference, Set<TypeReference>>
     }
     
     public void registerTargets(final AnnotatedMixin mixin) {
-        this.registerTargets(mixin.getTargets(), mixin.getHandle());
+        this.registerTargets(mixin.getTargets(),  mixin.getHandle());
     }
     
-    public void registerTargets(final List<TypeHandle> targets, final TypeHandle mixin) {
+    public void registerTargets(final List<TypeHandle> targets,  final TypeHandle mixin) {
         for (final TypeHandle target : targets) {
-            this.addMixin(target, mixin);
+            this.addMixin(target,  mixin);
         }
     }
     
-    public void addMixin(final TypeHandle target, final TypeHandle mixin) {
-        this.addMixin(target.getReference(), mixin.getReference());
+    public void addMixin(final TypeHandle target,  final TypeHandle mixin) {
+        this.addMixin(target.getReference(),  mixin.getReference());
     }
     
-    public void addMixin(final String target, final String mixin) {
-        this.addMixin(new TypeReference(target), new TypeReference(mixin));
+    public void addMixin(final String target,  final String mixin) {
+        this.addMixin(new TypeReference(target),  new TypeReference(mixin));
     }
     
-    public void addMixin(final TypeReference target, final TypeReference mixin) {
+    public void addMixin(final TypeReference target,  final TypeReference mixin) {
         final Set<TypeReference> mixins = this.getMixinsFor(target);
         mixins.add(mixin);
     }
@@ -64,10 +64,10 @@ public final class TargetMap extends HashMap<TypeReference, Set<TypeReference>>
     }
     
     private Set<TypeReference> getMixinsFor(final TypeReference target) {
-        Set<TypeReference> mixins = ((HashMap<K, Set<TypeReference>>)this).get(target);
+        Set<TypeReference> mixins = ((HashMap<K,  Set<TypeReference>>)this).get(target);
         if (mixins == null) {
             mixins = new HashSet<TypeReference>();
-            this.put(target, mixins);
+            this.put(target,  mixins);
         }
         return mixins;
     }
@@ -76,10 +76,10 @@ public final class TargetMap extends HashMap<TypeReference, Set<TypeReference>>
         if (!file.isFile()) {
             return;
         }
-        for (final String line : Files.readLines(file, Charset.defaultCharset())) {
+        for (final String line : Files.readLines(file,  Charset.defaultCharset())) {
             final String[] parts = line.split("\t");
             if (parts.length == 2) {
-                this.addMixin(parts[1], parts[0]);
+                this.addMixin(parts[1],  parts[0]);
             }
         }
     }
@@ -92,7 +92,7 @@ public final class TargetMap extends HashMap<TypeReference, Set<TypeReference>>
             if (temp) {
                 sessionFile.deleteOnExit();
             }
-            fout = new FileOutputStream(sessionFile, true);
+            fout = new FileOutputStream(sessionFile,  true);
             oos = new ObjectOutputStream(fout);
             oos.writeObject(this);
         }
@@ -166,6 +166,6 @@ public final class TargetMap extends HashMap<TypeReference, Set<TypeReference>>
     
     private static File getSessionFile(final String sessionId) {
         final File tempDir = new File(System.getProperty("java.io.tmpdir"));
-        return new File(tempDir, String.format("mixin-targetdb-%s.tmp", sessionId));
+        return new File(tempDir,  String.format("mixin-targetdb-%s.tmp",  sessionId));
     }
 }

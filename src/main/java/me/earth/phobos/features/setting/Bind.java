@@ -48,7 +48,7 @@ public class Bind
         return Character.toUpperCase(str.charAt(0)) + ((str.length() != 1) ? str.substring(1).toLowerCase() : "");
     }
     
-    public static class BindConverter extends Converter<Bind, JsonElement>
+    public static class BindConverter extends Converter<Bind,  JsonElement>
     {
         public JsonElement doForward(final Bind bind) {
             return (JsonElement)new JsonPrimitive(bind.toString());

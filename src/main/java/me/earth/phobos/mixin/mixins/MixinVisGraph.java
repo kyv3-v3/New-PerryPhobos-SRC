@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.*;
 @Mixin({ VisGraph.class })
 public class MixinVisGraph
 {
-    @Inject(method = { "setOpaqueCube" }, at = { @At("HEAD") }, cancellable = true)
-    public void setOpaqueCubeHook(final BlockPos pos, final CallbackInfo info) {
+    @Inject(method = { "setOpaqueCube" },  at = { @At("HEAD") },  cancellable = true)
+    public void setOpaqueCubeHook(final BlockPos pos,  final CallbackInfo info) {
         try {
             if (XRay.getInstance().isOn()) {
                 info.cancel();

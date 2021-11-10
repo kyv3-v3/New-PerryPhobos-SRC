@@ -29,12 +29,12 @@ public class MCF extends Module
     private boolean clicked;
     
     public MCF() {
-        super("MCF", "Middleclick Friends.", Category.MISC, true, false, false);
-        this.middleClick = (Setting<Boolean>)this.register(new Setting("MiddleClick", (T)true));
-        this.keyboard = (Setting<Boolean>)this.register(new Setting("Keyboard", (T)false));
-        this.server = (Setting<Boolean>)this.register(new Setting("Server", (T)false));
-        this.sendmsg = (Setting<Boolean>)this.register(new Setting("Send Msgs", (T)false));
-        this.key = (Setting<Bind>)this.register(new Setting("KeyBind", (T)new Bind(-1), v -> this.keyboard.getValue()));
+        super("MCF",  "Middleclick Friends.",  Category.MISC,  true,  false,  false);
+        this.middleClick = (Setting<Boolean>)this.register(new Setting("MiddleClick", true));
+        this.keyboard = (Setting<Boolean>)this.register(new Setting("Keyboard", false));
+        this.server = (Setting<Boolean>)this.register(new Setting("Server", false));
+        this.sendmsg = (Setting<Boolean>)this.register(new Setting("Send Msgs", false));
+        this.key = (Setting<Bind>)this.register(new Setting("KeyBind", new Bind(-1),  v -> this.keyboard.getValue()));
     }
     
     @Override
@@ -50,7 +50,7 @@ public class MCF extends Module
         }
     }
     
-    @SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = true)
+    @SubscribeEvent(priority = EventPriority.NORMAL,  receiveCanceled = true)
     public void onKeyInput(final InputEvent.KeyInputEvent event) {
         if (this.keyboard.getValue() && Keyboard.getEventKeyState() && !(MCF.mc.currentScreen instanceof PhobosGui) && this.key.getValue().getKey() == Keyboard.getEventKey()) {
             this.onClick();

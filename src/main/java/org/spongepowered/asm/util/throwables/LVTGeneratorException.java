@@ -14,7 +14,7 @@ public class LVTGeneratorException extends MixinException
         super(message);
     }
     
-    public LVTGeneratorException(final String message, final Throwable cause) {
-        super(message, cause);
+    public LVTGeneratorException(final String message,  final Throwable cause) {
+        super(message,  cause);
     }
 }

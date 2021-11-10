@@ -26,15 +26,15 @@ public class CustomFont extends Module
     private boolean reloadFont;
     
     public CustomFont() {
-        super("CustomFont", "CustomFont for all of the clients text. Use the font command.", Category.CLIENT, true, false, false);
-        this.fontName = (Setting<String>)this.register(new Setting("FontName", (T)"Arial", "Name of the font."));
-        this.fontSize = (Setting<Integer>)this.register(new Setting("FontSize", (T)18, "Size of the font."));
-        this.fontStyle = (Setting<Integer>)this.register(new Setting("FontStyle", (T)0, "Style of the font."));
-        this.antiAlias = (Setting<Boolean>)this.register(new Setting("AntiAlias", (T)true, "Smoother font."));
-        this.fractionalMetrics = (Setting<Boolean>)this.register(new Setting("Metrics", (T)true, "Thinner font."));
-        this.shadow = (Setting<Boolean>)this.register(new Setting("Shadow", (T)true, "Less shadow offset font."));
-        this.showFonts = (Setting<Boolean>)this.register(new Setting("Fonts", (T)false, "Shows all fonts."));
-        this.full = (Setting<Boolean>)this.register(new Setting("Full", (T)false));
+        super("CustomFont",  "CustomFont for all of the clients text. Use the font command.",  Category.CLIENT,  true,  false,  false);
+        this.fontName = (Setting<String>)this.register(new Setting("FontName", "Arial",  "Name of the font."));
+        this.fontSize = (Setting<Integer>)this.register(new Setting("FontSize", 18,  "Size of the font."));
+        this.fontStyle = (Setting<Integer>)this.register(new Setting("FontStyle", 0,  "Style of the font."));
+        this.antiAlias = (Setting<Boolean>)this.register(new Setting("AntiAlias", true,  "Smoother font."));
+        this.fractionalMetrics = (Setting<Boolean>)this.register(new Setting("Metrics", true,  "Thinner font."));
+        this.shadow = (Setting<Boolean>)this.register(new Setting("Shadow", true,  "Less shadow offset font."));
+        this.showFonts = (Setting<Boolean>)this.register(new Setting("Fonts", false,  "Shows all fonts."));
+        this.full = (Setting<Boolean>)this.register(new Setting("Full", false));
         this.setInstance();
     }
     
@@ -45,7 +45,7 @@ public class CustomFont extends Module
         return CustomFont.INSTANCE;
     }
     
-    public static boolean checkFont(final String font, final boolean message) {
+    public static boolean checkFont(final String font,  final boolean message) {
         for (final String s : GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()) {
             if (!message && s.equals(font)) {
                 return true;
@@ -65,7 +65,7 @@ public class CustomFont extends Module
     public void onSettingChange(final ClientEvent event) {
         final Setting setting;
         if (event.getStage() == 2 && (setting = event.getSetting()) != null && setting.getFeature().equals(this)) {
-            if (setting.getName().equals("FontName") && !checkFont(setting.getPlannedValue().toString(), false)) {
+            if (setting.getName().equals("FontName") && !checkFont(setting.getPlannedValue().toString(),  false)) {
                 Command.sendMessage("§cThat font doesnt exist.");
                 event.setCanceled(true);
                 return;
@@ -77,7 +77,7 @@ public class CustomFont extends Module
     @Override
     public void onTick() {
         if (this.showFonts.getValue()) {
-            checkFont("Hello", true);
+            checkFont("Hello",  true);
             Command.sendMessage("Current Font: " + this.fontName.getValue());
             this.showFonts.setValue(false);
         }

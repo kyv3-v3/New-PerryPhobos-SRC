@@ -13,7 +13,7 @@ public class BlockBreakingEvent extends EventStage
     public int breakingID;
     public int breakStage;
     
-    public BlockBreakingEvent(final BlockPos pos, final int breakingID, final int breakStage) {
+    public BlockBreakingEvent(final BlockPos pos,  final int breakingID,  final int breakStage) {
         this.pos = pos;
         this.breakingID = breakingID;
         this.breakStage = breakStage;

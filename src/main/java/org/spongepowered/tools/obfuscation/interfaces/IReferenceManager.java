@@ -19,11 +19,11 @@ public interface IReferenceManager
     
     ReferenceMapper getMapper();
     
-    void addMethodMapping(final String p0, final String p1, final ObfuscationData<MappingMethod> p2);
+    void addMethodMapping(final String p0,  final String p1,  final ObfuscationData<MappingMethod> p2);
     
-    void addMethodMapping(final String p0, final String p1, final MemberInfo p2, final ObfuscationData<MappingMethod> p3);
+    void addMethodMapping(final String p0,  final String p1,  final MemberInfo p2,  final ObfuscationData<MappingMethod> p3);
     
-    void addFieldMapping(final String p0, final String p1, final MemberInfo p2, final ObfuscationData<MappingField> p3);
+    void addFieldMapping(final String p0,  final String p1,  final MemberInfo p2,  final ObfuscationData<MappingField> p3);
     
-    void addClassMapping(final String p0, final String p1, final ObfuscationData<String> p2);
+    void addClassMapping(final String p0,  final String p1,  final ObfuscationData<String> p2);
 }

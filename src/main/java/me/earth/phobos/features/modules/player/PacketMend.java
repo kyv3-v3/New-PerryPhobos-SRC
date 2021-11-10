@@ -29,15 +29,15 @@ public class PacketMend extends Module
     char toMend;
     
     public PacketMend() {
-        super("PacketMend", "Automatically mends.", Module.Category.PLAYER, true, false, false);
-        this.sneakOnly = (Setting<Boolean>)this.register(new Setting("SneakOnly", (T)false));
-        this.noEntityCollision = (Setting<Boolean>)this.register(new Setting("No Collision", (T)true));
-        this.silentSwitch = (Setting<Boolean>)this.register(new Setting("Silent Switch", (T)true));
-        this.minDamage = (Setting<Integer>)this.register(new Setting("Min Damage", (T)100, (T)1, (T)100));
-        this.maxHeal = (Setting<Integer>)this.register(new Setting("Repair To", (T)90, (T)1, (T)100));
-        this.predict = (Setting<Boolean>)this.register(new Setting("Predict", (T)false));
-        this.DisableWhenDone = (Setting<Boolean>)this.register(new Setting("AutoDisable", (T)true));
-        this.rotate = (Setting<Boolean>)this.register(new Setting("Rotate", (T)true));
+        super("PacketMend",  "Automatically mends.",  Module.Category.PLAYER,  true,  false,  false);
+        this.sneakOnly = (Setting<Boolean>)this.register(new Setting("SneakOnly", false));
+        this.noEntityCollision = (Setting<Boolean>)this.register(new Setting("No Collision", true));
+        this.silentSwitch = (Setting<Boolean>)this.register(new Setting("Silent Switch", true));
+        this.minDamage = (Setting<Integer>)this.register(new Setting("Min Damage", 100, 1, 100));
+        this.maxHeal = (Setting<Integer>)this.register(new Setting("Repair To", 90, 1, 100));
+        this.predict = (Setting<Boolean>)this.register(new Setting("Predict", false));
+        this.DisableWhenDone = (Setting<Boolean>)this.register(new Setting("AutoDisable", true));
+        this.rotate = (Setting<Boolean>)this.register(new Setting("Rotate", true));
     }
     
     public void onUpdate() {
@@ -105,7 +105,7 @@ public class PacketMend extends Module
             PacketMend.mc.playerController.syncCurrentPlayItem();
         }
         if (this.rotate.getValue()) {
-            PacketMend.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Rotation(0.0f, 90.0f, true));
+            PacketMend.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Rotation(0.0f,  90.0f,  true));
         }
         PacketMend.mc.player.connection.sendPacket((Packet)new CPacketPlayerTryUseItem(EnumHand.MAIN_HAND));
         if (this.silentSwitch.getValue()) {

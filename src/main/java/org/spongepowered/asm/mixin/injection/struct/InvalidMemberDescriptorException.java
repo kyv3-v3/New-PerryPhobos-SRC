@@ -18,7 +18,7 @@ public class InvalidMemberDescriptorException extends MixinException
         super(cause);
     }
     
-    public InvalidMemberDescriptorException(final String message, final Throwable cause) {
-        super(message, cause);
+    public InvalidMemberDescriptorException(final String message,  final Throwable cause) {
+        super(message,  cause);
     }
 }

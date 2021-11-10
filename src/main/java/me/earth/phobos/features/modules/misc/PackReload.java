@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.eventhandler.*;
 public class PackReload extends Module
 {
     public PackReload() {
-        super("PackReload", "Automatically reloads ur pack.", Category.MISC, false, false, false);
+        super("PackReload",  "Automatically reloads ur pack.",  Category.MISC,  false,  false,  false);
     }
     
     @SubscribeEvent

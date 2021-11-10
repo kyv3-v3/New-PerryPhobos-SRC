@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.struct.*;
 
 public class InvokerInfo extends AccessorInfo
 {
-    public InvokerInfo(final MixinTargetContext mixin, final MethodNode method) {
-        super(mixin, method, (Class)Invoker.class);
+    public InvokerInfo(final MixinTargetContext mixin,  final MethodNode method) {
+        super(mixin,  method,  (Class)Invoker.class);
     }
     
     protected AccessorInfo.AccessorType initType() {
@@ -24,7 +24,7 @@ public class InvokerInfo extends AccessorInfo
     }
     
     protected MemberInfo initTarget() {
-        return new MemberInfo(this.getTargetName(), null, this.method.desc);
+        return new MemberInfo(this.getTargetName(),  null,  this.method.desc);
     }
     
     public void locate() {

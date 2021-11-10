@@ -31,11 +31,11 @@ public class DiscordUser extends Structure
             return false;
         }
         final DiscordUser that = (DiscordUser)o;
-        return Objects.equals(this.userId, that.userId) && Objects.equals(this.username, that.username) && Objects.equals(this.discriminator, that.discriminator) && Objects.equals(this.avatar, that.avatar);
+        return Objects.equals(this.userId,  that.userId) && Objects.equals(this.username,  that.username) && Objects.equals(this.discriminator,  that.discriminator) && Objects.equals(this.avatar,  that.avatar);
     }
     
     public int hashCode() {
-        return Objects.hash(this.userId, this.username, this.discriminator, this.avatar);
+        return Objects.hash(this.userId,  this.username,  this.discriminator,  this.avatar);
     }
     
     protected List<String> getFieldOrder() {
@@ -43,6 +43,6 @@ public class DiscordUser extends Structure
     }
     
     static {
-        FIELD_ORDER = Collections.unmodifiableList((List<? extends String>)Arrays.asList("userId", "username", "discriminator", "avatar"));
+        FIELD_ORDER = Collections.unmodifiableList((List<? extends String>)Arrays.asList("userId",  "username",  "discriminator",  "avatar"));
     }
 }

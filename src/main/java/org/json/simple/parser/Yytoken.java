@@ -17,7 +17,7 @@ public class Yytoken
     public int type;
     public Object value;
     
-    public Yytoken(final int type, final Object value) {
+    public Yytoken(final int type,  final Object value) {
         this.type = 0;
         this.value = null;
         this.type = type;
@@ -48,7 +48,7 @@ public class Yytoken
                 break;
             }
             case 5: {
-                sb.append("COMMA(,)");
+                sb.append("COMMA(, )");
                 break;
             }
             case 6: {

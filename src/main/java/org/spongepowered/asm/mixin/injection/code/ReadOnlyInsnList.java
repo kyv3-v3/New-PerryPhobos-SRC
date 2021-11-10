@@ -19,7 +19,7 @@ class ReadOnlyInsnList extends InsnList
         this.insnList = null;
     }
     
-    public final void set(final AbstractInsnNode location, final AbstractInsnNode insn) {
+    public final void set(final AbstractInsnNode location,  final AbstractInsnNode insn) {
         throw new UnsupportedOperationException();
     }
     
@@ -39,19 +39,19 @@ class ReadOnlyInsnList extends InsnList
         throw new UnsupportedOperationException();
     }
     
-    public final void insert(final AbstractInsnNode location, final AbstractInsnNode insn) {
+    public final void insert(final AbstractInsnNode location,  final AbstractInsnNode insn) {
         throw new UnsupportedOperationException();
     }
     
-    public final void insert(final AbstractInsnNode location, final InsnList insns) {
+    public final void insert(final AbstractInsnNode location,  final InsnList insns) {
         throw new UnsupportedOperationException();
     }
     
-    public final void insertBefore(final AbstractInsnNode location, final AbstractInsnNode insn) {
+    public final void insertBefore(final AbstractInsnNode location,  final AbstractInsnNode insn) {
         throw new UnsupportedOperationException();
     }
     
-    public final void insertBefore(final AbstractInsnNode location, final InsnList insns) {
+    public final void insertBefore(final AbstractInsnNode location,  final InsnList insns) {
         throw new UnsupportedOperationException();
     }
     

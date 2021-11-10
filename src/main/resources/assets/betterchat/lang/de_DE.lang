@@ -1,5 +1,5 @@
 gui.betterchat.text.title=%1$s von %2$s
-gui.betterchat.text.drag=Ziehen Sie den Chat, um es umzustellen
+gui.betterchat.text.drag=Ziehen Sie den Chat,  um es umzustellen
 gui.betterchat.text.clear.name=Durchsichtiger Chat Hintergrund:
 gui.betterchat.text.clear.enabled=Aktiviert
 gui.betterchat.text.clear.disabled=Deaktiviert
@@ -10,5 +10,5 @@ gui.betterchat.text.scale.name=Verhältnis:
 gui.betterchat.text.width.name=Breite:
 gui.betterchat.text.reset.name=Einstellungen Zurücksetzen
 gui.betterchat.text.example1=Chat Beispiel
-gui.betterchat.text.example2=Test, Test, 1, 2, 3
+gui.betterchat.text.example2=Test,  Test,  1,  2,  3
 gui.betterchat.text.example3=Spielernachrichten wird wie folgt aussehen

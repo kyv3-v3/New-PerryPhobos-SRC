@@ -22,9 +22,9 @@ public class StreamerMode extends Module
     private SecondScreenFrame window;
     
     public StreamerMode() {
-        super("StreamerMode", "Displays client info in a second window.", Category.CLIENT, false, false, false);
-        this.width = (Setting<Integer>)this.register(new Setting("Width", (T)600, (T)100, (T)3160));
-        this.height = (Setting<Integer>)this.register(new Setting("Height", (T)900, (T)100, (T)2140));
+        super("StreamerMode",  "Displays client info in a second window.",  Category.CLIENT,  false,  false,  false);
+        this.width = (Setting<Integer>)this.register(new Setting("Width", 600, 100, 3160));
+        this.height = (Setting<Integer>)this.register(new Setting("Height", 900, 100, 2140));
     }
     
     @Override
@@ -84,7 +84,7 @@ public class StreamerMode extends Module
             final float nether = inHell ? 8.0f : 0.125f;
             final int hposX = (int)(StreamerMode.mc.player.posX * nether);
             final int hposZ = (int)(StreamerMode.mc.player.posZ * nether);
-            final String coordinates = "XYZ " + posX + ", " + posY + ", " + posZ + " [" + hposX + ", " + hposZ + "]";
+            final String coordinates = "XYZ " + posX + ",  " + posY + ",  " + posZ + " [" + hposX + ",  " + hposZ + "]";
             final String text = Phobos.rotationManager.getDirection4D(false);
             drawInfo.add("");
             drawInfo.add(text);
@@ -100,9 +100,9 @@ public class StreamerMode extends Module
                 drawInfo.add(potionText);
             }
             drawInfo.add("");
-            final Map<String, Integer> map = EntityUtil.getTextRadarPlayers();
+            final Map<String,  Integer> map = EntityUtil.getTextRadarPlayers();
             if (!map.isEmpty()) {
-                for (final Map.Entry<String, Integer> player : map.entrySet()) {
+                for (final Map.Entry<String,  Integer> player : map.entrySet()) {
                     final String playerText = TextUtil.stripColor(player.getKey());
                     drawInfo.add(playerText);
                 }
@@ -121,7 +121,7 @@ public class StreamerMode extends Module
         public SecondScreen() {
             this.B_WIDTH = StreamerMode.this.width.getValue();
             this.B_HEIGHT = StreamerMode.this.height.getValue();
-            this.font = new Font("Verdana", 0, 20);
+            this.font = new Font("Verdana",  0,  20);
             this.toDraw = new ArrayList<String>();
             this.initBoard();
         }
@@ -136,14 +136,14 @@ public class StreamerMode extends Module
             this.font = font;
         }
         
-        public void setWindowSize(final int width, final int height) {
-            this.setPreferredSize(new Dimension(width, height));
+        public void setWindowSize(final int width,  final int height) {
+            this.setPreferredSize(new Dimension(width,  height));
         }
         
         private void initBoard() {
             this.setBackground(Color.black);
             this.setFocusable(true);
-            this.setPreferredSize(new Dimension(this.B_WIDTH, this.B_HEIGHT));
+            this.setPreferredSize(new Dimension(this.B_WIDTH,  this.B_HEIGHT));
         }
         
         public void paintComponent(final Graphics g) {
@@ -158,7 +158,7 @@ public class StreamerMode extends Module
             g.setFont(small);
             int y = 40;
             for (final String msg : this.toDraw) {
-                g.drawString(msg, (this.getWidth() - metr.stringWidth(msg)) / 2, y);
+                g.drawString(msg,  (this.getWidth() - metr.stringWidth(msg)) / 2,  y);
                 y += 20;
             }
             Toolkit.getDefaultToolkit().sync();

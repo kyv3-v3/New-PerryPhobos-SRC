@@ -12,7 +12,7 @@ public class CallbackInfo implements Cancellable
     private final boolean cancellable;
     private boolean cancelled;
     
-    public CallbackInfo(final String name, final boolean cancellable) {
+    public CallbackInfo(final String name,  final boolean cancellable) {
         this.name = name;
         this.cancellable = cancellable;
     }
@@ -23,7 +23,7 @@ public class CallbackInfo implements Cancellable
     
     @Override
     public String toString() {
-        return String.format("CallbackInfo[TYPE=%s,NAME=%s,CANCELLABLE=%s]", this.getClass().getSimpleName(), this.name, this.cancellable);
+        return String.format("CallbackInfo[TYPE=%s, NAME=%s, CANCELLABLE=%s]",  this.getClass().getSimpleName(),  this.name,  this.cancellable);
     }
     
     @Override
@@ -39,7 +39,7 @@ public class CallbackInfo implements Cancellable
     @Override
     public void cancel() throws CancellationException {
         if (!this.cancellable) {
-            throw new CancellationException(String.format("The call %s is not cancellable.", this.name));
+            throw new CancellationException(String.format("The call %s is not cancellable.",  this.name));
         }
         this.cancelled = true;
     }
@@ -49,7 +49,7 @@ public class CallbackInfo implements Cancellable
     }
     
     public static String getCallInfoClassName(final Type returnType) {
-        return (returnType.equals((Object)Type.VOID_TYPE) ? CallbackInfo.class.getName() : CallbackInfoReturnable.class.getName()).replace('.', '/');
+        return (returnType.equals((Object)Type.VOID_TYPE) ? CallbackInfo.class.getName() : CallbackInfoReturnable.class.getName()).replace('.',  '/');
     }
     
     static String getConstructorDescriptor(final Type returnType) {
@@ -57,13 +57,13 @@ public class CallbackInfo implements Cancellable
             return getConstructorDescriptor();
         }
         if (returnType.getSort() == 10 || returnType.getSort() == 9) {
-            return String.format("(%sZ%s)V", "Ljava/lang/String;", "Ljava/lang/Object;");
+            return String.format("(%sZ%s)V",  "Ljava/lang/String;",  "Ljava/lang/Object;");
         }
-        return String.format("(%sZ%s)V", "Ljava/lang/String;", returnType.getDescriptor());
+        return String.format("(%sZ%s)V",  "Ljava/lang/String;",  returnType.getDescriptor());
     }
     
     static String getConstructorDescriptor() {
-        return String.format("(%sZ)V", "Ljava/lang/String;");
+        return String.format("(%sZ)V",  "Ljava/lang/String;");
     }
     
     static String getIsCancelledMethodName() {

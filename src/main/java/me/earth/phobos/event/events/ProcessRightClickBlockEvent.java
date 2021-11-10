@@ -17,7 +17,7 @@ public class ProcessRightClickBlockEvent extends EventStage
     public EnumHand hand;
     public ItemStack stack;
     
-    public ProcessRightClickBlockEvent(final BlockPos pos, final EnumHand hand, final ItemStack stack) {
+    public ProcessRightClickBlockEvent(final BlockPos pos,  final EnumHand hand,  final ItemStack stack) {
         this.pos = pos;
         this.hand = hand;
         this.stack = stack;

@@ -14,8 +14,8 @@ public class IceSpeed extends Module
     private final Setting<Float> speed;
     
     public IceSpeed() {
-        super("IceSpeed", "Speeds you up on ice.", Module.Category.MOVEMENT, false, false, false);
-        this.speed = (Setting<Float>)this.register(new Setting("Speed", (T)0.4f, (T)0.1f, (T)1.5f));
+        super("IceSpeed",  "Speeds you up on ice.",  Module.Category.MOVEMENT,  false,  false,  false);
+        this.speed = (Setting<Float>)this.register(new Setting("Speed", 0.4f, 0.1f, 1.5f));
         IceSpeed.INSTANCE = this;
     }
     

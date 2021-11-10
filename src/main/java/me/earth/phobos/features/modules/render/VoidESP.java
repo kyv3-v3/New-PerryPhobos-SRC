@@ -43,28 +43,28 @@ public class VoidESP extends Module
     private List<BlockPos> voidHoles;
     
     public VoidESP() {
-        super("VoidEsp", "Esps the void.", Module.Category.RENDER, true, false, false);
-        this.radius = (Setting<Float>)this.register(new Setting("Radius", (T)8.0f, (T)0.0f, (T)50.0f));
+        super("VoidEsp",  "Esps the void.",  Module.Category.RENDER,  true,  false,  false);
+        this.radius = (Setting<Float>)this.register(new Setting("Radius", 8.0f, 0.0f, 50.0f));
         this.timer = new TimerUtil();
-        this.updates = (Setting<Integer>)this.register(new Setting("Updates", (T)500, (T)0, (T)1000));
-        this.voidCap = (Setting<Integer>)this.register(new Setting("VoidCap", (T)500, (T)0, (T)1000));
-        this.red = (Setting<Integer>)this.register(new Setting("Red", (T)0, (T)0, (T)255));
-        this.green = (Setting<Integer>)this.register(new Setting("Green", (T)255, (T)0, (T)255));
-        this.blue = (Setting<Integer>)this.register(new Setting("Blue", (T)0, (T)0, (T)255));
-        this.alpha = (Setting<Integer>)this.register(new Setting("Alpha", (T)255, (T)0, (T)255));
-        this.air = (Setting<Boolean>)this.register(new Setting("OnlyAir", (T)true));
-        this.noEnd = (Setting<Boolean>)this.register(new Setting("NoEnd", (T)true));
-        this.box = (Setting<Boolean>)this.register(new Setting("Box", (T)true));
-        this.boxAlpha = (Setting<Integer>)this.register(new Setting("BoxAlpha", (T)125, (T)0, (T)255, v -> this.box.getValue()));
-        this.outline = (Setting<Boolean>)this.register(new Setting("Outline", (T)true));
-        this.lineWidth = (Setting<Float>)this.register(new Setting("LineWidth", (T)1.0f, (T)0.1f, (T)5.0f, v -> this.outline.getValue()));
-        this.colorSync = (Setting<Boolean>)this.register(new Setting("Sync", (T)false));
-        this.height = (Setting<Double>)this.register(new Setting("Height", (T)0.0, (T)(-2.0), (T)2.0));
-        this.customOutline = (Setting<Boolean>)this.register(new Setting("CustomLine", (T)false, v -> this.outline.getValue()));
-        this.cRed = (Setting<Integer>)this.register(new Setting("OL-Red", (T)0, (T)0, (T)255, v -> this.customOutline.getValue() && this.outline.getValue()));
-        this.cGreen = (Setting<Integer>)this.register(new Setting("OL-Green", (T)0, (T)0, (T)255, v -> this.customOutline.getValue() && this.outline.getValue()));
-        this.cBlue = (Setting<Integer>)this.register(new Setting("OL-Blue", (T)255, (T)0, (T)255, v -> this.customOutline.getValue() && this.outline.getValue()));
-        this.cAlpha = (Setting<Integer>)this.register(new Setting("OL-Alpha", (T)255, (T)0, (T)255, v -> this.customOutline.getValue() && this.outline.getValue()));
+        this.updates = (Setting<Integer>)this.register(new Setting("Updates", 500, 0, 1000));
+        this.voidCap = (Setting<Integer>)this.register(new Setting("VoidCap", 500, 0, 1000));
+        this.red = (Setting<Integer>)this.register(new Setting("Red", 0, 0, 255));
+        this.green = (Setting<Integer>)this.register(new Setting("Green", 255, 0, 255));
+        this.blue = (Setting<Integer>)this.register(new Setting("Blue", 0, 0, 255));
+        this.alpha = (Setting<Integer>)this.register(new Setting("Alpha", 255, 0, 255));
+        this.air = (Setting<Boolean>)this.register(new Setting("OnlyAir", true));
+        this.noEnd = (Setting<Boolean>)this.register(new Setting("NoEnd", true));
+        this.box = (Setting<Boolean>)this.register(new Setting("Box", true));
+        this.boxAlpha = (Setting<Integer>)this.register(new Setting("BoxAlpha", 125, 0, 255,  v -> this.box.getValue()));
+        this.outline = (Setting<Boolean>)this.register(new Setting("Outline", true));
+        this.lineWidth = (Setting<Float>)this.register(new Setting("LineWidth", 1.0f, 0.1f, 5.0f,  v -> this.outline.getValue()));
+        this.colorSync = (Setting<Boolean>)this.register(new Setting("Sync", false));
+        this.height = (Setting<Double>)this.register(new Setting("Height", 0.0, (-2.0), 2.0));
+        this.customOutline = (Setting<Boolean>)this.register(new Setting("CustomLine", false,  v -> this.outline.getValue()));
+        this.cRed = (Setting<Integer>)this.register(new Setting("OL-Red", 0, 0, 255,  v -> this.customOutline.getValue() && this.outline.getValue()));
+        this.cGreen = (Setting<Integer>)this.register(new Setting("OL-Green", 0, 0, 255,  v -> this.customOutline.getValue() && this.outline.getValue()));
+        this.cBlue = (Setting<Integer>)this.register(new Setting("OL-Blue", 255, 0, 255,  v -> this.customOutline.getValue() && this.outline.getValue()));
+        this.cAlpha = (Setting<Integer>)this.register(new Setting("OL-Alpha", 255, 0, 255,  v -> this.customOutline.getValue() && this.outline.getValue()));
         this.voidHoles = new CopyOnWriteArrayList<BlockPos>();
     }
     
@@ -95,13 +95,13 @@ public class VoidESP extends Module
             if (RotationUtil.isInFov(pos)) {
                 continue;
             }
-            RenderUtil.drawBoxESP(pos, new Color(this.red.getValue(), this.green.getValue(), this.blue.getValue(), this.alpha.getValue()), this.customOutline.getValue(), new Color(this.cRed.getValue(), this.cGreen.getValue(), this.cBlue.getValue(), this.cAlpha.getValue()), this.lineWidth.getValue(), this.outline.getValue(), this.box.getValue(), this.boxAlpha.getValue(), true, this.height.getValue(), false, false, false, false, 0);
+            RenderUtil.drawBoxESP(pos,  new Color(this.red.getValue(),  this.green.getValue(),  this.blue.getValue(),  this.alpha.getValue()),  this.customOutline.getValue(),  new Color(this.cRed.getValue(),  this.cGreen.getValue(),  this.cBlue.getValue(),  this.cAlpha.getValue()),  this.lineWidth.getValue(),  this.outline.getValue(),  this.box.getValue(),  this.boxAlpha.getValue(),  true,  this.height.getValue(),  false,  false,  false,  false,  0);
         }
     }
     
     private List<BlockPos> findVoidHoles() {
         final BlockPos playerPos = EntityUtil.getPlayerPos((EntityPlayer)VoidESP.mc.player);
-        return BlockUtil.getDisc(playerPos.add(0, -playerPos.getY(), 0), this.radius.getValue()).stream().filter((Predicate<? super Object>)this::isVoid).collect((Collector<? super Object, ?, List<BlockPos>>)Collectors.toList());
+        return BlockUtil.getDisc(playerPos.add(0,  -playerPos.getY(),  0),  this.radius.getValue()).stream().filter((Predicate<? super Object>)this::isVoid).collect((Collector<? super Object,  ?,  List<BlockPos>>)Collectors.toList());
     }
     
     private boolean isVoid(final BlockPos pos) {

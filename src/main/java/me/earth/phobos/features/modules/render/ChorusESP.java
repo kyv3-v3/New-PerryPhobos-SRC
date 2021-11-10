@@ -32,19 +32,19 @@ public class ChorusESP extends Module
     private double z;
     
     public ChorusESP() {
-        super("ChorusESP", "Renders a chorus sound packet.", Module.Category.RENDER, true, false, false);
-        this.time = (Setting<Integer>)this.register(new Setting("Duration", (T)500, (T)50, (T)3000));
-        this.box = (Setting<Boolean>)this.register(new Setting("Box", (T)true));
-        this.outline = (Setting<Boolean>)this.register(new Setting("Outline", (T)true));
-        this.boxR = (Setting<Integer>)this.register(new Setting("BoxR", (T)180, (T)0, (T)255, v -> this.box.getValue()));
-        this.boxG = (Setting<Integer>)this.register(new Setting("BoxG", (T)0, (T)0, (T)255, v -> this.box.getValue()));
-        this.boxB = (Setting<Integer>)this.register(new Setting("BoxB", (T)180, (T)0, (T)255, v -> this.box.getValue()));
-        this.boxA = (Setting<Integer>)this.register(new Setting("BoxA", (T)180, (T)0, (T)255, v -> this.box.getValue()));
-        this.lineWidth = (Setting<Float>)this.register(new Setting("LineWidth", (T)1.0f, (T)0.1f, (T)5.0f, v -> this.outline.getValue()));
-        this.outlineR = (Setting<Integer>)this.register(new Setting("OutlineR", (T)255, (T)0, (T)255, v -> this.outline.getValue()));
-        this.outlineG = (Setting<Integer>)this.register(new Setting("OutlineG", (T)0, (T)0, (T)255, v -> this.outline.getValue()));
-        this.outlineB = (Setting<Integer>)this.register(new Setting("OutlineB", (T)255, (T)0, (T)255, v -> this.outline.getValue()));
-        this.outlineA = (Setting<Integer>)this.register(new Setting("OutlineA", (T)255, (T)0, (T)255, v -> this.outline.getValue()));
+        super("ChorusESP",  "Renders a chorus sound packet.",  Module.Category.RENDER,  true,  false,  false);
+        this.time = (Setting<Integer>)this.register(new Setting("Duration", 500, 50, 3000));
+        this.box = (Setting<Boolean>)this.register(new Setting("Box", true));
+        this.outline = (Setting<Boolean>)this.register(new Setting("Outline", true));
+        this.boxR = (Setting<Integer>)this.register(new Setting("BoxR", 180, 0, 255,  v -> this.box.getValue()));
+        this.boxG = (Setting<Integer>)this.register(new Setting("BoxG", 0, 0, 255,  v -> this.box.getValue()));
+        this.boxB = (Setting<Integer>)this.register(new Setting("BoxB", 180, 0, 255,  v -> this.box.getValue()));
+        this.boxA = (Setting<Integer>)this.register(new Setting("BoxA", 180, 0, 255,  v -> this.box.getValue()));
+        this.lineWidth = (Setting<Float>)this.register(new Setting("LineWidth", 1.0f, 0.1f, 5.0f,  v -> this.outline.getValue()));
+        this.outlineR = (Setting<Integer>)this.register(new Setting("OutlineR", 255, 0, 255,  v -> this.outline.getValue()));
+        this.outlineG = (Setting<Integer>)this.register(new Setting("OutlineG", 0, 0, 255,  v -> this.outline.getValue()));
+        this.outlineB = (Setting<Integer>)this.register(new Setting("OutlineB", 255, 0, 255,  v -> this.outline.getValue()));
+        this.outlineA = (Setting<Integer>)this.register(new Setting("OutlineA", 255, 0, 255,  v -> this.outline.getValue()));
         this.timer = new TimerUtil();
     }
     
@@ -60,12 +60,12 @@ public class ChorusESP extends Module
         if (this.timer.passedMs(this.time.getValue())) {
             return;
         }
-        final AxisAlignedBB pos = RenderUtil.interpolateAxis(new AxisAlignedBB(this.x - 0.3, this.y, this.z - 0.3, this.x + 0.3, this.y + 1.8, this.z + 0.3));
+        final AxisAlignedBB pos = RenderUtil.interpolateAxis(new AxisAlignedBB(this.x - 0.3,  this.y,  this.z - 0.3,  this.x + 0.3,  this.y + 1.8,  this.z + 0.3));
         if (this.outline.getValue()) {
-            RenderUtil.drawBlockOutline(pos, new Color(this.outlineR.getValue(), this.outlineG.getValue(), this.outlineB.getValue(), this.outlineA.getValue()), this.lineWidth.getValue());
+            RenderUtil.drawBlockOutline(pos,  new Color(this.outlineR.getValue(),  this.outlineG.getValue(),  this.outlineB.getValue(),  this.outlineA.getValue()),  this.lineWidth.getValue());
         }
         if (this.box.getValue()) {
-            RenderUtil.drawFilledBox(pos, ColorUtil.toRGBA(this.boxR.getValue(), this.boxG.getValue(), this.boxB.getValue(), this.boxA.getValue()));
+            RenderUtil.drawFilledBox(pos,  ColorUtil.toRGBA(this.boxR.getValue(),  this.boxG.getValue(),  this.boxB.getValue(),  this.boxA.getValue()));
         }
     }
 }

@@ -89,7 +89,7 @@ public class HoleManager extends Feature implements Runnable
     
     private ScheduledExecutorService getExecutor() {
         final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(this, 0L, (int)Management.getInstance().holeUpdates.getValue(), TimeUnit.MILLISECONDS);
+        service.scheduleAtFixedRate(this,  0L,  (int)Management.getInstance().holeUpdates.getValue(),  TimeUnit.MILLISECONDS);
         return service;
     }
     
@@ -136,15 +136,15 @@ public class HoleManager extends Feature implements Runnable
     public List<BlockPos> calcHoles() {
         final ArrayList<BlockPos> safeSpots = new ArrayList<BlockPos>();
         this.midSafety.clear();
-        final List<BlockPos> positions = BlockUtil.getSphere(EntityUtil.getPlayerPos((EntityPlayer)HoleManager.mc.player), (float)Management.getInstance().holeRange.getValue(), ((Float)Management.getInstance().holeRange.getValue()).intValue(), false, true, 0);
+        final List<BlockPos> positions = BlockUtil.getSphere(EntityUtil.getPlayerPos((EntityPlayer)HoleManager.mc.player),  (float)Management.getInstance().holeRange.getValue(),  ((Float)Management.getInstance().holeRange.getValue()).intValue(),  false,  true,  0);
         for (final BlockPos pos : positions) {
             if (fullNullCheck()) {
                 return null;
             }
-            if (!HoleManager.mc.world.getBlockState(pos).getBlock().equals(Blocks.AIR) || !HoleManager.mc.world.getBlockState(pos.add(0, 1, 0)).getBlock().equals(Blocks.AIR)) {
+            if (!HoleManager.mc.world.getBlockState(pos).getBlock().equals(Blocks.AIR) || !HoleManager.mc.world.getBlockState(pos.add(0,  1,  0)).getBlock().equals(Blocks.AIR)) {
                 continue;
             }
-            if (!HoleManager.mc.world.getBlockState(pos.add(0, 2, 0)).getBlock().equals(Blocks.AIR)) {
+            if (!HoleManager.mc.world.getBlockState(pos.add(0,  2,  0)).getBlock().equals(Blocks.AIR)) {
                 continue;
             }
             boolean isSafe = true;
@@ -184,6 +184,6 @@ public class HoleManager extends Feature implements Runnable
     }
     
     static {
-        surroundOffset = BlockUtil.toBlockPos(EntityUtil.getOffsets(0, true, true));
+        surroundOffset = BlockUtil.toBlockPos(EntityUtil.getOffsets(0,  true,  true));
     }
 }

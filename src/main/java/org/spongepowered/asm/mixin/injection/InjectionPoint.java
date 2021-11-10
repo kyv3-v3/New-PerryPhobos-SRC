@@ -24,20 +24,20 @@ public abstract class InjectionPoint
 {
     public static final int DEFAULT_ALLOWED_SHIFT_BY = 0;
     public static final int MAX_ALLOWED_SHIFT_BY = 5;
-    private static Map<String, Class<? extends InjectionPoint>> types;
+    private static Map<String,  Class<? extends InjectionPoint>> types;
     private final String slice;
     private final Selector selector;
     private final String id;
     
     protected InjectionPoint() {
-        this("", Selector.DEFAULT, null);
+        this("",  Selector.DEFAULT,  null);
     }
     
     protected InjectionPoint(final InjectionPointData data) {
-        this(data.getSlice(), data.getSelector(), data.getId());
+        this(data.getSlice(),  data.getSelector(),  data.getId());
     }
     
-    public InjectionPoint(final String slice, final Selector selector, final String id) {
+    public InjectionPoint(final String slice,  final Selector selector,  final String id) {
         this.slice = slice;
         this.selector = selector;
         this.id = id;
@@ -55,18 +55,18 @@ public abstract class InjectionPoint
         return this.id;
     }
     
-    public boolean checkPriority(final int targetPriority, final int mixinPriority) {
+    public boolean checkPriority(final int targetPriority,  final int mixinPriority) {
         return targetPriority < mixinPriority;
     }
     
-    public abstract boolean find(final String p0, final InsnList p1, final Collection<AbstractInsnNode> p2);
+    public abstract boolean find(final String p0,  final InsnList p1,  final Collection<AbstractInsnNode> p2);
     
     @Override
     public String toString() {
-        return String.format("@At(\"%s\")", this.getAtCode());
+        return String.format("@At(\"%s\")",  this.getAtCode());
     }
     
-    protected static AbstractInsnNode nextNode(final InsnList insns, final AbstractInsnNode insn) {
+    protected static AbstractInsnNode nextNode(final InsnList insns,  final AbstractInsnNode insn) {
         final int index = insns.indexOf(insn) + 1;
         if (index > 0 && index < insns.size()) {
             return insns.get(index);
@@ -83,25 +83,25 @@ public abstract class InjectionPoint
     }
     
     public static InjectionPoint after(final InjectionPoint point) {
-        return new Shift(point, 1);
+        return new Shift(point,  1);
     }
     
     public static InjectionPoint before(final InjectionPoint point) {
-        return new Shift(point, -1);
+        return new Shift(point,  -1);
     }
     
-    public static InjectionPoint shift(final InjectionPoint point, final int count) {
-        return new Shift(point, count);
+    public static InjectionPoint shift(final InjectionPoint point,  final int count) {
+        return new Shift(point,  count);
     }
     
-    public static List<InjectionPoint> parse(final IInjectionPointContext owner, final List<AnnotationNode> ats) {
-        return parse(owner.getContext(), owner.getMethod(), owner.getAnnotation(), ats);
+    public static List<InjectionPoint> parse(final IInjectionPointContext owner,  final List<AnnotationNode> ats) {
+        return parse(owner.getContext(),  owner.getMethod(),  owner.getAnnotation(),  ats);
     }
     
-    public static List<InjectionPoint> parse(final IMixinContext context, final MethodNode method, final AnnotationNode parent, final List<AnnotationNode> ats) {
+    public static List<InjectionPoint> parse(final IMixinContext context,  final MethodNode method,  final AnnotationNode parent,  final List<AnnotationNode> ats) {
         final ImmutableList.Builder<InjectionPoint> injectionPoints = (ImmutableList.Builder<InjectionPoint>)ImmutableList.builder();
         for (final AnnotationNode at : ats) {
-            final InjectionPoint injectionPoint = parse(context, method, parent, at);
+            final InjectionPoint injectionPoint = parse(context,  method,  parent,  at);
             if (injectionPoint != null) {
                 injectionPoints.add((Object)injectionPoint);
             }
@@ -109,80 +109,80 @@ public abstract class InjectionPoint
         return (List<InjectionPoint>)injectionPoints.build();
     }
     
-    public static InjectionPoint parse(final IInjectionPointContext owner, final At at) {
-        return parse(owner.getContext(), owner.getMethod(), owner.getAnnotation(), at.value(), at.shift(), at.by(), Arrays.asList(at.args()), at.target(), at.slice(), at.ordinal(), at.opcode(), at.id());
+    public static InjectionPoint parse(final IInjectionPointContext owner,  final At at) {
+        return parse(owner.getContext(),  owner.getMethod(),  owner.getAnnotation(),  at.value(),  at.shift(),  at.by(),  Arrays.asList(at.args()),  at.target(),  at.slice(),  at.ordinal(),  at.opcode(),  at.id());
     }
     
-    public static InjectionPoint parse(final IMixinContext context, final MethodNode method, final AnnotationNode parent, final At at) {
-        return parse(context, method, parent, at.value(), at.shift(), at.by(), Arrays.asList(at.args()), at.target(), at.slice(), at.ordinal(), at.opcode(), at.id());
+    public static InjectionPoint parse(final IMixinContext context,  final MethodNode method,  final AnnotationNode parent,  final At at) {
+        return parse(context,  method,  parent,  at.value(),  at.shift(),  at.by(),  Arrays.asList(at.args()),  at.target(),  at.slice(),  at.ordinal(),  at.opcode(),  at.id());
     }
     
-    public static InjectionPoint parse(final IInjectionPointContext owner, final AnnotationNode node) {
-        return parse(owner.getContext(), owner.getMethod(), owner.getAnnotation(), node);
+    public static InjectionPoint parse(final IInjectionPointContext owner,  final AnnotationNode node) {
+        return parse(owner.getContext(),  owner.getMethod(),  owner.getAnnotation(),  node);
     }
     
-    public static InjectionPoint parse(final IMixinContext context, final MethodNode method, final AnnotationNode parent, final AnnotationNode node) {
-        final String at = Annotations.getValue(node, "value");
-        List<String> args = Annotations.getValue(node, "args");
-        final String target = Annotations.getValue(node, "target", "");
-        final String slice = Annotations.getValue(node, "slice", "");
-        final At.Shift shift = Annotations.getValue(node, "shift", At.Shift.class, At.Shift.NONE);
-        final int by = Annotations.getValue(node, "by", 0);
-        final int ordinal = Annotations.getValue(node, "ordinal", -1);
-        final int opcode = Annotations.getValue(node, "opcode", 0);
-        final String id = Annotations.getValue(node, "id");
+    public static InjectionPoint parse(final IMixinContext context,  final MethodNode method,  final AnnotationNode parent,  final AnnotationNode node) {
+        final String at = Annotations.getValue(node,  "value");
+        List<String> args = Annotations.getValue(node,  "args");
+        final String target = Annotations.getValue(node,  "target",  "");
+        final String slice = Annotations.getValue(node,  "slice",  "");
+        final At.Shift shift = Annotations.getValue(node,  "shift",  At.Shift.class,  At.Shift.NONE);
+        final int by = Annotations.getValue(node,  "by",  0);
+        final int ordinal = Annotations.getValue(node,  "ordinal",  -1);
+        final int opcode = Annotations.getValue(node,  "opcode",  0);
+        final String id = Annotations.getValue(node,  "id");
         if (args == null) {
             args = (List<String>)ImmutableList.of();
         }
-        return parse(context, method, parent, at, shift, by, args, target, slice, ordinal, opcode, id);
+        return parse(context,  method,  parent,  at,  shift,  by,  args,  target,  slice,  ordinal,  opcode,  id);
     }
     
-    public static InjectionPoint parse(final IMixinContext context, final MethodNode method, final AnnotationNode parent, final String at, final At.Shift shift, final int by, final List<String> args, final String target, final String slice, final int ordinal, final int opcode, final String id) {
-        final InjectionPointData data = new InjectionPointData(context, method, parent, at, args, target, slice, ordinal, opcode, id);
-        final Class<? extends InjectionPoint> ipClass = findClass(context, data);
-        final InjectionPoint point = create(context, data, ipClass);
-        return shift(context, method, parent, point, shift, by);
+    public static InjectionPoint parse(final IMixinContext context,  final MethodNode method,  final AnnotationNode parent,  final String at,  final At.Shift shift,  final int by,  final List<String> args,  final String target,  final String slice,  final int ordinal,  final int opcode,  final String id) {
+        final InjectionPointData data = new InjectionPointData(context,  method,  parent,  at,  args,  target,  slice,  ordinal,  opcode,  id);
+        final Class<? extends InjectionPoint> ipClass = findClass(context,  data);
+        final InjectionPoint point = create(context,  data,  ipClass);
+        return shift(context,  method,  parent,  point,  shift,  by);
     }
     
-    private static Class<? extends InjectionPoint> findClass(final IMixinContext context, final InjectionPointData data) {
+    private static Class<? extends InjectionPoint> findClass(final IMixinContext context,  final InjectionPointData data) {
         final String type = data.getType();
         Class<? extends InjectionPoint> ipClass = InjectionPoint.types.get(type);
         if (ipClass == null) {
             if (type.matches("^([A-Za-z_][A-Za-z0-9_]*\\.)+[A-Za-z_][A-Za-z0-9_]*$")) {
                 try {
                     ipClass = (Class<? extends InjectionPoint>)Class.forName(type);
-                    InjectionPoint.types.put(type, ipClass);
+                    InjectionPoint.types.put(type,  ipClass);
                     return ipClass;
                 }
                 catch (Exception ex) {
-                    throw new InvalidInjectionException(context, data + " could not be loaded or is not a valid InjectionPoint", ex);
+                    throw new InvalidInjectionException(context,  data + " could not be loaded or is not a valid InjectionPoint",  ex);
                 }
             }
-            throw new InvalidInjectionException(context, data + " is not a valid injection point specifier");
+            throw new InvalidInjectionException(context,  data + " is not a valid injection point specifier");
         }
         return ipClass;
     }
     
-    private static InjectionPoint create(final IMixinContext context, final InjectionPointData data, final Class<? extends InjectionPoint> ipClass) {
+    private static InjectionPoint create(final IMixinContext context,  final InjectionPointData data,  final Class<? extends InjectionPoint> ipClass) {
         Constructor<? extends InjectionPoint> ipCtor = null;
         try {
             ipCtor = ipClass.getDeclaredConstructor(InjectionPointData.class);
             ipCtor.setAccessible(true);
         }
         catch (NoSuchMethodException ex) {
-            throw new InvalidInjectionException(context, ipClass.getName() + " must contain a constructor which accepts an InjectionPointData", ex);
+            throw new InvalidInjectionException(context,  ipClass.getName() + " must contain a constructor which accepts an InjectionPointData",  ex);
         }
         InjectionPoint point = null;
         try {
             point = (InjectionPoint)ipCtor.newInstance(data);
         }
         catch (Exception ex2) {
-            throw new InvalidInjectionException(context, "Error whilst instancing injection point " + ipClass.getName() + " for " + data.getAt(), ex2);
+            throw new InvalidInjectionException(context,  "Error whilst instancing injection point " + ipClass.getName() + " for " + data.getAt(),  ex2);
         }
         return point;
     }
     
-    private static InjectionPoint shift(final IMixinContext context, final MethodNode method, final AnnotationNode parent, final InjectionPoint point, final At.Shift shift, final int by) {
+    private static InjectionPoint shift(final IMixinContext context,  final MethodNode method,  final AnnotationNode parent,  final InjectionPoint point,  final At.Shift shift,  final int by) {
         if (point != null) {
             if (shift == At.Shift.BEFORE) {
                 return before(point);
@@ -191,16 +191,16 @@ public abstract class InjectionPoint
                 return after(point);
             }
             if (shift == At.Shift.BY) {
-                validateByValue(context, method, parent, point, by);
-                return shift(point, by);
+                validateByValue(context,  method,  parent,  point,  by);
+                return shift(point,  by);
             }
         }
         return point;
     }
     
-    private static void validateByValue(final IMixinContext context, final MethodNode method, final AnnotationNode parent, final InjectionPoint point, final int by) {
+    private static void validateByValue(final IMixinContext context,  final MethodNode method,  final AnnotationNode parent,  final InjectionPoint point,  final int by) {
         final MixinEnvironment env = context.getMixin().getConfig().getEnvironment();
-        final ShiftByViolationBehaviour err = env.getOption(MixinEnvironment.Option.SHIFT_BY_VIOLATION_BEHAVIOUR, ShiftByViolationBehaviour.WARN);
+        final ShiftByViolationBehaviour err = env.getOption(MixinEnvironment.Option.SHIFT_BY_VIOLATION_BEHAVIOUR,  ShiftByViolationBehaviour.WARN);
         if (err == ShiftByViolationBehaviour.IGNORE) {
             return;
         }
@@ -218,12 +218,12 @@ public abstract class InjectionPoint
             advice = "You must use an alternate query or a custom injection point.";
             allowed = 5;
         }
-        final String message = String.format("@%s(%s) Shift.BY=%d on %s::%s exceeds %s%d. %s", Bytecode.getSimpleName(parent), point, by, context, method.name, limitBreached, allowed, advice);
+        final String message = String.format("@%s(%s) Shift.BY=%d on %s::%s exceeds %s%d. %s",  Bytecode.getSimpleName(parent),  point,  by,  context,  method.name,  limitBreached,  allowed,  advice);
         if (err == ShiftByViolationBehaviour.WARN && allowed < 5) {
             LogManager.getLogger("mixin").warn(message);
             return;
         }
-        throw new InvalidInjectionException(context, message);
+        throw new InvalidInjectionException(context,  message);
     }
     
     protected String getAtCode() {
@@ -238,13 +238,13 @@ public abstract class InjectionPoint
         }
         final Class<? extends InjectionPoint> existing = InjectionPoint.types.get(code.value());
         if (existing != null && !existing.equals(type)) {
-            LogManager.getLogger("mixin").debug("Overriding InjectionPoint {} with {} (previously {})", new Object[] { code.value(), type.getName(), existing.getName() });
+            LogManager.getLogger("mixin").debug("Overriding InjectionPoint {} with {} (previously {})",  new Object[] { code.value(),  type.getName(),  existing.getName() });
         }
-        InjectionPoint.types.put(code.value(), type);
+        InjectionPoint.types.put(code.value(),  type);
     }
     
     static {
-        InjectionPoint.types = new HashMap<String, Class<? extends InjectionPoint>>();
+        InjectionPoint.types = new HashMap<String,  Class<? extends InjectionPoint>>();
         register(BeforeFieldAccess.class);
         register(BeforeInvoke.class);
         register(BeforeNew.class);
@@ -261,8 +261,8 @@ public abstract class InjectionPoint
     
     public enum Selector
     {
-        FIRST, 
-        LAST, 
+        FIRST,  
+        LAST,  
         ONE;
         
         public static final Selector DEFAULT;
@@ -274,8 +274,8 @@ public abstract class InjectionPoint
     
     enum ShiftByViolationBehaviour
     {
-        IGNORE, 
-        WARN, 
+        IGNORE,  
+        WARN,  
         ERROR;
     }
     
@@ -292,7 +292,7 @@ public abstract class InjectionPoint
         
         @Override
         public String toString() {
-            return "CompositeInjectionPoint(" + this.getClass().getSimpleName() + ")[" + Joiner.on(',').join((Object[])this.components) + "]";
+            return "CompositeInjectionPoint(" + this.getClass().getSimpleName() + ")[" + Joiner.on(', ').join((Object[])this.components) + "]";
         }
     }
     
@@ -303,12 +303,12 @@ public abstract class InjectionPoint
         }
         
         @Override
-        public boolean find(final String desc, final InsnList insns, final Collection<AbstractInsnNode> nodes) {
+        public boolean find(final String desc,  final InsnList insns,  final Collection<AbstractInsnNode> nodes) {
             boolean found = false;
-            final ArrayList<AbstractInsnNode>[] allNodes = (ArrayList<AbstractInsnNode>[])Array.newInstance(ArrayList.class, this.components.length);
+            final ArrayList<AbstractInsnNode>[] allNodes = (ArrayList<AbstractInsnNode>[])Array.newInstance(ArrayList.class,  this.components.length);
             for (int i = 0; i < this.components.length; ++i) {
                 allNodes[i] = new ArrayList<AbstractInsnNode>();
-                this.components[i].find(desc, insns, allNodes[i]);
+                this.components[i].find(desc,  insns,  allNodes[i]);
             }
             final ArrayList<AbstractInsnNode> alpha = allNodes[0];
             for (int nodeIndex = 0; nodeIndex < alpha.size(); ++nodeIndex) {
@@ -331,10 +331,10 @@ public abstract class InjectionPoint
         }
         
         @Override
-        public boolean find(final String desc, final InsnList insns, final Collection<AbstractInsnNode> nodes) {
+        public boolean find(final String desc,  final InsnList insns,  final Collection<AbstractInsnNode> nodes) {
             final LinkedHashSet<AbstractInsnNode> allNodes = new LinkedHashSet<AbstractInsnNode>();
             for (int i = 0; i < this.components.length; ++i) {
-                this.components[i].find(desc, insns, allNodes);
+                this.components[i].find(desc,  insns,  allNodes);
             }
             nodes.addAll(allNodes);
             return allNodes.size() > 0;
@@ -346,7 +346,7 @@ public abstract class InjectionPoint
         private final InjectionPoint input;
         private final int shift;
         
-        public Shift(final InjectionPoint input, final int shift) {
+        public Shift(final InjectionPoint input,  final int shift) {
             if (input == null) {
                 throw new IllegalArgumentException("Must supply an input injection point for SHIFT");
             }
@@ -360,11 +360,11 @@ public abstract class InjectionPoint
         }
         
         @Override
-        public boolean find(final String desc, final InsnList insns, final Collection<AbstractInsnNode> nodes) {
+        public boolean find(final String desc,  final InsnList insns,  final Collection<AbstractInsnNode> nodes) {
             final List<AbstractInsnNode> list = (nodes instanceof List) ? ((List)nodes) : new ArrayList<AbstractInsnNode>(nodes);
-            this.input.find(desc, insns, nodes);
+            this.input.find(desc,  insns,  nodes);
             for (int i = 0; i < list.size(); ++i) {
-                list.set(i, insns.get(insns.indexOf((AbstractInsnNode)list.get(i)) + this.shift));
+                list.set(i,  insns.get(insns.indexOf((AbstractInsnNode)list.get(i)) + this.shift));
             }
             if (nodes != list) {
                 nodes.clear();

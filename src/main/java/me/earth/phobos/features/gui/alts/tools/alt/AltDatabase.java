@@ -25,7 +25,7 @@ public class AltDatabase implements Serializable
     }
     
     private static void saveToConfig() {
-        Config.getInstance().setKey("altaccounts", AltDatabase.instance);
+        Config.getInstance().setKey("altaccounts",  AltDatabase.instance);
     }
     
     public static AltDatabase getInstance() {

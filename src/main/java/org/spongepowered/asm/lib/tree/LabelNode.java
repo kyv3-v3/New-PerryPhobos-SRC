@@ -35,7 +35,7 @@ public class LabelNode extends AbstractInsnNode
         cv.visitLabel(this.getLabel());
     }
     
-    public AbstractInsnNode clone(final Map<LabelNode, LabelNode> labels) {
+    public AbstractInsnNode clone(final Map<LabelNode,  LabelNode> labels) {
         return labels.get(this);
     }
     

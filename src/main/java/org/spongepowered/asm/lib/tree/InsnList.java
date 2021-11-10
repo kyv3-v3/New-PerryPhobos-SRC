@@ -75,7 +75,7 @@ public class InsnList
         return insns;
     }
     
-    public void set(final AbstractInsnNode location, final AbstractInsnNode insn) {
+    public void set(final AbstractInsnNode location,  final AbstractInsnNode insn) {
         final AbstractInsnNode next = location.next;
         insn.next = next;
         if (next != null) {
@@ -173,7 +173,7 @@ public class InsnList
         insns.removeAll(false);
     }
     
-    public void insert(final AbstractInsnNode location, final AbstractInsnNode insn) {
+    public void insert(final AbstractInsnNode location,  final AbstractInsnNode insn) {
         ++this.size;
         final AbstractInsnNode next = location.next;
         if (next == null) {
@@ -189,7 +189,7 @@ public class InsnList
         insn.index = 0;
     }
     
-    public void insert(final AbstractInsnNode location, final InsnList insns) {
+    public void insert(final AbstractInsnNode location,  final InsnList insns) {
         if (insns.size == 0) {
             return;
         }
@@ -210,7 +210,7 @@ public class InsnList
         insns.removeAll(false);
     }
     
-    public void insertBefore(final AbstractInsnNode location, final AbstractInsnNode insn) {
+    public void insertBefore(final AbstractInsnNode location,  final AbstractInsnNode insn) {
         ++this.size;
         final AbstractInsnNode prev = location.prev;
         if (prev == null) {
@@ -226,7 +226,7 @@ public class InsnList
         insn.index = 0;
     }
     
-    public void insertBefore(final AbstractInsnNode location, final InsnList insns) {
+    public void insertBefore(final AbstractInsnNode location,  final InsnList insns) {
         if (insns.size == 0) {
             return;
         }
@@ -382,10 +382,10 @@ public class InsnList
         
         public void add(final Object o) {
             if (this.next != null) {
-                InsnList.this.insertBefore(this.next, (AbstractInsnNode)o);
+                InsnList.this.insertBefore(this.next,  (AbstractInsnNode)o);
             }
             else if (this.prev != null) {
-                InsnList.this.insert(this.prev, (AbstractInsnNode)o);
+                InsnList.this.insert(this.prev,  (AbstractInsnNode)o);
             }
             else {
                 InsnList.this.add((AbstractInsnNode)o);
@@ -396,7 +396,7 @@ public class InsnList
         
         public void set(final Object o) {
             if (this.remove != null) {
-                InsnList.this.set(this.remove, (AbstractInsnNode)o);
+                InsnList.this.set(this.remove,  (AbstractInsnNode)o);
                 if (this.remove == this.prev) {
                     this.prev = (AbstractInsnNode)o;
                 }

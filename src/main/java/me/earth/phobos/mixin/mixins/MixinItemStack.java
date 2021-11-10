@@ -17,18 +17,18 @@ public abstract class MixinItemStack
     @Shadow
     public int itemDamage;
     
-    @Inject(method = { "<init>(Lnet/minecraft/item/Item;IILnet/minecraft/nbt/NBTTagCompound;)V" }, at = { @At("RETURN") })
+    @Inject(method = { "<init>(Lnet/minecraft/item/Item;IILnet/minecraft/nbt/NBTTagCompound;)V" },  at = { @At("RETURN") })
     @Dynamic
-    private void initHook(final Item item, final int idkWhatDisIsIPastedThis, final int dura, final NBTTagCompound compound, final CallbackInfo info) {
-        this.itemDamage = this.checkDurability(ItemStack.class.cast(this), this.itemDamage, dura);
+    private void initHook(final Item item,  final int idkWhatDisIsIPastedThis,  final int dura,  final NBTTagCompound compound,  final CallbackInfo info) {
+        this.itemDamage = this.checkDurability(ItemStack.class.cast(this),  this.itemDamage,  dura);
     }
     
-    @Inject(method = { "<init>(Lnet/minecraft/nbt/NBTTagCompound;)V" }, at = { @At("RETURN") })
-    private void initHook2(final NBTTagCompound compound, final CallbackInfo info) {
-        this.itemDamage = this.checkDurability(ItemStack.class.cast(this), this.itemDamage, compound.getShort("Damage"));
+    @Inject(method = { "<init>(Lnet/minecraft/nbt/NBTTagCompound;)V" },  at = { @At("RETURN") })
+    private void initHook2(final NBTTagCompound compound,  final CallbackInfo info) {
+        this.itemDamage = this.checkDurability(ItemStack.class.cast(this),  this.itemDamage,  compound.getShort("Damage"));
     }
     
-    private int checkDurability(final ItemStack item, final int damage, final int dura) {
+    private int checkDurability(final ItemStack item,  final int damage,  final int dura) {
         int trueDura = damage;
         if (TrueDurability.getInstance().isOn() && dura < 0) {
             trueDura = dura;

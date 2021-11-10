@@ -28,10 +28,10 @@ public class NoSoundLag extends Module
     public Setting<Float> soundRange;
     
     public NoSoundLag() {
-        super("NoSoundLag", "Prevents Lag through sound spam.", Category.MISC, true, false, false);
-        this.crystals = (Setting<Boolean>)this.register(new Setting("Crystals", (T)true));
-        this.armor = (Setting<Boolean>)this.register(new Setting("Armor", (T)true));
-        this.soundRange = (Setting<Float>)this.register(new Setting("SoundRange", (T)12.0f, (T)0.0f, (T)12.0f));
+        super("NoSoundLag",  "Prevents Lag through sound spam.",  Category.MISC,  true,  false,  false);
+        this.crystals = (Setting<Boolean>)this.register(new Setting("Crystals", true));
+        this.armor = (Setting<Boolean>)this.register(new Setting("Armor", true));
+        this.soundRange = (Setting<Float>)this.register(new Setting("SoundRange", 12.0f, 0.0f, 12.0f));
         NoSoundLag.instance = this;
     }
     
@@ -42,8 +42,8 @@ public class NoSoundLag extends Module
         return NoSoundLag.instance;
     }
     
-    public static void removeEntities(final SPacketSoundEffect packet, final float range) {
-        final BlockPos pos = new BlockPos(packet.getX(), packet.getY(), packet.getZ());
+    public static void removeEntities(final SPacketSoundEffect packet,  final float range) {
+        final BlockPos pos = new BlockPos(packet.getX(),  packet.getY(),  packet.getZ());
         final ArrayList<Entity> toRemove = new ArrayList<Entity>();
         if (fullNullCheck()) {
             return;
@@ -66,7 +66,7 @@ public class NoSoundLag extends Module
         if (event != null && event.getPacket() != null && NoSoundLag.mc.player != null && NoSoundLag.mc.world != null && event.getPacket() instanceof SPacketSoundEffect) {
             final SPacketSoundEffect packet = (SPacketSoundEffect)event.getPacket();
             if (this.crystals.getValue() && packet.getCategory() == SoundCategory.BLOCKS && packet.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE && (AutoCrystal.getInstance().isOff() || (!AutoCrystal.getInstance().sound.getValue() && AutoCrystal.getInstance().threadMode.getValue() != AutoCrystal.ThreadMode.SOUND))) {
-                removeEntities(packet, this.soundRange.getValue());
+                removeEntities(packet,  this.soundRange.getValue());
             }
             if (NoSoundLag.BLACKLIST.contains(packet.getSound()) && this.armor.getValue()) {
                 event.setCanceled(true);
@@ -75,6 +75,6 @@ public class NoSoundLag extends Module
     }
     
     static {
-        BLACKLIST = Sets.newHashSet((Object[])new SoundEvent[] { SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, SoundEvents.ITEM_ARMOR_EQIIP_ELYTRA, SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND, SoundEvents.ITEM_ARMOR_EQUIP_IRON, SoundEvents.ITEM_ARMOR_EQUIP_GOLD, SoundEvents.ITEM_ARMOR_EQUIP_CHAIN, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER });
+        BLACKLIST = Sets.newHashSet((Object[])new SoundEvent[] { SoundEvents.ITEM_ARMOR_EQUIP_GENERIC,  SoundEvents.ITEM_ARMOR_EQIIP_ELYTRA,  SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND,  SoundEvents.ITEM_ARMOR_EQUIP_IRON,  SoundEvents.ITEM_ARMOR_EQUIP_GOLD,  SoundEvents.ITEM_ARMOR_EQUIP_CHAIN,  SoundEvents.ITEM_ARMOR_EQUIP_LEATHER });
     }
 }

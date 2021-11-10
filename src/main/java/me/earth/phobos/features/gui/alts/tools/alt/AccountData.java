@@ -14,7 +14,7 @@ public class AccountData implements Serializable
     public final String pass;
     public String alias;
     
-    protected AccountData(final String user, final String pass, final String alias) {
+    protected AccountData(final String user,  final String pass,  final String alias) {
         this.user = EncryptionTools.encode(user);
         this.pass = EncryptionTools.encode(pass);
         this.alias = alias;

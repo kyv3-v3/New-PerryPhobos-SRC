@@ -18,24 +18,24 @@ public class Item extends Feature
         super(name);
     }
     
-    public void setLocation(final float x, final float y) {
+    public void setLocation(final float x,  final float y) {
         this.x = x;
         this.y = y;
     }
     
-    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
+    public void drawScreen(final int mouseX,  final int mouseY,  final float partialTicks) {
     }
     
-    public void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) {
+    public void mouseClicked(final int mouseX,  final int mouseY,  final int mouseButton) {
     }
     
-    public void mouseReleased(final int mouseX, final int mouseY, final int releaseButton) {
+    public void mouseReleased(final int mouseX,  final int mouseY,  final int releaseButton) {
     }
     
     public void update() {
     }
     
-    public void onKeyTyped(final char typedChar, final int keyCode) {
+    public void onKeyTyped(final char typedChar,  final int keyCode) {
     }
     
     public float getX() {

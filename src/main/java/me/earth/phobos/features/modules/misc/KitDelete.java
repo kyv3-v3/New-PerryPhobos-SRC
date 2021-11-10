@@ -17,8 +17,8 @@ public class KitDelete extends Module
     private boolean keyDown;
     
     public KitDelete() {
-        super("KitDelete", "Automates /deleteukit if u have too many kits.", Category.MISC, false, false, false);
-        this.deleteKey = (Setting<Bind>)this.register(new Setting("Key", (T)new Bind(-1)));
+        super("KitDelete",  "Automates /deleteukit if u have too many kits.",  Category.MISC,  false,  false,  false);
+        this.deleteKey = (Setting<Bind>)this.register(new Setting("Key", new Bind(-1)));
     }
     
     @Override

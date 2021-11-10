@@ -12,7 +12,7 @@ public class MultiANewArrayInsnNode extends AbstractInsnNode
     public String desc;
     public int dims;
     
-    public MultiANewArrayInsnNode(final String desc, final int dims) {
+    public MultiANewArrayInsnNode(final String desc,  final int dims) {
         super(197);
         this.desc = desc;
         this.dims = dims;
@@ -23,11 +23,11 @@ public class MultiANewArrayInsnNode extends AbstractInsnNode
     }
     
     public void accept(final MethodVisitor mv) {
-        mv.visitMultiANewArrayInsn(this.desc, this.dims);
+        mv.visitMultiANewArrayInsn(this.desc,  this.dims);
         this.acceptAnnotations(mv);
     }
     
-    public AbstractInsnNode clone(final Map<LabelNode, LabelNode> labels) {
-        return new MultiANewArrayInsnNode(this.desc, this.dims).cloneAnnotations((AbstractInsnNode)this);
+    public AbstractInsnNode clone(final Map<LabelNode,  LabelNode> labels) {
+        return new MultiANewArrayInsnNode(this.desc,  this.dims).cloneAnnotations((AbstractInsnNode)this);
     }
 }

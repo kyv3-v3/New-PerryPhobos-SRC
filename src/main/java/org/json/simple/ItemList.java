@@ -12,25 +12,25 @@ public class ItemList
     List items;
     
     public ItemList() {
-        this.sp = ",";
+        this.sp = ", ";
         this.items = new ArrayList();
     }
     
     public ItemList(final String s) {
-        this.sp = ",";
+        this.sp = ", ";
         this.items = new ArrayList();
-        this.split(s, this.sp, this.items);
+        this.split(s,  this.sp,  this.items);
     }
     
-    public ItemList(final String s, final String sp) {
-        this.sp = ",";
+    public ItemList(final String s,  final String sp) {
+        this.sp = ", ";
         this.items = new ArrayList();
-        this.split(this.sp = s, sp, this.items);
+        this.split(this.sp = s,  sp,  this.items);
     }
     
-    public ItemList(final String s, final String sp, final boolean isMultiToken) {
-        this.sp = ",";
-        this.split(s, sp, this.items = new ArrayList(), isMultiToken);
+    public ItemList(final String s,  final String sp,  final boolean isMultiToken) {
+        this.sp = ", ";
+        this.split(s,  sp,  this.items = new ArrayList(),  isMultiToken);
     }
     
     public List getItems() {
@@ -41,22 +41,22 @@ public class ItemList
         return (String[])this.items.toArray();
     }
     
-    public void split(final String s, final String sp, final List append, final boolean isMultiToken) {
+    public void split(final String s,  final String sp,  final List append,  final boolean isMultiToken) {
         if (s == null || sp == null) {
             return;
         }
         if (isMultiToken) {
-            final StringTokenizer tokens = new StringTokenizer(s, sp);
+            final StringTokenizer tokens = new StringTokenizer(s,  sp);
             while (tokens.hasMoreTokens()) {
                 append.add(tokens.nextToken().trim());
             }
         }
         else {
-            this.split(s, sp, append);
+            this.split(s,  sp,  append);
         }
     }
     
-    public void split(final String s, final String sp, final List append) {
+    public void split(final String s,  final String sp,  final List append) {
         if (s == null || sp == null) {
             return;
         }
@@ -64,11 +64,11 @@ public class ItemList
         int prevPos = 0;
         do {
             prevPos = pos;
-            pos = s.indexOf(sp, pos);
+            pos = s.indexOf(sp,  pos);
             if (pos == -1) {
                 break;
             }
-            append.add(s.substring(prevPos, pos).trim());
+            append.add(s.substring(prevPos,  pos).trim());
             pos += sp.length();
         } while (pos != -1);
         append.add(s.substring(prevPos).trim());
@@ -78,11 +78,11 @@ public class ItemList
         this.sp = sp;
     }
     
-    public void add(final int i, final String item) {
+    public void add(final int i,  final String item) {
         if (item == null) {
             return;
         }
-        this.items.add(i, item.trim());
+        this.items.add(i,  item.trim());
     }
     
     public void add(final String item) {
@@ -97,15 +97,15 @@ public class ItemList
     }
     
     public void addAll(final String s) {
-        this.split(s, this.sp, this.items);
+        this.split(s,  this.sp,  this.items);
     }
     
-    public void addAll(final String s, final String sp) {
-        this.split(s, sp, this.items);
+    public void addAll(final String s,  final String sp) {
+        this.split(s,  sp,  this.items);
     }
     
-    public void addAll(final String s, final String sp, final boolean isMultiToken) {
-        this.split(s, sp, this.items, isMultiToken);
+    public void addAll(final String s,  final String sp,  final boolean isMultiToken) {
+        this.split(s,  sp,  this.items,  isMultiToken);
     }
     
     public String get(final int i) {
@@ -139,7 +139,7 @@ public class ItemList
     }
     
     public void reset() {
-        this.sp = ",";
+        this.sp = ", ";
         this.items.clear();
     }
 }

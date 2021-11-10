@@ -20,7 +20,7 @@ public class ColorManager
         this.green = 1.0f;
         this.blue = 1.0f;
         this.alpha = 1.0f;
-        this.color = new Color(this.red, this.green, this.blue, this.alpha);
+        this.color = new Color(this.red,  this.green,  this.blue,  this.alpha);
     }
     
     public Color getColor() {
@@ -36,14 +36,14 @@ public class ColorManager
     }
     
     public int getColorAsIntFullAlpha() {
-        return ColorUtil.toRGBA(new Color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), 255));
+        return ColorUtil.toRGBA(new Color(this.color.getRed(),  this.color.getGreen(),  this.color.getBlue(),  255));
     }
     
     public int getColorWithAlpha(final int alpha) {
-        return ColorUtil.toRGBA(new Color(this.red, this.green, this.blue, alpha / 255.0f));
+        return ColorUtil.toRGBA(new Color(this.red,  this.green,  this.blue,  alpha / 255.0f));
     }
     
-    public void setColor(final float red, final float green, final float blue, final float alpha) {
+    public void setColor(final float red,  final float green,  final float blue,  final float alpha) {
         this.red = red;
         this.green = green;
         this.blue = blue;
@@ -52,10 +52,10 @@ public class ColorManager
     }
     
     public void updateColor() {
-        this.setColor(new Color(this.red, this.green, this.blue, this.alpha));
+        this.setColor(new Color(this.red,  this.green,  this.blue,  this.alpha));
     }
     
-    public void setColor(final int red, final int green, final int blue, final int alpha) {
+    public void setColor(final int red,  final int green,  final int blue,  final int alpha) {
         this.red = red / 255.0f;
         this.green = green / 255.0f;
         this.blue = blue / 255.0f;

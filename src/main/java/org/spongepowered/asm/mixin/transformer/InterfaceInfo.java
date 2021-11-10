@@ -22,9 +22,9 @@ public final class InterfaceInfo
     private final boolean unique;
     private Set<String> methods;
     
-    private InterfaceInfo(final MixinInfo mixin, final String prefix, final Type iface, final boolean unique) {
+    private InterfaceInfo(final MixinInfo mixin,  final String prefix,  final Type iface,  final boolean unique) {
         if (prefix == null || prefix.length() < 2 || !prefix.endsWith("$")) {
-            throw new InvalidMixinException((IMixinInfo)mixin, String.format("Prefix %s for iface %s is not valid", prefix, iface.toString()));
+            throw new InvalidMixinException((IMixinInfo)mixin,  String.format("Prefix %s for iface %s is not valid",  prefix,  iface.toString()));
         }
         this.mixin = mixin;
         this.prefix = prefix;
@@ -80,12 +80,12 @@ public final class InterfaceInfo
         final String realName = method.name.substring(this.prefix.length());
         final String signature = realName + method.desc;
         if (!this.methods.contains(signature)) {
-            throw new InvalidMixinException((IMixinInfo)this.mixin, String.format("%s does not exist in target interface %s", realName, this.getName()));
+            throw new InvalidMixinException((IMixinInfo)this.mixin,  String.format("%s does not exist in target interface %s",  realName,  this.getName()));
         }
         if ((method.access & 0x1) == 0x0) {
-            throw new InvalidMixinException((IMixinInfo)this.mixin, String.format("%s cannot implement %s because it is not visible", realName, this.getName()));
+            throw new InvalidMixinException((IMixinInfo)this.mixin,  String.format("%s cannot implement %s because it is not visible",  realName,  this.getName()));
         }
-        Annotations.setVisible(method, MixinRenamed.class, "originalName", method.name, "isInterfaceMember", true);
+        Annotations.setVisible(method,  MixinRenamed.class,  "originalName",  method.name,  "isInterfaceMember",  true);
         this.decorateUniqueMethod(method);
         method.name = realName;
         return true;
@@ -95,20 +95,20 @@ public final class InterfaceInfo
         if (!this.unique) {
             return;
         }
-        if (Annotations.getVisible(method, Unique.class) == null) {
-            Annotations.setVisible(method, Unique.class, new Object[0]);
+        if (Annotations.getVisible(method,  Unique.class) == null) {
+            Annotations.setVisible(method,  Unique.class,  new Object[0]);
             this.mixin.getClassInfo().findMethod(method).setUnique(true);
         }
     }
     
-    static InterfaceInfo fromAnnotation(final MixinInfo mixin, final AnnotationNode node) {
-        final String prefix = Annotations.getValue(node, "prefix");
-        final Type iface = Annotations.getValue(node, "iface");
-        final Boolean unique = Annotations.getValue(node, "unique");
+    static InterfaceInfo fromAnnotation(final MixinInfo mixin,  final AnnotationNode node) {
+        final String prefix = Annotations.getValue(node,  "prefix");
+        final Type iface = Annotations.getValue(node,  "iface");
+        final Boolean unique = Annotations.getValue(node,  "unique");
         if (prefix == null || iface == null) {
-            throw new InvalidMixinException((IMixinInfo)mixin, String.format("@Interface annotation on %s is missing a required parameter", mixin));
+            throw new InvalidMixinException((IMixinInfo)mixin,  String.format("@Interface annotation on %s is missing a required parameter",  mixin));
         }
-        return new InterfaceInfo(mixin, prefix, iface, unique != null && unique);
+        return new InterfaceInfo(mixin,  prefix,  iface,  unique != null && unique);
     }
     
     @Override

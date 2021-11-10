@@ -18,9 +18,9 @@ public class MixinKeyBinding
     @Shadow
     public boolean pressed;
     
-    @Inject(method = { "isKeyDown" }, at = { @At("RETURN") }, cancellable = true)
+    @Inject(method = { "isKeyDown" },  at = { @At("RETURN") },  cancellable = true)
     private void isKeyDown(final CallbackInfoReturnable<Boolean> info) {
-        final KeyEvent event = new KeyEvent(0, (boolean)info.getReturnValue(), this.pressed);
+        final KeyEvent event = new KeyEvent(0,  (boolean)info.getReturnValue(),  this.pressed);
         MinecraftForge.EVENT_BUS.post((Event)event);
         info.setReturnValue((Object)event.info);
     }

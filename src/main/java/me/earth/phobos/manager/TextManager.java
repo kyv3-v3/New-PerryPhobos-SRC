@@ -22,45 +22,45 @@ public class TextManager extends Feature
     
     public TextManager() {
         this.idleTimer = new TimerUtil();
-        this.customFont = new CustomFont(new Font("Verdana", 0, 17), true, false);
+        this.customFont = new CustomFont(new Font("Verdana",  0,  17),  true,  false);
         this.updateResolution();
     }
     
     public void init(final boolean startup) {
         final me.earth.phobos.features.modules.client.CustomFont cFont = (me.earth.phobos.features.modules.client.CustomFont)Phobos.moduleManager.getModuleByClass((Class)me.earth.phobos.features.modules.client.CustomFont.class);
         try {
-            this.setFontRenderer(new Font((String)cFont.fontName.getValue(), (int)cFont.fontStyle.getValue(), (int)cFont.fontSize.getValue()), (boolean)cFont.antiAlias.getValue(), (boolean)cFont.fractionalMetrics.getValue());
+            this.setFontRenderer(new Font((String)cFont.fontName.getValue(),  (int)cFont.fontStyle.getValue(),  (int)cFont.fontSize.getValue()),  (boolean)cFont.antiAlias.getValue(),  (boolean)cFont.fractionalMetrics.getValue());
         }
         catch (Exception ex) {}
     }
     
-    public void drawStringWithShadow(final String text, final float x, final float y, final int color) {
-        this.drawString(text, x, y, color, true);
+    public void drawStringWithShadow(final String text,  final float x,  final float y,  final int color) {
+        this.drawString(text,  x,  y,  color,  true);
     }
     
-    public float drawString(final String text, final float x, final float y, final int color, final boolean shadow) {
+    public float drawString(final String text,  final float x,  final float y,  final int color,  final boolean shadow) {
         if (!Phobos.moduleManager.isModuleEnabled((Class)me.earth.phobos.features.modules.client.CustomFont.class)) {
-            return (float)TextManager.mc.fontRenderer.drawString(text, x, y, color, shadow);
+            return (float)TextManager.mc.fontRenderer.drawString(text,  x,  y,  color,  shadow);
         }
         if (shadow) {
-            return this.customFont.drawStringWithShadow(text, (double)x, (double)y, color);
+            return this.customFont.drawStringWithShadow(text,  (double)x,  (double)y,  color);
         }
-        return this.customFont.drawString(text, x, y, color);
+        return this.customFont.drawString(text,  x,  y,  color);
     }
     
-    public void drawRainbowString(final String text, final float x, final float y, final int startColor, final float factor, final boolean shadow) {
+    public void drawRainbowString(final String text,  final float x,  final float y,  final int startColor,  final float factor,  final boolean shadow) {
         Color currentColor = new Color(startColor);
         final float hueIncrement = 1.0f / factor;
         final String[] rainbowStrings = text.split("§.");
-        float currentHue = Color.RGBtoHSB(currentColor.getRed(), currentColor.getGreen(), currentColor.getBlue(), null)[0];
-        final float saturation = Color.RGBtoHSB(currentColor.getRed(), currentColor.getGreen(), currentColor.getBlue(), null)[1];
-        final float brightness = Color.RGBtoHSB(currentColor.getRed(), currentColor.getGreen(), currentColor.getBlue(), null)[2];
+        float currentHue = Color.RGBtoHSB(currentColor.getRed(),  currentColor.getGreen(),  currentColor.getBlue(),  null)[0];
+        final float saturation = Color.RGBtoHSB(currentColor.getRed(),  currentColor.getGreen(),  currentColor.getBlue(),  null)[1];
+        final float brightness = Color.RGBtoHSB(currentColor.getRed(),  currentColor.getGreen(),  currentColor.getBlue(),  null)[2];
         int currentWidth = 0;
         boolean shouldRainbow = true;
         boolean shouldContinue = false;
         for (int i = 0; i < text.length(); ++i) {
             final char currentChar = text.charAt(i);
-            final char nextChar = text.charAt(MathUtil.clamp(i + 1, 0, text.length() - 1));
+            final char nextChar = text.charAt(MathUtil.clamp(i + 1,  0,  text.length() - 1));
             final boolean equals = (String.valueOf(currentChar) + nextChar).equals("§r");
             if (equals) {
                 shouldRainbow = false;
@@ -74,16 +74,16 @@ public class TextManager extends Feature
             else {
                 if (equals) {
                     final String escapeString = text.substring(i);
-                    this.drawString(escapeString, x + currentWidth, y, Color.WHITE.getRGB(), shadow);
+                    this.drawString(escapeString,  x + currentWidth,  y,  Color.WHITE.getRGB(),  shadow);
                     break;
                 }
-                this.drawString(String.valueOf(currentChar).equals("§") ? "" : String.valueOf(currentChar), x + currentWidth, y, shouldRainbow ? currentColor.getRGB() : Color.WHITE.getRGB(), shadow);
+                this.drawString(String.valueOf(currentChar).equals("§") ? "" : String.valueOf(currentChar),  x + currentWidth,  y,  shouldRainbow ? currentColor.getRGB() : Color.WHITE.getRGB(),  shadow);
                 if (String.valueOf(currentChar).equals("§")) {
                     shouldContinue = true;
                 }
                 currentWidth += this.getStringWidth(String.valueOf(currentChar));
                 if (!String.valueOf(currentChar).equals(" ")) {
-                    currentColor = new Color(Color.HSBtoRGB(currentHue, saturation, brightness));
+                    currentColor = new Color(Color.HSBtoRGB(currentHue,  saturation,  brightness));
                     currentHue += hueIncrement;
                 }
             }
@@ -105,8 +105,8 @@ public class TextManager extends Feature
         return TextManager.mc.fontRenderer.FONT_HEIGHT;
     }
     
-    public void setFontRenderer(final Font font, final boolean antiAlias, final boolean fractionalMetrics) {
-        this.customFont = new CustomFont(font, antiAlias, fractionalMetrics);
+    public void setFontRenderer(final Font font,  final boolean antiAlias,  final boolean fractionalMetrics) {
+        this.customFont = new CustomFont(font,  antiAlias,  fractionalMetrics);
     }
     
     public Font getCurrentFont() {

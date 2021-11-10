@@ -49,14 +49,14 @@ public class SourceInterpreter extends Interpreter<SourceValue> implements Opcod
                 break;
             }
         }
-        return new SourceValue(size, insn);
+        return new SourceValue(size,  insn);
     }
     
-    public SourceValue copyOperation(final AbstractInsnNode insn, final SourceValue value) {
-        return new SourceValue(value.getSize(), insn);
+    public SourceValue copyOperation(final AbstractInsnNode insn,  final SourceValue value) {
+        return new SourceValue(value.getSize(),  insn);
     }
     
-    public SourceValue unaryOperation(final AbstractInsnNode insn, final SourceValue value) {
+    public SourceValue unaryOperation(final AbstractInsnNode insn,  final SourceValue value) {
         int size = 0;
         switch (insn.getOpcode()) {
             case 117:
@@ -79,10 +79,10 @@ public class SourceInterpreter extends Interpreter<SourceValue> implements Opcod
                 break;
             }
         }
-        return new SourceValue(size, insn);
+        return new SourceValue(size,  insn);
     }
     
-    public SourceValue binaryOperation(final AbstractInsnNode insn, final SourceValue value1, final SourceValue value2) {
+    public SourceValue binaryOperation(final AbstractInsnNode insn,  final SourceValue value1,  final SourceValue value2) {
         int size = 0;
         switch (insn.getOpcode()) {
             case 47:
@@ -111,14 +111,14 @@ public class SourceInterpreter extends Interpreter<SourceValue> implements Opcod
                 break;
             }
         }
-        return new SourceValue(size, insn);
+        return new SourceValue(size,  insn);
     }
     
-    public SourceValue ternaryOperation(final AbstractInsnNode insn, final SourceValue value1, final SourceValue value2, final SourceValue value3) {
-        return new SourceValue(1, insn);
+    public SourceValue ternaryOperation(final AbstractInsnNode insn,  final SourceValue value1,  final SourceValue value2,  final SourceValue value3) {
+        return new SourceValue(1,  insn);
     }
     
-    public SourceValue naryOperation(final AbstractInsnNode insn, final List<? extends SourceValue> values) {
+    public SourceValue naryOperation(final AbstractInsnNode insn,  final List<? extends SourceValue> values) {
         final int opcode = insn.getOpcode();
         int size;
         if (opcode == 197) {
@@ -128,26 +128,26 @@ public class SourceInterpreter extends Interpreter<SourceValue> implements Opcod
             final String desc = (opcode == 186) ? ((InvokeDynamicInsnNode)insn).desc : ((MethodInsnNode)insn).desc;
             size = Type.getReturnType(desc).getSize();
         }
-        return new SourceValue(size, insn);
+        return new SourceValue(size,  insn);
     }
     
-    public void returnOperation(final AbstractInsnNode insn, final SourceValue value, final SourceValue expected) {
+    public void returnOperation(final AbstractInsnNode insn,  final SourceValue value,  final SourceValue expected) {
     }
     
-    public SourceValue merge(final SourceValue d, final SourceValue w) {
+    public SourceValue merge(final SourceValue d,  final SourceValue w) {
         if (d.insns instanceof SmallSet && w.insns instanceof SmallSet) {
             final Set<AbstractInsnNode> s = (Set<AbstractInsnNode>)((SmallSet)d.insns).union((SmallSet)w.insns);
             if (s == d.insns && d.size == w.size) {
                 return d;
             }
-            return new SourceValue(Math.min(d.size, w.size), s);
+            return new SourceValue(Math.min(d.size,  w.size),  s);
         }
         else {
             if (d.size != w.size || !d.insns.containsAll(w.insns)) {
                 final HashSet<AbstractInsnNode> s2 = new HashSet<AbstractInsnNode>();
                 s2.addAll((Collection<?>)d.insns);
                 s2.addAll((Collection<?>)w.insns);
-                return new SourceValue(Math.min(d.size, w.size), s2);
+                return new SourceValue(Math.min(d.size,  w.size),  s2);
             }
             return d;
         }

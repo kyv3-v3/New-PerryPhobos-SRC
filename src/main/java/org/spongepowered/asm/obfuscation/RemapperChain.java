@@ -17,7 +17,7 @@ public class RemapperChain implements IRemapper
     
     @Override
     public String toString() {
-        return String.format("RemapperChain[%d]", this.remappers.size());
+        return String.format("RemapperChain[%d]",  this.remappers.size());
     }
     
     public RemapperChain add(final IRemapper remapper) {
@@ -25,9 +25,9 @@ public class RemapperChain implements IRemapper
         return this;
     }
     
-    public String mapMethodName(final String owner, String name, final String desc) {
+    public String mapMethodName(final String owner,  String name,  final String desc) {
         for (final IRemapper remapper : this.remappers) {
-            final String newName = remapper.mapMethodName(owner, name, desc);
+            final String newName = remapper.mapMethodName(owner,  name,  desc);
             if (newName != null && !newName.equals(name)) {
                 name = newName;
             }
@@ -35,9 +35,9 @@ public class RemapperChain implements IRemapper
         return name;
     }
     
-    public String mapFieldName(final String owner, String name, final String desc) {
+    public String mapFieldName(final String owner,  String name,  final String desc) {
         for (final IRemapper remapper : this.remappers) {
-            final String newName = remapper.mapFieldName(owner, name, desc);
+            final String newName = remapper.mapFieldName(owner,  name,  desc);
             if (newName != null && !newName.equals(name)) {
                 name = newName;
             }

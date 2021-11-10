@@ -13,8 +13,8 @@ public class ItemPhysics extends Module
     public final Setting<Float> Scaling;
     
     public ItemPhysics() {
-        super("ItemPhysics", "Apply physics to items.", Module.Category.RENDER, false, false, false);
-        this.Scaling = (Setting<Float>)this.register(new Setting("Scaling", (T)0.5f, (T)0.0f, (T)10.0f));
+        super("ItemPhysics",  "Apply physics to items.",  Module.Category.RENDER,  false,  false,  false);
+        this.Scaling = (Setting<Float>)this.register(new Setting("Scaling", 0.5f, 0.0f, 10.0f));
         this.setInstance();
     }
     

@@ -16,7 +16,7 @@ public abstract class MixinPlatformAgentAbstract implements IMixinPlatformAgent
     protected final File container;
     protected final MainAttributes attributes;
     
-    public MixinPlatformAgentAbstract(final MixinPlatformManager manager, final URI uri) {
+    public MixinPlatformAgentAbstract(final MixinPlatformManager manager,  final URI uri) {
         this.manager = manager;
         this.uri = uri;
         this.container = ((this.uri != null) ? new File(this.uri) : null);
@@ -25,7 +25,7 @@ public abstract class MixinPlatformAgentAbstract implements IMixinPlatformAgent
     
     @Override
     public String toString() {
-        return String.format("PlatformAgent[%s:%s]", this.getClass().getSimpleName(), this.uri);
+        return String.format("PlatformAgent[%s:%s]",  this.getClass().getSimpleName(),  this.uri);
     }
     
     public String getPhaseProvider() {

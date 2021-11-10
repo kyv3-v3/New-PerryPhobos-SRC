@@ -15,17 +15,17 @@ final class LaunchClassLoaderUtil
     private static final String CLASS_LOADER_EXCEPTIONS_FIELD = "classLoaderExceptions";
     private static final String TRANSFORMER_EXCEPTIONS_FIELD = "transformerExceptions";
     private final LaunchClassLoader classLoader;
-    private final Map<String, Class<?>> cachedClasses;
+    private final Map<String,  Class<?>> cachedClasses;
     private final Set<String> invalidClasses;
     private final Set<String> classLoaderExceptions;
     private final Set<String> transformerExceptions;
     
     LaunchClassLoaderUtil(final LaunchClassLoader classLoader) {
         this.classLoader = classLoader;
-        this.cachedClasses = getField(classLoader, "cachedClasses");
-        this.invalidClasses = getField(classLoader, "invalidClasses");
-        this.classLoaderExceptions = getField(classLoader, "classLoaderExceptions");
-        this.transformerExceptions = getField(classLoader, "transformerExceptions");
+        this.cachedClasses = getField(classLoader,  "cachedClasses");
+        this.invalidClasses = getField(classLoader,  "invalidClasses");
+        this.classLoaderExceptions = getField(classLoader,  "classLoaderExceptions");
+        this.transformerExceptions = getField(classLoader,  "transformerExceptions");
     }
     
     LaunchClassLoader getClassLoader() {
@@ -36,11 +36,11 @@ final class LaunchClassLoaderUtil
         return this.cachedClasses.containsKey(name);
     }
     
-    boolean isClassExcluded(final String name, final String transformedName) {
-        return this.isClassClassLoaderExcluded(name, transformedName) || this.isClassTransformerExcluded(name, transformedName);
+    boolean isClassExcluded(final String name,  final String transformedName) {
+        return this.isClassClassLoaderExcluded(name,  transformedName) || this.isClassTransformerExcluded(name,  transformedName);
     }
     
-    boolean isClassClassLoaderExcluded(final String name, final String transformedName) {
+    boolean isClassClassLoaderExcluded(final String name,  final String transformedName) {
         for (final String exception : this.getClassLoaderExceptions()) {
             if ((transformedName != null && transformedName.startsWith(exception)) || name.startsWith(exception)) {
                 return true;
@@ -49,7 +49,7 @@ final class LaunchClassLoaderUtil
         return false;
     }
     
-    boolean isClassTransformerExcluded(final String name, final String transformedName) {
+    boolean isClassTransformerExcluded(final String name,  final String transformedName) {
         for (final String exception : this.getTransformerExceptions()) {
             if ((transformedName != null && transformedName.startsWith(exception)) || name.startsWith(exception)) {
                 return true;
@@ -78,7 +78,7 @@ final class LaunchClassLoaderUtil
         return Collections.emptySet();
     }
     
-    private static <T> T getField(final LaunchClassLoader classLoader, final String fieldName) {
+    private static <T> T getField(final LaunchClassLoader classLoader,  final String fieldName) {
         try {
             final Field field = LaunchClassLoader.class.getDeclaredField(fieldName);
             field.setAccessible(true);

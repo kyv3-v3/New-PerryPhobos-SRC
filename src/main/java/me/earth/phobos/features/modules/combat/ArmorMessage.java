@@ -21,14 +21,14 @@ public class ArmorMessage extends Module
     private final Setting<Integer> armorThreshhold;
     private final Setting<Boolean> notifySelf;
     private final Setting<Boolean> notification;
-    private final Map<EntityPlayer, Integer> entityArmorArraylist;
+    private final Map<EntityPlayer,  Integer> entityArmorArraylist;
     
     public ArmorMessage() {
-        super("ArmorMessage", "Message friends/urself when their armor is low.", Category.COMBAT, true, false, false);
-        this.armorThreshhold = (Setting<Integer>)this.register(new Setting("Armor%", (T)20, (T)1, (T)100));
-        this.notifySelf = (Setting<Boolean>)this.register(new Setting("NotifySelf", (T)true));
-        this.notification = (Setting<Boolean>)this.register(new Setting("Notification", (T)true));
-        this.entityArmorArraylist = new HashMap<EntityPlayer, Integer>();
+        super("ArmorMessage",  "Message friends/urself when their armor is low.",  Category.COMBAT,  true,  false,  false);
+        this.armorThreshhold = (Setting<Integer>)this.register(new Setting("Armor%", 20, 1, 100));
+        this.notifySelf = (Setting<Boolean>)this.register(new Setting("NotifySelf", true));
+        this.notification = (Setting<Boolean>)this.register(new Setting("Notification", true));
+        this.entityArmorArraylist = new HashMap<EntityPlayer,  Integer>();
     }
     
     @SubscribeEvent
@@ -45,12 +45,12 @@ public class ArmorMessage extends Module
                     final int percent = DamageUtil.getRoundedDamage(stack);
                     if (percent <= this.armorThreshhold.getValue() && !this.entityArmorArraylist.containsKey(player)) {
                         if (player == ArmorMessage.mc.player && this.notifySelf.getValue()) {
-                            Command.sendMessage(player.getName() + " watchout your " + this.getArmorPieceName(stack) + " low dura!", (boolean)this.notification.getValue());
+                            Command.sendMessage(player.getName() + " watchout your " + this.getArmorPieceName(stack) + " low dura!",  (boolean)this.notification.getValue());
                         }
                         else {
                             ArmorMessage.mc.player.sendChatMessage("/msg " + player.getName() + " " + player.getName() + " watchout your " + this.getArmorPieceName(stack) + " low dura!");
                         }
-                        this.entityArmorArraylist.put(player, player.inventory.armorInventory.indexOf((Object)stack));
+                        this.entityArmorArraylist.put(player,  player.inventory.armorInventory.indexOf((Object)stack));
                     }
                     if (!this.entityArmorArraylist.containsKey(player) || this.entityArmorArraylist.get(player) != player.inventory.armorInventory.indexOf((Object)stack)) {
                         continue;

@@ -32,36 +32,36 @@ public class StringButton extends Button
     public static String removeLastChar(final String str) {
         String output = "";
         if (str != null && str.length() > 0) {
-            output = str.substring(0, str.length() - 1);
+            output = str.substring(0,  str.length() - 1);
         }
         return output;
     }
     
-    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
+    public void drawScreen(final int mouseX,  final int mouseY,  final float partialTicks) {
         if (ClickGui.getInstance().rainbowRolling.getValue()) {
-            final int color = ColorUtil.changeAlpha(HUD.getInstance().colorMap.get(MathUtil.clamp((int)this.y, 0, this.renderer.scaledHeight)), Phobos.moduleManager.getModuleByClass(ClickGui.class).hoverAlpha.getValue());
-            final int color2 = ColorUtil.changeAlpha(HUD.getInstance().colorMap.get(MathUtil.clamp((int)this.y + this.height, 0, this.renderer.scaledHeight)), Phobos.moduleManager.getModuleByClass(ClickGui.class).hoverAlpha.getValue());
-            RenderUtil.drawGradientRect(this.x, this.y, this.width + 7.4f, this.height - 0.5f, this.getState() ? (this.isHovering(mouseX, mouseY) ? color : HUD.getInstance().colorMap.get(MathUtil.clamp((int)this.y, 0, this.renderer.scaledHeight))) : (this.isHovering(mouseX, mouseY) ? -2007673515 : 290805077), this.getState() ? (this.isHovering(mouseX, mouseY) ? color2 : HUD.getInstance().colorMap.get(MathUtil.clamp((int)this.y + this.height, 0, this.renderer.scaledHeight))) : (this.isHovering(mouseX, mouseY) ? -2007673515 : 290805077));
+            final int color = ColorUtil.changeAlpha(HUD.getInstance().colorMap.get(MathUtil.clamp((int)this.y,  0,  this.renderer.scaledHeight)),  Phobos.moduleManager.getModuleByClass(ClickGui.class).hoverAlpha.getValue());
+            final int color2 = ColorUtil.changeAlpha(HUD.getInstance().colorMap.get(MathUtil.clamp((int)this.y + this.height,  0,  this.renderer.scaledHeight)),  Phobos.moduleManager.getModuleByClass(ClickGui.class).hoverAlpha.getValue());
+            RenderUtil.drawGradientRect(this.x,  this.y,  this.width + 7.4f,  this.height - 0.5f,  this.getState() ? (this.isHovering(mouseX,  mouseY) ? color : HUD.getInstance().colorMap.get(MathUtil.clamp((int)this.y,  0,  this.renderer.scaledHeight))) : (this.isHovering(mouseX,  mouseY) ? -2007673515 : 290805077),  this.getState() ? (this.isHovering(mouseX,  mouseY) ? color2 : HUD.getInstance().colorMap.get(MathUtil.clamp((int)this.y + this.height,  0,  this.renderer.scaledHeight))) : (this.isHovering(mouseX,  mouseY) ? -2007673515 : 290805077));
         }
         else {
-            RenderUtil.drawRect(this.x, this.y, this.x + this.width + 7.4f, this.y + this.height - 0.5f, this.getState() ? (this.isHovering(mouseX, mouseY) ? Phobos.colorManager.getColorWithAlpha(Phobos.moduleManager.getModuleByClass(ClickGui.class).alpha.getValue()) : Phobos.colorManager.getColorWithAlpha(Phobos.moduleManager.getModuleByClass(ClickGui.class).hoverAlpha.getValue())) : (this.isHovering(mouseX, mouseY) ? -2007673515 : 290805077));
+            RenderUtil.drawRect(this.x,  this.y,  this.x + this.width + 7.4f,  this.y + this.height - 0.5f,  this.getState() ? (this.isHovering(mouseX,  mouseY) ? Phobos.colorManager.getColorWithAlpha(Phobos.moduleManager.getModuleByClass(ClickGui.class).alpha.getValue()) : Phobos.colorManager.getColorWithAlpha(Phobos.moduleManager.getModuleByClass(ClickGui.class).hoverAlpha.getValue())) : (this.isHovering(mouseX,  mouseY) ? -2007673515 : 290805077));
         }
         if (this.isListening) {
-            Phobos.textManager.drawStringWithShadow(this.currentString.getString() + Phobos.textManager.getIdleSign(), this.x + 2.3f, this.y - 1.7f - PhobosGui.getClickGui().getTextOffset(), this.getState() ? -1 : -5592406);
+            Phobos.textManager.drawStringWithShadow(this.currentString.getString() + Phobos.textManager.getIdleSign(),  this.x + 2.3f,  this.y - 1.7f - PhobosGui.getClickGui().getTextOffset(),  this.getState() ? -1 : -5592406);
         }
         else {
-            Phobos.textManager.drawStringWithShadow((this.setting.shouldRenderName() ? (this.setting.getName() + " §7") : "") + this.setting.getValue(), this.x + 2.3f, this.y - 1.7f - PhobosGui.getClickGui().getTextOffset(), this.getState() ? -1 : -5592406);
+            Phobos.textManager.drawStringWithShadow((this.setting.shouldRenderName() ? (this.setting.getName() + " §7") : "") + this.setting.getValue(),  this.x + 2.3f,  this.y - 1.7f - PhobosGui.getClickGui().getTextOffset(),  this.getState() ? -1 : -5592406);
         }
     }
     
-    public void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
-        if (this.isHovering(mouseX, mouseY)) {
-            StringButton.mc.getSoundHandler().playSound((ISound)PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0f));
+    public void mouseClicked(final int mouseX,  final int mouseY,  final int mouseButton) {
+        super.mouseClicked(mouseX,  mouseY,  mouseButton);
+        if (this.isHovering(mouseX,  mouseY)) {
+            StringButton.mc.getSoundHandler().playSound((ISound)PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK,  1.0f));
         }
     }
     
-    public void onKeyTyped(final char typedChar, final int keyCode) {
+    public void onKeyTyped(final char typedChar,  final int keyCode) {
         if (this.isListening) {
             if (keyCode == 1) {
                 return;

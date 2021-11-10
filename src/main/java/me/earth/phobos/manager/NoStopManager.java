@@ -31,7 +31,7 @@ public class NoStopManager extends Feature
         if (this.running && this.pos != null) {
             final BlockPos currentPos = NoStopManager.mc.player.getPosition();
             if (currentPos.equals((Object)this.pos)) {
-                BlockUtil.debugPos("<Baritone> Arrived at Position: ", this.pos);
+                BlockUtil.debugPos("<Baritone> Arrived at Position: ",  this.pos);
                 this.running = false;
                 return;
             }
@@ -61,8 +61,8 @@ public class NoStopManager extends Feature
         NoStopManager.mc.player.sendChatMessage(this.prefix + "goto " + this.pos.getX() + " " + this.pos.getY() + " " + this.pos.getZ());
     }
     
-    public void start(final int x, final int y, final int z) {
-        this.pos = new BlockPos(x, y, z);
+    public void start(final int x,  final int y,  final int z) {
+        this.pos = new BlockPos(x,  y,  z);
         this.sentMessage = false;
         this.running = true;
     }

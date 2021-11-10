@@ -15,16 +15,16 @@ public class MethodHandle extends MemberHandle<MappingMethod>
     private final ExecutableElement element;
     private final TypeHandle ownerHandle;
     
-    public MethodHandle(final TypeHandle owner, final ExecutableElement element) {
-        this(owner, element, TypeUtils.getName(element), TypeUtils.getDescriptor(element));
+    public MethodHandle(final TypeHandle owner,  final ExecutableElement element) {
+        this(owner,  element,  TypeUtils.getName(element),  TypeUtils.getDescriptor(element));
     }
     
-    public MethodHandle(final TypeHandle owner, final String name, final String desc) {
-        this(owner, null, name, desc);
+    public MethodHandle(final TypeHandle owner,  final String name,  final String desc) {
+        this(owner,  null,  name,  desc);
     }
     
-    private MethodHandle(final TypeHandle owner, final ExecutableElement element, final String name, final String desc) {
-        super((owner != null) ? owner.getName() : null, name, desc);
+    private MethodHandle(final TypeHandle owner,  final ExecutableElement element,  final String name,  final String desc) {
+        super((owner != null) ? owner.getName() : null,  name,  desc);
         this.element = element;
         this.ownerHandle = owner;
     }
@@ -43,18 +43,18 @@ public class MethodHandle extends MemberHandle<MappingMethod>
     
     public MappingMethod asMapping(final boolean includeOwner) {
         if (!includeOwner) {
-            return new MappingMethod((String)null, this.getName(), this.getDesc());
+            return new MappingMethod((String)null,  this.getName(),  this.getDesc());
         }
         if (this.ownerHandle != null) {
-            return (MappingMethod)new ResolvableMappingMethod(this.ownerHandle, this.getName(), this.getDesc());
+            return (MappingMethod)new ResolvableMappingMethod(this.ownerHandle,  this.getName(),  this.getDesc());
         }
-        return new MappingMethod(this.getOwner(), this.getName(), this.getDesc());
+        return new MappingMethod(this.getOwner(),  this.getName(),  this.getDesc());
     }
     
     public String toString() {
         final String owner = (this.getOwner() != null) ? ("L" + this.getOwner() + ";") : "";
         final String name = Strings.nullToEmpty(this.getName());
         final String desc = Strings.nullToEmpty(this.getDesc());
-        return String.format("%s%s%s", owner, name, desc);
+        return String.format("%s%s%s",  owner,  name,  desc);
     }
 }

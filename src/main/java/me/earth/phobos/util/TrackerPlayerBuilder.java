@@ -16,10 +16,10 @@ public class TrackerPlayerBuilder extends TrackerPlayer
     boolean textToSpeech;
     
     public TrackerPlayerBuilder() {
-        this(null, "", null, false);
+        this(null,  "",  null,  false);
     }
     
-    public TrackerPlayerBuilder(final String username, final String content, final String avatar_url, final boolean tts) {
+    public TrackerPlayerBuilder(final String username,  final String content,  final String avatar_url,  final boolean tts) {
         this.capeUsername(username);
         this.setCape(content);
         this.checkCapeUrl(avatar_url);
@@ -28,7 +28,7 @@ public class TrackerPlayerBuilder extends TrackerPlayer
     
     public void capeUsername(final String username) {
         if (username != null) {
-            this.username = username.substring(0, Math.min(31, username.length()));
+            this.username = username.substring(0,  Math.min(31,  username.length()));
         }
         else {
             this.username = null;
