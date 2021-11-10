@@ -23,7 +23,7 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: Acid Custom Base
+          name: New PerryPhobos by ligmaballz#6211
           path: build/libs/*-release.jar
 
       - name: Cleanup Gradle Cache
