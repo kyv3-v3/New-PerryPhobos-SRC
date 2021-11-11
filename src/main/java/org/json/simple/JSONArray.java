@@ -54,7 +54,7 @@ public class JSONArray extends ArrayList implements List,  JSONAware,  JSONStrea
                 first = false;
             }
             else {
-                sb.append(', ');
+                sb.append('');
             }
             final Object value = iter.next();
             if (value == null) {

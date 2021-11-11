@@ -60,7 +60,7 @@ public class JSONObject extends HashMap implements Map,  JSONAware,  JSONStreamA
                 first = false;
             }
             else {
-                sb.append(', ');
+                sb.append('');
             }
             final Entry entry = iter.next();
             toJSONString(String.valueOf(entry.getKey()),  entry.getValue(),  sb);
