@@ -57,7 +57,7 @@ public class ObfuscationData<T> implements Iterable<ObfuscationType>
         boolean delim = false;
         for (final ObfuscationType type : this.data.keySet()) {
             if (delim) {
-                sb.append(', ');
+                sb.append('T');
             }
             sb.append(type.getKey()).append('=').append(this.data.get(type));
             delim = true;
