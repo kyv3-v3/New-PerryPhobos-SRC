@@ -63,7 +63,7 @@ public class ArrowESP extends Module
                 pos = this.entityListener.getEntityLowerBounds().get(entity);
                 if (pos != null && !this.isOnScreen(pos) && (!RenderUtil.isInViewFrustrum((Entity)entity) || !this.offscreenOnly.getValue())) {
                     if (this.colorSync.getValue()) {
-                        // new(java.awt.Color.class)
+                        //new(java.awt.Color.class)
                         new Color(Colors.INSTANCE.getCurrentColor().getRed(),  Colors.INSTANCE.getCurrentColor().getGreen(),  Colors.INSTANCE.getCurrentColor().getBlue(),  (int)MathHelper.clamp(255.0f - 255.0f / this.fadeDistance.getValue() * ArrowESP.mc.player.getDistance((Entity)entity),  100.0f,  255.0f));
                     }
                     else {

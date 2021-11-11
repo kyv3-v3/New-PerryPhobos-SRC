@@ -19,7 +19,7 @@ public class MixinInitialisationError extends Error
         super(cause);
     }
     
-    public MixinInitialisationError(final String message,  final Throwable cause) {
-        super(message,  cause);
+    public MixinInitialisationError(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }

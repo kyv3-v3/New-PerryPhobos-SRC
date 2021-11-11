@@ -4,10 +4,15 @@
 
 package org.spongepowered.tools.obfuscation.service;
 
-import org.spongepowered.tools.obfuscation.interfaces.*;
-import org.spongepowered.tools.obfuscation.*;
-import javax.tools.*;
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.ServiceConfigurationError;
+import javax.tools.Diagnostic;
+import org.spongepowered.tools.obfuscation.ObfuscationType;
+import org.spongepowered.tools.obfuscation.interfaces.IMixinAnnotationProcessor;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.ServiceLoader;
 
 public final class ObfuscationServices
 {
@@ -17,7 +22,7 @@ public final class ObfuscationServices
     
     private ObfuscationServices() {
         this.services = new HashSet<IObfuscationService>();
-        this.serviceLoader = ServiceLoader.load(IObfuscationService.class,  this.getClass().getClassLoader());
+        this.serviceLoader = ServiceLoader.load(IObfuscationService.class, this.getClass().getClassLoader());
     }
     
     public static ObfuscationServices getInstance() {
@@ -33,14 +38,14 @@ public final class ObfuscationServices
                 if (!this.services.contains(service)) {
                     this.services.add(service);
                     final String serviceName = service.getClass().getSimpleName();
-                    final Collection<ObfuscationTypeDescriptor> obfTypes = (Collection<ObfuscationTypeDescriptor>)service.getObfuscationTypes();
+                    final Collection<ObfuscationTypeDescriptor> obfTypes = service.getObfuscationTypes();
                     if (obfTypes == null) {
                         continue;
                     }
                     for (final ObfuscationTypeDescriptor obfType : obfTypes) {
                         try {
-                            final ObfuscationType type = ObfuscationType.create(obfType,  ap);
-                            ap.printMessage(Diagnostic.Kind.NOTE,  (CharSequence)(serviceName + " supports type: \"" + type + "\""));
+                            final ObfuscationType type = ObfuscationType.create(obfType, ap);
+                            ap.printMessage(Diagnostic.Kind.NOTE, serviceName + " supports type: \"" + type + "\"");
                         }
                         catch (Exception ex) {
                             ex.printStackTrace();
@@ -50,7 +55,7 @@ public final class ObfuscationServices
             }
         }
         catch (ServiceConfigurationError serviceError) {
-            ap.printMessage(Diagnostic.Kind.ERROR,  (CharSequence)(serviceError.getClass().getSimpleName() + ": " + serviceError.getMessage()));
+            ap.printMessage(Diagnostic.Kind.ERROR, serviceError.getClass().getSimpleName() + ": " + serviceError.getMessage());
             serviceError.printStackTrace();
         }
     }
@@ -58,7 +63,7 @@ public final class ObfuscationServices
     public Set<String> getSupportedOptions() {
         final Set<String> supportedOptions = new HashSet<String>();
         for (final IObfuscationService provider : this.serviceLoader) {
-            final Set<String> options = (Set<String>)provider.getSupportedOptions();
+            final Set<String> options = provider.getSupportedOptions();
             if (options != null) {
                 supportedOptions.addAll(options);
             }

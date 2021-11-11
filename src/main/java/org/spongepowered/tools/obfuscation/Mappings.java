@@ -4,47 +4,53 @@
 
 package org.spongepowered.tools.obfuscation;
 
-import org.spongepowered.tools.obfuscation.mapping.*;
-import org.spongepowered.asm.obfuscation.mapping.common.*;
-import java.util.*;
-import org.spongepowered.asm.obfuscation.mapping.*;
+import org.spongepowered.asm.obfuscation.mapping.IMapping;
+import java.util.Iterator;
+import java.util.HashMap;
+import org.spongepowered.asm.obfuscation.mapping.common.MappingMethod;
+import org.spongepowered.asm.obfuscation.mapping.common.MappingField;
+import java.util.Map;
+import org.spongepowered.tools.obfuscation.mapping.IMappingConsumer;
 
 class Mappings implements IMappingConsumer
 {
-    private final Map<ObfuscationType,  IMappingConsumer.MappingSet<MappingField>> fieldMappings;
-    private final Map<ObfuscationType,  IMappingConsumer.MappingSet<MappingMethod>> methodMappings;
+    private final Map<ObfuscationType, MappingSet<MappingField>> fieldMappings;
+    private final Map<ObfuscationType, MappingSet<MappingMethod>> methodMappings;
     private UniqueMappings unique;
     
     public Mappings() {
-        this.fieldMappings = new HashMap<ObfuscationType,  IMappingConsumer.MappingSet<MappingField>>();
-        this.methodMappings = new HashMap<ObfuscationType,  IMappingConsumer.MappingSet<MappingMethod>>();
+        this.fieldMappings = new HashMap<ObfuscationType, MappingSet<MappingField>>();
+        this.methodMappings = new HashMap<ObfuscationType, MappingSet<MappingMethod>>();
         this.init();
     }
     
     private void init() {
         for (final ObfuscationType obfType : ObfuscationType.types()) {
-            this.fieldMappings.put(obfType,  (IMappingConsumer.MappingSet<MappingField>)new IMappingConsumer.MappingSet());
-            this.methodMappings.put(obfType,  (IMappingConsumer.MappingSet<MappingMethod>)new IMappingConsumer.MappingSet());
+            this.fieldMappings.put(obfType, new MappingSet<MappingField>());
+            this.methodMappings.put(obfType, new MappingSet<MappingMethod>());
         }
     }
     
     public IMappingConsumer asUnique() {
         if (this.unique == null) {
-            this.unique = new UniqueMappings((IMappingConsumer)this);
+            this.unique = new UniqueMappings(this);
         }
-        return (IMappingConsumer)this.unique;
+        return this.unique;
     }
     
-    public IMappingConsumer.MappingSet<MappingField> getFieldMappings(final ObfuscationType type) {
-        final IMappingConsumer.MappingSet<MappingField> mappings = this.fieldMappings.get(type);
-        return (IMappingConsumer.MappingSet<MappingField>)((mappings != null) ? mappings : new IMappingConsumer.MappingSet());
+    @Override
+    public MappingSet<MappingField> getFieldMappings(final ObfuscationType type) {
+        final MappingSet<MappingField> mappings = this.fieldMappings.get(type);
+        return (mappings != null) ? mappings : new MappingSet<MappingField>();
     }
     
-    public IMappingConsumer.MappingSet<MappingMethod> getMethodMappings(final ObfuscationType type) {
-        final IMappingConsumer.MappingSet<MappingMethod> mappings = this.methodMappings.get(type);
-        return (IMappingConsumer.MappingSet<MappingMethod>)((mappings != null) ? mappings : new IMappingConsumer.MappingSet());
+    @Override
+    public MappingSet<MappingMethod> getMethodMappings(final ObfuscationType type) {
+        final MappingSet<MappingMethod> mappings = this.methodMappings.get(type);
+        return (mappings != null) ? mappings : new MappingSet<MappingMethod>();
     }
     
+    @Override
     public void clear() {
         this.fieldMappings.clear();
         this.methodMappings.clear();
@@ -54,22 +60,24 @@ class Mappings implements IMappingConsumer
         this.init();
     }
     
-    public void addFieldMapping(final ObfuscationType type,  final MappingField from,  final MappingField to) {
-        IMappingConsumer.MappingSet<MappingField> mappings = this.fieldMappings.get(type);
+    @Override
+    public void addFieldMapping(final ObfuscationType type, final MappingField from, final MappingField to) {
+        MappingSet<MappingField> mappings = this.fieldMappings.get(type);
         if (mappings == null) {
-            mappings = (IMappingConsumer.MappingSet<MappingField>)new IMappingConsumer.MappingSet();
-            this.fieldMappings.put(type,  mappings);
+            mappings = new MappingSet<MappingField>();
+            this.fieldMappings.put(type, mappings);
         }
-        mappings.add((Object)new IMappingConsumer.MappingSet.Pair((IMapping)from,  (IMapping)to));
+        mappings.add(new MappingSet.Pair<MappingField>(from, to));
     }
     
-    public void addMethodMapping(final ObfuscationType type,  final MappingMethod from,  final MappingMethod to) {
-        IMappingConsumer.MappingSet<MappingMethod> mappings = this.methodMappings.get(type);
+    @Override
+    public void addMethodMapping(final ObfuscationType type, final MappingMethod from, final MappingMethod to) {
+        MappingSet<MappingMethod> mappings = this.methodMappings.get(type);
         if (mappings == null) {
-            mappings = (IMappingConsumer.MappingSet<MappingMethod>)new IMappingConsumer.MappingSet();
-            this.methodMappings.put(type,  mappings);
+            mappings = new MappingSet<MappingMethod>();
+            this.methodMappings.put(type, mappings);
         }
-        mappings.add((Object)new IMappingConsumer.MappingSet.Pair((IMapping)from,  (IMapping)to));
+        mappings.add(new MappingSet.Pair<MappingMethod>(from, to));
     }
     
     public static class MappingConflictException extends RuntimeException
@@ -78,7 +86,7 @@ class Mappings implements IMappingConsumer
         private final IMapping<?> oldMapping;
         private final IMapping<?> newMapping;
         
-        public MappingConflictException(final IMapping<?> oldMapping,  final IMapping<?> newMapping) {
+        public MappingConflictException(final IMapping<?> oldMapping, final IMapping<?> newMapping) {
             this.oldMapping = oldMapping;
             this.newMapping = newMapping;
         }
@@ -95,15 +103,16 @@ class Mappings implements IMappingConsumer
     static class UniqueMappings implements IMappingConsumer
     {
         private final IMappingConsumer mappings;
-        private final Map<ObfuscationType,  Map<MappingField,  MappingField>> fields;
-        private final Map<ObfuscationType,  Map<MappingMethod,  MappingMethod>> methods;
+        private final Map<ObfuscationType, Map<MappingField, MappingField>> fields;
+        private final Map<ObfuscationType, Map<MappingMethod, MappingMethod>> methods;
         
         public UniqueMappings(final IMappingConsumer mappings) {
-            this.fields = new HashMap<ObfuscationType,  Map<MappingField,  MappingField>>();
-            this.methods = new HashMap<ObfuscationType,  Map<MappingMethod,  MappingMethod>>();
+            this.fields = new HashMap<ObfuscationType, Map<MappingField, MappingField>>();
+            this.methods = new HashMap<ObfuscationType, Map<MappingMethod, MappingMethod>>();
             this.mappings = mappings;
         }
         
+        @Override
         public void clear() {
             this.clearMaps();
             this.mappings.clear();
@@ -114,41 +123,45 @@ class Mappings implements IMappingConsumer
             this.methods.clear();
         }
         
-        public void addFieldMapping(final ObfuscationType type,  final MappingField from,  final MappingField to) {
-            if (!this.checkForExistingMapping(type,  from,  to,  this.fields)) {
-                this.mappings.addFieldMapping(type,  from,  to);
+        @Override
+        public void addFieldMapping(final ObfuscationType type, final MappingField from, final MappingField to) {
+            if (!this.checkForExistingMapping(type, from, to, this.fields)) {
+                this.mappings.addFieldMapping(type, from, to);
             }
         }
         
-        public void addMethodMapping(final ObfuscationType type,  final MappingMethod from,  final MappingMethod to) {
-            if (!this.checkForExistingMapping(type,  from,  to,  this.methods)) {
-                this.mappings.addMethodMapping(type,  from,  to);
+        @Override
+        public void addMethodMapping(final ObfuscationType type, final MappingMethod from, final MappingMethod to) {
+            if (!this.checkForExistingMapping(type, from, to, this.methods)) {
+                this.mappings.addMethodMapping(type, from, to);
             }
         }
         
-        private <TMapping extends IMapping<TMapping>> boolean checkForExistingMapping(final ObfuscationType type,  final TMapping from,  final TMapping to,  final Map<ObfuscationType,  Map<TMapping,  TMapping>> mappings) throws MappingConflictException {
-            Map<TMapping,  TMapping> existingMappings = mappings.get(type);
+        private <TMapping extends IMapping<TMapping>> boolean checkForExistingMapping(final ObfuscationType type, final TMapping from, final TMapping to, final Map<ObfuscationType, Map<TMapping, TMapping>> mappings) throws MappingConflictException {
+            Map<TMapping, TMapping> existingMappings = mappings.get(type);
             if (existingMappings == null) {
-                existingMappings = new HashMap<TMapping,  TMapping>();
-                mappings.put(type,  existingMappings);
+                existingMappings = new HashMap<TMapping, TMapping>();
+                mappings.put(type, existingMappings);
             }
             final TMapping existing = existingMappings.get(from);
             if (existing == null) {
-                existingMappings.put(from,  to);
+                existingMappings.put(from, to);
                 return false;
             }
             if (existing.equals(to)) {
                 return true;
             }
-            throw new MappingConflictException(existing,  to);
+            throw new MappingConflictException(existing, to);
         }
         
-        public IMappingConsumer.MappingSet<MappingField> getFieldMappings(final ObfuscationType type) {
-            return (IMappingConsumer.MappingSet<MappingField>)this.mappings.getFieldMappings(type);
+        @Override
+        public MappingSet<MappingField> getFieldMappings(final ObfuscationType type) {
+            return this.mappings.getFieldMappings(type);
         }
         
-        public IMappingConsumer.MappingSet<MappingMethod> getMethodMappings(final ObfuscationType type) {
-            return (IMappingConsumer.MappingSet<MappingMethod>)this.mappings.getMethodMappings(type);
+        @Override
+        public MappingSet<MappingMethod> getMethodMappings(final ObfuscationType type) {
+            return this.mappings.getMethodMappings(type);
         }
     }
 }

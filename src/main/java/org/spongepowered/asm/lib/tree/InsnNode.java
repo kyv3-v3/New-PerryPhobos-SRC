@@ -4,8 +4,8 @@
 
 package org.spongepowered.asm.lib.tree;
 
-import org.spongepowered.asm.lib.*;
-import java.util.*;
+import java.util.Map;
+import org.spongepowered.asm.lib.MethodVisitor;
 
 public class InsnNode extends AbstractInsnNode
 {
@@ -13,16 +13,19 @@ public class InsnNode extends AbstractInsnNode
         super(opcode);
     }
     
+    @Override
     public int getType() {
         return 0;
     }
     
+    @Override
     public void accept(final MethodVisitor mv) {
         mv.visitInsn(this.opcode);
         this.acceptAnnotations(mv);
     }
     
-    public AbstractInsnNode clone(final Map<LabelNode,  LabelNode> labels) {
-        return new InsnNode(this.opcode).cloneAnnotations((AbstractInsnNode)this);
+    @Override
+    public AbstractInsnNode clone(final Map<LabelNode, LabelNode> labels) {
+        return new InsnNode(this.opcode).cloneAnnotations(this);
     }
 }

@@ -4,94 +4,109 @@
 
 package org.spongepowered.tools.obfuscation;
 
-import org.spongepowered.tools.obfuscation.interfaces.*;
-import org.spongepowered.asm.mixin.extensibility.*;
-import org.spongepowered.asm.mixin.transformer.ext.*;
-import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.lib.tree.*;
-import javax.tools.*;
-import javax.annotation.processing.*;
-import org.spongepowered.asm.mixin.gen.*;
-import java.util.*;
-import org.spongepowered.asm.obfuscation.mapping.common.*;
-import com.google.common.base.*;
-import org.spongepowered.asm.mixin.refmap.*;
-import javax.lang.model.element.*;
-import org.spongepowered.tools.obfuscation.mirror.*;
-import org.spongepowered.asm.mixin.injection.struct.*;
-import javax.lang.model.type.*;
+import javax.lang.model.element.Element;
+import javax.lang.model.type.TypeKind;
+import org.spongepowered.asm.mixin.injection.struct.MemberInfo;
+import org.spongepowered.tools.obfuscation.mirror.TypeUtils;
+import javax.lang.model.element.VariableElement;
+import org.spongepowered.tools.obfuscation.mirror.AnnotationHandle;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.element.ExecutableElement;
+import org.spongepowered.asm.mixin.refmap.IReferenceMapper;
+import com.google.common.base.Strings;
+import org.spongepowered.asm.obfuscation.mapping.common.MappingMethod;
+import org.spongepowered.tools.obfuscation.mirror.MethodHandle;
+import org.spongepowered.asm.obfuscation.mapping.common.MappingField;
+import org.spongepowered.tools.obfuscation.mirror.FieldHandle;
+import java.util.Iterator;
+import org.spongepowered.asm.mixin.gen.AccessorInfo;
+import org.spongepowered.tools.obfuscation.mirror.TypeHandle;
+import javax.annotation.processing.Messager;
+import javax.tools.Diagnostic;
+import org.spongepowered.asm.mixin.injection.struct.Target;
+import org.spongepowered.asm.lib.tree.MethodNode;
+import org.spongepowered.asm.mixin.MixinEnvironment;
+import org.spongepowered.asm.mixin.transformer.ext.Extensions;
+import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
+import org.spongepowered.asm.mixin.refmap.ReferenceMapper;
+import org.spongepowered.tools.obfuscation.interfaces.IMixinAnnotationProcessor;
+import org.spongepowered.asm.mixin.refmap.IMixinContext;
 
 public class AnnotatedMixinElementHandlerAccessor extends AnnotatedMixinElementHandler implements IMixinContext
 {
-    public AnnotatedMixinElementHandlerAccessor(final IMixinAnnotationProcessor ap,  final AnnotatedMixin mixin) {
-        super(ap,  mixin);
+    public AnnotatedMixinElementHandlerAccessor(final IMixinAnnotationProcessor ap, final AnnotatedMixin mixin) {
+        super(ap, mixin);
     }
     
+    @Override
     public ReferenceMapper getReferenceMapper() {
         return null;
     }
     
-    public String getClassName() {
-        return this.mixin.getClassRef().replace('/',  '.');
-    }
-    
+    @Override
     public String getClassRef() {
         return this.mixin.getClassRef();
     }
     
+    @Override
     public String getTargetClassRef() {
         throw new UnsupportedOperationException("Target class not available at compile time");
     }
     
+    @Override
     public IMixinInfo getMixin() {
         throw new UnsupportedOperationException("MixinInfo not available at compile time");
     }
     
+    @Override
     public Extensions getExtensions() {
         throw new UnsupportedOperationException("Mixin Extensions not available at compile time");
     }
     
+    @Override
     public boolean getOption(final MixinEnvironment.Option option) {
         throw new UnsupportedOperationException("Options not available at compile time");
     }
     
+    @Override
     public int getPriority() {
         throw new UnsupportedOperationException("Priority not available at compile time");
     }
     
+    @Override
     public Target getTargetMethod(final MethodNode into) {
         throw new UnsupportedOperationException("Target not available at compile time");
     }
     
     public void registerAccessor(final AnnotatedElementAccessor elem) {
         if (elem.getAccessorType() == null) {
-            elem.printMessage((Messager)this.ap,  Diagnostic.Kind.WARNING,  (CharSequence)"Unsupported accessor type");
+            elem.printMessage(this.ap, Diagnostic.Kind.WARNING, "Unsupported accessor type");
             return;
         }
         final String targetName = this.getAccessorTargetName(elem);
         if (targetName == null) {
-            elem.printMessage((Messager)this.ap,  Diagnostic.Kind.WARNING,  (CharSequence)"Cannot inflect accessor target name");
+            elem.printMessage(this.ap, Diagnostic.Kind.WARNING, "Cannot inflect accessor target name");
             return;
         }
         elem.setTargetName(targetName);
         for (final TypeHandle target : this.mixin.getTargets()) {
             if (elem.getAccessorType() == AccessorInfo.AccessorType.METHOD_PROXY) {
-                this.registerInvokerForTarget((AnnotatedElementInvoker)elem,  target);
+                this.registerInvokerForTarget((AnnotatedElementInvoker)elem, target);
             }
             else {
-                this.registerAccessorForTarget(elem,  target);
+                this.registerAccessorForTarget(elem, target);
             }
         }
     }
     
-    private void registerAccessorForTarget(final AnnotatedElementAccessor elem,  final TypeHandle target) {
-        FieldHandle targetField = target.findField(elem.getTargetName(),  elem.getTargetTypeName(),  false);
+    private void registerAccessorForTarget(final AnnotatedElementAccessor elem, final TypeHandle target) {
+        FieldHandle targetField = target.findField(elem.getTargetName(), elem.getTargetTypeName(), false);
         if (targetField == null) {
             if (!target.isImaginary()) {
-                elem.printMessage((Messager)this.ap,  Diagnostic.Kind.ERROR,  (CharSequence)("Could not locate @Accessor target " + elem + " in target " + target));
+                elem.printMessage(this.ap, Diagnostic.Kind.ERROR, "Could not locate @Accessor target " + elem + " in target " + target);
                 return;
             }
-            targetField = new FieldHandle(target.getName(),  elem.getTargetName(),  elem.getDesc());
+            targetField = new FieldHandle(target.getName(), elem.getTargetName(), elem.getDesc());
         }
         if (!elem.shouldRemap()) {
             return;
@@ -99,26 +114,26 @@ public class AnnotatedMixinElementHandlerAccessor extends AnnotatedMixinElementH
         ObfuscationData<MappingField> obfData = this.obf.getDataProvider().getObfField(targetField.asMapping(false).move(target.getName()));
         if (obfData.isEmpty()) {
             final String info = this.mixin.isMultiTarget() ? (" in target " + target) : "";
-            elem.printMessage((Messager)this.ap,  Diagnostic.Kind.WARNING,  (CharSequence)("Unable to locate obfuscation mapping" + info + " for @Accessor target " + elem));
+            elem.printMessage(this.ap, Diagnostic.Kind.WARNING, "Unable to locate obfuscation mapping" + info + " for @Accessor target " + elem);
             return;
         }
-        obfData = (ObfuscationData<MappingField>)AnnotatedMixinElementHandler.stripOwnerData((ObfuscationData)obfData);
+        obfData = AnnotatedMixinElementHandler.stripOwnerData(obfData);
         try {
-            this.obf.getReferenceManager().addFieldMapping(this.mixin.getClassRef(),  elem.getTargetName(),  elem.getContext(),  obfData);
+            this.obf.getReferenceManager().addFieldMapping(this.mixin.getClassRef(), elem.getTargetName(), elem.getContext(), obfData);
         }
         catch (ReferenceManager.ReferenceConflictException ex) {
-            elem.printMessage((Messager)this.ap,  Diagnostic.Kind.ERROR,  (CharSequence)("Mapping conflict for @Accessor target " + elem + ": " + ex.getNew() + " for target " + target + " conflicts with existing mapping " + ex.getOld()));
+            elem.printMessage(this.ap, Diagnostic.Kind.ERROR, "Mapping conflict for @Accessor target " + elem + ": " + ex.getNew() + " for target " + target + " conflicts with existing mapping " + ex.getOld());
         }
     }
     
-    private void registerInvokerForTarget(final AnnotatedElementInvoker elem,  final TypeHandle target) {
-        MethodHandle targetMethod = target.findMethod(elem.getTargetName(),  elem.getTargetTypeName(),  false);
+    private void registerInvokerForTarget(final AnnotatedElementInvoker elem, final TypeHandle target) {
+        MethodHandle targetMethod = target.findMethod(elem.getTargetName(), elem.getTargetTypeName(), false);
         if (targetMethod == null) {
             if (!target.isImaginary()) {
-                elem.printMessage((Messager)this.ap,  Diagnostic.Kind.ERROR,  (CharSequence)("Could not locate @Invoker target " + elem + " in target " + target));
+                elem.printMessage(this.ap, Diagnostic.Kind.ERROR, "Could not locate @Invoker target " + elem + " in target " + target);
                 return;
             }
-            targetMethod = new MethodHandle(target,  elem.getTargetName(),  elem.getDesc());
+            targetMethod = new MethodHandle(target, elem.getTargetName(), elem.getDesc());
         }
         if (!elem.shouldRemap()) {
             return;
@@ -126,15 +141,15 @@ public class AnnotatedMixinElementHandlerAccessor extends AnnotatedMixinElementH
         ObfuscationData<MappingMethod> obfData = this.obf.getDataProvider().getObfMethod(targetMethod.asMapping(false).move(target.getName()));
         if (obfData.isEmpty()) {
             final String info = this.mixin.isMultiTarget() ? (" in target " + target) : "";
-            elem.printMessage((Messager)this.ap,  Diagnostic.Kind.WARNING,  (CharSequence)("Unable to locate obfuscation mapping" + info + " for @Accessor target " + elem));
+            elem.printMessage(this.ap, Diagnostic.Kind.WARNING, "Unable to locate obfuscation mapping" + info + " for @Accessor target " + elem);
             return;
         }
-        obfData = (ObfuscationData<MappingMethod>)AnnotatedMixinElementHandler.stripOwnerData((ObfuscationData)obfData);
+        obfData = AnnotatedMixinElementHandler.stripOwnerData(obfData);
         try {
-            this.obf.getReferenceManager().addMethodMapping(this.mixin.getClassRef(),  elem.getTargetName(),  elem.getContext(),  obfData);
+            this.obf.getReferenceManager().addMethodMapping(this.mixin.getClassRef(), elem.getTargetName(), elem.getContext(), obfData);
         }
         catch (ReferenceManager.ReferenceConflictException ex) {
-            elem.printMessage((Messager)this.ap,  Diagnostic.Kind.ERROR,  (CharSequence)("Mapping conflict for @Invoker target " + elem + ": " + ex.getNew() + " for target " + target + " conflicts with existing mapping " + ex.getOld()));
+            elem.printMessage(this.ap, Diagnostic.Kind.ERROR, "Mapping conflict for @Invoker target " + elem + ": " + ex.getNew() + " for target " + target + " conflicts with existing mapping " + ex.getOld());
         }
     }
     
@@ -147,19 +162,19 @@ public class AnnotatedMixinElementHandlerAccessor extends AnnotatedMixinElementH
     }
     
     private String inflectAccessorTarget(final AnnotatedElementAccessor elem) {
-        return AccessorInfo.inflectTarget(elem.getSimpleName(),  elem.getAccessorType(),  "",  (IMixinContext)this,  false);
+        return AccessorInfo.inflectTarget(elem.getSimpleName(), elem.getAccessorType(), "", this, false);
     }
     
-    static class AnnotatedElementAccessor extends AnnotatedMixinElementHandler.AnnotatedElement<ExecutableElement>
+    static class AnnotatedElementAccessor extends AnnotatedElement<ExecutableElement>
     {
         private final boolean shouldRemap;
         private final TypeMirror returnType;
         private String targetName;
         
-        public AnnotatedElementAccessor(final ExecutableElement element,  final AnnotationHandle annotation,  final boolean shouldRemap) {
-            super((Element)element,  annotation);
+        public AnnotatedElementAccessor(final ExecutableElement element, final AnnotationHandle annotation, final boolean shouldRemap) {
+            super(element, annotation);
             this.shouldRemap = shouldRemap;
-            this.returnType = ((ExecutableElement)this.getElement()).getReturnType();
+            this.returnType = this.getElement().getReturnType();
         }
         
         public boolean shouldRemap() {
@@ -176,7 +191,7 @@ public class AnnotatedMixinElementHandlerAccessor extends AnnotatedMixinElementH
                     return this.returnType;
                 }
                 case FIELD_SETTER: {
-                    return ((VariableElement)((ExecutableElement)this.getElement()).getParameters().get(0)).asType();
+                    return ((VariableElement)this.getElement().getParameters().get(0)).asType();
                 }
                 default: {
                     return null;
@@ -193,7 +208,7 @@ public class AnnotatedMixinElementHandlerAccessor extends AnnotatedMixinElementH
         }
         
         public MemberInfo getContext() {
-            return new MemberInfo(this.getTargetName(),  (String)null,  this.getAccessorDesc());
+            return new MemberInfo(this.getTargetName(), null, this.getAccessorDesc());
         }
         
         public AccessorInfo.AccessorType getAccessorType() {
@@ -208,6 +223,7 @@ public class AnnotatedMixinElementHandlerAccessor extends AnnotatedMixinElementH
             return this.targetName;
         }
         
+        @Override
         public String toString() {
             return (this.targetName != null) ? this.targetName : "<invalid>";
         }
@@ -215,13 +231,13 @@ public class AnnotatedMixinElementHandlerAccessor extends AnnotatedMixinElementH
     
     static class AnnotatedElementInvoker extends AnnotatedElementAccessor
     {
-        public AnnotatedElementInvoker(final ExecutableElement element,  final AnnotationHandle annotation,  final boolean shouldRemap) {
-            super(element,  annotation,  shouldRemap);
+        public AnnotatedElementInvoker(final ExecutableElement element, final AnnotationHandle annotation, final boolean shouldRemap) {
+            super(element, annotation, shouldRemap);
         }
         
         @Override
         public String getAccessorDesc() {
-            return TypeUtils.getDescriptor((ExecutableElement)this.getElement());
+            return TypeUtils.getDescriptor(this.getElement());
         }
         
         @Override
@@ -231,7 +247,7 @@ public class AnnotatedMixinElementHandlerAccessor extends AnnotatedMixinElementH
         
         @Override
         public String getTargetTypeName() {
-            return TypeUtils.getJavaSignature(this.getElement());
+            return TypeUtils.getJavaSignature(((AnnotatedElement<Element>)this).getElement());
         }
     }
 }

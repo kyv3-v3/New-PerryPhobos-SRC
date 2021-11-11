@@ -4,11 +4,11 @@
 
 package org.spongepowered.tools.obfuscation.mirror;
 
-import java.io.*;
-import javax.annotation.processing.*;
-import javax.lang.model.element.*;
+import javax.lang.model.element.TypeElement;
+import javax.annotation.processing.ProcessingEnvironment;
+import java.io.Serializable;
 
-public class TypeReference implements Serializable,  Comparable<TypeReference>
+public class TypeReference implements Serializable, Comparable<TypeReference>
 {
     private static final long serialVersionUID = 1L;
     private final String name;
@@ -28,7 +28,7 @@ public class TypeReference implements Serializable,  Comparable<TypeReference>
     }
     
     public String getClassName() {
-        return this.name.replace('/',  '.');
+        return this.name.replace('/', '.');
     }
     
     public TypeHandle getHandle(final ProcessingEnvironment processingEnv) {
@@ -46,7 +46,7 @@ public class TypeReference implements Serializable,  Comparable<TypeReference>
     
     @Override
     public String toString() {
-        return String.format("TypeReference[%s]",  this.name);
+        return String.format("TypeReference[%s]", this.name);
     }
     
     @Override

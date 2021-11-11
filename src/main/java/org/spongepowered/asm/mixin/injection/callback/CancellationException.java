@@ -19,7 +19,7 @@ public class CancellationException extends RuntimeException
         super(cause);
     }
     
-    public CancellationException(final String message,  final Throwable cause) {
-        super(message,  cause);
+    public CancellationException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }

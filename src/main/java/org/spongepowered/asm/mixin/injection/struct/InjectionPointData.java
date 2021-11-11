@@ -4,20 +4,26 @@
 
 package org.spongepowered.asm.mixin.injection.struct;
 
-import org.spongepowered.asm.mixin.refmap.*;
-import org.spongepowered.asm.lib.tree.*;
-import org.spongepowered.asm.mixin.injection.*;
-import java.util.regex.*;
-import java.util.*;
-import org.spongepowered.asm.lib.*;
-import org.spongepowered.asm.mixin.injection.modify.*;
-import org.spongepowered.asm.mixin.injection.throwables.*;
-import com.google.common.base.*;
+import com.google.common.base.Joiner;
+import org.spongepowered.asm.mixin.injection.throwables.InvalidInjectionPointException;
+import org.spongepowered.asm.mixin.injection.modify.LocalVariableDiscriminator;
+import org.spongepowered.asm.lib.Type;
+import java.util.Iterator;
+import java.util.regex.Matcher;
+import com.google.common.base.Strings;
+import java.util.HashMap;
+import java.util.List;
+import org.spongepowered.asm.mixin.injection.InjectionPoint;
+import org.spongepowered.asm.lib.tree.AnnotationNode;
+import org.spongepowered.asm.lib.tree.MethodNode;
+import org.spongepowered.asm.mixin.refmap.IMixinContext;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 public class InjectionPointData
 {
     private static final Pattern AT_PATTERN;
-    private final Map<String,  String> args;
+    private final Map<String, String> args;
     private final IMixinContext context;
     private final MethodNode method;
     private final AnnotationNode parent;
@@ -30,23 +36,23 @@ public class InjectionPointData
     private final int opcode;
     private final String id;
     
-    public InjectionPointData(final IMixinContext context,  final MethodNode method,  final AnnotationNode parent,  final String at,  final List<String> args,  final String target,  final String slice,  final int ordinal,  final int opcode,  final String id) {
-        this.args = new HashMap<String,  String>();
+    public InjectionPointData(final IMixinContext context, final MethodNode method, final AnnotationNode parent, final String at, final List<String> args, final String target, final String slice, final int ordinal, final int opcode, final String id) {
+        this.args = new HashMap<String, String>();
         this.context = context;
         this.method = method;
         this.parent = parent;
         this.at = at;
         this.target = target;
         this.slice = Strings.nullToEmpty(slice);
-        this.ordinal = Math.max(-1,  ordinal);
+        this.ordinal = Math.max(-1, ordinal);
         this.opcode = opcode;
         this.id = id;
         this.parseArgs(args);
-        this.args.put("target",  target);
-        this.args.put("ordinal",  String.valueOf(ordinal));
-        this.args.put("opcode",  String.valueOf(opcode));
+        this.args.put("target", target);
+        this.args.put("ordinal", String.valueOf(ordinal));
+        this.args.put("opcode", String.valueOf(opcode));
         final Matcher matcher = InjectionPointData.AT_PATTERN.matcher(at);
-        this.type = parseType(matcher,  at);
+        this.type = parseType(matcher, at);
         this.selector = parseSelector(matcher);
     }
     
@@ -58,10 +64,10 @@ public class InjectionPointData
             if (arg != null) {
                 final int eqPos = arg.indexOf(61);
                 if (eqPos > -1) {
-                    this.args.put(arg.substring(0,  eqPos),  arg.substring(eqPos + 1));
+                    this.args.put(arg.substring(0, eqPos), arg.substring(eqPos + 1));
                 }
                 else {
-                    this.args.put(arg,  "");
+                    this.args.put(arg, "");
                 }
             }
         }
@@ -103,34 +109,34 @@ public class InjectionPointData
         return LocalVariableDiscriminator.parse(this.parent);
     }
     
-    public String get(final String key,  final String defaultValue) {
+    public String get(final String key, final String defaultValue) {
         final String value = this.args.get(key);
         return (value != null) ? value : defaultValue;
     }
     
-    public int get(final String key,  final int defaultValue) {
-        return parseInt(this.get(key,  String.valueOf(defaultValue)),  defaultValue);
+    public int get(final String key, final int defaultValue) {
+        return parseInt(this.get(key, String.valueOf(defaultValue)), defaultValue);
     }
     
-    public boolean get(final String key,  final boolean defaultValue) {
-        return parseBoolean(this.get(key,  String.valueOf(defaultValue)),  defaultValue);
+    public boolean get(final String key, final boolean defaultValue) {
+        return parseBoolean(this.get(key, String.valueOf(defaultValue)), defaultValue);
     }
     
     public MemberInfo get(final String key) {
         try {
-            return MemberInfo.parseAndValidate(this.get(key,  ""),  this.context);
+            return MemberInfo.parseAndValidate(this.get(key, ""), this.context);
         }
         catch (InvalidMemberDescriptorException ex) {
-            throw new InvalidInjectionPointException(this.context,  "Failed parsing @At(\"%s\").%s descriptor \"%s\" on %s",  new Object[] { this.at,  key,  this.target,  InjectionInfo.describeInjector(this.context,  this.parent,  this.method) });
+            throw new InvalidInjectionPointException(this.context, "Failed parsing @At(\"%s\").%s descriptor \"%s\" on %s", new Object[] { this.at, key, this.target, InjectionInfo.describeInjector(this.context, this.parent, this.method) });
         }
     }
     
     public MemberInfo getTarget() {
         try {
-            return MemberInfo.parseAndValidate(this.target,  this.context);
+            return MemberInfo.parseAndValidate(this.target, this.context);
         }
         catch (InvalidMemberDescriptorException ex) {
-            throw new InvalidInjectionPointException(this.context,  "Failed parsing @At(\"%s\") descriptor \"%s\" on %s",  new Object[] { this.at,  this.target,  InjectionInfo.describeInjector(this.context,  this.parent,  this.method) });
+            throw new InvalidInjectionPointException(this.context, "Failed parsing @At(\"%s\") descriptor \"%s\" on %s", new Object[] { this.at, this.target, InjectionInfo.describeInjector(this.context, this.parent, this.method) });
         }
     }
     
@@ -146,7 +152,7 @@ public class InjectionPointData
         return (this.opcode > 0) ? this.opcode : defaultOpcode;
     }
     
-    public int getOpcode(final int defaultOpcode,  final int... validOpcodes) {
+    public int getOpcode(final int defaultOpcode, final int... validOpcodes) {
         for (final int validOpcode : validOpcodes) {
             if (this.opcode == validOpcode) {
                 return this.opcode;
@@ -165,15 +171,15 @@ public class InjectionPointData
     }
     
     private static Pattern createPattern() {
-        return Pattern.compile(String.format("^([^:]+):?(%s)?$",  Joiner.on('|').join((Object[])InjectionPoint.Selector.values())));
+        return Pattern.compile(String.format("^([^:]+):?(%s)?$", Joiner.on('|').join((Object[])InjectionPoint.Selector.values())));
     }
     
     public static String parseType(final String at) {
         final Matcher matcher = InjectionPointData.AT_PATTERN.matcher(at);
-        return parseType(matcher,  at);
+        return parseType(matcher, at);
     }
     
-    private static String parseType(final Matcher matcher,  final String at) {
+    private static String parseType(final Matcher matcher, final String at) {
         return matcher.matches() ? matcher.group(1) : at;
     }
     
@@ -181,7 +187,7 @@ public class InjectionPointData
         return (matcher.matches() && matcher.group(2) != null) ? InjectionPoint.Selector.valueOf(matcher.group(2)) : InjectionPoint.Selector.DEFAULT;
     }
     
-    private static int parseInt(final String string,  final int defaultValue) {
+    private static int parseInt(final String string, final int defaultValue) {
         try {
             return Integer.parseInt(string);
         }
@@ -190,7 +196,7 @@ public class InjectionPointData
         }
     }
     
-    private static boolean parseBoolean(final String string,  final boolean defaultValue) {
+    private static boolean parseBoolean(final String string, final boolean defaultValue) {
         try {
             return Boolean.parseBoolean(string);
         }

@@ -218,7 +218,7 @@ public class HoleFiller extends Module
             final Object object = Phobos.holeManager.getMidSafety();
             synchronized (object) {
             }
-            // monitorexit(object)
+            //monitorexit(object)
         }
         final Object object = Phobos.holeManager.getHoles();
         final ArrayList<BlockPos> targets;

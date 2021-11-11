@@ -4,9 +4,18 @@
 
 package org.spongepowered.asm.lib.tree.analysis;
 
-import org.spongepowered.asm.lib.*;
-import java.util.*;
-import org.spongepowered.asm.lib.tree.*;
+import org.spongepowered.asm.lib.tree.MethodInsnNode;
+import org.spongepowered.asm.lib.tree.InvokeDynamicInsnNode;
+import org.spongepowered.asm.lib.tree.MultiANewArrayInsnNode;
+import java.util.List;
+import org.spongepowered.asm.lib.tree.IntInsnNode;
+import org.spongepowered.asm.lib.tree.TypeInsnNode;
+import org.spongepowered.asm.lib.tree.FieldInsnNode;
+import org.spongepowered.asm.lib.Handle;
+import org.spongepowered.asm.lib.tree.LdcInsnNode;
+import org.spongepowered.asm.lib.tree.AbstractInsnNode;
+import org.spongepowered.asm.lib.Type;
+import org.spongepowered.asm.lib.Opcodes;
 
 public class BasicInterpreter extends Interpreter<BasicValue> implements Opcodes
 {
@@ -136,12 +145,12 @@ public class BasicInterpreter extends Interpreter<BasicValue> implements Opcodes
     }
     
     @Override
-    public BasicValue copyOperation(final AbstractInsnNode insn,  final BasicValue value) throws AnalyzerException {
+    public BasicValue copyOperation(final AbstractInsnNode insn, final BasicValue value) throws AnalyzerException {
         return value;
     }
     
     @Override
-    public BasicValue unaryOperation(final AbstractInsnNode insn,  final BasicValue value) throws AnalyzerException {
+    public BasicValue unaryOperation(final AbstractInsnNode insn, final BasicValue value) throws AnalyzerException {
         switch (insn.getOpcode()) {
             case 116:
             case 132:
@@ -217,7 +226,7 @@ public class BasicInterpreter extends Interpreter<BasicValue> implements Opcodes
                         return this.newValue(Type.getType("[J"));
                     }
                     default: {
-                        throw new AnalyzerException(insn,  "Invalid array type");
+                        throw new AnalyzerException(insn, "Invalid array type");
                     }
                 }
                 break;
@@ -252,7 +261,7 @@ public class BasicInterpreter extends Interpreter<BasicValue> implements Opcodes
     }
     
     @Override
-    public BasicValue binaryOperation(final AbstractInsnNode insn,  final BasicValue value1,  final BasicValue value2) throws AnalyzerException {
+    public BasicValue binaryOperation(final AbstractInsnNode insn, final BasicValue value1, final BasicValue value2) throws AnalyzerException {
         switch (insn.getOpcode()) {
             case 46:
             case 51:
@@ -329,12 +338,12 @@ public class BasicInterpreter extends Interpreter<BasicValue> implements Opcodes
     }
     
     @Override
-    public BasicValue ternaryOperation(final AbstractInsnNode insn,  final BasicValue value1,  final BasicValue value2,  final BasicValue value3) throws AnalyzerException {
+    public BasicValue ternaryOperation(final AbstractInsnNode insn, final BasicValue value1, final BasicValue value2, final BasicValue value3) throws AnalyzerException {
         return null;
     }
     
     @Override
-    public BasicValue naryOperation(final AbstractInsnNode insn,  final List<? extends BasicValue> values) throws AnalyzerException {
+    public BasicValue naryOperation(final AbstractInsnNode insn, final List<? extends BasicValue> values) throws AnalyzerException {
         final int opcode = insn.getOpcode();
         if (opcode == 197) {
             return this.newValue(Type.getType(((MultiANewArrayInsnNode)insn).desc));
@@ -346,11 +355,11 @@ public class BasicInterpreter extends Interpreter<BasicValue> implements Opcodes
     }
     
     @Override
-    public void returnOperation(final AbstractInsnNode insn,  final BasicValue value,  final BasicValue expected) throws AnalyzerException {
+    public void returnOperation(final AbstractInsnNode insn, final BasicValue value, final BasicValue expected) throws AnalyzerException {
     }
     
     @Override
-    public BasicValue merge(final BasicValue v,  final BasicValue w) {
+    public BasicValue merge(final BasicValue v, final BasicValue w) {
         if (!v.equals(w)) {
             return BasicValue.UNINITIALIZED_VALUE;
         }

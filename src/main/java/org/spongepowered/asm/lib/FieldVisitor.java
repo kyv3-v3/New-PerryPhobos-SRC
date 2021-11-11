@@ -10,10 +10,10 @@ public abstract class FieldVisitor
     protected FieldVisitor fv;
     
     public FieldVisitor(final int api) {
-        this(api,  null);
+        this(api, null);
     }
     
-    public FieldVisitor(final int api,  final FieldVisitor fv) {
+    public FieldVisitor(final int api, final FieldVisitor fv) {
         if (api != 262144 && api != 327680) {
             throw new IllegalArgumentException();
         }
@@ -21,19 +21,19 @@ public abstract class FieldVisitor
         this.fv = fv;
     }
     
-    public AnnotationVisitor visitAnnotation(final String desc,  final boolean visible) {
+    public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
         if (this.fv != null) {
-            return this.fv.visitAnnotation(desc,  visible);
+            return this.fv.visitAnnotation(desc, visible);
         }
         return null;
     }
     
-    public AnnotationVisitor visitTypeAnnotation(final int typeRef,  final TypePath typePath,  final String desc,  final boolean visible) {
+    public AnnotationVisitor visitTypeAnnotation(final int typeRef, final TypePath typePath, final String desc, final boolean visible) {
         if (this.api < 327680) {
             throw new RuntimeException();
         }
         if (this.fv != null) {
-            return this.fv.visitTypeAnnotation(typeRef,  typePath,  desc,  visible);
+            return this.fv.visitTypeAnnotation(typeRef, typePath, desc, visible);
         }
         return null;
     }

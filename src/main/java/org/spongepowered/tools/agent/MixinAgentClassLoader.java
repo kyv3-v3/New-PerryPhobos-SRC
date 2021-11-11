@@ -4,37 +4,41 @@
 
 package org.spongepowered.tools.agent;
 
-import java.util.*;
-import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.lib.*;
-import org.apache.logging.log4j.*;
+import org.apache.logging.log4j.LogManager;
+import org.spongepowered.asm.lib.MethodVisitor;
+import org.spongepowered.asm.lib.Type;
+import org.spongepowered.asm.mixin.MixinEnvironment;
+import org.spongepowered.asm.lib.ClassWriter;
+import java.util.HashMap;
+import java.util.Map;
+import org.apache.logging.log4j.Logger;
 
 class MixinAgentClassLoader extends ClassLoader
 {
     private static final Logger logger;
-    private Map<Class<?>,  byte[]> mixins;
-    private Map<String,  byte[]> targets;
+    private Map<Class<?>, byte[]> mixins;
+    private Map<String, byte[]> targets;
     
     MixinAgentClassLoader() {
-        this.mixins = new HashMap<Class<?>,  byte[]>();
-        this.targets = new HashMap<String,  byte[]>();
+        this.mixins = new HashMap<Class<?>, byte[]>();
+        this.targets = new HashMap<String, byte[]>();
     }
     
     void addMixinClass(final String name) {
-        MixinAgentClassLoader.logger.debug("Mixin class {} added to class loader",  new Object[] { name });
+        MixinAgentClassLoader.logger.debug("Mixin class {} added to class loader", new Object[] { name });
         try {
             final byte[] bytes = this.materialise(name);
-            final Class<?> clazz = this.defineClass(name,  bytes,  0,  bytes.length);
+            final Class<?> clazz = this.defineClass(name, bytes, 0, bytes.length);
             clazz.newInstance();
-            this.mixins.put(clazz,  bytes);
+            this.mixins.put(clazz, bytes);
         }
         catch (Throwable e) {
             MixinAgentClassLoader.logger.catching(e);
         }
     }
     
-    void addTargetClass(final String name,  final byte[] bytecode) {
-        this.targets.put(name,  bytecode);
+    void addTargetClass(final String name, final byte[] bytecode) {
+        this.targets.put(name, bytecode);
     }
     
     byte[] getFakeMixinBytecode(final Class<?> clazz) {
@@ -47,13 +51,13 @@ class MixinAgentClassLoader extends ClassLoader
     
     private byte[] materialise(final String name) {
         final ClassWriter cw = new ClassWriter(3);
-        cw.visit(MixinEnvironment.getCompatibilityLevel().classVersion(),  1,  name.replace('.',  '/'),  (String)null,  Type.getInternalName((Class)Object.class),  (String[])null);
-        final MethodVisitor mv = cw.visitMethod(1,  "<init>",  "()V",  (String)null,  (String[])null);
+        cw.visit(MixinEnvironment.getCompatibilityLevel().classVersion(), 1, name.replace('.', '/'), null, Type.getInternalName(Object.class), null);
+        final MethodVisitor mv = cw.visitMethod(1, "<init>", "()V", null, null);
         mv.visitCode();
-        mv.visitVarInsn(25,  0);
-        mv.visitMethodInsn(183,  Type.getInternalName((Class)Object.class),  "<init>",  "()V",  false);
+        mv.visitVarInsn(25, 0);
+        mv.visitMethodInsn(183, Type.getInternalName(Object.class), "<init>", "()V", false);
         mv.visitInsn(177);
-        mv.visitMaxs(1,  1);
+        mv.visitMaxs(1, 1);
         mv.visitEnd();
         cw.visitEnd();
         return cw.toByteArray();

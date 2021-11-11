@@ -4,14 +4,14 @@
 
 package org.spongepowered.asm.lib.tree;
 
-import org.spongepowered.asm.lib.*;
-import java.util.*;
+import java.util.Map;
+import org.spongepowered.asm.lib.MethodVisitor;
 
 public class IntInsnNode extends AbstractInsnNode
 {
     public int operand;
     
-    public IntInsnNode(final int opcode,  final int operand) {
+    public IntInsnNode(final int opcode, final int operand) {
         super(opcode);
         this.operand = operand;
     }
@@ -20,16 +20,19 @@ public class IntInsnNode extends AbstractInsnNode
         this.opcode = opcode;
     }
     
+    @Override
     public int getType() {
         return 1;
     }
     
+    @Override
     public void accept(final MethodVisitor mv) {
-        mv.visitIntInsn(this.opcode,  this.operand);
+        mv.visitIntInsn(this.opcode, this.operand);
         this.acceptAnnotations(mv);
     }
     
-    public AbstractInsnNode clone(final Map<LabelNode,  LabelNode> labels) {
-        return new IntInsnNode(this.opcode,  this.operand).cloneAnnotations((AbstractInsnNode)this);
+    @Override
+    public AbstractInsnNode clone(final Map<LabelNode, LabelNode> labels) {
+        return new IntInsnNode(this.opcode, this.operand).cloneAnnotations(this);
     }
 }

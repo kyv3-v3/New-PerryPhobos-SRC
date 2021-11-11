@@ -38,14 +38,14 @@ public class Label
         return this.position;
     }
     
-    void put(final MethodWriter owner,  final ByteVector out,  final int source,  final boolean wideOffset) {
+    void put(final MethodWriter owner, final ByteVector out, final int source, final boolean wideOffset) {
         if ((this.status & 0x2) == 0x0) {
             if (wideOffset) {
-                this.addReference(-1 - source,  out.length);
+                this.addReference(-1 - source, out.length);
                 out.putInt(-1);
             }
             else {
-                this.addReference(source,  out.length);
+                this.addReference(source, out.length);
                 out.putShort(-1);
             }
         }
@@ -57,20 +57,20 @@ public class Label
         }
     }
     
-    private void addReference(final int sourcePosition,  final int referencePosition) {
+    private void addReference(final int sourcePosition, final int referencePosition) {
         if (this.srcAndRefPositions == null) {
             this.srcAndRefPositions = new int[6];
         }
         if (this.referenceCount >= this.srcAndRefPositions.length) {
             final int[] a = new int[this.srcAndRefPositions.length + 6];
-            System.arraycopy(this.srcAndRefPositions,  0,  a,  0,  this.srcAndRefPositions.length);
+            System.arraycopy(this.srcAndRefPositions, 0, a, 0, this.srcAndRefPositions.length);
             this.srcAndRefPositions = a;
         }
         this.srcAndRefPositions[this.referenceCount++] = sourcePosition;
         this.srcAndRefPositions[this.referenceCount++] = referencePosition;
     }
     
-    boolean resolve(final MethodWriter owner,  final int position,  final byte[] data) {
+    boolean resolve(final MethodWriter owner, final int position, final byte[] data) {
         boolean needUpdate = false;
         this.status |= 0x2;
         this.position = position;
@@ -124,7 +124,7 @@ public class Label
         return false;
     }
     
-    void addToSubroutine(final long id,  final int nbSubroutines) {
+    void addToSubroutine(final long id, final int nbSubroutines) {
         if ((this.status & 0x400) == 0x0) {
             this.status |= 0x400;
             this.srcAndRefPositions = new int[nbSubroutines / 32 + 1];
@@ -134,7 +134,7 @@ public class Label
         srcAndRefPositions[n] |= (int)id;
     }
     
-    void visitSubroutine(final Label JSR,  final long id,  final int nbSubroutines) {
+    void visitSubroutine(final Label JSR, final long id, final int nbSubroutines) {
         Label stack = this;
         while (stack != null) {
             final Label l = stack;
@@ -158,7 +158,7 @@ public class Label
                 if (l.inSubroutine(id)) {
                     continue;
                 }
-                l.addToSubroutine(id,  nbSubroutines);
+                l.addToSubroutine(id, nbSubroutines);
             }
             for (Edge e = l.successors; e != null; e = e.next) {
                 if (((l.status & 0x80) == 0x0 || e != l.successors.next) && e.successor.next == null) {

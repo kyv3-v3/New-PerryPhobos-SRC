@@ -8,5 +8,5 @@ public interface IHotSwap
 {
     void registerMixinClass(final String p0);
     
-    void registerTargetClass(final String p0,  final byte[] p1);
+    void registerTargetClass(final String p0, final byte[] p1);
 }

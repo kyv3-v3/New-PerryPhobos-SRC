@@ -19,7 +19,7 @@ public class MixinException extends RuntimeException
         super(cause);
     }
     
-    public MixinException(final String message,  final Throwable cause) {
-        super(message,  cause);
+    public MixinException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }

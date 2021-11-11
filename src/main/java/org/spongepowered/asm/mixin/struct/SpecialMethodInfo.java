@@ -4,10 +4,12 @@
 
 package org.spongepowered.asm.mixin.struct;
 
-import org.spongepowered.asm.mixin.injection.*;
-import org.spongepowered.asm.lib.tree.*;
-import org.spongepowered.asm.mixin.transformer.*;
-import org.spongepowered.asm.mixin.refmap.*;
+import org.spongepowered.asm.mixin.refmap.IMixinContext;
+import org.spongepowered.asm.mixin.transformer.MixinTargetContext;
+import org.spongepowered.asm.lib.tree.MethodNode;
+import org.spongepowered.asm.lib.tree.ClassNode;
+import org.spongepowered.asm.lib.tree.AnnotationNode;
+import org.spongepowered.asm.mixin.injection.IInjectionPointContext;
 
 public abstract class SpecialMethodInfo implements IInjectionPointContext
 {
@@ -16,17 +18,19 @@ public abstract class SpecialMethodInfo implements IInjectionPointContext
     protected final MethodNode method;
     protected final MixinTargetContext mixin;
     
-    public SpecialMethodInfo(final MixinTargetContext mixin,  final MethodNode method,  final AnnotationNode annotation) {
+    public SpecialMethodInfo(final MixinTargetContext mixin, final MethodNode method, final AnnotationNode annotation) {
         this.mixin = mixin;
         this.method = method;
         this.annotation = annotation;
         this.classNode = mixin.getTargetClassNode();
     }
     
+    @Override
     public final IMixinContext getContext() {
-        return (IMixinContext)this.mixin;
+        return this.mixin;
     }
     
+    @Override
     public final AnnotationNode getAnnotation() {
         return this.annotation;
     }
@@ -35,6 +39,7 @@ public abstract class SpecialMethodInfo implements IInjectionPointContext
         return this.classNode;
     }
     
+    @Override
     public final MethodNode getMethod() {
         return this.method;
     }

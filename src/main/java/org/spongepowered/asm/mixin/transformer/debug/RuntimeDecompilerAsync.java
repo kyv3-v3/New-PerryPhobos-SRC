@@ -4,10 +4,11 @@
 
 package org.spongepowered.asm.mixin.transformer.debug;
 
-import java.io.*;
-import java.util.concurrent.*;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.io.File;
+import java.util.concurrent.BlockingQueue;
 
-public class RuntimeDecompilerAsync extends RuntimeDecompiler implements Runnable,  Thread.UncaughtExceptionHandler
+public class RuntimeDecompilerAsync extends RuntimeDecompiler implements Runnable, Thread.UncaughtExceptionHandler
 {
     private final BlockingQueue<File> queue;
     private final Thread thread;
@@ -17,12 +18,13 @@ public class RuntimeDecompilerAsync extends RuntimeDecompiler implements Runnabl
         super(outputPath);
         this.queue = new LinkedBlockingQueue<File>();
         this.run = true;
-        (this.thread = new Thread(this,  "Decompiler thread")).setDaemon(true);
+        (this.thread = new Thread(this, "Decompiler thread")).setDaemon(true);
         this.thread.setPriority(1);
         this.thread.setUncaughtExceptionHandler(this);
         this.thread.start();
     }
     
+    @Override
     public void decompile(final File file) {
         if (this.run) {
             this.queue.offer(file);
@@ -32,6 +34,7 @@ public class RuntimeDecompilerAsync extends RuntimeDecompiler implements Runnabl
         }
     }
     
+    @Override
     public void run() {
         while (this.run) {
             try {
@@ -47,8 +50,9 @@ public class RuntimeDecompilerAsync extends RuntimeDecompiler implements Runnabl
         }
     }
     
-    public void uncaughtException(final Thread thread,  final Throwable ex) {
-        this.logger.error("Async decompiler encountered an error and will terminate. Further decompile requests will be handled synchronously. {} {}",  new Object[] { ex.getClass().getName(),  ex.getMessage() });
+    @Override
+    public void uncaughtException(final Thread thread, final Throwable ex) {
+        this.logger.error("Async decompiler encountered an error and will terminate. Further decompile requests will be handled synchronously. {} {}", new Object[] { ex.getClass().getName(), ex.getMessage() });
         this.flush();
     }
     

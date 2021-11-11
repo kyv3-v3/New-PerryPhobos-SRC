@@ -4,10 +4,13 @@
 
 package org.spongepowered.tools.obfuscation.mcp;
 
-import java.util.*;
-import org.spongepowered.tools.obfuscation.service.*;
-import org.spongepowered.tools.obfuscation.*;
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableList;
+import org.spongepowered.tools.obfuscation.ObfuscationEnvironment;
+import org.spongepowered.tools.obfuscation.service.ObfuscationTypeDescriptor;
+import java.util.Collection;
+import com.google.common.collect.ImmutableSet;
+import java.util.Set;
+import org.spongepowered.tools.obfuscation.service.IObfuscationService;
 
 public class ObfuscationServiceMCP implements IObfuscationService
 {
@@ -23,11 +26,11 @@ public class ObfuscationServiceMCP implements IObfuscationService
     
     @Override
     public Set<String> getSupportedOptions() {
-        return (Set<String>)ImmutableSet.of((Object)"reobfSrgFile",  (Object)"reobfSrgFiles",  (Object)"reobfNotchSrgFile",  (Object)"reobfNotchSrgFiles",  (Object)"outSrgFile",  (Object)"outNotchSrgFile",  (Object[])new String[] { "outRefMapFile" });
+        return (Set<String>)ImmutableSet.of((Object)"reobfSrgFile", (Object)"reobfSrgFiles", (Object)"reobfNotchSrgFile", (Object)"reobfNotchSrgFiles", (Object)"outSrgFile", (Object)"outNotchSrgFile", (Object[])new String[] { "outRefMapFile" });
     }
     
     @Override
     public Collection<ObfuscationTypeDescriptor> getObfuscationTypes() {
-        return (Collection<ObfuscationTypeDescriptor>)ImmutableList.of((Object)new ObfuscationTypeDescriptor("searge",  "reobfSrgFile",  "reobfSrgFiles",  "outSrgFile",  (Class<? extends ObfuscationEnvironment>)ObfuscationEnvironmentMCP.class),  (Object)new ObfuscationTypeDescriptor("notch",  "reobfNotchSrgFile",  "reobfNotchSrgFiles",  "outNotchSrgFile",  (Class<? extends ObfuscationEnvironment>)ObfuscationEnvironmentMCP.class));
+        return (Collection<ObfuscationTypeDescriptor>)ImmutableList.of((Object)new ObfuscationTypeDescriptor("searge", "reobfSrgFile", "reobfSrgFiles", "outSrgFile", ObfuscationEnvironmentMCP.class), (Object)new ObfuscationTypeDescriptor("notch", "reobfNotchSrgFile", "reobfNotchSrgFiles", "outNotchSrgFile", ObfuscationEnvironmentMCP.class));
     }
 }

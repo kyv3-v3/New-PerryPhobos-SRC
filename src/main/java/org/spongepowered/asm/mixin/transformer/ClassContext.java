@@ -4,9 +4,14 @@
 
 package org.spongepowered.asm.mixin.transformer;
 
-import java.util.*;
-import org.spongepowered.asm.lib.tree.*;
-import org.spongepowered.asm.mixin.struct.*;
+import org.spongepowered.asm.mixin.struct.MemberRef;
+import org.spongepowered.asm.lib.tree.MethodInsnNode;
+import org.spongepowered.asm.lib.tree.AbstractInsnNode;
+import java.util.Iterator;
+import org.spongepowered.asm.lib.tree.MethodNode;
+import org.spongepowered.asm.lib.tree.ClassNode;
+import java.util.HashSet;
+import java.util.Set;
 
 abstract class ClassContext
 {
@@ -41,16 +46,16 @@ abstract class ClassContext
             if (!(insn instanceof MethodInsnNode)) {
                 continue;
             }
-            final MemberRef methodRef = (MemberRef)new MemberRef.Method((MethodInsnNode)insn);
+            final MemberRef methodRef = new MemberRef.Method((MethodInsnNode)insn);
             if (!methodRef.getOwner().equals(this.getClassRef())) {
                 continue;
             }
-            final ClassInfo.Method md = this.getClassInfo().findMethod(methodRef.getName(),  methodRef.getDesc(),  10);
-            this.upgradeMethodRef(method,  methodRef,  md);
+            final ClassInfo.Method md = this.getClassInfo().findMethod(methodRef.getName(), methodRef.getDesc(), 10);
+            this.upgradeMethodRef(method, methodRef, md);
         }
     }
     
-    protected void upgradeMethodRef(final MethodNode containingMethod,  final MemberRef methodRef,  final ClassInfo.Method method) {
+    protected void upgradeMethodRef(final MethodNode containingMethod, final MemberRef methodRef, final ClassInfo.Method method) {
         if (methodRef.getOpcode() != 183) {
             return;
         }

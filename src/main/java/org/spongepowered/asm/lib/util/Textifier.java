@@ -4,10 +4,22 @@
 
 package org.spongepowered.asm.lib.util;
 
-import java.io.*;
-import org.spongepowered.asm.lib.signature.*;
-import java.util.*;
-import org.spongepowered.asm.lib.*;
+import org.spongepowered.asm.lib.TypeReference;
+import java.util.HashMap;
+import org.spongepowered.asm.lib.Handle;
+import org.spongepowered.asm.lib.Type;
+import org.spongepowered.asm.lib.Attribute;
+import org.spongepowered.asm.lib.TypePath;
+import org.spongepowered.asm.lib.signature.SignatureVisitor;
+import org.spongepowered.asm.lib.signature.SignatureReader;
+import org.spongepowered.asm.lib.ClassVisitor;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.InputStream;
+import org.spongepowered.asm.lib.ClassReader;
+import java.io.FileInputStream;
+import org.spongepowered.asm.lib.Label;
+import java.util.Map;
 
 public class Textifier extends Printer
 {
@@ -25,7 +37,7 @@ public class Textifier extends Printer
     protected String tab2;
     protected String tab3;
     protected String ltab;
-    protected Map<Label,  String> labelNames;
+    protected Map<Label, String> labelNames;
     private int access;
     private int valueNumber;
     
@@ -66,30 +78,31 @@ public class Textifier extends Printer
         }
         ClassReader cr;
         if (args[i].endsWith(".class") || args[i].indexOf(92) > -1 || args[i].indexOf(47) > -1) {
-            cr = new ClassReader((InputStream)new FileInputStream(args[i]));
+            cr = new ClassReader(new FileInputStream(args[i]));
         }
         else {
             cr = new ClassReader(args[i]);
         }
-        cr.accept((ClassVisitor)new TraceClassVisitor(new PrintWriter(System.out)),  flags);
+        cr.accept(new TraceClassVisitor(new PrintWriter(System.out)), flags);
     }
     
-    public void visit(final int version,  final int access,  final String name,  final String signature,  final String superName,  final String[] interfaces) {
+    @Override
+    public void visit(final int version, final int access, final String name, final String signature, final String superName, final String[] interfaces) {
         this.access = access;
         final int major = version & 0xFFFF;
         final int minor = version >>> 16;
         this.buf.setLength(0);
-        this.buf.append("// class version ").append(major).append('.').append(minor).append(" (").append(version).append(")\n");
+        this.buf.append("class version ").append(major).append('.').append(minor).append(" (").append(version).append(")\n");
         if ((access & 0x20000) != 0x0) {
-            this.buf.append("// DEPRECATED\n");
+            this.buf.append("DEPRECATED\n");
         }
-        this.buf.append("// access flags 0x").append(Integer.toHexString(access).toUpperCase()).append('\n');
-        this.appendDescriptor(5,  signature);
+        this.buf.append("access flags 0x").append(Integer.toHexString(access).toUpperCase()).append('\n');
+        this.appendDescriptor(5, signature);
         if (signature != null) {
             final TraceSignatureVisitor sv = new TraceSignatureVisitor(access);
             final SignatureReader r = new SignatureReader(signature);
-            r.accept((SignatureVisitor)sv);
-            this.buf.append("// declaration: ").append(name).append(sv.getDeclaration()).append('\n');
+            r.accept(sv);
+            this.buf.append("declaration: ").append(name).append(sv.getDeclaration()).append('\n');
         }
         this.appendAccess(access & 0xFFFFFFDF);
         if ((access & 0x2000) != 0x0) {
@@ -101,16 +114,16 @@ public class Textifier extends Printer
         else if ((access & 0x4000) == 0x0) {
             this.buf.append("class ");
         }
-        this.appendDescriptor(0,  name);
+        this.appendDescriptor(0, name);
         if (superName != null && !"java/lang/Object".equals(superName)) {
             this.buf.append(" extends ");
-            this.appendDescriptor(0,  superName);
+            this.appendDescriptor(0, superName);
             this.buf.append(' ');
         }
         if (interfaces != null && interfaces.length > 0) {
             this.buf.append(" implements ");
             for (int i = 0; i < interfaces.length; ++i) {
-                this.appendDescriptor(0,  interfaces[i]);
+                this.appendDescriptor(0, interfaces[i]);
                 this.buf.append(' ');
             }
         }
@@ -118,81 +131,88 @@ public class Textifier extends Printer
         this.text.add(this.buf.toString());
     }
     
-    public void visitSource(final String file,  final String debug) {
+    @Override
+    public void visitSource(final String file, final String debug) {
         this.buf.setLength(0);
         if (file != null) {
-            this.buf.append(this.tab).append("// compiled from: ").append(file).append('\n');
+            this.buf.append(this.tab).append("compiled from: ").append(file).append('\n');
         }
         if (debug != null) {
-            this.buf.append(this.tab).append("// debug info: ").append(debug).append('\n');
+            this.buf.append(this.tab).append("debug info: ").append(debug).append('\n');
         }
         if (this.buf.length() > 0) {
             this.text.add(this.buf.toString());
         }
     }
     
-    public void visitOuterClass(final String owner,  final String name,  final String desc) {
+    @Override
+    public void visitOuterClass(final String owner, final String name, final String desc) {
         this.buf.setLength(0);
         this.buf.append(this.tab).append("OUTERCLASS ");
-        this.appendDescriptor(0,  owner);
+        this.appendDescriptor(0, owner);
         this.buf.append(' ');
         if (name != null) {
             this.buf.append(name).append(' ');
         }
-        this.appendDescriptor(3,  desc);
+        this.appendDescriptor(3, desc);
         this.buf.append('\n');
         this.text.add(this.buf.toString());
     }
     
-    public Textifier visitClassAnnotation(final String desc,  final boolean visible) {
+    @Override
+    public Textifier visitClassAnnotation(final String desc, final boolean visible) {
         this.text.add("\n");
-        return this.visitAnnotation(desc,  visible);
+        return this.visitAnnotation(desc, visible);
     }
     
-    public Printer visitClassTypeAnnotation(final int typeRef,  final TypePath typePath,  final String desc,  final boolean visible) {
+    @Override
+    public Printer visitClassTypeAnnotation(final int typeRef, final TypePath typePath, final String desc, final boolean visible) {
         this.text.add("\n");
-        return this.visitTypeAnnotation(typeRef,  typePath,  desc,  visible);
+        return this.visitTypeAnnotation(typeRef, typePath, desc, visible);
     }
     
+    @Override
     public void visitClassAttribute(final Attribute attr) {
         this.text.add("\n");
         this.visitAttribute(attr);
     }
     
-    public void visitInnerClass(final String name,  final String outerName,  final String innerName,  final int access) {
+    @Override
+    public void visitInnerClass(final String name, final String outerName, final String innerName, final int access) {
         this.buf.setLength(0);
-        this.buf.append(this.tab).append("// access flags 0x");
+        this.buf.append(this.tab).append("access flags 0x");
         this.buf.append(Integer.toHexString(access & 0xFFFFFFDF).toUpperCase()).append('\n');
         this.buf.append(this.tab);
         this.appendAccess(access);
         this.buf.append("INNERCLASS ");
-        this.appendDescriptor(0,  name);
+        this.appendDescriptor(0, name);
         this.buf.append(' ');
-        this.appendDescriptor(0,  outerName);
+        this.appendDescriptor(0, outerName);
         this.buf.append(' ');
-        this.appendDescriptor(0,  innerName);
+        this.appendDescriptor(0, innerName);
         this.buf.append('\n');
         this.text.add(this.buf.toString());
     }
     
-    public Textifier visitField(final int access,  final String name,  final String desc,  final String signature,  final Object value) {
+    @Override
+    public Textifier visitField(final int access, final String name, final String desc, final String signature, final Object value) {
         this.buf.setLength(0);
         this.buf.append('\n');
         if ((access & 0x20000) != 0x0) {
-            this.buf.append(this.tab).append("// DEPRECATED\n");
+            this.buf.append(this.tab).append("DEPRECATED\n");
         }
-        this.buf.append(this.tab).append("// access flags 0x").append(Integer.toHexString(access).toUpperCase()).append('\n');
+        this.buf.append(this.tab).append("access flags 0x").append(Integer.toHexString(access).toUpperCase()).append('\n');
         if (signature != null) {
             this.buf.append(this.tab);
-            this.appendDescriptor(2,  signature);
+            this.appendDescriptor(2, signature);
             final TraceSignatureVisitor sv = new TraceSignatureVisitor(0);
             final SignatureReader r = new SignatureReader(signature);
-            r.acceptType((SignatureVisitor)sv);
-            this.buf.append(this.tab).append("// declaration: ").append(sv.getDeclaration()).append('\n');
+            r.acceptType(sv);
+            this.buf.append(this.tab).append("declaration: ").append(sv.getDeclaration()).append('\n');
         }
         this.buf.append(this.tab);
         this.appendAccess(access);
-        this.appendDescriptor(1,  desc);
+        this.appendDescriptor(1, desc);
         this.buf.append(' ').append(name);
         if (value != null) {
             this.buf.append(" = ");
@@ -210,23 +230,24 @@ public class Textifier extends Printer
         return t;
     }
     
-    public Textifier visitMethod(final int access,  final String name,  final String desc,  final String signature,  final String[] exceptions) {
+    @Override
+    public Textifier visitMethod(final int access, final String name, final String desc, final String signature, final String[] exceptions) {
         this.buf.setLength(0);
         this.buf.append('\n');
         if ((access & 0x20000) != 0x0) {
-            this.buf.append(this.tab).append("// DEPRECATED\n");
+            this.buf.append(this.tab).append("DEPRECATED\n");
         }
-        this.buf.append(this.tab).append("// access flags 0x").append(Integer.toHexString(access).toUpperCase()).append('\n');
+        this.buf.append(this.tab).append("access flags 0x").append(Integer.toHexString(access).toUpperCase()).append('\n');
         if (signature != null) {
             this.buf.append(this.tab);
-            this.appendDescriptor(4,  signature);
+            this.appendDescriptor(4, signature);
             final TraceSignatureVisitor v = new TraceSignatureVisitor(0);
             final SignatureReader r = new SignatureReader(signature);
-            r.accept((SignatureVisitor)v);
+            r.accept(v);
             final String genericDecl = v.getDeclaration();
             final String genericReturn = v.getReturnType();
             final String genericExceptions = v.getExceptions();
-            this.buf.append(this.tab).append("// declaration: ").append(genericReturn).append(' ').append(name).append(genericDecl);
+            this.buf.append(this.tab).append("declaration: ").append(genericReturn).append(' ').append(name).append(genericDecl);
             if (genericExceptions != null) {
                 this.buf.append(" throws ").append(genericExceptions);
             }
@@ -247,11 +268,11 @@ public class Textifier extends Printer
             this.buf.append("default ");
         }
         this.buf.append(name);
-        this.appendDescriptor(3,  desc);
+        this.appendDescriptor(3, desc);
         if (exceptions != null && exceptions.length > 0) {
             this.buf.append(" throws ");
             for (int i = 0; i < exceptions.length; ++i) {
-                this.appendDescriptor(0,  exceptions[i]);
+                this.appendDescriptor(0, exceptions[i]);
                 this.buf.append(' ');
             }
         }
@@ -262,11 +283,13 @@ public class Textifier extends Printer
         return t;
     }
     
+    @Override
     public void visitClassEnd() {
         this.text.add("}\n");
     }
     
-    public void visit(final String name,  final Object value) {
+    @Override
+    public void visit(final String name, final Object value) {
         this.buf.setLength(0);
         this.appendComa(this.valueNumber++);
         if (name != null) {
@@ -398,32 +421,34 @@ public class Textifier extends Printer
     }
     
     private void visitString(final String value) {
-        appendString(this.buf,  value);
+        Printer.appendString(this.buf, value);
     }
     
     private void visitType(final Type value) {
         this.buf.append(value.getClassName()).append(".class");
     }
     
-    public void visitEnum(final String name,  final String desc,  final String value) {
+    @Override
+    public void visitEnum(final String name, final String desc, final String value) {
         this.buf.setLength(0);
         this.appendComa(this.valueNumber++);
         if (name != null) {
             this.buf.append(name).append('=');
         }
-        this.appendDescriptor(1,  desc);
+        this.appendDescriptor(1, desc);
         this.buf.append('.').append(value);
         this.text.add(this.buf.toString());
     }
     
-    public Textifier visitAnnotation(final String name,  final String desc) {
+    @Override
+    public Textifier visitAnnotation(final String name, final String desc) {
         this.buf.setLength(0);
         this.appendComa(this.valueNumber++);
         if (name != null) {
             this.buf.append(name).append('=');
         }
         this.buf.append('@');
-        this.appendDescriptor(1,  desc);
+        this.appendDescriptor(1, desc);
         this.buf.append('(');
         this.text.add(this.buf.toString());
         final Textifier t = this.createTextifier();
@@ -432,6 +457,7 @@ public class Textifier extends Printer
         return t;
     }
     
+    @Override
     public Textifier visitArray(final String name) {
         this.buf.setLength(0);
         this.appendComa(this.valueNumber++);
@@ -446,32 +472,39 @@ public class Textifier extends Printer
         return t;
     }
     
+    @Override
     public void visitAnnotationEnd() {
     }
     
-    public Textifier visitFieldAnnotation(final String desc,  final boolean visible) {
-        return this.visitAnnotation(desc,  visible);
+    @Override
+    public Textifier visitFieldAnnotation(final String desc, final boolean visible) {
+        return this.visitAnnotation(desc, visible);
     }
     
-    public Printer visitFieldTypeAnnotation(final int typeRef,  final TypePath typePath,  final String desc,  final boolean visible) {
-        return this.visitTypeAnnotation(typeRef,  typePath,  desc,  visible);
+    @Override
+    public Printer visitFieldTypeAnnotation(final int typeRef, final TypePath typePath, final String desc, final boolean visible) {
+        return this.visitTypeAnnotation(typeRef, typePath, desc, visible);
     }
     
+    @Override
     public void visitFieldAttribute(final Attribute attr) {
         this.visitAttribute(attr);
     }
     
+    @Override
     public void visitFieldEnd() {
     }
     
-    public void visitParameter(final String name,  final int access) {
+    @Override
+    public void visitParameter(final String name, final int access) {
         this.buf.setLength(0);
-        this.buf.append(this.tab2).append("// parameter ");
+        this.buf.append(this.tab2).append("parameter ");
         this.appendAccess(access);
         this.buf.append(' ').append((name == null) ? "<no name>" : name).append('\n');
         this.text.add(this.buf.toString());
     }
     
+    @Override
     public Textifier visitAnnotationDefault() {
         this.text.add(this.tab2 + "default=");
         final Textifier t = this.createTextifier();
@@ -480,34 +513,38 @@ public class Textifier extends Printer
         return t;
     }
     
-    public Textifier visitMethodAnnotation(final String desc,  final boolean visible) {
-        return this.visitAnnotation(desc,  visible);
+    @Override
+    public Textifier visitMethodAnnotation(final String desc, final boolean visible) {
+        return this.visitAnnotation(desc, visible);
     }
     
-    public Printer visitMethodTypeAnnotation(final int typeRef,  final TypePath typePath,  final String desc,  final boolean visible) {
-        return this.visitTypeAnnotation(typeRef,  typePath,  desc,  visible);
+    @Override
+    public Printer visitMethodTypeAnnotation(final int typeRef, final TypePath typePath, final String desc, final boolean visible) {
+        return this.visitTypeAnnotation(typeRef, typePath, desc, visible);
     }
     
-    public Textifier visitParameterAnnotation(final int parameter,  final String desc,  final boolean visible) {
+    @Override
+    public Textifier visitParameterAnnotation(final int parameter, final String desc, final boolean visible) {
         this.buf.setLength(0);
         this.buf.append(this.tab2).append('@');
-        this.appendDescriptor(1,  desc);
+        this.appendDescriptor(1, desc);
         this.buf.append('(');
         this.text.add(this.buf.toString());
         final Textifier t = this.createTextifier();
         this.text.add(t.getText());
-        this.text.add(visible ? ") // parameter " : ") // invisible,  parameter ");
+        this.text.add(visible ? ") parameter " : ") invisible, parameter ");
         this.text.add(parameter);
         this.text.add("\n");
         return t;
     }
     
+    @Override
     public void visitMethodAttribute(final Attribute attr) {
         this.buf.setLength(0);
         this.buf.append(this.tab).append("ATTRIBUTE ");
-        this.appendDescriptor(-1,  attr.type);
+        this.appendDescriptor(-1, attr.type);
         if (attr instanceof Textifiable) {
-            ((Textifiable)attr).textify(this.buf,  (Map)this.labelNames);
+            ((Textifiable)attr).textify(this.buf, this.labelNames);
         }
         else {
             this.buf.append(" : unknown\n");
@@ -515,10 +552,12 @@ public class Textifier extends Printer
         this.text.add(this.buf.toString());
     }
     
+    @Override
     public void visitCode() {
     }
     
-    public void visitFrame(final int type,  final int nLocal,  final Object[] local,  final int nStack,  final Object[] stack) {
+    @Override
+    public void visitFrame(final int type, final int nLocal, final Object[] local, final int nStack, final Object[] stack) {
         this.buf.setLength(0);
         this.buf.append(this.ltab);
         this.buf.append("FRAME ");
@@ -526,15 +565,15 @@ public class Textifier extends Printer
             case -1:
             case 0: {
                 this.buf.append("FULL [");
-                this.appendFrameTypes(nLocal,  local);
+                this.appendFrameTypes(nLocal, local);
                 this.buf.append("] [");
-                this.appendFrameTypes(nStack,  stack);
+                this.appendFrameTypes(nStack, stack);
                 this.buf.append(']');
                 break;
             }
             case 1: {
                 this.buf.append("APPEND [");
-                this.appendFrameTypes(nLocal,  local);
+                this.appendFrameTypes(nLocal, local);
                 this.buf.append(']');
                 break;
             }
@@ -548,7 +587,7 @@ public class Textifier extends Printer
             }
             case 4: {
                 this.buf.append("SAME1 ");
-                this.appendFrameTypes(1,  stack);
+                this.appendFrameTypes(1, stack);
                 break;
             }
         }
@@ -556,80 +595,88 @@ public class Textifier extends Printer
         this.text.add(this.buf.toString());
     }
     
+    @Override
     public void visitInsn(final int opcode) {
         this.buf.setLength(0);
         this.buf.append(this.tab2).append(Textifier.OPCODES[opcode]).append('\n');
         this.text.add(this.buf.toString());
     }
     
-    public void visitIntInsn(final int opcode,  final int operand) {
+    @Override
+    public void visitIntInsn(final int opcode, final int operand) {
         this.buf.setLength(0);
         this.buf.append(this.tab2).append(Textifier.OPCODES[opcode]).append(' ').append((opcode == 188) ? Textifier.TYPES[operand] : Integer.toString(operand)).append('\n');
         this.text.add(this.buf.toString());
     }
     
-    public void visitVarInsn(final int opcode,  final int var) {
+    @Override
+    public void visitVarInsn(final int opcode, final int var) {
         this.buf.setLength(0);
         this.buf.append(this.tab2).append(Textifier.OPCODES[opcode]).append(' ').append(var).append('\n');
         this.text.add(this.buf.toString());
     }
     
-    public void visitTypeInsn(final int opcode,  final String type) {
+    @Override
+    public void visitTypeInsn(final int opcode, final String type) {
         this.buf.setLength(0);
         this.buf.append(this.tab2).append(Textifier.OPCODES[opcode]).append(' ');
-        this.appendDescriptor(0,  type);
+        this.appendDescriptor(0, type);
         this.buf.append('\n');
         this.text.add(this.buf.toString());
     }
     
-    public void visitFieldInsn(final int opcode,  final String owner,  final String name,  final String desc) {
+    @Override
+    public void visitFieldInsn(final int opcode, final String owner, final String name, final String desc) {
         this.buf.setLength(0);
         this.buf.append(this.tab2).append(Textifier.OPCODES[opcode]).append(' ');
-        this.appendDescriptor(0,  owner);
+        this.appendDescriptor(0, owner);
         this.buf.append('.').append(name).append(" : ");
-        this.appendDescriptor(1,  desc);
+        this.appendDescriptor(1, desc);
         this.buf.append('\n');
         this.text.add(this.buf.toString());
     }
     
     @Deprecated
-    public void visitMethodInsn(final int opcode,  final String owner,  final String name,  final String desc) {
+    @Override
+    public void visitMethodInsn(final int opcode, final String owner, final String name, final String desc) {
         if (this.api >= 327680) {
-            super.visitMethodInsn(opcode,  owner,  name,  desc);
+            super.visitMethodInsn(opcode, owner, name, desc);
             return;
         }
-        this.doVisitMethodInsn(opcode,  owner,  name,  desc,  opcode == 185);
+        this.doVisitMethodInsn(opcode, owner, name, desc, opcode == 185);
     }
     
-    public void visitMethodInsn(final int opcode,  final String owner,  final String name,  final String desc,  final boolean itf) {
+    @Override
+    public void visitMethodInsn(final int opcode, final String owner, final String name, final String desc, final boolean itf) {
         if (this.api < 327680) {
-            super.visitMethodInsn(opcode,  owner,  name,  desc,  itf);
+            super.visitMethodInsn(opcode, owner, name, desc, itf);
             return;
         }
-        this.doVisitMethodInsn(opcode,  owner,  name,  desc,  itf);
+        this.doVisitMethodInsn(opcode, owner, name, desc, itf);
     }
     
-    private void doVisitMethodInsn(final int opcode,  final String owner,  final String name,  final String desc,  final boolean itf) {
+    private void doVisitMethodInsn(final int opcode, final String owner, final String name, final String desc, final boolean itf) {
         this.buf.setLength(0);
         this.buf.append(this.tab2).append(Textifier.OPCODES[opcode]).append(' ');
-        this.appendDescriptor(0,  owner);
+        this.appendDescriptor(0, owner);
         this.buf.append('.').append(name).append(' ');
-        this.appendDescriptor(3,  desc);
+        this.appendDescriptor(3, desc);
         this.buf.append('\n');
         this.text.add(this.buf.toString());
     }
     
-    public void visitInvokeDynamicInsn(final String name,  final String desc,  final Handle bsm,  final Object... bsmArgs) {
+    @Override
+    public void visitInvokeDynamicInsn(final String name, final String desc, final Handle bsm, final Object... bsmArgs) {
         this.buf.setLength(0);
         this.buf.append(this.tab2).append("INVOKEDYNAMIC").append(' ');
         this.buf.append(name);
-        this.appendDescriptor(3,  desc);
+        this.appendDescriptor(3, desc);
         this.buf.append(" [");
         this.buf.append('\n');
         this.buf.append(this.tab3);
         this.appendHandle(bsm);
         this.buf.append('\n');
-        this.buf.append(this.tab3).append("// arguments:");
+        this.buf.append(this.tab3).append("arguments:");
         if (bsmArgs.length == 0) {
             this.buf.append(" none");
         }
@@ -639,12 +686,12 @@ public class Textifier extends Printer
                 this.buf.append(this.tab3);
                 final Object cst = bsmArgs[i];
                 if (cst instanceof String) {
-                    Printer.appendString(this.buf,  (String)cst);
+                    Printer.appendString(this.buf, (String)cst);
                 }
                 else if (cst instanceof Type) {
                     final Type type = (Type)cst;
                     if (type.getSort() == 11) {
-                        this.appendDescriptor(3,  type.getDescriptor());
+                        this.appendDescriptor(3, type.getDescriptor());
                     }
                     else {
                         this.buf.append(type.getDescriptor()).append(".class");
@@ -656,7 +703,7 @@ public class Textifier extends Printer
                 else {
                     this.buf.append(cst);
                 }
-                this.buf.append(",  \n");
+                this.buf.append(", \n");
             }
             this.buf.setLength(this.buf.length() - 3);
         }
@@ -665,7 +712,8 @@ public class Textifier extends Printer
         this.text.add(this.buf.toString());
     }
     
-    public void visitJumpInsn(final int opcode,  final Label label) {
+    @Override
+    public void visitJumpInsn(final int opcode, final Label label) {
         this.buf.setLength(0);
         this.buf.append(this.tab2).append(Textifier.OPCODES[opcode]).append(' ');
         this.appendLabel(label);
@@ -673,6 +721,7 @@ public class Textifier extends Printer
         this.text.add(this.buf.toString());
     }
     
+    @Override
     public void visitLabel(final Label label) {
         this.buf.setLength(0);
         this.buf.append(this.ltab);
@@ -681,11 +730,12 @@ public class Textifier extends Printer
         this.text.add(this.buf.toString());
     }
     
+    @Override
     public void visitLdcInsn(final Object cst) {
         this.buf.setLength(0);
         this.buf.append(this.tab2).append("LDC ");
         if (cst instanceof String) {
-            Printer.appendString(this.buf,  (String)cst);
+            Printer.appendString(this.buf, (String)cst);
         }
         else if (cst instanceof Type) {
             this.buf.append(((Type)cst).getDescriptor()).append(".class");
@@ -697,13 +747,15 @@ public class Textifier extends Printer
         this.text.add(this.buf.toString());
     }
     
-    public void visitIincInsn(final int var,  final int increment) {
+    @Override
+    public void visitIincInsn(final int var, final int increment) {
         this.buf.setLength(0);
         this.buf.append(this.tab2).append("IINC ").append(var).append(' ').append(increment).append('\n');
         this.text.add(this.buf.toString());
     }
     
-    public void visitTableSwitchInsn(final int min,  final int max,  final Label dflt,  final Label... labels) {
+    @Override
+    public void visitTableSwitchInsn(final int min, final int max, final Label dflt, final Label... labels) {
         this.buf.setLength(0);
         this.buf.append(this.tab2).append("TABLESWITCH\n");
         for (int i = 0; i < labels.length; ++i) {
@@ -717,7 +769,8 @@ public class Textifier extends Printer
         this.text.add(this.buf.toString());
     }
     
-    public void visitLookupSwitchInsn(final Label dflt,  final int[] keys,  final Label[] labels) {
+    @Override
+    public void visitLookupSwitchInsn(final Label dflt, final int[] keys, final Label[] labels) {
         this.buf.setLength(0);
         this.buf.append(this.tab2).append("LOOKUPSWITCH\n");
         for (int i = 0; i < labels.length; ++i) {
@@ -731,19 +784,22 @@ public class Textifier extends Printer
         this.text.add(this.buf.toString());
     }
     
-    public void visitMultiANewArrayInsn(final String desc,  final int dims) {
+    @Override
+    public void visitMultiANewArrayInsn(final String desc, final int dims) {
         this.buf.setLength(0);
         this.buf.append(this.tab2).append("MULTIANEWARRAY ");
-        this.appendDescriptor(1,  desc);
+        this.appendDescriptor(1, desc);
         this.buf.append(' ').append(dims).append('\n');
         this.text.add(this.buf.toString());
     }
     
-    public Printer visitInsnAnnotation(final int typeRef,  final TypePath typePath,  final String desc,  final boolean visible) {
-        return this.visitTypeAnnotation(typeRef,  typePath,  desc,  visible);
+    @Override
+    public Printer visitInsnAnnotation(final int typeRef, final TypePath typePath, final String desc, final boolean visible) {
+        return this.visitTypeAnnotation(typeRef, typePath, desc, visible);
     }
     
-    public void visitTryCatchBlock(final Label start,  final Label end,  final Label handler,  final String type) {
+    @Override
+    public void visitTryCatchBlock(final Label start, final Label end, final Label handler, final String type) {
         this.buf.setLength(0);
         this.buf.append(this.tab2).append("TRYCATCHBLOCK ");
         this.appendLabel(start);
@@ -752,15 +808,16 @@ public class Textifier extends Printer
         this.buf.append(' ');
         this.appendLabel(handler);
         this.buf.append(' ');
-        this.appendDescriptor(0,  type);
+        this.appendDescriptor(0, type);
         this.buf.append('\n');
         this.text.add(this.buf.toString());
     }
     
-    public Printer visitTryCatchAnnotation(final int typeRef,  final TypePath typePath,  final String desc,  final boolean visible) {
+    @Override
+    public Printer visitTryCatchAnnotation(final int typeRef, final TypePath typePath, final String desc, final boolean visible) {
         this.buf.setLength(0);
         this.buf.append(this.tab2).append("TRYCATCHBLOCK @");
-        this.appendDescriptor(1,  desc);
+        this.appendDescriptor(1, desc);
         this.buf.append('(');
         this.text.add(this.buf.toString());
         final Textifier t = this.createTextifier();
@@ -768,16 +825,17 @@ public class Textifier extends Printer
         this.buf.setLength(0);
         this.buf.append(") : ");
         this.appendTypeReference(typeRef);
-        this.buf.append(",  ").append(typePath);
-        this.buf.append(visible ? "\n" : " // invisible\n");
+        this.buf.append(", ").append(typePath);
+        this.buf.append(visible ? "\n" : " invisible\n");
         this.text.add(this.buf.toString());
         return t;
     }
     
-    public void visitLocalVariable(final String name,  final String desc,  final String signature,  final Label start,  final Label end,  final int index) {
+    @Override
+    public void visitLocalVariable(final String name, final String desc, final String signature, final Label start, final Label end, final int index) {
         this.buf.setLength(0);
         this.buf.append(this.tab2).append("LOCALVARIABLE ").append(name).append(' ');
-        this.appendDescriptor(1,  desc);
+        this.appendDescriptor(1, desc);
         this.buf.append(' ');
         this.appendLabel(start);
         this.buf.append(' ');
@@ -785,19 +843,20 @@ public class Textifier extends Printer
         this.buf.append(' ').append(index).append('\n');
         if (signature != null) {
             this.buf.append(this.tab2);
-            this.appendDescriptor(2,  signature);
+            this.appendDescriptor(2, signature);
             final TraceSignatureVisitor sv = new TraceSignatureVisitor(0);
             final SignatureReader r = new SignatureReader(signature);
-            r.acceptType((SignatureVisitor)sv);
-            this.buf.append(this.tab2).append("// declaration: ").append(sv.getDeclaration()).append('\n');
+            r.acceptType(sv);
+            this.buf.append(this.tab2).append("declaration: ").append(sv.getDeclaration()).append('\n');
         }
         this.text.add(this.buf.toString());
     }
     
-    public Printer visitLocalVariableAnnotation(final int typeRef,  final TypePath typePath,  final Label[] start,  final Label[] end,  final int[] index,  final String desc,  final boolean visible) {
+    @Override
+    public Printer visitLocalVariableAnnotation(final int typeRef, final TypePath typePath, final Label[] start, final Label[] end, final int[] index, final String desc, final boolean visible) {
         this.buf.setLength(0);
         this.buf.append(this.tab2).append("LOCALVARIABLE @");
-        this.appendDescriptor(1,  desc);
+        this.appendDescriptor(1, desc);
         this.buf.append('(');
         this.text.add(this.buf.toString());
         final Textifier t = this.createTextifier();
@@ -805,7 +864,7 @@ public class Textifier extends Printer
         this.buf.setLength(0);
         this.buf.append(") : ");
         this.appendTypeReference(typeRef);
-        this.buf.append(",  ").append(typePath);
+        this.buf.append(", ").append(typePath);
         for (int i = 0; i < start.length; ++i) {
             this.buf.append(" [ ");
             this.appendLabel(start[i]);
@@ -813,12 +872,13 @@ public class Textifier extends Printer
             this.appendLabel(end[i]);
             this.buf.append(" - ").append(index[i]).append(" ]");
         }
-        this.buf.append(visible ? "\n" : " // invisible\n");
+        this.buf.append(visible ? "\n" : " invisible\n");
         this.text.add(this.buf.toString());
         return t;
     }
     
-    public void visitLineNumber(final int line,  final Label start) {
+    @Override
+    public void visitLineNumber(final int line, final Label start) {
         this.buf.setLength(0);
         this.buf.append(this.tab2).append("LINENUMBER ").append(line).append(' ');
         this.appendLabel(start);
@@ -826,7 +886,8 @@ public class Textifier extends Printer
         this.text.add(this.buf.toString());
     }
     
-    public void visitMaxs(final int maxStack,  final int maxLocals) {
+    @Override
+    public void visitMaxs(final int maxStack, final int maxLocals) {
         this.buf.setLength(0);
         this.buf.append(this.tab2).append("MAXSTACK = ").append(maxStack).append('\n');
         this.text.add(this.buf.toString());
@@ -835,25 +896,26 @@ public class Textifier extends Printer
         this.text.add(this.buf.toString());
     }
     
+    @Override
     public void visitMethodEnd() {
     }
     
-    public Textifier visitAnnotation(final String desc,  final boolean visible) {
+    public Textifier visitAnnotation(final String desc, final boolean visible) {
         this.buf.setLength(0);
         this.buf.append(this.tab).append('@');
-        this.appendDescriptor(1,  desc);
+        this.appendDescriptor(1, desc);
         this.buf.append('(');
         this.text.add(this.buf.toString());
         final Textifier t = this.createTextifier();
         this.text.add(t.getText());
-        this.text.add(visible ? ")\n" : ") // invisible\n");
+        this.text.add(visible ? ")\n" : ") invisible\n");
         return t;
     }
     
-    public Textifier visitTypeAnnotation(final int typeRef,  final TypePath typePath,  final String desc,  final boolean visible) {
+    public Textifier visitTypeAnnotation(final int typeRef, final TypePath typePath, final String desc, final boolean visible) {
         this.buf.setLength(0);
         this.buf.append(this.tab).append('@');
-        this.appendDescriptor(1,  desc);
+        this.appendDescriptor(1, desc);
         this.buf.append('(');
         this.text.add(this.buf.toString());
         final Textifier t = this.createTextifier();
@@ -861,8 +923,8 @@ public class Textifier extends Printer
         this.buf.setLength(0);
         this.buf.append(") : ");
         this.appendTypeReference(typeRef);
-        this.buf.append(",  ").append(typePath);
-        this.buf.append(visible ? "\n" : " // invisible\n");
+        this.buf.append(", ").append(typePath);
+        this.buf.append(visible ? "\n" : " invisible\n");
         this.text.add(this.buf.toString());
         return t;
     }
@@ -870,9 +932,9 @@ public class Textifier extends Printer
     public void visitAttribute(final Attribute attr) {
         this.buf.setLength(0);
         this.buf.append(this.tab).append("ATTRIBUTE ");
-        this.appendDescriptor(-1,  attr.type);
+        this.appendDescriptor(-1, attr.type);
         if (attr instanceof Textifiable) {
-            ((Textifiable)attr).textify(this.buf,  (Map)null);
+            ((Textifiable)attr).textify(this.buf, null);
         }
         else {
             this.buf.append(" : unknown\n");
@@ -884,10 +946,10 @@ public class Textifier extends Printer
         return new Textifier();
     }
     
-    protected void appendDescriptor(final int type,  final String desc) {
+    protected void appendDescriptor(final int type, final String desc) {
         if (type == 5 || type == 2 || type == 4) {
             if (desc != null) {
-                this.buf.append("// signature ").append(desc).append('\n');
+                this.buf.append("signature ").append(desc).append('\n');
             }
         }
         else {
@@ -897,19 +959,19 @@ public class Textifier extends Printer
     
     protected void appendLabel(final Label l) {
         if (this.labelNames == null) {
-            this.labelNames = new HashMap<Label,  String>();
+            this.labelNames = new HashMap<Label, String>();
         }
         String name = this.labelNames.get(l);
         if (name == null) {
             name = "L" + this.labelNames.size();
-            this.labelNames.put(l,  name);
+            this.labelNames.put(l, name);
         }
         this.buf.append(name);
     }
     
     protected void appendHandle(final Handle h) {
         final int tag = h.getTag();
-        this.buf.append("// handle kind 0x").append(Integer.toHexString(tag)).append(" : ");
+        this.buf.append("handle kind 0x").append(Integer.toHexString(tag)).append(" : ");
         boolean isMethodHandle = false;
         switch (tag) {
             case 1: {
@@ -956,13 +1018,13 @@ public class Textifier extends Printer
         }
         this.buf.append('\n');
         this.buf.append(this.tab3);
-        this.appendDescriptor(0,  h.getOwner());
+        this.appendDescriptor(0, h.getOwner());
         this.buf.append('.');
         this.buf.append(h.getName());
         if (!isMethodHandle) {
             this.buf.append('(');
         }
-        this.appendDescriptor(9,  h.getDesc());
+        this.appendDescriptor(9, h.getDesc());
         if (!isMethodHandle) {
             this.buf.append(')');
         }
@@ -1012,7 +1074,7 @@ public class Textifier extends Printer
     
     private void appendComa(final int i) {
         if (i != 0) {
-            this.buf.append(",  ");
+            this.buf.append(", ");
         }
     }
     
@@ -1032,11 +1094,11 @@ public class Textifier extends Printer
                 break;
             }
             case 17: {
-                this.buf.append("CLASS_TYPE_PARAMETER_BOUND ").append(ref.getTypeParameterIndex()).append(",  ").append(ref.getTypeParameterBoundIndex());
+                this.buf.append("CLASS_TYPE_PARAMETER_BOUND ").append(ref.getTypeParameterIndex()).append(", ").append(ref.getTypeParameterBoundIndex());
                 break;
             }
             case 18: {
-                this.buf.append("METHOD_TYPE_PARAMETER_BOUND ").append(ref.getTypeParameterIndex()).append(",  ").append(ref.getTypeParameterBoundIndex());
+                this.buf.append("METHOD_TYPE_PARAMETER_BOUND ").append(ref.getTypeParameterIndex()).append(", ").append(ref.getTypeParameterBoundIndex());
                 break;
             }
             case 19: {
@@ -1110,7 +1172,7 @@ public class Textifier extends Printer
         }
     }
     
-    private void appendFrameTypes(final int n,  final Object[] o) {
+    private void appendFrameTypes(final int n, final Object[] o) {
         for (int i = 0; i < n; ++i) {
             if (i > 0) {
                 this.buf.append(' ');
@@ -1118,40 +1180,40 @@ public class Textifier extends Printer
             if (o[i] instanceof String) {
                 final String desc = (String)o[i];
                 if (desc.startsWith("[")) {
-                    this.appendDescriptor(1,  desc);
+                    this.appendDescriptor(1, desc);
                 }
                 else {
-                    this.appendDescriptor(0,  desc);
+                    this.appendDescriptor(0, desc);
                 }
             }
             else if (o[i] instanceof Integer) {
                 switch ((int)o[i]) {
                     case 0: {
-                        this.appendDescriptor(1,  "T");
+                        this.appendDescriptor(1, "T");
                         break;
                     }
                     case 1: {
-                        this.appendDescriptor(1,  "I");
+                        this.appendDescriptor(1, "I");
                         break;
                     }
                     case 2: {
-                        this.appendDescriptor(1,  "F");
+                        this.appendDescriptor(1, "F");
                         break;
                     }
                     case 3: {
-                        this.appendDescriptor(1,  "D");
+                        this.appendDescriptor(1, "D");
                         break;
                     }
                     case 4: {
-                        this.appendDescriptor(1,  "J");
+                        this.appendDescriptor(1, "J");
                         break;
                     }
                     case 5: {
-                        this.appendDescriptor(1,  "N");
+                        this.appendDescriptor(1, "N");
                         break;
                     }
                     case 6: {
-                        this.appendDescriptor(1,  "U");
+                        this.appendDescriptor(1, "U");
                         break;
                     }
                 }

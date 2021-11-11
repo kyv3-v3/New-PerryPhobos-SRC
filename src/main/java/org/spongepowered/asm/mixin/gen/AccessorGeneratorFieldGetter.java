@@ -4,7 +4,11 @@
 
 package org.spongepowered.asm.mixin.gen;
 
-import org.spongepowered.asm.lib.tree.*;
+import org.spongepowered.asm.lib.tree.InsnNode;
+import org.spongepowered.asm.lib.tree.FieldInsnNode;
+import org.spongepowered.asm.lib.tree.AbstractInsnNode;
+import org.spongepowered.asm.lib.tree.VarInsnNode;
+import org.spongepowered.asm.lib.tree.MethodNode;
 
 public class AccessorGeneratorFieldGetter extends AccessorGeneratorField
 {
@@ -12,14 +16,15 @@ public class AccessorGeneratorFieldGetter extends AccessorGeneratorField
         super(info);
     }
     
+    @Override
     public MethodNode generate() {
-        final MethodNode method = this.createMethod(this.targetType.getSize(),  this.targetType.getSize());
+        final MethodNode method = this.createMethod(this.targetType.getSize(), this.targetType.getSize());
         if (this.isInstanceField) {
-            method.instructions.add((AbstractInsnNode)new VarInsnNode(25,  0));
+            method.instructions.add(new VarInsnNode(25, 0));
         }
         final int opcode = this.isInstanceField ? 180 : 178;
-        method.instructions.add((AbstractInsnNode)new FieldInsnNode(opcode,  this.info.getClassNode().name,  this.targetField.name,  this.targetField.desc));
-        method.instructions.add((AbstractInsnNode)new InsnNode(this.targetType.getOpcode(172)));
+        method.instructions.add(new FieldInsnNode(opcode, this.info.getClassNode().name, this.targetField.name, this.targetField.desc));
+        method.instructions.add(new InsnNode(this.targetType.getOpcode(172)));
         return method;
     }
 }

@@ -4,7 +4,7 @@
 
 package org.spongepowered.asm.mixin.transformer.ext;
 
-import java.io.*;
+import java.io.File;
 
 public interface IDecompiler
 {

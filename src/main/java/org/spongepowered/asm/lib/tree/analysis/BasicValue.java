@@ -4,7 +4,7 @@
 
 package org.spongepowered.asm.lib.tree.analysis;
 
-import org.spongepowered.asm.lib.*;
+import org.spongepowered.asm.lib.Type;
 
 public class BasicValue implements Value
 {

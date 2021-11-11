@@ -4,11 +4,12 @@
 
 package org.spongepowered.tools.obfuscation.interfaces;
 
-import org.spongepowered.asm.mixin.injection.struct.*;
-import org.spongepowered.tools.obfuscation.*;
-import org.spongepowered.asm.obfuscation.mapping.*;
-import org.spongepowered.asm.obfuscation.mapping.common.*;
-import org.spongepowered.tools.obfuscation.mirror.*;
+import org.spongepowered.tools.obfuscation.mirror.TypeHandle;
+import org.spongepowered.asm.obfuscation.mapping.common.MappingField;
+import org.spongepowered.asm.obfuscation.mapping.common.MappingMethod;
+import org.spongepowered.asm.obfuscation.mapping.IMapping;
+import org.spongepowered.tools.obfuscation.ObfuscationData;
+import org.spongepowered.asm.mixin.injection.struct.MemberInfo;
 
 public interface IObfuscationDataProvider
 {

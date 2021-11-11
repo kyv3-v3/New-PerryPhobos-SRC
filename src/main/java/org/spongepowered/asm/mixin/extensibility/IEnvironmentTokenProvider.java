@@ -4,7 +4,7 @@
 
 package org.spongepowered.asm.mixin.extensibility;
 
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.MixinEnvironment;
 
 public interface IEnvironmentTokenProvider
 {
@@ -12,5 +12,5 @@ public interface IEnvironmentTokenProvider
     
     int getPriority();
     
-    Integer getToken(final String p0,  final MixinEnvironment p1);
+    Integer getToken(final String p0, final MixinEnvironment p1);
 }

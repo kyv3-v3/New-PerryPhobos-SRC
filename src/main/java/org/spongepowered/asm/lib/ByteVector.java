@@ -27,7 +27,7 @@ public class ByteVector
         return this;
     }
     
-    ByteVector put11(final int b1,  final int b2) {
+    ByteVector put11(final int b1, final int b2) {
         int length = this.length;
         if (length + 2 > this.data.length) {
             this.enlarge(2);
@@ -51,7 +51,7 @@ public class ByteVector
         return this;
     }
     
-    ByteVector put12(final int b,  final int s) {
+    ByteVector put12(final int b, final int s) {
         int length = this.length;
         if (length + 3 > this.data.length) {
             this.enlarge(3);
@@ -114,7 +114,7 @@ public class ByteVector
             final char c = s.charAt(i);
             if (c < '\u0001' || c > '\u007f') {
                 this.length = len;
-                return this.encodeUTF8(s,  i,  65535);
+                return this.encodeUTF8(s, i, 65535);
             }
             data[len++] = (byte)c;
         }
@@ -122,7 +122,7 @@ public class ByteVector
         return this;
     }
     
-    ByteVector encodeUTF8(final String s,  final int i,  final int maxByteLength) {
+    ByteVector encodeUTF8(final String s, final int i, final int maxByteLength) {
         final int charLength = s.length();
         int byteLength = i;
         for (int j = i; j < charLength; ++j) {
@@ -168,12 +168,12 @@ public class ByteVector
         return this;
     }
     
-    public ByteVector putByteArray(final byte[] b,  final int off,  final int len) {
+    public ByteVector putByteArray(final byte[] b, final int off, final int len) {
         if (this.length + len > this.data.length) {
             this.enlarge(len);
         }
         if (b != null) {
-            System.arraycopy(b,  off,  this.data,  this.length,  len);
+            System.arraycopy(b, off, this.data, this.length, len);
         }
         this.length += len;
         return this;
@@ -183,7 +183,7 @@ public class ByteVector
         final int length1 = 2 * this.data.length;
         final int length2 = this.length + size;
         final byte[] newData = new byte[(length1 > length2) ? length1 : length2];
-        System.arraycopy(this.data,  0,  newData,  0,  this.length);
+        System.arraycopy(this.data, 0, newData, 0, this.length);
         this.data = newData;
     }
 }

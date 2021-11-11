@@ -4,8 +4,8 @@
 
 package org.spongepowered.asm.mixin.transformer.ext;
 
-import org.spongepowered.asm.mixin.transformer.*;
-import org.spongepowered.asm.lib.tree.*;
+import org.spongepowered.asm.lib.tree.ClassNode;
+import org.spongepowered.asm.mixin.transformer.ClassInfo;
 
 public interface ITargetClassContext
 {

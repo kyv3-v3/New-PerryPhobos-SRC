@@ -4,8 +4,10 @@
 
 package org.spongepowered.tools.obfuscation.mapping;
 
-import java.io.*;
-import org.spongepowered.asm.obfuscation.mapping.common.*;
+import org.spongepowered.asm.obfuscation.mapping.common.MappingField;
+import org.spongepowered.asm.obfuscation.mapping.common.MappingMethod;
+import java.io.IOException;
+import java.io.File;
 
 public interface IMappingProvider
 {

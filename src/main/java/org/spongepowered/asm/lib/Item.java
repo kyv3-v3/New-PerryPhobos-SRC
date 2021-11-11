@@ -23,7 +23,7 @@ final class Item
         this.index = index;
     }
     
-    Item(final int index,  final Item i) {
+    Item(final int index, final Item i) {
         this.index = index;
         this.type = i.type;
         this.intVal = i.intVal;
@@ -58,7 +58,7 @@ final class Item
         this.hashCode = (Integer.MAX_VALUE & this.type + (int)doubleVal);
     }
     
-    void set(final int type,  final String strVal1,  final String strVal2,  final String strVal3) {
+    void set(final int type, final String strVal1, final String strVal2, final String strVal3) {
         this.type = type;
         this.strVal1 = strVal1;
         this.strVal2 = strVal2;
@@ -82,7 +82,7 @@ final class Item
         }
     }
     
-    void set(final String name,  final String desc,  final int bsmIndex) {
+    void set(final String name, final String desc, final int bsmIndex) {
         this.type = 18;
         this.longVal = bsmIndex;
         this.strVal1 = name;
@@ -90,7 +90,7 @@ final class Item
         this.hashCode = (Integer.MAX_VALUE & 18 + bsmIndex * this.strVal1.hashCode() * this.strVal2.hashCode());
     }
     
-    void set(final int position,  final int hashCode) {
+    void set(final int position, final int hashCode) {
         this.type = 33;
         this.intVal = position;
         this.hashCode = hashCode;

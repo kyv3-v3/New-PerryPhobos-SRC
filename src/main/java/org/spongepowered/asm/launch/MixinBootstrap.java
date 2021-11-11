@@ -4,15 +4,16 @@
 
 package org.spongepowered.asm.launch;
 
-import org.spongepowered.asm.launch.platform.*;
-import org.spongepowered.asm.service.*;
-import java.util.*;
-import org.spongepowered.asm.mixin.*;
-import org.apache.logging.log4j.*;
+import org.apache.logging.log4j.LogManager;
+import org.spongepowered.asm.mixin.MixinEnvironment;
+import java.util.List;
+import org.spongepowered.asm.service.MixinService;
+import org.spongepowered.asm.launch.platform.MixinPlatformManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class MixinBootstrap
 {
-    public static final String VERSION = "0.7.11";
+    public static final String VERSION = "0.7.8";
     private static final Logger logger;
     private static boolean initialised;
     private static boolean initState;
@@ -33,7 +34,7 @@ public abstract class MixinBootstrap
                 MixinBootstrap.platform = (MixinPlatformManager)globalPlatformManager;
             }
             else {
-                GlobalProperties.put("mixin.platform",  (Object)(MixinBootstrap.platform = new MixinPlatformManager()));
+                GlobalProperties.put("mixin.platform", MixinBootstrap.platform = new MixinPlatformManager());
                 MixinBootstrap.platform.init();
             }
         }
@@ -49,12 +50,12 @@ public abstract class MixinBootstrap
     
     static boolean start() {
         if (!isSubsystemRegistered()) {
-            registerSubsystem("0.7.11");
+            registerSubsystem("0.7.8");
             if (!MixinBootstrap.initialised) {
                 MixinBootstrap.initialised = true;
                 final String command = System.getProperty("sun.java.command");
                 if (command != null && command.contains("GradleStart")) {
-                    System.setProperty("mixin.env.remapRefMap",  "true");
+                    System.setProperty("mixin.env.remapRefMap", "true");
                 }
                 final MixinEnvironment.Phase initialPhase = MixinService.getService().getInitialPhase();
                 if (initialPhase == MixinEnvironment.Phase.DEFAULT) {
@@ -72,7 +73,7 @@ public abstract class MixinBootstrap
             return true;
         }
         if (!checkSubsystemVersion()) {
-            throw new MixinInitialisationError("Mixin subsystem version " + getActiveSubsystemVersion() + " was already initialised. Cannot bootstrap version " + "0.7.11");
+            throw new MixinInitialisationError("Mixin subsystem version " + getActiveSubsystemVersion() + " was already initialised. Cannot bootstrap version " + "0.7.8");
         }
         return false;
     }
@@ -87,7 +88,7 @@ public abstract class MixinBootstrap
             return;
         }
         if (isSubsystemRegistered()) {
-            MixinBootstrap.logger.warn("Multiple Mixin containers present,  init suppressed for 0.7.11");
+            MixinBootstrap.logger.warn("Multiple Mixin containers present, init suppressed for 0.7.8");
             return;
         }
         throw new IllegalStateException("MixinBootstrap.doInit() called before MixinBootstrap.start()");
@@ -102,7 +103,7 @@ public abstract class MixinBootstrap
     }
     
     private static boolean checkSubsystemVersion() {
-        return "0.7.11".equals(getActiveSubsystemVersion());
+        return "0.7.8".equals(getActiveSubsystemVersion());
     }
     
     private static Object getActiveSubsystemVersion() {
@@ -111,7 +112,7 @@ public abstract class MixinBootstrap
     }
     
     private static void registerSubsystem(final String version) {
-        GlobalProperties.put("mixin.initialised",  (Object)version);
+        GlobalProperties.put("mixin.initialised", version);
     }
     
     static {

@@ -16,6 +16,7 @@ public class SignatureWriter extends SignatureVisitor
         this.buf = new StringBuilder();
     }
     
+    @Override
     public void visitFormalTypeParameter(final String name) {
         if (!this.hasFormals) {
             this.hasFormals = true;
@@ -25,24 +26,29 @@ public class SignatureWriter extends SignatureVisitor
         this.buf.append(':');
     }
     
+    @Override
     public SignatureVisitor visitClassBound() {
         return this;
     }
     
+    @Override
     public SignatureVisitor visitInterfaceBound() {
         this.buf.append(':');
         return this;
     }
     
+    @Override
     public SignatureVisitor visitSuperclass() {
         this.endFormals();
         return this;
     }
     
+    @Override
     public SignatureVisitor visitInterface() {
         return this;
     }
     
+    @Override
     public SignatureVisitor visitParameterType() {
         this.endFormals();
         if (!this.hasParameters) {
@@ -52,6 +58,7 @@ public class SignatureWriter extends SignatureVisitor
         return this;
     }
     
+    @Override
     public SignatureVisitor visitReturnType() {
         this.endFormals();
         if (!this.hasParameters) {
@@ -61,32 +68,38 @@ public class SignatureWriter extends SignatureVisitor
         return this;
     }
     
+    @Override
     public SignatureVisitor visitExceptionType() {
         this.buf.append('^');
         return this;
     }
     
+    @Override
     public void visitBaseType(final char descriptor) {
         this.buf.append(descriptor);
     }
     
+    @Override
     public void visitTypeVariable(final String name) {
         this.buf.append('T');
         this.buf.append(name);
         this.buf.append(';');
     }
     
+    @Override
     public SignatureVisitor visitArrayType() {
         this.buf.append('[');
         return this;
     }
     
+    @Override
     public void visitClassType(final String name) {
         this.buf.append('L');
         this.buf.append(name);
         this.argumentStack *= 2;
     }
     
+    @Override
     public void visitInnerClassType(final String name) {
         this.endArguments();
         this.buf.append('.');
@@ -94,6 +107,7 @@ public class SignatureWriter extends SignatureVisitor
         this.argumentStack *= 2;
     }
     
+    @Override
     public void visitTypeArgument() {
         if (this.argumentStack % 2 == 0) {
             ++this.argumentStack;
@@ -102,6 +116,7 @@ public class SignatureWriter extends SignatureVisitor
         this.buf.append('*');
     }
     
+    @Override
     public SignatureVisitor visitTypeArgument(final char wildcard) {
         if (this.argumentStack % 2 == 0) {
             ++this.argumentStack;
@@ -113,11 +128,13 @@ public class SignatureWriter extends SignatureVisitor
         return this;
     }
     
+    @Override
     public void visitEnd() {
         this.endArguments();
         this.buf.append(';');
     }
     
+    @Override
     public String toString() {
         return this.buf.toString();
     }

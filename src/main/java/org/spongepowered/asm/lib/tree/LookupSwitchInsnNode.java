@@ -4,8 +4,13 @@
 
 package org.spongepowered.asm.lib.tree;
 
-import org.spongepowered.asm.lib.*;
-import java.util.*;
+import java.util.Map;
+import org.spongepowered.asm.lib.Label;
+import org.spongepowered.asm.lib.MethodVisitor;
+import java.util.Collection;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LookupSwitchInsnNode extends AbstractInsnNode
 {
@@ -13,7 +18,7 @@ public class LookupSwitchInsnNode extends AbstractInsnNode
     public List<Integer> keys;
     public List<LabelNode> labels;
     
-    public LookupSwitchInsnNode(final LabelNode dflt,  final int[] keys,  final LabelNode[] labels) {
+    public LookupSwitchInsnNode(final LabelNode dflt, final int[] keys, final LabelNode[] labels) {
         super(171);
         this.dflt = dflt;
         this.keys = new ArrayList<Integer>((keys == null) ? 0 : keys.length);
@@ -28,10 +33,12 @@ public class LookupSwitchInsnNode extends AbstractInsnNode
         }
     }
     
+    @Override
     public int getType() {
         return 12;
     }
     
+    @Override
     public void accept(final MethodVisitor mv) {
         final int[] keys = new int[this.keys.size()];
         for (int i = 0; i < keys.length; ++i) {
@@ -41,13 +48,14 @@ public class LookupSwitchInsnNode extends AbstractInsnNode
         for (int j = 0; j < labels.length; ++j) {
             labels[j] = this.labels.get(j).getLabel();
         }
-        mv.visitLookupSwitchInsn(this.dflt.getLabel(),  keys,  labels);
+        mv.visitLookupSwitchInsn(this.dflt.getLabel(), keys, labels);
         this.acceptAnnotations(mv);
     }
     
-    public AbstractInsnNode clone(final Map<LabelNode,  LabelNode> labels) {
-        final LookupSwitchInsnNode clone = new LookupSwitchInsnNode(clone(this.dflt,  (Map)labels),  null,  clone((List)this.labels,  (Map)labels));
+    @Override
+    public AbstractInsnNode clone(final Map<LabelNode, LabelNode> labels) {
+        final LookupSwitchInsnNode clone = new LookupSwitchInsnNode(AbstractInsnNode.clone(this.dflt, labels), null, AbstractInsnNode.clone(this.labels, labels));
         clone.keys.addAll(this.keys);
-        return clone.cloneAnnotations((AbstractInsnNode)this);
+        return clone.cloneAnnotations(this);
     }
 }

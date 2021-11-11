@@ -4,8 +4,9 @@
 
 package org.spongepowered.asm.mixin.gen;
 
-import org.spongepowered.asm.lib.tree.*;
-import java.util.*;
+import org.spongepowered.asm.lib.tree.AnnotationNode;
+import java.util.ArrayList;
+import org.spongepowered.asm.lib.tree.MethodNode;
 
 public abstract class AccessorGenerator
 {
@@ -15,10 +16,10 @@ public abstract class AccessorGenerator
         this.info = info;
     }
     
-    protected final MethodNode createMethod(final int maxLocals,  final int maxStack) {
+    protected final MethodNode createMethod(final int maxLocals, final int maxStack) {
         final MethodNode method = this.info.getMethod();
-        final MethodNode accessor = new MethodNode(327680,  (method.access & 0xFFFFFBFF) | 0x1000,  method.name,  method.desc,  (String)null,  (String[])null);
-        (accessor.visibleAnnotations = new ArrayList()).add(this.info.getAnnotation());
+        final MethodNode accessor = new MethodNode(327680, (method.access & 0xFFFFFBFF) | 0x1000, method.name, method.desc, null, null);
+        (accessor.visibleAnnotations = new ArrayList<AnnotationNode>()).add(this.info.getAnnotation());
         accessor.maxLocals = maxLocals;
         accessor.maxStack = maxStack;
         return accessor;

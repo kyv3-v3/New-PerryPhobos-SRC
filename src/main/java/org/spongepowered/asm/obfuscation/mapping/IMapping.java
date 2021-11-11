@@ -30,9 +30,9 @@ public interface IMapping<TMapping>
     
     public enum Type
     {
-        FIELD,  
-        METHOD,  
-        CLASS,  
+        FIELD, 
+        METHOD, 
+        CLASS, 
         PACKAGE;
     }
 }

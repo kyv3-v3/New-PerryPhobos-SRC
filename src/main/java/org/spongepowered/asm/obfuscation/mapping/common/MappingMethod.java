@@ -4,8 +4,8 @@
 
 package org.spongepowered.asm.obfuscation.mapping.common;
 
-import org.spongepowered.asm.obfuscation.mapping.*;
-import com.google.common.base.*;
+import com.google.common.base.Objects;
+import org.spongepowered.asm.obfuscation.mapping.IMapping;
 
 public class MappingMethod implements IMapping<MappingMethod>
 {
@@ -13,11 +13,11 @@ public class MappingMethod implements IMapping<MappingMethod>
     private final String name;
     private final String desc;
     
-    public MappingMethod(final String fullyQualifiedName,  final String desc) {
-        this(getOwnerFromName(fullyQualifiedName),  getBaseName(fullyQualifiedName),  desc);
+    public MappingMethod(final String fullyQualifiedName, final String desc) {
+        this(getOwnerFromName(fullyQualifiedName), getBaseName(fullyQualifiedName), desc);
     }
     
-    public MappingMethod(final String owner,  final String simpleName,  final String desc) {
+    public MappingMethod(final String owner, final String simpleName, final String desc) {
         this.owner = owner;
         this.name = simpleName;
         this.desc = desc;
@@ -62,22 +62,22 @@ public class MappingMethod implements IMapping<MappingMethod>
     
     @Override
     public MappingMethod move(final String newOwner) {
-        return new MappingMethod(newOwner,  this.getSimpleName(),  this.getDesc());
+        return new MappingMethod(newOwner, this.getSimpleName(), this.getDesc());
     }
     
     @Override
     public MappingMethod remap(final String newName) {
-        return new MappingMethod(this.getOwner(),  newName,  this.getDesc());
+        return new MappingMethod(this.getOwner(), newName, this.getDesc());
     }
     
     @Override
     public MappingMethod transform(final String newDesc) {
-        return new MappingMethod(this.getOwner(),  this.getSimpleName(),  newDesc);
+        return new MappingMethod(this.getOwner(), this.getSimpleName(), newDesc);
     }
     
     @Override
     public MappingMethod copy() {
-        return new MappingMethod(this.getOwner(),  this.getSimpleName(),  this.getDesc());
+        return new MappingMethod(this.getOwner(), this.getSimpleName(), this.getDesc());
     }
     
     public MappingMethod addPrefix(final String prefix) {
@@ -85,17 +85,17 @@ public class MappingMethod implements IMapping<MappingMethod>
         if (simpleName == null || simpleName.startsWith(prefix)) {
             return this;
         }
-        return new MappingMethod(this.getOwner(),  prefix + simpleName,  this.getDesc());
+        return new MappingMethod(this.getOwner(), prefix + simpleName, this.getDesc());
     }
     
     @Override
     public int hashCode() {
-        return Objects.hashCode(new Object[] { this.getName(),  this.getDesc() });
+        return Objects.hashCode(new Object[] { this.getName(), this.getDesc() });
     }
     
     @Override
     public boolean equals(final Object obj) {
-        return this == obj || (obj instanceof MappingMethod && Objects.equal((Object)this.name,  (Object)((MappingMethod)obj).name) && Objects.equal((Object)this.desc,  (Object)((MappingMethod)obj).desc));
+        return this == obj || (obj instanceof MappingMethod && Objects.equal((Object)this.name, (Object)((MappingMethod)obj).name) && Objects.equal((Object)this.desc, (Object)((MappingMethod)obj).desc));
     }
     
     @Override
@@ -106,7 +106,7 @@ public class MappingMethod implements IMapping<MappingMethod>
     @Override
     public String toString() {
         final String desc = this.getDesc();
-        return String.format("%s%s%s",  this.getName(),  (desc != null) ? " " : "",  (desc != null) ? desc : "");
+        return String.format("%s%s%s", this.getName(), (desc != null) ? " " : "", (desc != null) ? desc : "");
     }
     
     private static String getBaseName(final String name) {
@@ -122,6 +122,6 @@ public class MappingMethod implements IMapping<MappingMethod>
             return null;
         }
         final int pos = name.lastIndexOf(47);
-        return (pos > -1) ? name.substring(0,  pos) : null;
+        return (pos > -1) ? name.substring(0, pos) : null;
     }
 }

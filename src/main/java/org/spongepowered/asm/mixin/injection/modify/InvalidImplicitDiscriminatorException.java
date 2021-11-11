@@ -4,7 +4,7 @@
 
 package org.spongepowered.asm.mixin.injection.modify;
 
-import org.spongepowered.asm.mixin.throwables.*;
+import org.spongepowered.asm.mixin.throwables.MixinException;
 
 public class InvalidImplicitDiscriminatorException extends MixinException
 {
@@ -14,7 +14,7 @@ public class InvalidImplicitDiscriminatorException extends MixinException
         super(message);
     }
     
-    public InvalidImplicitDiscriminatorException(final String message,  final Throwable cause) {
-        super(message,  cause);
+    public InvalidImplicitDiscriminatorException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }

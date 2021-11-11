@@ -4,9 +4,9 @@
 
 package org.spongepowered.tools.obfuscation.interfaces;
 
-import org.spongepowered.tools.obfuscation.mapping.*;
-import java.util.*;
-import org.spongepowered.tools.obfuscation.*;
+import org.spongepowered.tools.obfuscation.ObfuscationEnvironment;
+import java.util.List;
+import org.spongepowered.tools.obfuscation.mapping.IMappingConsumer;
 
 public interface IObfuscationManager
 {

@@ -4,14 +4,24 @@
 
 package org.spongepowered.tools.obfuscation.mirror;
 
-import java.lang.annotation.*;
-import javax.lang.model.type.*;
-import com.google.common.collect.*;
-import java.util.*;
-import org.spongepowered.asm.obfuscation.mapping.common.*;
-import org.spongepowered.tools.obfuscation.mirror.mapping.*;
-import org.spongepowered.asm.mixin.injection.struct.*;
-import javax.lang.model.element.*;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.element.ExecutableElement;
+import org.spongepowered.asm.mixin.injection.struct.MemberInfo;
+import org.spongepowered.tools.obfuscation.mirror.mapping.ResolvableMappingMethod;
+import org.spongepowered.asm.obfuscation.mapping.common.MappingMethod;
+import javax.lang.model.element.Modifier;
+import java.util.Iterator;
+import com.google.common.collect.ImmutableList;
+import java.util.Collections;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.element.ElementKind;
+import java.util.List;
+import javax.lang.model.element.Element;
+import java.lang.annotation.Annotation;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.PackageElement;
 
 public class TypeHandle
 {
@@ -20,8 +30,8 @@ public class TypeHandle
     private final TypeElement element;
     private TypeReference reference;
     
-    public TypeHandle(final PackageElement pkg,  final String name) {
-        this.name = name.replace('.',  '/');
+    public TypeHandle(final PackageElement pkg, final String name) {
+        this.name = name.replace('.', '/');
         this.pkg = pkg;
         this.element = null;
     }
@@ -38,7 +48,7 @@ public class TypeHandle
     
     @Override
     public final String toString() {
-        return this.name.replace('/',  '.');
+        return this.name.replace('/', '.');
     }
     
     public final String getName() {
@@ -58,7 +68,7 @@ public class TypeHandle
     }
     
     public AnnotationHandle getAnnotation(final Class<? extends Annotation> annotationClass) {
-        return AnnotationHandle.of((Element)this.getTargetElement(),  (Class)annotationClass);
+        return AnnotationHandle.of(this.getTargetElement(), annotationClass);
     }
     
     public final List<? extends Element> getEnclosedElements() {
@@ -66,7 +76,7 @@ public class TypeHandle
     }
     
     public <T extends Element> List<T> getEnclosedElements(final ElementKind... kind) {
-        return getEnclosedElements(this.getTargetElement(),  kind);
+        return getEnclosedElements(this.getTargetElement(), kind);
     }
     
     public TypeMirror getType() {
@@ -115,8 +125,8 @@ public class TypeHandle
         return this.reference;
     }
     
-    public MappingMethod getMappingMethod(final String name,  final String desc) {
-        return (MappingMethod)new ResolvableMappingMethod(this,  name,  desc);
+    public MappingMethod getMappingMethod(final String name, final String desc) {
+        return new ResolvableMappingMethod(this, name, desc);
     }
     
     public String findDescriptor(final MemberInfo memberInfo) {
@@ -133,57 +143,57 @@ public class TypeHandle
     }
     
     public final FieldHandle findField(final VariableElement element) {
-        return this.findField(element,  true);
+        return this.findField(element, true);
     }
     
-    public final FieldHandle findField(final VariableElement element,  final boolean caseSensitive) {
-        return this.findField(element.getSimpleName().toString(),  TypeUtils.getTypeName(element.asType()),  caseSensitive);
+    public final FieldHandle findField(final VariableElement element, final boolean caseSensitive) {
+        return this.findField(element.getSimpleName().toString(), TypeUtils.getTypeName(element.asType()), caseSensitive);
     }
     
-    public final FieldHandle findField(final String name,  final String type) {
-        return this.findField(name,  type,  true);
+    public final FieldHandle findField(final String name, final String type) {
+        return this.findField(name, type, true);
     }
     
-    public FieldHandle findField(final String name,  final String type,  final boolean caseSensitive) {
+    public FieldHandle findField(final String name, final String type, final boolean caseSensitive) {
         final String rawType = TypeUtils.stripGenerics(type);
         for (final VariableElement field : this.getEnclosedElements(ElementKind.FIELD)) {
-            if (compareElement(field,  name,  type,  caseSensitive)) {
-                return new FieldHandle(this.getTargetElement(),  field);
+            if (compareElement(field, name, type, caseSensitive)) {
+                return new FieldHandle(this.getTargetElement(), field);
             }
-            if (compareElement(field,  name,  rawType,  caseSensitive)) {
-                return new FieldHandle(this.getTargetElement(),  field,  true);
+            if (compareElement(field, name, rawType, caseSensitive)) {
+                return new FieldHandle(this.getTargetElement(), field, true);
             }
         }
         return null;
     }
     
     public final MethodHandle findMethod(final ExecutableElement element) {
-        return this.findMethod(element,  true);
+        return this.findMethod(element, true);
     }
     
-    public final MethodHandle findMethod(final ExecutableElement element,  final boolean caseSensitive) {
-        return this.findMethod(element.getSimpleName().toString(),  TypeUtils.getJavaSignature(element),  caseSensitive);
+    public final MethodHandle findMethod(final ExecutableElement element, final boolean caseSensitive) {
+        return this.findMethod(element.getSimpleName().toString(), TypeUtils.getJavaSignature(element), caseSensitive);
     }
     
-    public final MethodHandle findMethod(final String name,  final String signature) {
-        return this.findMethod(name,  signature,  true);
+    public final MethodHandle findMethod(final String name, final String signature) {
+        return this.findMethod(name, signature, true);
     }
     
-    public MethodHandle findMethod(final String name,  final String signature,  final boolean matchCase) {
+    public MethodHandle findMethod(final String name, final String signature, final boolean matchCase) {
         final String rawSignature = TypeUtils.stripGenerics(signature);
-        return findMethod(this,  name,  signature,  rawSignature,  matchCase);
+        return findMethod(this, name, signature, rawSignature, matchCase);
     }
     
-    protected static MethodHandle findMethod(final TypeHandle target,  final String name,  final String signature,  final String rawSignature,  final boolean matchCase) {
-        for (final ExecutableElement method : getEnclosedElements(target.getTargetElement(),  ElementKind.CONSTRUCTOR,  ElementKind.METHOD)) {
-            if (compareElement(method,  name,  signature,  matchCase) || compareElement(method,  name,  rawSignature,  matchCase)) {
-                return new MethodHandle(target,  method);
+    protected static MethodHandle findMethod(final TypeHandle target, final String name, final String signature, final String rawSignature, final boolean matchCase) {
+        for (final ExecutableElement method : getEnclosedElements(target.getTargetElement(), ElementKind.CONSTRUCTOR, ElementKind.METHOD)) {
+            if (compareElement(method, name, signature, matchCase) || compareElement(method, name, rawSignature, matchCase)) {
+                return new MethodHandle(target, method);
             }
         }
         return null;
     }
     
-    protected static boolean compareElement(final Element elem,  final String name,  final String type,  final boolean matchCase) {
+    protected static boolean compareElement(final Element elem, final String name, final String type, final boolean matchCase) {
         try {
             final String elementName = elem.getSimpleName().toString();
             final String elementType = TypeUtils.getJavaSignature(elem);
@@ -196,7 +206,7 @@ public class TypeHandle
         }
     }
     
-    protected static <T extends Element> List<T> getEnclosedElements(final TypeElement targetElement,  final ElementKind... kind) {
+    protected static <T extends Element> List<T> getEnclosedElements(final TypeElement targetElement, final ElementKind... kind) {
         if (kind == null || kind.length < 1) {
             return (List<T>)getEnclosedElements(targetElement);
         }

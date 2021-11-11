@@ -4,9 +4,10 @@
 
 package org.spongepowered.asm.launch;
 
-import java.util.*;
-import java.io.*;
-import net.minecraft.launchwrapper.*;
+import net.minecraft.launchwrapper.LaunchClassLoader;
+import java.io.File;
+import java.util.List;
+import net.minecraft.launchwrapper.ITweaker;
 
 public class MixinTweaker implements ITweaker
 {
@@ -14,8 +15,8 @@ public class MixinTweaker implements ITweaker
         MixinBootstrap.start();
     }
     
-    public final void acceptOptions(final List<String> args,  final File gameDir,  final File assetsDir,  final String profile) {
-        MixinBootstrap.doInit((List)args);
+    public final void acceptOptions(final List<String> args, final File gameDir, final File assetsDir, final String profile) {
+        MixinBootstrap.doInit(args);
     }
     
     public final void injectIntoClassLoader(final LaunchClassLoader classLoader) {

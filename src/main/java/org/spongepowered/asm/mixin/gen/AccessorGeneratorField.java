@@ -4,8 +4,8 @@
 
 package org.spongepowered.asm.mixin.gen;
 
-import org.spongepowered.asm.lib.tree.*;
-import org.spongepowered.asm.lib.*;
+import org.spongepowered.asm.lib.Type;
+import org.spongepowered.asm.lib.tree.FieldNode;
 
 public abstract class AccessorGeneratorField extends AccessorGenerator
 {

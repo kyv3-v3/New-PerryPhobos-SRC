@@ -4,14 +4,15 @@
 
 package org.spongepowered.asm.mixin;
 
-import java.util.*;
-import java.io.*;
-import net.minecraft.launchwrapper.*;
-import org.spongepowered.asm.launch.*;
+import org.spongepowered.asm.launch.MixinBootstrap;
+import net.minecraft.launchwrapper.LaunchClassLoader;
+import java.io.File;
+import java.util.List;
+import net.minecraft.launchwrapper.ITweaker;
 
 public class EnvironmentStateTweaker implements ITweaker
 {
-    public void acceptOptions(final List<String> args,  final File gameDir,  final File assetsDir,  final String profile) {
+    public void acceptOptions(final List<String> args, final File gameDir, final File assetsDir, final String profile) {
     }
     
     public void injectIntoClassLoader(final LaunchClassLoader classLoader) {

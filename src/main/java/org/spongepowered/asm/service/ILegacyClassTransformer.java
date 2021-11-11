@@ -10,5 +10,5 @@ public interface ILegacyClassTransformer extends ITransformer
     
     boolean isDelegationExcluded();
     
-    byte[] transformClassBytes(final String p0,  final String p1,  final byte[] p2);
+    byte[] transformClassBytes(final String p0, final String p1, final byte[] p2);
 }

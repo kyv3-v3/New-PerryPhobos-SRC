@@ -4,29 +4,32 @@
 
 package org.spongepowered.asm.lib.tree;
 
-import org.spongepowered.asm.lib.*;
-import java.util.*;
+import java.util.Map;
+import org.spongepowered.asm.lib.MethodVisitor;
 
 public class LineNumberNode extends AbstractInsnNode
 {
     public int line;
     public LabelNode start;
     
-    public LineNumberNode(final int line,  final LabelNode start) {
+    public LineNumberNode(final int line, final LabelNode start) {
         super(-1);
         this.line = line;
         this.start = start;
     }
     
+    @Override
     public int getType() {
         return 15;
     }
     
+    @Override
     public void accept(final MethodVisitor mv) {
-        mv.visitLineNumber(this.line,  this.start.getLabel());
+        mv.visitLineNumber(this.line, this.start.getLabel());
     }
     
-    public AbstractInsnNode clone(final Map<LabelNode,  LabelNode> labels) {
-        return new LineNumberNode(this.line,  clone(this.start,  (Map)labels));
+    @Override
+    public AbstractInsnNode clone(final Map<LabelNode, LabelNode> labels) {
+        return new LineNumberNode(this.line, AbstractInsnNode.clone(this.start, labels));
     }
 }

@@ -4,12 +4,16 @@
 
 package org.spongepowered.asm.launch.platform;
 
-import java.net.*;
-import org.apache.logging.log4j.*;
-import java.lang.reflect.*;
-import java.util.*;
-import org.spongepowered.asm.launch.*;
-import org.spongepowered.asm.service.*;
+import org.spongepowered.asm.service.MixinService;
+import org.spongepowered.asm.launch.GlobalProperties;
+import java.util.Collection;
+import java.lang.reflect.Constructor;
+import java.util.Iterator;
+import java.util.ArrayList;
+import org.apache.logging.log4j.LogManager;
+import java.net.URI;
+import org.apache.logging.log4j.Logger;
+import java.util.List;
 
 public class MixinContainer
 {
@@ -18,16 +22,16 @@ public class MixinContainer
     private final URI uri;
     private final List<IMixinPlatformAgent> agents;
     
-    public MixinContainer(final MixinPlatformManager manager,  final URI uri) {
+    public MixinContainer(final MixinPlatformManager manager, final URI uri) {
         this.logger = LogManager.getLogger("mixin");
         this.agents = new ArrayList<IMixinPlatformAgent>();
         this.uri = uri;
         for (final String agentClass : MixinContainer.agentClasses) {
             try {
                 final Class<IMixinPlatformAgent> clazz = (Class<IMixinPlatformAgent>)Class.forName(agentClass);
-                final Constructor<IMixinPlatformAgent> ctor = clazz.getDeclaredConstructor(MixinPlatformManager.class,  URI.class);
-                this.logger.debug("Instancing new {} for {}",  new Object[] { clazz.getSimpleName(),  this.uri });
-                final IMixinPlatformAgent agent = ctor.newInstance(manager,  uri);
+                final Constructor<IMixinPlatformAgent> ctor = clazz.getDeclaredConstructor(MixinPlatformManager.class, URI.class);
+                this.logger.debug("Instancing new {} for {}", new Object[] { clazz.getSimpleName(), this.uri });
+                final IMixinPlatformAgent agent = ctor.newInstance(manager, uri);
                 this.agents.add(agent);
             }
             catch (Exception ex) {
@@ -53,21 +57,21 @@ public class MixinContainer
     
     public void prepare() {
         for (final IMixinPlatformAgent agent : this.agents) {
-            this.logger.debug("Processing prepare() for {}",  new Object[] { agent });
+            this.logger.debug("Processing prepare() for {}", new Object[] { agent });
             agent.prepare();
         }
     }
     
     public void initPrimaryContainer() {
         for (final IMixinPlatformAgent agent : this.agents) {
-            this.logger.debug("Processing launch tasks for {}",  new Object[] { agent });
+            this.logger.debug("Processing launch tasks for {}", new Object[] { agent });
             agent.initPrimaryContainer();
         }
     }
     
     public void inject() {
         for (final IMixinPlatformAgent agent : this.agents) {
-            this.logger.debug("Processing inject() for {}",  new Object[] { agent });
+            this.logger.debug("Processing inject() for {}", new Object[] { agent });
             agent.inject();
         }
     }
@@ -83,7 +87,7 @@ public class MixinContainer
     }
     
     static {
-        GlobalProperties.put("mixin.agents",  (Object)(agentClasses = new ArrayList<String>()));
+        GlobalProperties.put("mixin.agents", agentClasses = new ArrayList<String>());
         for (final String agent : MixinService.getService().getPlatformAgents()) {
             MixinContainer.agentClasses.add(agent);
         }

@@ -4,34 +4,24 @@
 
 package org.spongepowered.asm.mixin.injection.code;
 
-import org.spongepowered.asm.mixin.injection.struct.*;
-import org.spongepowered.asm.mixin.transformer.meta.*;
-import org.spongepowered.asm.util.*;
-import java.lang.annotation.*;
-import org.spongepowered.asm.lib.tree.*;
-import org.spongepowered.asm.mixin.injection.*;
-import java.util.*;
+import java.util.Iterator;
+import org.spongepowered.asm.mixin.injection.InjectionPoint;
+import org.spongepowered.asm.lib.tree.InsnList;
+import org.spongepowered.asm.lib.tree.MethodNode;
+import java.util.HashMap;
+import org.spongepowered.asm.mixin.injection.struct.Target;
+import java.util.Map;
 
 public class InjectorTarget
 {
     private final ISliceContext context;
-    private final Map<String,  ReadOnlyInsnList> cache;
+    private final Map<String, ReadOnlyInsnList> cache;
     private final Target target;
-    private final String mergedBy;
-    private final int mergedPriority;
     
-    public InjectorTarget(final ISliceContext context,  final Target target) {
-        this.cache = new HashMap<String,  ReadOnlyInsnList>();
+    public InjectorTarget(final ISliceContext context, final Target target) {
+        this.cache = new HashMap<String, ReadOnlyInsnList>();
         this.context = context;
         this.target = target;
-        final AnnotationNode merged = Annotations.getVisible(target.method,  MixinMerged.class);
-        this.mergedBy = Annotations.getValue(merged,  "mixin");
-        this.mergedPriority = Annotations.getValue(merged,  "priority",  1000);
-    }
-    
-    @Override
-    public String toString() {
-        return this.target.toString();
     }
     
     public Target getTarget() {
@@ -40,18 +30,6 @@ public class InjectorTarget
     
     public MethodNode getMethod() {
         return this.target.method;
-    }
-    
-    public boolean isMerged() {
-        return this.mergedBy != null;
-    }
-    
-    public String getMergedBy() {
-        return this.mergedBy;
-    }
-    
-    public int getMergedPriority() {
-        return this.mergedPriority;
     }
     
     public InsnList getSlice(final String id) {
@@ -64,7 +42,7 @@ public class InjectorTarget
             else {
                 slice = new ReadOnlyInsnList(this.target.method.instructions);
             }
-            this.cache.put(id,  slice);
+            this.cache.put(id, slice);
         }
         return slice;
     }

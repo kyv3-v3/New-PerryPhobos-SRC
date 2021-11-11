@@ -4,7 +4,11 @@
 
 package org.spongepowered.asm.mixin;
 
-import java.lang.annotation.*;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Retention;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
+import java.lang.annotation.Annotation;
 
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.CLASS)
@@ -19,9 +23,9 @@ public @interface Interface {
     
     public enum Remap
     {
-        ALL,  
-        FORCE(true),  
-        ONLY_PREFIXED,  
+        ALL, 
+        FORCE(true), 
+        ONLY_PREFIXED, 
         NONE;
         
         private final boolean forceRemap;

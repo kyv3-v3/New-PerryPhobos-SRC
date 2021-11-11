@@ -4,9 +4,9 @@
 
 package org.spongepowered.asm.mixin.extensibility;
 
-import org.spongepowered.asm.lib.tree.*;
-import java.util.*;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.MixinEnvironment;
+import java.util.List;
+import org.spongepowered.asm.lib.tree.ClassNode;
 
 public interface IMixinInfo
 {

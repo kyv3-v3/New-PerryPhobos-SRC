@@ -4,8 +4,8 @@
 
 package org.spongepowered.asm.util;
 
-import java.io.*;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Mixin;
+import java.io.File;
 
 public abstract class Constants
 {
@@ -27,7 +27,7 @@ public abstract class Constants
     
     static {
         MIXIN_PACKAGE = Mixin.class.getPackage().getName();
-        MIXIN_PACKAGE_REF = Constants.MIXIN_PACKAGE.replace('.',  '/');
+        MIXIN_PACKAGE_REF = Constants.MIXIN_PACKAGE.replace('.', '/');
         DEBUG_OUTPUT_DIR = new File(".mixin.out");
     }
     

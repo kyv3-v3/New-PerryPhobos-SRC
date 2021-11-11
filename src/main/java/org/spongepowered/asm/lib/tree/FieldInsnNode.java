@@ -4,8 +4,8 @@
 
 package org.spongepowered.asm.lib.tree;
 
-import org.spongepowered.asm.lib.*;
-import java.util.*;
+import java.util.Map;
+import org.spongepowered.asm.lib.MethodVisitor;
 
 public class FieldInsnNode extends AbstractInsnNode
 {
@@ -13,7 +13,7 @@ public class FieldInsnNode extends AbstractInsnNode
     public String name;
     public String desc;
     
-    public FieldInsnNode(final int opcode,  final String owner,  final String name,  final String desc) {
+    public FieldInsnNode(final int opcode, final String owner, final String name, final String desc) {
         super(opcode);
         this.owner = owner;
         this.name = name;
@@ -24,16 +24,19 @@ public class FieldInsnNode extends AbstractInsnNode
         this.opcode = opcode;
     }
     
+    @Override
     public int getType() {
         return 4;
     }
     
+    @Override
     public void accept(final MethodVisitor mv) {
-        mv.visitFieldInsn(this.opcode,  this.owner,  this.name,  this.desc);
+        mv.visitFieldInsn(this.opcode, this.owner, this.name, this.desc);
         this.acceptAnnotations(mv);
     }
     
-    public AbstractInsnNode clone(final Map<LabelNode,  LabelNode> labels) {
-        return new FieldInsnNode(this.opcode,  this.owner,  this.name,  this.desc).cloneAnnotations((AbstractInsnNode)this);
+    @Override
+    public AbstractInsnNode clone(final Map<LabelNode, LabelNode> labels) {
+        return new FieldInsnNode(this.opcode, this.owner, this.name, this.desc).cloneAnnotations(this);
     }
 }

@@ -4,9 +4,10 @@
 
 package org.spongepowered.asm.bridge;
 
-import org.objectweb.asm.commons.*;
-import org.spongepowered.asm.mixin.extensibility.*;
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import org.spongepowered.asm.mixin.extensibility.IRemapper;
+import org.objectweb.asm.commons.Remapper;
+import java.lang.reflect.Method;
 
 public final class RemapperAdapterFML extends RemapperAdapter
 {
@@ -17,15 +18,16 @@ public final class RemapperAdapterFML extends RemapperAdapter
     private static final String UNMAP_METHOD = "unmap";
     private final Method mdUnmap;
     
-    private RemapperAdapterFML(final Remapper remapper,  final Method mdUnmap) {
+    private RemapperAdapterFML(final Remapper remapper, final Method mdUnmap) {
         super(remapper);
-        this.logger.info("Initialised Mixin FML Remapper Adapter with {}",  new Object[] { remapper });
+        this.logger.info("Initialised Mixin FML Remapper Adapter with {}", new Object[] { remapper });
         this.mdUnmap = mdUnmap;
     }
     
+    @Override
     public String unmap(final String typeName) {
         try {
-            return this.mdUnmap.invoke(this.remapper,  typeName).toString();
+            return this.mdUnmap.invoke(this.remapper, typeName).toString();
         }
         catch (Exception ex) {
             return typeName;
@@ -36,9 +38,9 @@ public final class RemapperAdapterFML extends RemapperAdapter
         try {
             final Class<?> clDeobfRemapper = getFMLDeobfuscatingRemapper();
             final Field singletonField = clDeobfRemapper.getDeclaredField("INSTANCE");
-            final Method mdUnmap = clDeobfRemapper.getDeclaredMethod("unmap",  String.class);
+            final Method mdUnmap = clDeobfRemapper.getDeclaredMethod("unmap", String.class);
             final Remapper remapper = (Remapper)singletonField.get(null);
-            return (IRemapper)new RemapperAdapterFML(remapper,  mdUnmap);
+            return new RemapperAdapterFML(remapper, mdUnmap);
         }
         catch (Exception ex) {
             ex.printStackTrace();

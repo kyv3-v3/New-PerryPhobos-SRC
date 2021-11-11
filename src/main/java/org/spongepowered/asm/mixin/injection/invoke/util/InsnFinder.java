@@ -4,18 +4,25 @@
 
 package org.spongepowered.asm.mixin.injection.invoke.util;
 
-import org.spongepowered.asm.mixin.injection.struct.*;
-import org.spongepowered.asm.lib.tree.*;
-import org.apache.logging.log4j.*;
-import org.spongepowered.asm.lib.tree.analysis.*;
+import org.spongepowered.asm.lib.tree.analysis.Value;
+import org.spongepowered.asm.lib.tree.analysis.Frame;
+import org.spongepowered.asm.lib.tree.analysis.Interpreter;
+import org.spongepowered.asm.lib.tree.analysis.BasicInterpreter;
+import org.spongepowered.asm.lib.tree.analysis.BasicValue;
+import org.spongepowered.asm.lib.tree.analysis.Analyzer;
+import org.apache.logging.log4j.LogManager;
+import org.spongepowered.asm.lib.tree.analysis.AnalyzerException;
+import org.spongepowered.asm.lib.tree.AbstractInsnNode;
+import org.spongepowered.asm.mixin.injection.struct.Target;
+import org.apache.logging.log4j.Logger;
 
 public class InsnFinder
 {
     private static final Logger logger;
     
-    public AbstractInsnNode findPopInsn(final Target target,  final AbstractInsnNode node) {
+    public AbstractInsnNode findPopInsn(final Target target, final AbstractInsnNode node) {
         try {
-            new PopAnalyzer(node).analyze(target.classNode.name,  target.method);
+            new PopAnalyzer(node).analyze(target.classNode.name, target.method);
         }
         catch (AnalyzerException ex) {
             if (ex.getCause() instanceof AnalysisResultException) {
@@ -46,8 +53,8 @@ public class InsnFinder
     
     enum AnalyzerState
     {
-        SEARCH,  
-        ANALYSE,  
+        SEARCH, 
+        ANALYSE, 
         COMPLETE;
     }
     
@@ -56,12 +63,13 @@ public class InsnFinder
         protected final AbstractInsnNode node;
         
         public PopAnalyzer(final AbstractInsnNode node) {
-            super((Interpreter)new BasicInterpreter());
+            super(new BasicInterpreter());
             this.node = node;
         }
         
-        protected Frame<BasicValue> newFrame(final int locals,  final int stack) {
-            return new PopFrame(locals,  stack);
+        @Override
+        protected Frame<BasicValue> newFrame(final int locals, final int stack) {
+            return new PopFrame(locals, stack);
         }
         
         class PopFrame extends Frame<BasicValue>
@@ -70,16 +78,18 @@ public class InsnFinder
             private AnalyzerState state;
             private int depth;
             
-            public PopFrame(final int locals,  final int stack) {
-                super(locals,  stack);
+            public PopFrame(final int locals, final int stack) {
+                super(locals, stack);
                 this.state = AnalyzerState.SEARCH;
                 this.depth = 0;
             }
             
-            public void execute(final AbstractInsnNode insn,  final Interpreter<BasicValue> interpreter) throws AnalyzerException {
-                super.execute(this.current = insn,  (Interpreter)interpreter);
+            @Override
+            public void execute(final AbstractInsnNode insn, final Interpreter<BasicValue> interpreter) throws AnalyzerException {
+                super.execute(this.current = insn, interpreter);
             }
             
+            @Override
             public void push(final BasicValue value) throws IndexOutOfBoundsException {
                 if (this.current == PopAnalyzer.this.node && this.state == AnalyzerState.SEARCH) {
                     this.state = AnalyzerState.ANALYSE;
@@ -88,15 +98,16 @@ public class InsnFinder
                 else if (this.state == AnalyzerState.ANALYSE) {
                     ++this.depth;
                 }
-                super.push((Value)value);
+                super.push(value);
             }
             
+            @Override
             public BasicValue pop() throws IndexOutOfBoundsException {
                 if (this.state == AnalyzerState.ANALYSE && --this.depth == 0) {
                     this.state = AnalyzerState.COMPLETE;
                     throw new AnalysisResultException(this.current);
                 }
-                return (BasicValue)super.pop();
+                return super.pop();
             }
         }
     }

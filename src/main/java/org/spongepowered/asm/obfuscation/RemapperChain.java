@@ -4,8 +4,10 @@
 
 package org.spongepowered.asm.obfuscation;
 
-import org.spongepowered.asm.mixin.extensibility.*;
-import java.util.*;
+import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
+import org.spongepowered.asm.mixin.extensibility.IRemapper;
 
 public class RemapperChain implements IRemapper
 {
@@ -17,7 +19,7 @@ public class RemapperChain implements IRemapper
     
     @Override
     public String toString() {
-        return String.format("RemapperChain[%d]",  this.remappers.size());
+        return String.format("RemapperChain[%d]", this.remappers.size());
     }
     
     public RemapperChain add(final IRemapper remapper) {
@@ -25,9 +27,10 @@ public class RemapperChain implements IRemapper
         return this;
     }
     
-    public String mapMethodName(final String owner,  String name,  final String desc) {
+    @Override
+    public String mapMethodName(final String owner, String name, final String desc) {
         for (final IRemapper remapper : this.remappers) {
-            final String newName = remapper.mapMethodName(owner,  name,  desc);
+            final String newName = remapper.mapMethodName(owner, name, desc);
             if (newName != null && !newName.equals(name)) {
                 name = newName;
             }
@@ -35,9 +38,10 @@ public class RemapperChain implements IRemapper
         return name;
     }
     
-    public String mapFieldName(final String owner,  String name,  final String desc) {
+    @Override
+    public String mapFieldName(final String owner, String name, final String desc) {
         for (final IRemapper remapper : this.remappers) {
-            final String newName = remapper.mapFieldName(owner,  name,  desc);
+            final String newName = remapper.mapFieldName(owner, name, desc);
             if (newName != null && !newName.equals(name)) {
                 name = newName;
             }
@@ -45,6 +49,7 @@ public class RemapperChain implements IRemapper
         return name;
     }
     
+    @Override
     public String map(String typeName) {
         for (final IRemapper remapper : this.remappers) {
             final String newName = remapper.map(typeName);
@@ -55,6 +60,7 @@ public class RemapperChain implements IRemapper
         return typeName;
     }
     
+    @Override
     public String unmap(String typeName) {
         for (final IRemapper remapper : this.remappers) {
             final String newName = remapper.unmap(typeName);
@@ -65,6 +71,7 @@ public class RemapperChain implements IRemapper
         return typeName;
     }
     
+    @Override
     public String mapDesc(String desc) {
         for (final IRemapper remapper : this.remappers) {
             final String newDesc = remapper.mapDesc(desc);
@@ -75,6 +82,7 @@ public class RemapperChain implements IRemapper
         return desc;
     }
     
+    @Override
     public String unmapDesc(String desc) {
         for (final IRemapper remapper : this.remappers) {
             final String newDesc = remapper.unmapDesc(desc);

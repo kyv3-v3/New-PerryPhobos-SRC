@@ -4,10 +4,10 @@
 
 package org.spongepowered.asm.service;
 
-import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.util.*;
-import java.util.*;
-import java.io.*;
+import java.io.InputStream;
+import java.util.Collection;
+import org.spongepowered.asm.util.ReEntranceLock;
+import org.spongepowered.asm.mixin.MixinEnvironment;
 
 public interface IMixinService
 {
@@ -38,8 +38,6 @@ public interface IMixinService
     void registerInvalidClass(final String p0);
     
     boolean isClassLoaded(final String p0);
-    
-    String getClassRestrictions(final String p0);
     
     Collection<ITransformer> getTransformers();
     

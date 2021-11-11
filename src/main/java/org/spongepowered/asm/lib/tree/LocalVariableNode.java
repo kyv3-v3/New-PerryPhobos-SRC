@@ -4,7 +4,7 @@
 
 package org.spongepowered.asm.lib.tree;
 
-import org.spongepowered.asm.lib.*;
+import org.spongepowered.asm.lib.MethodVisitor;
 
 public class LocalVariableNode
 {
@@ -15,7 +15,7 @@ public class LocalVariableNode
     public LabelNode end;
     public int index;
     
-    public LocalVariableNode(final String name,  final String desc,  final String signature,  final LabelNode start,  final LabelNode end,  final int index) {
+    public LocalVariableNode(final String name, final String desc, final String signature, final LabelNode start, final LabelNode end, final int index) {
         this.name = name;
         this.desc = desc;
         this.signature = signature;
@@ -25,6 +25,6 @@ public class LocalVariableNode
     }
     
     public void accept(final MethodVisitor mv) {
-        mv.visitLocalVariable(this.name,  this.desc,  this.signature,  this.start.getLabel(),  this.end.getLabel(),  this.index);
+        mv.visitLocalVariable(this.name, this.desc, this.signature, this.start.getLabel(), this.end.getLabel(), this.index);
     }
 }

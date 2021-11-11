@@ -6,9 +6,9 @@ package org.spongepowered.asm.mixin.extensibility;
 
 public interface IRemapper
 {
-    String mapMethodName(final String p0,  final String p1,  final String p2);
+    String mapMethodName(final String p0, final String p1, final String p2);
     
-    String mapFieldName(final String p0,  final String p1,  final String p2);
+    String mapFieldName(final String p0, final String p1, final String p2);
     
     String map(final String p0);
     

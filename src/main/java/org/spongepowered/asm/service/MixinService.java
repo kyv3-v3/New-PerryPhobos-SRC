@@ -4,8 +4,13 @@
 
 package org.spongepowered.asm.service;
 
-import java.util.*;
-import org.apache.logging.log4j.*;
+import org.apache.logging.log4j.LogManager;
+import java.util.ServiceConfigurationError;
+import java.util.Iterator;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.ServiceLoader;
+import org.apache.logging.log4j.Logger;
 
 public final class MixinService
 {
@@ -23,7 +28,7 @@ public final class MixinService
     }
     
     private void runBootServices() {
-        this.bootstrapServiceLoader = ServiceLoader.load(IMixinServiceBootstrap.class,  this.getClass().getClassLoader());
+        this.bootstrapServiceLoader = ServiceLoader.load(IMixinServiceBootstrap.class, this.getClass().getClassLoader());
         for (final IMixinServiceBootstrap bootService : this.bootstrapServiceLoader) {
             try {
                 bootService.bootstrap();
@@ -61,13 +66,13 @@ public final class MixinService
     }
     
     private IMixinService initService() {
-        this.serviceLoader = ServiceLoader.load(IMixinService.class,  this.getClass().getClassLoader());
+        this.serviceLoader = ServiceLoader.load(IMixinService.class, this.getClass().getClassLoader());
         final Iterator<IMixinService> iter = this.serviceLoader.iterator();
         while (iter.hasNext()) {
             try {
                 final IMixinService service = iter.next();
                 if (this.bootedServices.contains(service.getClass().getName())) {
-                    MixinService.logger.debug("MixinService [{}] was successfully booted in {}",  new Object[] { service.getName(),  this.getClass().getClassLoader() });
+                    MixinService.logger.debug("MixinService [{}] was successfully booted in {}", new Object[] { service.getName(), this.getClass().getClassLoader() });
                 }
                 if (service.isValid()) {
                     return service;

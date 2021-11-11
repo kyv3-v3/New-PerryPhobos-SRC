@@ -40,20 +40,20 @@ class Frame
     private int initializationCount;
     private int[] initializations;
     
-    final void set(final ClassWriter cw,  final int nLocal,  final Object[] local,  final int nStack,  final Object[] stack) {
-        for (int i = convert(cw,  nLocal,  local,  this.inputLocals); i < local.length; this.inputLocals[i++] = 16777216) {}
+    final void set(final ClassWriter cw, final int nLocal, final Object[] local, final int nStack, final Object[] stack) {
+        for (int i = convert(cw, nLocal, local, this.inputLocals); i < local.length; this.inputLocals[i++] = 16777216) {}
         int nStackTop = 0;
         for (int j = 0; j < nStack; ++j) {
             if (stack[j] == Opcodes.LONG || stack[j] == Opcodes.DOUBLE) {
                 ++nStackTop;
             }
         }
-        convert(cw,  nStack,  stack,  this.inputStack = new int[nStack + nStackTop]);
+        convert(cw, nStack, stack, this.inputStack = new int[nStack + nStackTop]);
         this.outputStackTop = 0;
         this.initializationCount = 0;
     }
     
-    private static int convert(final ClassWriter cw,  final int nInput,  final Object[] input,  final int[] output) {
+    private static int convert(final ClassWriter cw, final int nInput, final Object[] input, final int[] output) {
         int i = 0;
         for (int j = 0; j < nInput; ++j) {
             if (input[j] instanceof Integer) {
@@ -63,10 +63,10 @@ class Frame
                 }
             }
             else if (input[j] instanceof String) {
-                output[i++] = type(cw,  Type.getObjectType((String)input[j]).getDescriptor());
+                output[i++] = type(cw, Type.getObjectType((String)input[j]).getDescriptor());
             }
             else {
-                output[i++] = (0x1800000 | cw.addUninitializedType("",  ((Label)input[j]).position));
+                output[i++] = (0x1800000 | cw.addUninitializedType("", ((Label)input[j]).position));
             }
         }
         return i;
@@ -96,14 +96,14 @@ class Frame
         return type;
     }
     
-    private void set(final int local,  final int type) {
+    private void set(final int local, final int type) {
         if (this.outputLocals == null) {
             this.outputLocals = new int[10];
         }
         final int n = this.outputLocals.length;
         if (local >= n) {
-            final int[] t = new int[Math.max(local + 1,  2 * n)];
-            System.arraycopy(this.outputLocals,  0,  t,  0,  n);
+            final int[] t = new int[Math.max(local + 1, 2 * n)];
+            System.arraycopy(this.outputLocals, 0, t, 0, n);
             this.outputLocals = t;
         }
         this.outputLocals[local] = type;
@@ -115,8 +115,8 @@ class Frame
         }
         final int n = this.outputStack.length;
         if (this.outputStackTop >= n) {
-            final int[] t = new int[Math.max(this.outputStackTop + 1,  2 * n)];
-            System.arraycopy(this.outputStack,  0,  t,  0,  n);
+            final int[] t = new int[Math.max(this.outputStackTop + 1, 2 * n)];
+            System.arraycopy(this.outputStack, 0, t, 0, n);
             this.outputStack = t;
         }
         this.outputStack[this.outputStackTop++] = type;
@@ -126,8 +126,8 @@ class Frame
         }
     }
     
-    private void push(final ClassWriter cw,  final String desc) {
-        final int type = type(cw,  desc);
+    private void push(final ClassWriter cw, final String desc) {
+        final int type = type(cw, desc);
         if (type != 0) {
             this.push(type);
             if (type == 16777220 || type == 16777219) {
@@ -136,7 +136,7 @@ class Frame
         }
     }
     
-    private static int type(final ClassWriter cw,  final String desc) {
+    private static int type(final ClassWriter cw, final String desc) {
         final int index = (desc.charAt(0) == '(') ? (desc.indexOf(41) + 1) : 0;
         switch (desc.charAt(index)) {
             case 'V': {
@@ -159,7 +159,7 @@ class Frame
                 return 16777219;
             }
             case 'L': {
-                final String t = desc.substring(index + 1,  desc.length() - 1);
+                final String t = desc.substring(index + 1, desc.length() - 1);
                 return 0x1700000 | cw.addType(t);
             }
             default: {
@@ -200,7 +200,7 @@ class Frame
                         break;
                     }
                     default: {
-                        final String t = desc.substring(dims + 1,  desc.length() - 1);
+                        final String t = desc.substring(dims + 1, desc.length() - 1);
                         data = (0x1700000 | cw.addType(t));
                         break;
                     }
@@ -252,14 +252,14 @@ class Frame
         }
         final int n = this.initializations.length;
         if (this.initializationCount >= n) {
-            final int[] t = new int[Math.max(this.initializationCount + 1,  2 * n)];
-            System.arraycopy(this.initializations,  0,  t,  0,  n);
+            final int[] t = new int[Math.max(this.initializationCount + 1, 2 * n)];
+            System.arraycopy(this.initializations, 0, t, 0, n);
             this.initializations = t;
         }
         this.initializations[this.initializationCount++] = var;
     }
     
-    private int init(final ClassWriter cw,  final int t) {
+    private int init(final ClassWriter cw, final int t) {
         int s;
         if (t == 16777222) {
             s = (0x1700000 | cw.addType(cw.thisName));
@@ -288,7 +288,7 @@ class Frame
         return t;
     }
     
-    final void initInputFrame(final ClassWriter cw,  final int access,  final Type[] args,  final int maxLocals) {
+    final void initInputFrame(final ClassWriter cw, final int access, final Type[] args, final int maxLocals) {
         this.inputLocals = new int[maxLocals];
         this.inputStack = new int[0];
         int i = 0;
@@ -301,7 +301,7 @@ class Frame
             }
         }
         for (int j = 0; j < args.length; ++j) {
-            final int t = type(cw,  args[j].getDescriptor());
+            final int t = type(cw, args[j].getDescriptor());
             this.inputLocals[i++] = t;
             if (t == 16777220 || t == 16777219) {
                 this.inputLocals[i++] = 16777216;
@@ -312,7 +312,7 @@ class Frame
         }
     }
     
-    void execute(final int opcode,  final int arg,  final ClassWriter cw,  final Item item) {
+    void execute(final int opcode, final int arg, final ClassWriter cw, final Item item) {
         Label_2260: {
             switch (opcode) {
                 case 0:
@@ -445,17 +445,17 @@ class Frame
                 case 56:
                 case 58: {
                     final int t1 = this.pop();
-                    this.set(arg,  t1);
+                    this.set(arg, t1);
                     if (arg <= 0) {
                         break;
                     }
                     final int t2 = this.get(arg - 1);
                     if (t2 == 16777220 || t2 == 16777219) {
-                        this.set(arg - 1,  16777216);
+                        this.set(arg - 1, 16777216);
                         break;
                     }
                     if ((t2 & 0xF000000) != 0x1000000) {
-                        this.set(arg - 1,  t2 | 0x800000);
+                        this.set(arg - 1, t2 | 0x800000);
                         break;
                     }
                     break;
@@ -464,18 +464,18 @@ class Frame
                 case 57: {
                     this.pop(1);
                     final int t1 = this.pop();
-                    this.set(arg,  t1);
-                    this.set(arg + 1,  16777216);
+                    this.set(arg, t1);
+                    this.set(arg + 1, 16777216);
                     if (arg <= 0) {
                         break;
                     }
                     final int t2 = this.get(arg - 1);
                     if (t2 == 16777220 || t2 == 16777219) {
-                        this.set(arg - 1,  16777216);
+                        this.set(arg - 1, 16777216);
                         break;
                     }
                     if ((t2 & 0xF000000) != 0x1000000) {
-                        this.set(arg - 1,  t2 | 0x800000);
+                        this.set(arg - 1, t2 | 0x800000);
                         break;
                     }
                     break;
@@ -654,7 +654,7 @@ class Frame
                     break;
                 }
                 case 132: {
-                    this.set(arg,  16777217);
+                    this.set(arg, 16777217);
                     break;
                 }
                 case 133:
@@ -695,7 +695,7 @@ class Frame
                     throw new RuntimeException("JSR/RET are not supported with computeFrames option");
                 }
                 case 178: {
-                    this.push(cw,  item.strVal3);
+                    this.push(cw, item.strVal3);
                     break;
                 }
                 case 179: {
@@ -704,7 +704,7 @@ class Frame
                 }
                 case 180: {
                     this.pop(1);
-                    this.push(cw,  item.strVal3);
+                    this.push(cw, item.strVal3);
                     break;
                 }
                 case 181: {
@@ -723,16 +723,16 @@ class Frame
                             this.init(t1);
                         }
                     }
-                    this.push(cw,  item.strVal3);
+                    this.push(cw, item.strVal3);
                     break;
                 }
                 case 186: {
                     this.pop(item.strVal2);
-                    this.push(cw,  item.strVal2);
+                    this.push(cw, item.strVal2);
                     break;
                 }
                 case 187: {
-                    this.push(0x1800000 | cw.addUninitializedType(item.strVal1,  arg));
+                    this.push(0x1800000 | cw.addUninitializedType(item.strVal1, arg));
                     break;
                 }
                 case 188: {
@@ -777,7 +777,7 @@ class Frame
                     final String s = item.strVal1;
                     this.pop();
                     if (s.charAt(0) == '[') {
-                        this.push(cw,  '[' + s);
+                        this.push(cw, '[' + s);
                         break;
                     }
                     this.push(0x11700000 | cw.addType(s));
@@ -787,7 +787,7 @@ class Frame
                     final String s = item.strVal1;
                     this.pop();
                     if (s.charAt(0) == '[') {
-                        this.push(cw,  s);
+                        this.push(cw, s);
                         break;
                     }
                     this.push(0x1700000 | cw.addType(s));
@@ -795,14 +795,14 @@ class Frame
                 }
                 default: {
                     this.pop(arg);
-                    this.push(cw,  item.strVal1);
+                    this.push(cw, item.strVal1);
                     break;
                 }
             }
         }
     }
     
-    final boolean merge(final ClassWriter cw,  final Frame frame,  final int edge) {
+    final boolean merge(final ClassWriter cw, final Frame frame, final int edge) {
         boolean changed = false;
         final int nLocal = this.inputLocals.length;
         final int nStack = this.inputStack.length;
@@ -840,20 +840,20 @@ class Frame
                 t = this.inputLocals[i];
             }
             if (this.initializations != null) {
-                t = this.init(cw,  t);
+                t = this.init(cw, t);
             }
-            changed |= merge(cw,  t,  frame.inputLocals,  i);
+            changed |= merge(cw, t, frame.inputLocals, i);
         }
         if (edge > 0) {
             for (int i = 0; i < nLocal; ++i) {
                 final int t = this.inputLocals[i];
-                changed |= merge(cw,  t,  frame.inputLocals,  i);
+                changed |= merge(cw, t, frame.inputLocals, i);
             }
             if (frame.inputStack == null) {
                 frame.inputStack = new int[1];
                 changed = true;
             }
-            changed |= merge(cw,  edge,  frame.inputStack,  0);
+            changed |= merge(cw, edge, frame.inputStack, 0);
             return changed;
         }
         final int nInputStack = this.inputStack.length + this.owner.inputStackTop;
@@ -864,9 +864,9 @@ class Frame
         for (int i = 0; i < nInputStack; ++i) {
             int t = this.inputStack[i];
             if (this.initializations != null) {
-                t = this.init(cw,  t);
+                t = this.init(cw, t);
             }
-            changed |= merge(cw,  t,  frame.inputStack,  i);
+            changed |= merge(cw, t, frame.inputStack, i);
         }
         for (int i = 0; i < this.outputStackTop; ++i) {
             final int s = this.outputStack[i];
@@ -888,14 +888,14 @@ class Frame
                 }
             }
             if (this.initializations != null) {
-                t = this.init(cw,  t);
+                t = this.init(cw, t);
             }
-            changed |= merge(cw,  t,  frame.inputStack,  nInputStack + i);
+            changed |= merge(cw, t, frame.inputStack, nInputStack + i);
         }
         return changed;
     }
     
-    private static boolean merge(final ClassWriter cw,  int t,  final int[] types,  final int index) {
+    private static boolean merge(final ClassWriter cw, int t, final int[] types, final int index) {
         final int u = types[index];
         if (u == t) {
             return false;
@@ -917,7 +917,7 @@ class Frame
             }
             if ((t & 0xFFF00000) == (u & 0xFFF00000)) {
                 if ((u & 0xFF00000) == 0x1700000) {
-                    v = ((t & 0xF0000000) | 0x1700000 | cw.getMergedType(t & 0xFFFFF,  u & 0xFFFFF));
+                    v = ((t & 0xF0000000) | 0x1700000 | cw.getMergedType(t & 0xFFFFF, u & 0xFFFFF));
                 }
                 else {
                     final int vdim = -268435456 + (u & 0xF0000000);
@@ -927,7 +927,7 @@ class Frame
             else if ((t & 0xFF00000) == 0x1700000 || (t & 0xF0000000) != 0x0) {
                 final int tdim = (((t & 0xF0000000) == 0x0 || (t & 0xFF00000) == 0x1700000) ? 0 : -268435456) + (t & 0xF0000000);
                 final int udim = (((u & 0xF0000000) == 0x0 || (u & 0xFF00000) == 0x1700000) ? 0 : -268435456) + (u & 0xF0000000);
-                v = (Math.min(tdim,  udim) | 0x1700000 | cw.addType("java/lang/Object"));
+                v = (Math.min(tdim, udim) | 0x1700000 | cw.addType("java/lang/Object"));
             }
             else {
                 v = 16777216;

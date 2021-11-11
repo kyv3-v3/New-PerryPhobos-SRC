@@ -4,14 +4,17 @@
 
 package org.spongepowered.asm.mixin.injection.points;
 
-import org.spongepowered.asm.mixin.injection.*;
-import org.spongepowered.asm.mixin.injection.struct.*;
-import org.spongepowered.asm.lib.*;
-import org.spongepowered.asm.lib.tree.*;
-import org.spongepowered.asm.util.*;
-import java.util.*;
+import java.util.Iterator;
+import org.spongepowered.asm.util.Bytecode;
+import java.util.Collection;
+import org.spongepowered.asm.lib.tree.InsnList;
+import org.spongepowered.asm.lib.tree.FieldInsnNode;
+import org.spongepowered.asm.lib.tree.AbstractInsnNode;
+import org.spongepowered.asm.lib.Type;
+import org.spongepowered.asm.mixin.injection.struct.InjectionPointData;
+import org.spongepowered.asm.mixin.injection.InjectionPoint;
 
-@InjectionPoint.AtCode("FIELD")
+@AtCode("FIELD")
 public class BeforeFieldAccess extends BeforeInvoke
 {
     private static final String ARRAY_GET = "get";
@@ -24,10 +27,10 @@ public class BeforeFieldAccess extends BeforeInvoke
     
     public BeforeFieldAccess(final InjectionPointData data) {
         super(data);
-        this.opcode = data.getOpcode(-1,  180,  181,  178,  179,  -1);
-        final String array = data.get("array",  "");
+        this.opcode = data.getOpcode(-1, 180, 181, 178, 179, -1);
+        final String array = data.get("array", "");
         this.arrOpcode = ("get".equalsIgnoreCase(array) ? 46 : ("set".equalsIgnoreCase(array) ? 79 : ("length".equalsIgnoreCase(array) ? 190 : 0)));
-        this.fuzzFactor = Math.min(Math.max(data.get("fuzz",  8),  1),  32);
+        this.fuzzFactor = Math.min(Math.max(data.get("fuzz", 8), 1), 32);
     }
     
     public int getFuzzFactor() {
@@ -51,23 +54,23 @@ public class BeforeFieldAccess extends BeforeInvoke
     }
     
     @Override
-    protected boolean addInsn(final InsnList insns,  final Collection<AbstractInsnNode> nodes,  final AbstractInsnNode insn) {
+    protected boolean addInsn(final InsnList insns, final Collection<AbstractInsnNode> nodes, final AbstractInsnNode insn) {
         if (this.arrOpcode > 0) {
             final FieldInsnNode fieldInsn = (FieldInsnNode)insn;
             final int accOpcode = this.getArrayOpcode(fieldInsn.desc);
-            this.log("{} > > > > searching for array access opcode {} fuzz={}",  this.className,  Bytecode.getOpcodeName(accOpcode),  this.fuzzFactor);
-            if (findArrayNode(insns,  fieldInsn,  accOpcode,  this.fuzzFactor) == null) {
-                this.log("{} > > > > > failed to locate matching insn",  this.className);
+            this.log("{} > > > > searching for array access opcode {} fuzz={}", this.className, Bytecode.getOpcodeName(accOpcode), this.fuzzFactor);
+            if (findArrayNode(insns, fieldInsn, accOpcode, this.fuzzFactor) == null) {
+                this.log("{} > > > > > failed to locate matching insn", this.className);
                 return false;
             }
         }
-        this.log("{} > > > > > adding matching insn",  this.className);
-        return super.addInsn(insns,  nodes,  insn);
+        this.log("{} > > > > > adding matching insn", this.className);
+        return super.addInsn(insns, nodes, insn);
     }
     
-    public static AbstractInsnNode findArrayNode(final InsnList insns,  final FieldInsnNode fieldNode,  final int opcode,  final int searchRange) {
+    public static AbstractInsnNode findArrayNode(final InsnList insns, final FieldInsnNode fieldNode, final int opcode, final int searchRange) {
         int pos = 0;
-        final Iterator<AbstractInsnNode> iter = (Iterator<AbstractInsnNode>)insns.iterator(insns.indexOf((AbstractInsnNode)fieldNode) + 1);
+        final Iterator<AbstractInsnNode> iter = insns.iterator(insns.indexOf(fieldNode) + 1);
         while (iter.hasNext()) {
             final AbstractInsnNode insn = iter.next();
             if (insn.getOpcode() == opcode) {

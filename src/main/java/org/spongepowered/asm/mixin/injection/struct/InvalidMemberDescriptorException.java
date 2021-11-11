@@ -4,7 +4,7 @@
 
 package org.spongepowered.asm.mixin.injection.struct;
 
-import org.spongepowered.asm.mixin.throwables.*;
+import org.spongepowered.asm.mixin.throwables.MixinException;
 
 public class InvalidMemberDescriptorException extends MixinException
 {
@@ -18,7 +18,7 @@ public class InvalidMemberDescriptorException extends MixinException
         super(cause);
     }
     
-    public InvalidMemberDescriptorException(final String message,  final Throwable cause) {
-        super(message,  cause);
+    public InvalidMemberDescriptorException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }

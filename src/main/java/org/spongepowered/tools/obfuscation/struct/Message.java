@@ -4,10 +4,12 @@
 
 package org.spongepowered.tools.obfuscation.struct;
 
-import javax.tools.*;
-import javax.lang.model.element.*;
-import org.spongepowered.tools.obfuscation.mirror.*;
-import javax.annotation.processing.*;
+import javax.annotation.processing.Messager;
+import org.spongepowered.tools.obfuscation.mirror.AnnotationHandle;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+import javax.tools.Diagnostic;
 
 public class Message
 {
@@ -17,27 +19,27 @@ public class Message
     private final AnnotationMirror annotation;
     private final AnnotationValue value;
     
-    public Message(final Diagnostic.Kind kind,  final CharSequence msg) {
-        this(kind,  msg,  null,  (AnnotationMirror)null,  null);
+    public Message(final Diagnostic.Kind kind, final CharSequence msg) {
+        this(kind, msg, null, (AnnotationMirror)null, null);
     }
     
-    public Message(final Diagnostic.Kind kind,  final CharSequence msg,  final Element element) {
-        this(kind,  msg,  element,  (AnnotationMirror)null,  null);
+    public Message(final Diagnostic.Kind kind, final CharSequence msg, final Element element) {
+        this(kind, msg, element, (AnnotationMirror)null, null);
     }
     
-    public Message(final Diagnostic.Kind kind,  final CharSequence msg,  final Element element,  final AnnotationHandle annotation) {
-        this(kind,  msg,  element,  annotation.asMirror(),  null);
+    public Message(final Diagnostic.Kind kind, final CharSequence msg, final Element element, final AnnotationHandle annotation) {
+        this(kind, msg, element, annotation.asMirror(), null);
     }
     
-    public Message(final Diagnostic.Kind kind,  final CharSequence msg,  final Element element,  final AnnotationMirror annotation) {
-        this(kind,  msg,  element,  annotation,  null);
+    public Message(final Diagnostic.Kind kind, final CharSequence msg, final Element element, final AnnotationMirror annotation) {
+        this(kind, msg, element, annotation, null);
     }
     
-    public Message(final Diagnostic.Kind kind,  final CharSequence msg,  final Element element,  final AnnotationHandle annotation,  final AnnotationValue value) {
-        this(kind,  msg,  element,  annotation.asMirror(),  value);
+    public Message(final Diagnostic.Kind kind, final CharSequence msg, final Element element, final AnnotationHandle annotation, final AnnotationValue value) {
+        this(kind, msg, element, annotation.asMirror(), value);
     }
     
-    public Message(final Diagnostic.Kind kind,  final CharSequence msg,  final Element element,  final AnnotationMirror annotation,  final AnnotationValue value) {
+    public Message(final Diagnostic.Kind kind, final CharSequence msg, final Element element, final AnnotationMirror annotation, final AnnotationValue value) {
         this.kind = kind;
         this.msg = msg;
         this.element = element;
@@ -47,16 +49,16 @@ public class Message
     
     public Message sendTo(final Messager messager) {
         if (this.value != null) {
-            messager.printMessage(this.kind,  this.msg,  this.element,  this.annotation,  this.value);
+            messager.printMessage(this.kind, this.msg, this.element, this.annotation, this.value);
         }
         else if (this.annotation != null) {
-            messager.printMessage(this.kind,  this.msg,  this.element,  this.annotation);
+            messager.printMessage(this.kind, this.msg, this.element, this.annotation);
         }
         else if (this.element != null) {
-            messager.printMessage(this.kind,  this.msg,  this.element);
+            messager.printMessage(this.kind, this.msg, this.element);
         }
         else {
-            messager.printMessage(this.kind,  this.msg);
+            messager.printMessage(this.kind, this.msg);
         }
         return this;
     }

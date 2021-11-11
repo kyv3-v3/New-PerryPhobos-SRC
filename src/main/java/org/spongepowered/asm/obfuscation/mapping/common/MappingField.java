@@ -4,8 +4,9 @@
 
 package org.spongepowered.asm.obfuscation.mapping.common;
 
-import org.spongepowered.asm.obfuscation.mapping.*;
-import com.google.common.base.*;
+import com.google.common.base.Strings;
+import com.google.common.base.Objects;
+import org.spongepowered.asm.obfuscation.mapping.IMapping;
 
 public class MappingField implements IMapping<MappingField>
 {
@@ -13,11 +14,11 @@ public class MappingField implements IMapping<MappingField>
     private final String name;
     private final String desc;
     
-    public MappingField(final String owner,  final String name) {
-        this(owner,  name,  null);
+    public MappingField(final String owner, final String name) {
+        this(owner, name, null);
     }
     
-    public MappingField(final String owner,  final String name,  final String desc) {
+    public MappingField(final String owner, final String name, final String desc) {
         this.owner = owner;
         this.name = name;
         this.desc = desc;
@@ -55,22 +56,22 @@ public class MappingField implements IMapping<MappingField>
     
     @Override
     public MappingField move(final String newOwner) {
-        return new MappingField(newOwner,  this.getName(),  this.getDesc());
+        return new MappingField(newOwner, this.getName(), this.getDesc());
     }
     
     @Override
     public MappingField remap(final String newName) {
-        return new MappingField(this.getOwner(),  newName,  this.getDesc());
+        return new MappingField(this.getOwner(), newName, this.getDesc());
     }
     
     @Override
     public MappingField transform(final String newDesc) {
-        return new MappingField(this.getOwner(),  this.getName(),  newDesc);
+        return new MappingField(this.getOwner(), this.getName(), newDesc);
     }
     
     @Override
     public MappingField copy() {
-        return new MappingField(this.getOwner(),  this.getName(),  this.getDesc());
+        return new MappingField(this.getOwner(), this.getName(), this.getDesc());
     }
     
     @Override
@@ -80,7 +81,7 @@ public class MappingField implements IMapping<MappingField>
     
     @Override
     public boolean equals(final Object obj) {
-        return this == obj || (obj instanceof MappingField && Objects.equal((Object)this.toString(),  (Object)((MappingField)obj).toString()));
+        return this == obj || (obj instanceof MappingField && Objects.equal((Object)this.toString(), (Object)((MappingField)obj).toString()));
     }
     
     @Override
@@ -90,6 +91,6 @@ public class MappingField implements IMapping<MappingField>
     
     @Override
     public String toString() {
-        return String.format("L%s;%s:%s",  this.getOwner(),  this.getName(),  Strings.nullToEmpty(this.getDesc()));
+        return String.format("L%s;%s:%s", this.getOwner(), this.getName(), Strings.nullToEmpty(this.getDesc()));
     }
 }

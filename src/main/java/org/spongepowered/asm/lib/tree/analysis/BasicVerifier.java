@@ -4,9 +4,12 @@
 
 package org.spongepowered.asm.lib.tree.analysis;
 
-import org.spongepowered.asm.lib.*;
-import java.util.*;
-import org.spongepowered.asm.lib.tree.*;
+import org.spongepowered.asm.lib.tree.InvokeDynamicInsnNode;
+import org.spongepowered.asm.lib.tree.MethodInsnNode;
+import java.util.List;
+import org.spongepowered.asm.lib.Type;
+import org.spongepowered.asm.lib.tree.FieldInsnNode;
+import org.spongepowered.asm.lib.tree.AbstractInsnNode;
 
 public class BasicVerifier extends BasicInterpreter
 {
@@ -18,38 +21,39 @@ public class BasicVerifier extends BasicInterpreter
         super(api);
     }
     
-    public BasicValue copyOperation(final AbstractInsnNode insn,  final BasicValue value) throws AnalyzerException {
+    @Override
+    public BasicValue copyOperation(final AbstractInsnNode insn, final BasicValue value) throws AnalyzerException {
         Value expected = null;
         switch (insn.getOpcode()) {
             case 21:
             case 54: {
-                expected = (Value)BasicValue.INT_VALUE;
+                expected = BasicValue.INT_VALUE;
                 break;
             }
             case 23:
             case 56: {
-                expected = (Value)BasicValue.FLOAT_VALUE;
+                expected = BasicValue.FLOAT_VALUE;
                 break;
             }
             case 22:
             case 55: {
-                expected = (Value)BasicValue.LONG_VALUE;
+                expected = BasicValue.LONG_VALUE;
                 break;
             }
             case 24:
             case 57: {
-                expected = (Value)BasicValue.DOUBLE_VALUE;
+                expected = BasicValue.DOUBLE_VALUE;
                 break;
             }
             case 25: {
                 if (!value.isReference()) {
-                    throw new AnalyzerException(insn,  (String)null,  (Object)"an object reference",  (Value)value);
+                    throw new AnalyzerException(insn, null, "an object reference", value);
                 }
                 return value;
             }
             case 58: {
-                if (!value.isReference() && !BasicValue.RETURNADDRESS_VALUE.equals((Object)value)) {
-                    throw new AnalyzerException(insn,  (String)null,  (Object)"an object reference or a return address",  (Value)value);
+                if (!value.isReference() && !BasicValue.RETURNADDRESS_VALUE.equals(value)) {
+                    throw new AnalyzerException(insn, null, "an object reference or a return address", value);
                 }
                 return value;
             }
@@ -58,12 +62,13 @@ public class BasicVerifier extends BasicInterpreter
             }
         }
         if (!expected.equals(value)) {
-            throw new AnalyzerException(insn,  (String)null,  (Object)expected,  (Value)value);
+            throw new AnalyzerException(insn, null, expected, value);
         }
         return value;
     }
     
-    public BasicValue unaryOperation(final AbstractInsnNode insn,  final BasicValue value) throws AnalyzerException {
+    @Override
+    public BasicValue unaryOperation(final AbstractInsnNode insn, final BasicValue value) throws AnalyzerException {
         BasicValue expected = null;
         switch (insn.getOpcode()) {
             case 116:
@@ -118,15 +123,15 @@ public class BasicVerifier extends BasicInterpreter
             }
             case 192: {
                 if (!value.isReference()) {
-                    throw new AnalyzerException(insn,  (String)null,  (Object)"an object reference",  (Value)value);
+                    throw new AnalyzerException(insn, null, "an object reference", value);
                 }
-                return super.unaryOperation(insn,  value);
+                return super.unaryOperation(insn, value);
             }
             case 190: {
                 if (!this.isArrayValue(value)) {
-                    throw new AnalyzerException(insn,  (String)null,  (Object)"an array reference",  (Value)value);
+                    throw new AnalyzerException(insn, null, "an array reference", value);
                 }
-                return super.unaryOperation(insn,  value);
+                return super.unaryOperation(insn, value);
             }
             case 176:
             case 191:
@@ -136,9 +141,9 @@ public class BasicVerifier extends BasicInterpreter
             case 198:
             case 199: {
                 if (!value.isReference()) {
-                    throw new AnalyzerException(insn,  (String)null,  (Object)"an object reference",  (Value)value);
+                    throw new AnalyzerException(insn, null, "an object reference", value);
                 }
-                return super.unaryOperation(insn,  value);
+                return super.unaryOperation(insn, value);
             }
             case 179: {
                 expected = this.newValue(Type.getType(((FieldInsnNode)insn).desc));
@@ -148,13 +153,14 @@ public class BasicVerifier extends BasicInterpreter
                 throw new Error("Internal error.");
             }
         }
-        if (!this.isSubTypeOf(value,  expected)) {
-            throw new AnalyzerException(insn,  (String)null,  (Object)expected,  (Value)value);
+        if (!this.isSubTypeOf(value, expected)) {
+            throw new AnalyzerException(insn, null, expected, value);
         }
-        return super.unaryOperation(insn,  value);
+        return super.unaryOperation(insn, value);
     }
     
-    public BasicValue binaryOperation(final AbstractInsnNode insn,  final BasicValue value1,  final BasicValue value2) throws AnalyzerException {
+    @Override
+    public BasicValue binaryOperation(final AbstractInsnNode insn, final BasicValue value1, final BasicValue value2) throws AnalyzerException {
         BasicValue expected1 = null;
         BasicValue expected2 = null;
         switch (insn.getOpcode()) {
@@ -164,7 +170,7 @@ public class BasicVerifier extends BasicInterpreter
                 break;
             }
             case 51: {
-                if (this.isSubTypeOf(value1,  this.newValue(Type.getType("[Z")))) {
+                if (this.isSubTypeOf(value1, this.newValue(Type.getType("[Z")))) {
                     expected1 = this.newValue(Type.getType("[Z"));
                 }
                 else {
@@ -282,19 +288,20 @@ public class BasicVerifier extends BasicInterpreter
                 throw new Error("Internal error.");
             }
         }
-        if (!this.isSubTypeOf(value1,  expected1)) {
-            throw new AnalyzerException(insn,  "First argument",  (Object)expected1,  (Value)value1);
+        if (!this.isSubTypeOf(value1, expected1)) {
+            throw new AnalyzerException(insn, "First argument", expected1, value1);
         }
-        if (!this.isSubTypeOf(value2,  expected2)) {
-            throw new AnalyzerException(insn,  "Second argument",  (Object)expected2,  (Value)value2);
+        if (!this.isSubTypeOf(value2, expected2)) {
+            throw new AnalyzerException(insn, "Second argument", expected2, value2);
         }
         if (insn.getOpcode() == 50) {
             return this.getElementValue(value1);
         }
-        return super.binaryOperation(insn,  value1,  value2);
+        return super.binaryOperation(insn, value1, value2);
     }
     
-    public BasicValue ternaryOperation(final AbstractInsnNode insn,  final BasicValue value1,  final BasicValue value2,  final BasicValue value3) throws AnalyzerException {
+    @Override
+    public BasicValue ternaryOperation(final AbstractInsnNode insn, final BasicValue value1, final BasicValue value2, final BasicValue value3) throws AnalyzerException {
         BasicValue expected1 = null;
         BasicValue expected2 = null;
         switch (insn.getOpcode()) {
@@ -304,7 +311,7 @@ public class BasicVerifier extends BasicInterpreter
                 break;
             }
             case 84: {
-                if (this.isSubTypeOf(value1,  this.newValue(Type.getType("[Z")))) {
+                if (this.isSubTypeOf(value1, this.newValue(Type.getType("[Z")))) {
                     expected1 = this.newValue(Type.getType("[Z"));
                 }
                 else {
@@ -347,24 +354,25 @@ public class BasicVerifier extends BasicInterpreter
                 throw new Error("Internal error.");
             }
         }
-        if (!this.isSubTypeOf(value1,  expected1)) {
-            throw new AnalyzerException(insn,  "First argument",  (Object)("a " + expected1 + " array reference"),  (Value)value1);
+        if (!this.isSubTypeOf(value1, expected1)) {
+            throw new AnalyzerException(insn, "First argument", "a " + expected1 + " array reference", value1);
         }
-        if (!BasicValue.INT_VALUE.equals((Object)value2)) {
-            throw new AnalyzerException(insn,  "Second argument",  (Object)BasicValue.INT_VALUE,  (Value)value2);
+        if (!BasicValue.INT_VALUE.equals(value2)) {
+            throw new AnalyzerException(insn, "Second argument", BasicValue.INT_VALUE, value2);
         }
-        if (!this.isSubTypeOf(value3,  expected2)) {
-            throw new AnalyzerException(insn,  "Third argument",  (Object)expected2,  (Value)value3);
+        if (!this.isSubTypeOf(value3, expected2)) {
+            throw new AnalyzerException(insn, "Third argument", expected2, value3);
         }
         return null;
     }
     
-    public BasicValue naryOperation(final AbstractInsnNode insn,  final List<? extends BasicValue> values) throws AnalyzerException {
+    @Override
+    public BasicValue naryOperation(final AbstractInsnNode insn, final List<? extends BasicValue> values) throws AnalyzerException {
         final int opcode = insn.getOpcode();
         if (opcode == 197) {
             for (int i = 0; i < values.size(); ++i) {
-                if (!BasicValue.INT_VALUE.equals((Object)values.get(i))) {
-                    throw new AnalyzerException(insn,  (String)null,  (Object)BasicValue.INT_VALUE,  (Value)values.get(i));
+                if (!BasicValue.INT_VALUE.equals(values.get(i))) {
+                    throw new AnalyzerException(insn, null, BasicValue.INT_VALUE, (Value)values.get(i));
                 }
             }
         }
@@ -373,8 +381,8 @@ public class BasicVerifier extends BasicInterpreter
             int j = 0;
             if (opcode != 184 && opcode != 186) {
                 final Type owner = Type.getObjectType(((MethodInsnNode)insn).owner);
-                if (!this.isSubTypeOf((BasicValue)values.get(i++),  this.newValue(owner))) {
-                    throw new AnalyzerException(insn,  "Method owner",  (Object)this.newValue(owner),  (Value)values.get(0));
+                if (!this.isSubTypeOf((BasicValue)values.get(i++), this.newValue(owner))) {
+                    throw new AnalyzerException(insn, "Method owner", this.newValue(owner), (Value)values.get(0));
                 }
             }
             final String desc = (opcode == 186) ? ((InvokeDynamicInsnNode)insn).desc : ((MethodInsnNode)insn).desc;
@@ -382,17 +390,18 @@ public class BasicVerifier extends BasicInterpreter
             while (i < values.size()) {
                 final BasicValue expected = this.newValue(args[j++]);
                 final BasicValue encountered = (BasicValue)values.get(i++);
-                if (!this.isSubTypeOf(encountered,  expected)) {
-                    throw new AnalyzerException(insn,  "Argument " + j,  (Object)expected,  (Value)encountered);
+                if (!this.isSubTypeOf(encountered, expected)) {
+                    throw new AnalyzerException(insn, "Argument " + j, expected, encountered);
                 }
             }
         }
-        return super.naryOperation(insn,  (List)values);
+        return super.naryOperation(insn, values);
     }
     
-    public void returnOperation(final AbstractInsnNode insn,  final BasicValue value,  final BasicValue expected) throws AnalyzerException {
-        if (!this.isSubTypeOf(value,  expected)) {
-            throw new AnalyzerException(insn,  "Incompatible return type",  (Object)expected,  (Value)value);
+    @Override
+    public void returnOperation(final AbstractInsnNode insn, final BasicValue value, final BasicValue expected) throws AnalyzerException {
+        if (!this.isSubTypeOf(value, expected)) {
+            throw new AnalyzerException(insn, "Incompatible return type", expected, value);
         }
     }
     
@@ -404,7 +413,7 @@ public class BasicVerifier extends BasicInterpreter
         return BasicValue.REFERENCE_VALUE;
     }
     
-    protected boolean isSubTypeOf(final BasicValue value,  final BasicValue expected) {
-        return value.equals((Object)expected);
+    protected boolean isSubTypeOf(final BasicValue value, final BasicValue expected) {
+        return value.equals(expected);
     }
 }

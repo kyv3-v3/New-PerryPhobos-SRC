@@ -4,8 +4,8 @@
 
 package org.spongepowered.asm.mixin.transformer;
 
-import org.spongepowered.asm.mixin.extensibility.*;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.MixinEnvironment;
+import org.spongepowered.asm.mixin.extensibility.IMixinConfig;
 
 public class Config
 {
@@ -30,7 +30,7 @@ public class Config
     }
     
     public IMixinConfig getConfig() {
-        return (IMixinConfig)this.config;
+        return this.config;
     }
     
     public MixinEnvironment getEnvironment() {
@@ -53,11 +53,11 @@ public class Config
     }
     
     @Deprecated
-    public static Config create(final String configFile,  final MixinEnvironment outer) {
-        return MixinConfig.create(configFile,  outer);
+    public static Config create(final String configFile, final MixinEnvironment outer) {
+        return MixinConfig.create(configFile, outer);
     }
     
     public static Config create(final String configFile) {
-        return MixinConfig.create(configFile,  MixinEnvironment.getDefaultEnvironment());
+        return MixinConfig.create(configFile, MixinEnvironment.getDefaultEnvironment());
     }
 }

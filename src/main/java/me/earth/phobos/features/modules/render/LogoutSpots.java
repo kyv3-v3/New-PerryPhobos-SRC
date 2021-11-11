@@ -80,7 +80,7 @@ public class LogoutSpots extends Module
                             currentColor = Colors.INSTANCE.getCurrentColor();
                         }
                         else {
-                            // new(java.awt.Color.class)
+                           // new(java.awt.Color.class)
                             new Color(this.red.getValue(),  this.green.getValue(),  this.blue.getValue(),  this.alpha.getValue());
                         }
                         RenderUtil.drawBlockOutline(interpolateAxis,  currentColor,  1.0f);

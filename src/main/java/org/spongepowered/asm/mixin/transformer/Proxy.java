@@ -4,12 +4,14 @@
 
 package org.spongepowered.asm.mixin.transformer;
 
-import net.minecraft.launchwrapper.*;
-import org.spongepowered.asm.service.*;
-import org.apache.logging.log4j.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import org.apache.logging.log4j.LogManager;
+import java.util.List;
+import org.spongepowered.asm.service.ILegacyClassTransformer;
+import net.minecraft.launchwrapper.IClassTransformer;
 
-public final class Proxy implements IClassTransformer,  ILegacyClassTransformer
+public final class Proxy implements IClassTransformer, ILegacyClassTransformer
 {
     private static List<Proxy> proxies;
     private static MixinTransformer transformer;
@@ -21,12 +23,12 @@ public final class Proxy implements IClassTransformer,  ILegacyClassTransformer
             hook.isActive = false;
         }
         Proxy.proxies.add(this);
-        LogManager.getLogger("mixin").debug("Adding new mixin transformer proxy #{}",  new Object[] { Proxy.proxies.size() });
+        LogManager.getLogger("mixin").debug("Adding new mixin transformer proxy #{}", new Object[] { Proxy.proxies.size() });
     }
     
-    public byte[] transform(final String name,  final String transformedName,  final byte[] basicClass) {
+    public byte[] transform(final String name, final String transformedName, final byte[] basicClass) {
         if (this.isActive) {
-            return Proxy.transformer.transformClassBytes(name,  transformedName,  basicClass);
+            return Proxy.transformer.transformClassBytes(name, transformedName, basicClass);
         }
         return basicClass;
     }
@@ -39,9 +41,9 @@ public final class Proxy implements IClassTransformer,  ILegacyClassTransformer
         return true;
     }
     
-    public byte[] transformClassBytes(final String name,  final String transformedName,  final byte[] basicClass) {
+    public byte[] transformClassBytes(final String name, final String transformedName, final byte[] basicClass) {
         if (this.isActive) {
-            return Proxy.transformer.transformClassBytes(name,  transformedName,  basicClass);
+            return Proxy.transformer.transformClassBytes(name, transformedName, basicClass);
         }
         return basicClass;
     }

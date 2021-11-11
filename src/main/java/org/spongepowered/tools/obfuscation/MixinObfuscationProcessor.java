@@ -4,13 +4,18 @@
 
 package org.spongepowered.tools.obfuscation;
 
-import javax.annotation.processing.*;
-import org.spongepowered.asm.mixin.*;
-import java.lang.annotation.*;
-import javax.lang.model.element.*;
-import javax.tools.*;
-import javax.lang.model.*;
-import java.util.*;
+import java.util.Set;
+import javax.lang.model.SourceVersion;
+import java.util.Iterator;
+import javax.tools.Diagnostic;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Element;
+import java.lang.annotation.Annotation;
+import org.spongepowered.asm.mixin.Mixin;
+import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.AbstractProcessor;
 
 public abstract class MixinObfuscationProcessor extends AbstractProcessor
 {
@@ -24,12 +29,12 @@ public abstract class MixinObfuscationProcessor extends AbstractProcessor
     
     protected void processMixins(final RoundEnvironment roundEnv) {
         this.mixins.onPassStarted();
-        for (final Element elem : roundEnv.getElementsAnnotatedWith((Class<? extends Annotation>)Mixin.class)) {
+        for (final Element elem : roundEnv.getElementsAnnotatedWith(Mixin.class)) {
             if (elem.getKind() == ElementKind.CLASS || elem.getKind() == ElementKind.INTERFACE) {
                 this.mixins.registerMixin((TypeElement)elem);
             }
             else {
-                this.mixins.printMessage(Diagnostic.Kind.ERROR,  (CharSequence)"Found an @Mixin annotation on an element which is not a class or interface",  elem);
+                this.mixins.printMessage(Diagnostic.Kind.ERROR, "Found an @Mixin annotation on an element which is not a class or interface", elem);
             }
         }
     }

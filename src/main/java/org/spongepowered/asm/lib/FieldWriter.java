@@ -18,7 +18,7 @@ final class FieldWriter extends FieldVisitor
     private AnnotationWriter itanns;
     private Attribute attrs;
     
-    FieldWriter(final ClassWriter cw,  final int access,  final String name,  final String desc,  final String signature,  final Object value) {
+    FieldWriter(final ClassWriter cw, final int access, final String name, final String desc, final String signature, final Object value) {
         super(327680);
         if (cw.firstField == null) {
             cw.firstField = this;
@@ -39,10 +39,11 @@ final class FieldWriter extends FieldVisitor
         }
     }
     
-    public AnnotationVisitor visitAnnotation(final String desc,  final boolean visible) {
+    @Override
+    public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
         final ByteVector bv = new ByteVector();
         bv.putShort(this.cw.newUTF8(desc)).putShort(0);
-        final AnnotationWriter aw = new AnnotationWriter(this.cw,  true,  bv,  bv,  2);
+        final AnnotationWriter aw = new AnnotationWriter(this.cw, true, bv, bv, 2);
         if (visible) {
             aw.next = this.anns;
             this.anns = aw;
@@ -51,14 +52,15 @@ final class FieldWriter extends FieldVisitor
             aw.next = this.ianns;
             this.ianns = aw;
         }
-        return (AnnotationVisitor)aw;
+        return aw;
     }
     
-    public AnnotationVisitor visitTypeAnnotation(final int typeRef,  final TypePath typePath,  final String desc,  final boolean visible) {
+    @Override
+    public AnnotationVisitor visitTypeAnnotation(final int typeRef, final TypePath typePath, final String desc, final boolean visible) {
         final ByteVector bv = new ByteVector();
-        AnnotationWriter.putTarget(typeRef,  typePath,  bv);
+        AnnotationWriter.putTarget(typeRef, typePath, bv);
         bv.putShort(this.cw.newUTF8(desc)).putShort(0);
-        final AnnotationWriter aw = new AnnotationWriter(this.cw,  true,  bv,  bv,  bv.length - 2);
+        final AnnotationWriter aw = new AnnotationWriter(this.cw, true, bv, bv, bv.length - 2);
         if (visible) {
             aw.next = this.tanns;
             this.tanns = aw;
@@ -67,14 +69,16 @@ final class FieldWriter extends FieldVisitor
             aw.next = this.itanns;
             this.itanns = aw;
         }
-        return (AnnotationVisitor)aw;
+        return aw;
     }
     
+    @Override
     public void visitAttribute(final Attribute attr) {
         attr.next = this.attrs;
         this.attrs = attr;
     }
     
+    @Override
     public void visitEnd() {
     }
     
@@ -113,7 +117,7 @@ final class FieldWriter extends FieldVisitor
             size += 8 + this.itanns.getSize();
         }
         if (this.attrs != null) {
-            size += this.attrs.getSize(this.cw,  (byte[])null,  0,  -1,  -1);
+            size += this.attrs.getSize(this.cw, null, 0, -1, -1);
         }
         return size;
     }
@@ -182,7 +186,7 @@ final class FieldWriter extends FieldVisitor
             this.itanns.put(out);
         }
         if (this.attrs != null) {
-            this.attrs.put(this.cw,  (byte[])null,  0,  -1,  -1,  out);
+            this.attrs.put(this.cw, null, 0, -1, -1, out);
         }
     }
 }

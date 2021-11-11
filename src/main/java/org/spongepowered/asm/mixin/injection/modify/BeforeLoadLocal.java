@@ -4,13 +4,17 @@
 
 package org.spongepowered.asm.mixin.injection.modify;
 
-import org.spongepowered.asm.mixin.injection.*;
-import org.spongepowered.asm.lib.*;
-import org.spongepowered.asm.mixin.injection.struct.*;
-import java.util.*;
-import org.spongepowered.asm.lib.tree.*;
+import org.spongepowered.asm.lib.tree.InsnList;
+import java.util.ListIterator;
+import org.spongepowered.asm.lib.tree.VarInsnNode;
+import org.spongepowered.asm.lib.tree.AbstractInsnNode;
+import java.util.Collection;
+import org.spongepowered.asm.mixin.injection.struct.Target;
+import org.spongepowered.asm.mixin.injection.struct.InjectionPointData;
+import org.spongepowered.asm.lib.Type;
+import org.spongepowered.asm.mixin.injection.InjectionPoint;
 
-@InjectionPoint.AtCode("LOAD")
+@AtCode("LOAD")
 public class BeforeLoadLocal extends ModifyVariableInjector.ContextualInjectionPoint
 {
     private final Type returnType;
@@ -20,10 +24,10 @@ public class BeforeLoadLocal extends ModifyVariableInjector.ContextualInjectionP
     private boolean opcodeAfter;
     
     protected BeforeLoadLocal(final InjectionPointData data) {
-        this(data,  21,  false);
+        this(data, 21, false);
     }
     
-    protected BeforeLoadLocal(final InjectionPointData data,  final int opcode,  final boolean opcodeAfter) {
+    protected BeforeLoadLocal(final InjectionPointData data, final int opcode, final boolean opcodeAfter) {
         super(data.getContext());
         this.returnType = data.getMethodReturnType();
         this.discriminator = data.getLocalVariableDiscriminator();
@@ -33,12 +37,12 @@ public class BeforeLoadLocal extends ModifyVariableInjector.ContextualInjectionP
     }
     
     @Override
-    boolean find(final Target target,  final Collection<AbstractInsnNode> nodes) {
-        final SearchState state = new SearchState(this.ordinal,  this.discriminator.printLVT());
+    boolean find(final Target target, final Collection<AbstractInsnNode> nodes) {
+        final SearchState state = new SearchState(this.ordinal, this.discriminator.printLVT());
         for (final AbstractInsnNode insn : target.method.instructions) {
             if (state.isPendingCheck()) {
-                final int local = this.discriminator.findLocal(this.returnType,  this.discriminator.isArgsOnly(),  target,  insn);
-                state.check(nodes,  insn,  local);
+                final int local = this.discriminator.findLocal(this.returnType, this.discriminator.isArgsOnly(), target, insn);
+                state.check(nodes, insn, local);
             }
             else {
                 if (!(insn instanceof VarInsnNode) || insn.getOpcode() != this.opcode || (this.ordinal != -1 && state.success())) {
@@ -49,8 +53,8 @@ public class BeforeLoadLocal extends ModifyVariableInjector.ContextualInjectionP
                     state.setPendingCheck();
                 }
                 else {
-                    final int local = this.discriminator.findLocal(this.returnType,  this.discriminator.isArgsOnly(),  target,  insn);
-                    state.check(nodes,  insn,  local);
+                    final int local = this.discriminator.findLocal(this.returnType, this.discriminator.isArgsOnly(), target, insn);
+                    state.check(nodes, insn, local);
                 }
             }
         }
@@ -66,7 +70,7 @@ public class BeforeLoadLocal extends ModifyVariableInjector.ContextualInjectionP
         private boolean found;
         private VarInsnNode varNode;
         
-        SearchState(final int targetOrdinal,  final boolean print) {
+        SearchState(final int targetOrdinal, final boolean print) {
             this.ordinal = 0;
             this.pendingCheck = false;
             this.found = false;
@@ -90,7 +94,7 @@ public class BeforeLoadLocal extends ModifyVariableInjector.ContextualInjectionP
             this.varNode = node;
         }
         
-        void check(final Collection<AbstractInsnNode> nodes,  final AbstractInsnNode insn,  final int local) {
+        void check(final Collection<AbstractInsnNode> nodes, final AbstractInsnNode insn, final int local) {
             this.pendingCheck = false;
             if (local != this.varNode.var && (local > -2 || !this.print)) {
                 return;

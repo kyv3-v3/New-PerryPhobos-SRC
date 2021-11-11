@@ -4,10 +4,10 @@
 
 package org.spongepowered.tools.obfuscation.struct;
 
-import javax.tools.*;
-import javax.lang.model.element.*;
-import org.spongepowered.tools.obfuscation.mirror.*;
-import javax.annotation.processing.*;
+import javax.annotation.processing.Messager;
+import org.spongepowered.tools.obfuscation.mirror.AnnotationHandle;
+import javax.lang.model.element.Element;
+import javax.tools.Diagnostic;
 
 public class InjectorRemap
 {
@@ -28,8 +28,8 @@ public class InjectorRemap
         this.clearMessage();
     }
     
-    public void addMessage(final Diagnostic.Kind kind,  final CharSequence msg,  final Element element,  final AnnotationHandle annotation) {
-        this.message = new Message(kind,  msg,  element,  annotation);
+    public void addMessage(final Diagnostic.Kind kind, final CharSequence msg, final Element element, final AnnotationHandle annotation) {
+        this.message = new Message(kind, msg, element, annotation);
     }
     
     public void clearMessage() {

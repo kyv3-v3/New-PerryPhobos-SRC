@@ -4,14 +4,18 @@
 
 package org.spongepowered.asm.launch.platform;
 
-import java.net.*;
-import java.io.*;
-import java.util.jar.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.jar.Manifest;
+import java.io.IOException;
+import java.util.jar.JarFile;
+import java.io.File;
+import java.util.jar.Attributes;
+import java.net.URI;
+import java.util.Map;
 
 final class MainAttributes
 {
-    private static final Map<URI,  MainAttributes> instances;
+    private static final Map<URI, MainAttributes> instances;
     protected final Attributes attributes;
     
     private MainAttributes() {
@@ -61,12 +65,12 @@ final class MainAttributes
         MainAttributes attributes = MainAttributes.instances.get(uri);
         if (attributes == null) {
             attributes = new MainAttributes(new File(uri));
-            MainAttributes.instances.put(uri,  attributes);
+            MainAttributes.instances.put(uri, attributes);
         }
         return attributes;
     }
     
     static {
-        instances = new HashMap<URI,  MainAttributes>();
+        instances = new HashMap<URI, MainAttributes>();
     }
 }

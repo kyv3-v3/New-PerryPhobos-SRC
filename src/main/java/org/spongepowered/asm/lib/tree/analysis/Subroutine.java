@@ -4,8 +4,11 @@
 
 package org.spongepowered.asm.lib.tree.analysis;
 
-import org.spongepowered.asm.lib.tree.*;
-import java.util.*;
+import java.util.Collection;
+import java.util.ArrayList;
+import org.spongepowered.asm.lib.tree.JumpInsnNode;
+import java.util.List;
+import org.spongepowered.asm.lib.tree.LabelNode;
 
 class Subroutine
 {
@@ -16,7 +19,7 @@ class Subroutine
     private Subroutine() {
     }
     
-    Subroutine(final LabelNode start,  final int maxLocals,  final JumpInsnNode caller) {
+    Subroutine(final LabelNode start, final int maxLocals, final JumpInsnNode caller) {
         this.start = start;
         this.access = new boolean[maxLocals];
         (this.callers = new ArrayList<JumpInsnNode>()).add(caller);
@@ -26,7 +29,7 @@ class Subroutine
         final Subroutine result = new Subroutine();
         result.start = this.start;
         result.access = new boolean[this.access.length];
-        System.arraycopy(this.access,  0,  result.access,  0,  this.access.length);
+        System.arraycopy(this.access, 0, result.access, 0, this.access.length);
         result.callers = new ArrayList<JumpInsnNode>(this.callers);
         return result;
     }

@@ -4,20 +4,31 @@
 
 package org.spongepowered.asm.util;
 
-import java.util.*;
-import org.spongepowered.asm.lib.tree.*;
-import org.spongepowered.asm.lib.signature.*;
+import org.spongepowered.asm.lib.signature.SignatureWriter;
+import org.spongepowered.asm.lib.tree.ClassNode;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.ListIterator;
+import java.util.Iterator;
+import org.spongepowered.asm.lib.signature.SignatureVisitor;
+import org.spongepowered.asm.lib.signature.SignatureReader;
+import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Deque;
+import java.util.List;
+import java.util.Map;
 
 public class ClassSignature
 {
     protected static final String OBJECT = "java/lang/Object";
-    private final Map<TypeVar,  TokenHandle> types;
+    private final Map<TypeVar, TokenHandle> types;
     private Token superClass;
     private final List<Token> interfaces;
     private final Deque<String> rawInterfaces;
     
     ClassSignature() {
-        this.types = new LinkedHashMap<TypeVar,  TokenHandle>();
+        this.types = new LinkedHashMap<TypeVar, TokenHandle>();
         this.superClass = new Token("java/lang/Object");
         this.interfaces = new ArrayList<Token>();
         this.rawInterfaces = new LinkedList<String>();
@@ -26,7 +37,7 @@ public class ClassSignature
     private ClassSignature read(final String signature) {
         if (signature != null) {
             try {
-                new SignatureReader(signature).accept((SignatureVisitor)new SignatureParser());
+                new SignatureReader(signature).accept(new SignatureParser());
             }
             catch (Exception ex) {
                 ex.printStackTrace();
@@ -51,12 +62,12 @@ public class ClassSignature
             }
         }
         final TokenHandle handle = new TokenHandle();
-        this.types.put(new TypeVar(varName),  handle);
+        this.types.put(new TypeVar(varName), handle);
         return handle;
     }
     
     protected String getTypeVar(final TokenHandle handle) {
-        for (final Map.Entry<TypeVar,  TokenHandle> type : this.types.entrySet()) {
+        for (final Map.Entry<TypeVar, TokenHandle> type : this.types.entrySet()) {
             final TypeVar typeVar = type.getKey();
             final TokenHandle typeHandle = type.getValue();
             if (handle == typeHandle || handle.asToken() == typeHandle.asToken()) {
@@ -66,11 +77,11 @@ public class ClassSignature
         return handle.token.asType();
     }
     
-    protected void addTypeVar(final TypeVar typeVar,  final TokenHandle handle) throws IllegalArgumentException {
+    protected void addTypeVar(final TypeVar typeVar, final TokenHandle handle) throws IllegalArgumentException {
         if (this.types.containsKey(typeVar)) {
             throw new IllegalArgumentException("TypeVar " + typeVar + " is already present on " + this);
         }
-        this.types.put(typeVar,  handle);
+        this.types.put(typeVar, handle);
     }
     
     protected void setSuperClass(final Token superClass) {
@@ -123,8 +134,8 @@ public class ClassSignature
             ex.printStackTrace();
             return;
         }
-        for (final Map.Entry<TypeVar,  TokenHandle> type : other.types.entrySet()) {
-            this.addTypeVar(type.getKey(),  type.getValue());
+        for (final Map.Entry<TypeVar, TokenHandle> type : other.types.entrySet()) {
+            this.addTypeVar(type.getKey(), type.getValue());
         }
         for (final Token iface : other.interfaces) {
             this.addInterface(iface);
@@ -133,53 +144,53 @@ public class ClassSignature
     
     private void conform(final Set<String> typeVars) {
         for (final TypeVar typeVar : this.types.keySet()) {
-            final String name = this.findUniqueName(typeVar.getOriginalName(),  typeVars);
+            final String name = this.findUniqueName(typeVar.getOriginalName(), typeVars);
             typeVar.rename(name);
             typeVars.add(name);
         }
     }
     
-    private String findUniqueName(final String typeVar,  final Set<String> typeVars) {
+    private String findUniqueName(final String typeVar, final Set<String> typeVars) {
         if (!typeVars.contains(typeVar)) {
             return typeVar;
         }
         if (typeVar.length() == 1) {
-            final String name = this.findOffsetName(typeVar.charAt(0),  typeVars);
+            final String name = this.findOffsetName(typeVar.charAt(0), typeVars);
             if (name != null) {
                 return name;
             }
         }
-        String name = this.findOffsetName('T',  typeVars,  "",  typeVar);
+        String name = this.findOffsetName('T', typeVars, "", typeVar);
         if (name != null) {
             return name;
         }
-        name = this.findOffsetName('T',  typeVars,  typeVar,  "");
+        name = this.findOffsetName('T', typeVars, typeVar, "");
         if (name != null) {
             return name;
         }
-        name = this.findOffsetName('T',  typeVars,  "T",  typeVar);
+        name = this.findOffsetName('T', typeVars, "T", typeVar);
         if (name != null) {
             return name;
         }
-        name = this.findOffsetName('T',  typeVars,  "",  typeVar + "Type");
+        name = this.findOffsetName('T', typeVars, "", typeVar + "Type");
         if (name != null) {
             return name;
         }
         throw new IllegalStateException("Failed to conform type var: " + typeVar);
     }
     
-    private String findOffsetName(final char c,  final Set<String> typeVars) {
-        return this.findOffsetName(c,  typeVars,  "",  "");
+    private String findOffsetName(final char c, final Set<String> typeVars) {
+        return this.findOffsetName(c, typeVars, "", "");
     }
     
-    private String findOffsetName(final char c,  final Set<String> typeVars,  final String prefix,  final String suffix) {
-        String name = String.format("%s%s%s",  prefix,  c,  suffix);
+    private String findOffsetName(final char c, final Set<String> typeVars, final String prefix, final String suffix) {
+        String name = String.format("%s%s%s", prefix, c, suffix);
         if (!typeVars.contains(name)) {
             return name;
         }
         if (c > '@' && c < '[') {
             for (int s = c - '@'; s + 65 != c; s = ++s % 26) {
-                name = String.format("%s%s%s",  prefix,  (char)(s + 65),  suffix);
+                name = String.format("%s%s%s", prefix, (char)(s + 65), suffix);
                 if (!typeVars.contains(name)) {
                     return name;
                 }
@@ -189,7 +200,7 @@ public class ClassSignature
     }
     
     public SignatureVisitor getRemapper() {
-        return (SignatureVisitor)new SignatureRemapper();
+        return new SignatureRemapper();
     }
     
     @Override
@@ -201,7 +212,7 @@ public class ClassSignature
         if (this.types.size() > 0) {
             boolean valid = false;
             final StringBuilder types = new StringBuilder();
-            for (final Map.Entry<TypeVar,  TokenHandle> type : this.types.entrySet()) {
+            for (final Map.Entry<TypeVar, TokenHandle> type : this.types.entrySet()) {
                 final String bound = type.getValue().asBound();
                 if (!bound.isEmpty()) {
                     types.append(type.getKey()).append(':').append(bound);
@@ -329,7 +340,7 @@ public class ClassSignature
         }
         
         Token(final String type) {
-            this(type,  false);
+            this(type, false);
         }
         
         Token(final char symbol) {
@@ -338,10 +349,10 @@ public class ClassSignature
         }
         
         Token(final boolean inner) {
-            this(null,  inner);
+            this(null, inner);
         }
         
-        Token(final String type,  final boolean inner) {
+        Token(final String type, final boolean inner) {
             this.symbol = '\0';
             this.inner = inner;
             this.type = type;
@@ -446,7 +457,7 @@ public class ClassSignature
             return handle;
         }
         
-        Token addBound(final String bound,  final boolean classBound) {
+        Token addBound(final String bound, final boolean classBound) {
             if (classBound) {
                 return this.addClassBound(bound);
             }
@@ -466,7 +477,7 @@ public class ClassSignature
         }
         
         Token addInnerClass(final String name) {
-            this.tail = new Token(name,  true);
+            this.tail = new Token(name, true);
             this.getSuffix().add(this.tail);
             return this.tail;
         }
@@ -556,7 +567,7 @@ public class ClassSignature
         char wildcard;
         
         TokenHandle(final ClassSignature this$0) {
-            this(this$0,  new Token());
+            this(this$0, new Token());
         }
         
         TokenHandle(final Token token) {
@@ -618,22 +629,27 @@ public class ClassSignature
             super(327680);
         }
         
+        @Override
         public void visitFormalTypeParameter(final String name) {
             this.param = new FormalParamElement(name);
         }
         
+        @Override
         public SignatureVisitor visitClassBound() {
             return this.param.visitClassBound();
         }
         
+        @Override
         public SignatureVisitor visitInterfaceBound() {
             return this.param.visitInterfaceBound();
         }
         
+        @Override
         public SignatureVisitor visitSuperclass() {
             return new SuperClassElement();
         }
         
+        @Override
         public SignatureVisitor visitInterface() {
             return new InterfaceElement();
         }
@@ -667,31 +683,37 @@ public class ClassSignature
                 return array;
             }
             
+            @Override
             public void visitClassType(final String name) {
                 this.getToken().setType(name);
             }
             
+            @Override
             public SignatureVisitor visitClassBound() {
                 this.getToken();
-                return new BoundElement(this,  true);
+                return new BoundElement(this, true);
             }
             
+            @Override
             public SignatureVisitor visitInterfaceBound() {
                 this.getToken();
-                return new BoundElement(this,  false);
+                return new BoundElement(this, false);
             }
             
+            @Override
             public void visitInnerClassType(final String name) {
                 this.token.addInnerClass(name);
             }
             
+            @Override
             public SignatureVisitor visitArrayType() {
                 this.setArray();
                 return this;
             }
             
+            @Override
             public SignatureVisitor visitTypeArgument(final char wildcard) {
-                return new TypeArgElement(this,  wildcard);
+                return new TypeArgElement(this, wildcard);
             }
             
             Token addTypeArgument() {
@@ -730,7 +752,7 @@ public class ClassSignature
             private final TokenElement type;
             private final char wildcard;
             
-            TypeArgElement(final TokenElement type,  final char wildcard) {
+            TypeArgElement(final TokenElement type, final char wildcard) {
                 this.type = type;
                 this.wildcard = wildcard;
             }
@@ -741,10 +763,12 @@ public class ClassSignature
                 return this;
             }
             
+            @Override
             public void visitBaseType(final char descriptor) {
                 this.token = this.type.addTypeArgument(descriptor).asToken();
             }
             
+            @Override
             public void visitTypeVariable(final String name) {
                 final TokenHandle token = ClassSignature.this.getType(name);
                 this.token = this.type.addTypeArgument(token).setWildcard(this.wildcard).asToken();
@@ -755,15 +779,17 @@ public class ClassSignature
                 this.token = this.type.addTypeArgument(name).setWildcard(this.wildcard).asToken();
             }
             
+            @Override
             public void visitTypeArgument() {
                 this.token.addTypeArgument('*');
             }
             
             @Override
             public SignatureVisitor visitTypeArgument(final char wildcard) {
-                return new TypeArgElement(this,  wildcard);
+                return new TypeArgElement(this, wildcard);
             }
             
+            @Override
             public void visitEnd() {
             }
         }
@@ -773,28 +799,30 @@ public class ClassSignature
             private final TokenElement type;
             private final boolean classBound;
             
-            BoundElement(final TokenElement type,  final boolean classBound) {
+            BoundElement(final TokenElement type, final boolean classBound) {
                 this.type = type;
                 this.classBound = classBound;
             }
             
             @Override
             public void visitClassType(final String name) {
-                this.token = this.type.token.addBound(name,  this.classBound);
+                this.token = this.type.token.addBound(name, this.classBound);
             }
             
+            @Override
             public void visitTypeArgument() {
                 this.token.addTypeArgument('*');
             }
             
             @Override
             public SignatureVisitor visitTypeArgument(final char wildcard) {
-                return new TypeArgElement(this,  wildcard);
+                return new TypeArgElement(this, wildcard);
             }
         }
         
         class SuperClassElement extends TokenElement
         {
+            @Override
             public void visitEnd() {
                 ClassSignature.this.setSuperClass(this.token);
             }
@@ -802,6 +830,7 @@ public class ClassSignature
         
         class InterfaceElement extends TokenElement
         {
+            @Override
             public void visitEnd() {
                 ClassSignature.this.addInterface(this.token);
             }
@@ -816,11 +845,13 @@ public class ClassSignature
             this.localTypeVars = new HashSet<String>();
         }
         
+        @Override
         public void visitFormalTypeParameter(final String name) {
             this.localTypeVars.add(name);
             super.visitFormalTypeParameter(name);
         }
         
+        @Override
         public void visitTypeVariable(final String name) {
             if (!this.localTypeVars.contains(name)) {
                 final TypeVar typeVar = ClassSignature.this.getTypeVar(name);

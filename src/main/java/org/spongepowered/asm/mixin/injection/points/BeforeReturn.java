@@ -4,13 +4,16 @@
 
 package org.spongepowered.asm.mixin.injection.points;
 
-import org.spongepowered.asm.mixin.injection.*;
-import org.spongepowered.asm.mixin.injection.struct.*;
-import org.spongepowered.asm.lib.*;
-import org.spongepowered.asm.lib.tree.*;
-import java.util.*;
+import java.util.ListIterator;
+import org.spongepowered.asm.lib.tree.InsnNode;
+import org.spongepowered.asm.lib.Type;
+import org.spongepowered.asm.lib.tree.AbstractInsnNode;
+import java.util.Collection;
+import org.spongepowered.asm.lib.tree.InsnList;
+import org.spongepowered.asm.mixin.injection.struct.InjectionPointData;
+import org.spongepowered.asm.mixin.injection.InjectionPoint;
 
-@InjectionPoint.AtCode("RETURN")
+@AtCode("RETURN")
 public class BeforeReturn extends InjectionPoint
 {
     private final int ordinal;
@@ -20,11 +23,8 @@ public class BeforeReturn extends InjectionPoint
         this.ordinal = data.getOrdinal();
     }
     
-    public boolean checkPriority(final int targetPriority,  final int ownerPriority) {
-        return true;
-    }
-    
-    public boolean find(final String desc,  final InsnList insns,  final Collection<AbstractInsnNode> nodes) {
+    @Override
+    public boolean find(final String desc, final InsnList insns, final Collection<AbstractInsnNode> nodes) {
         boolean found = false;
         final int returnOpcode = Type.getReturnType(desc).getOpcode(172);
         int ordinal = 0;

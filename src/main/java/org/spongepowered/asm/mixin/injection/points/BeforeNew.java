@@ -4,13 +4,20 @@
 
 package org.spongepowered.asm.mixin.injection.points;
 
-import org.spongepowered.asm.mixin.injection.*;
-import com.google.common.base.*;
-import org.spongepowered.asm.mixin.injection.struct.*;
-import java.util.*;
-import org.spongepowered.asm.lib.tree.*;
+import org.spongepowered.asm.lib.tree.MethodInsnNode;
+import java.util.Iterator;
+import java.util.ListIterator;
+import org.spongepowered.asm.lib.tree.TypeInsnNode;
+import java.util.ArrayList;
+import org.spongepowered.asm.lib.tree.AbstractInsnNode;
+import java.util.Collection;
+import org.spongepowered.asm.lib.tree.InsnList;
+import org.spongepowered.asm.mixin.injection.struct.MemberInfo;
+import com.google.common.base.Strings;
+import org.spongepowered.asm.mixin.injection.struct.InjectionPointData;
+import org.spongepowered.asm.mixin.injection.InjectionPoint;
 
-@InjectionPoint.AtCode("NEW")
+@AtCode("NEW")
 public class BeforeNew extends InjectionPoint
 {
     private final String target;
@@ -20,8 +27,8 @@ public class BeforeNew extends InjectionPoint
     public BeforeNew(final InjectionPointData data) {
         super(data);
         this.ordinal = data.getOrdinal();
-        final String target = Strings.emptyToNull(data.get("class",  data.get("target",  "")).replace('.',  '/'));
-        final MemberInfo member = MemberInfo.parseAndValidate(target,  data.getContext());
+        final String target = Strings.emptyToNull(data.get("class", data.get("target", "")).replace('.', '/'));
+        final MemberInfo member = MemberInfo.parseAndValidate(target, data.getContext());
         this.target = member.toCtorType();
         this.desc = member.toCtorDesc();
     }
@@ -30,7 +37,8 @@ public class BeforeNew extends InjectionPoint
         return this.desc != null;
     }
     
-    public boolean find(final String desc,  final InsnList insns,  final Collection<AbstractInsnNode> nodes) {
+    @Override
+    public boolean find(final String desc, final InsnList insns, final Collection<AbstractInsnNode> nodes) {
         boolean found = false;
         int ordinal = 0;
         final Collection<TypeInsnNode> newNodes = new ArrayList<TypeInsnNode>();
@@ -46,8 +54,8 @@ public class BeforeNew extends InjectionPoint
         }
         if (this.desc != null) {
             for (final TypeInsnNode newNode : newNodes) {
-                if (this.findCtor(insns,  newNode)) {
-                    nodes.add((AbstractInsnNode)newNode);
+                if (this.findCtor(insns, newNode)) {
+                    nodes.add(newNode);
                     found = true;
                 }
             }
@@ -55,9 +63,9 @@ public class BeforeNew extends InjectionPoint
         return found;
     }
     
-    protected boolean findCtor(final InsnList insns,  final TypeInsnNode newNode) {
-        final int indexOf = insns.indexOf((AbstractInsnNode)newNode);
-        final Iterator<AbstractInsnNode> iter = (Iterator<AbstractInsnNode>)insns.iterator(indexOf);
+    protected boolean findCtor(final InsnList insns, final TypeInsnNode newNode) {
+        final int indexOf = insns.indexOf(newNode);
+        final Iterator<AbstractInsnNode> iter = insns.iterator(indexOf);
         while (iter.hasNext()) {
             final AbstractInsnNode insn = iter.next();
             if (insn instanceof MethodInsnNode && insn.getOpcode() == 183) {

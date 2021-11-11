@@ -38,11 +38,11 @@ public class TypeReference
         return new TypeReference(sort << 24);
     }
     
-    public static TypeReference newTypeParameterReference(final int sort,  final int paramIndex) {
+    public static TypeReference newTypeParameterReference(final int sort, final int paramIndex) {
         return new TypeReference(sort << 24 | paramIndex << 16);
     }
     
-    public static TypeReference newTypeParameterBoundReference(final int sort,  final int paramIndex,  final int boundIndex) {
+    public static TypeReference newTypeParameterBoundReference(final int sort, final int paramIndex, final int boundIndex) {
         return new TypeReference(sort << 24 | paramIndex << 16 | boundIndex << 8);
     }
     
@@ -63,7 +63,7 @@ public class TypeReference
         return new TypeReference(0x42000000 | tryCatchBlockIndex << 8);
     }
     
-    public static TypeReference newTypeArgumentReference(final int sort,  final int argIndex) {
+    public static TypeReference newTypeArgumentReference(final int sort, final int argIndex) {
         return new TypeReference(sort << 24 | argIndex);
     }
     

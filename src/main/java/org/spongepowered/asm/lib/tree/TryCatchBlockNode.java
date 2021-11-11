@@ -4,8 +4,9 @@
 
 package org.spongepowered.asm.lib.tree;
 
-import java.util.*;
-import org.spongepowered.asm.lib.*;
+import org.spongepowered.asm.lib.MethodVisitor;
+import java.util.Iterator;
+import java.util.List;
 
 public class TryCatchBlockNode
 {
@@ -16,7 +17,7 @@ public class TryCatchBlockNode
     public List<TypeAnnotationNode> visibleTypeAnnotations;
     public List<TypeAnnotationNode> invisibleTypeAnnotations;
     
-    public TryCatchBlockNode(final LabelNode start,  final LabelNode end,  final LabelNode handler,  final String type) {
+    public TryCatchBlockNode(final LabelNode start, final LabelNode end, final LabelNode handler, final String type) {
         this.start = start;
         this.end = end;
         this.handler = handler;
@@ -38,14 +39,14 @@ public class TryCatchBlockNode
     }
     
     public void accept(final MethodVisitor mv) {
-        mv.visitTryCatchBlock(this.start.getLabel(),  this.end.getLabel(),  (this.handler == null) ? null : this.handler.getLabel(),  this.type);
-        for (int n = (this.visibleTypeAnnotations == null) ? 0 : this.visibleTypeAnnotations.size(),  i = 0; i < n; ++i) {
+        mv.visitTryCatchBlock(this.start.getLabel(), this.end.getLabel(), (this.handler == null) ? null : this.handler.getLabel(), this.type);
+        for (int n = (this.visibleTypeAnnotations == null) ? 0 : this.visibleTypeAnnotations.size(), i = 0; i < n; ++i) {
             final TypeAnnotationNode an = this.visibleTypeAnnotations.get(i);
-            an.accept(mv.visitTryCatchAnnotation(an.typeRef,  an.typePath,  an.desc,  true));
+            an.accept(mv.visitTryCatchAnnotation(an.typeRef, an.typePath, an.desc, true));
         }
-        for (int n = (this.invisibleTypeAnnotations == null) ? 0 : this.invisibleTypeAnnotations.size(),  i = 0; i < n; ++i) {
+        for (int n = (this.invisibleTypeAnnotations == null) ? 0 : this.invisibleTypeAnnotations.size(), i = 0; i < n; ++i) {
             final TypeAnnotationNode an = this.invisibleTypeAnnotations.get(i);
-            an.accept(mv.visitTryCatchAnnotation(an.typeRef,  an.typePath,  an.desc,  false));
+            an.accept(mv.visitTryCatchAnnotation(an.typeRef, an.typePath, an.desc, false));
         }
     }
 }

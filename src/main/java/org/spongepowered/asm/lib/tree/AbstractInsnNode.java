@@ -4,8 +4,11 @@
 
 package org.spongepowered.asm.lib.tree;
 
-import java.util.*;
-import org.spongepowered.asm.lib.*;
+import org.spongepowered.asm.lib.AnnotationVisitor;
+import java.util.ArrayList;
+import java.util.Map;
+import org.spongepowered.asm.lib.MethodVisitor;
+import java.util.List;
 
 public abstract class AbstractInsnNode
 {
@@ -54,23 +57,23 @@ public abstract class AbstractInsnNode
     public abstract void accept(final MethodVisitor p0);
     
     protected final void acceptAnnotations(final MethodVisitor mv) {
-        for (int n = (this.visibleTypeAnnotations == null) ? 0 : this.visibleTypeAnnotations.size(),  i = 0; i < n; ++i) {
+        for (int n = (this.visibleTypeAnnotations == null) ? 0 : this.visibleTypeAnnotations.size(), i = 0; i < n; ++i) {
             final TypeAnnotationNode an = this.visibleTypeAnnotations.get(i);
-            an.accept(mv.visitInsnAnnotation(an.typeRef,  an.typePath,  an.desc,  true));
+            an.accept(mv.visitInsnAnnotation(an.typeRef, an.typePath, an.desc, true));
         }
-        for (int n = (this.invisibleTypeAnnotations == null) ? 0 : this.invisibleTypeAnnotations.size(),  i = 0; i < n; ++i) {
+        for (int n = (this.invisibleTypeAnnotations == null) ? 0 : this.invisibleTypeAnnotations.size(), i = 0; i < n; ++i) {
             final TypeAnnotationNode an = this.invisibleTypeAnnotations.get(i);
-            an.accept(mv.visitInsnAnnotation(an.typeRef,  an.typePath,  an.desc,  false));
+            an.accept(mv.visitInsnAnnotation(an.typeRef, an.typePath, an.desc, false));
         }
     }
     
-    public abstract AbstractInsnNode clone(final Map<LabelNode,  LabelNode> p0);
+    public abstract AbstractInsnNode clone(final Map<LabelNode, LabelNode> p0);
     
-    static LabelNode clone(final LabelNode label,  final Map<LabelNode,  LabelNode> map) {
+    static LabelNode clone(final LabelNode label, final Map<LabelNode, LabelNode> map) {
         return map.get(label);
     }
     
-    static LabelNode[] clone(final List<LabelNode> labels,  final Map<LabelNode,  LabelNode> map) {
+    static LabelNode[] clone(final List<LabelNode> labels, final Map<LabelNode, LabelNode> map) {
         final LabelNode[] clones = new LabelNode[labels.size()];
         for (int i = 0; i < clones.length; ++i) {
             clones[i] = map.get(labels.get(i));
@@ -83,7 +86,7 @@ public abstract class AbstractInsnNode
             this.visibleTypeAnnotations = new ArrayList<TypeAnnotationNode>();
             for (int i = 0; i < insn.visibleTypeAnnotations.size(); ++i) {
                 final TypeAnnotationNode src = insn.visibleTypeAnnotations.get(i);
-                final TypeAnnotationNode ann = new TypeAnnotationNode(src.typeRef,  src.typePath,  src.desc);
+                final TypeAnnotationNode ann = new TypeAnnotationNode(src.typeRef, src.typePath, src.desc);
                 src.accept(ann);
                 this.visibleTypeAnnotations.add(ann);
             }
@@ -92,7 +95,7 @@ public abstract class AbstractInsnNode
             this.invisibleTypeAnnotations = new ArrayList<TypeAnnotationNode>();
             for (int i = 0; i < insn.invisibleTypeAnnotations.size(); ++i) {
                 final TypeAnnotationNode src = insn.invisibleTypeAnnotations.get(i);
-                final TypeAnnotationNode ann = new TypeAnnotationNode(src.typeRef,  src.typePath,  src.desc);
+                final TypeAnnotationNode ann = new TypeAnnotationNode(src.typeRef, src.typePath, src.desc);
                 src.accept(ann);
                 this.invisibleTypeAnnotations.add(ann);
             }

@@ -4,19 +4,37 @@
 
 package org.spongepowered.asm.mixin;
 
-import org.spongepowered.asm.util.perf.*;
-import org.spongepowered.asm.obfuscation.*;
-import org.spongepowered.asm.mixin.throwables.*;
-import org.spongepowered.asm.launch.*;
-import org.spongepowered.asm.mixin.extensibility.*;
-import java.util.*;
-import org.spongepowered.asm.service.*;
-import org.spongepowered.asm.mixin.transformer.*;
-import com.google.common.collect.*;
-import org.spongepowered.asm.util.*;
-import org.apache.logging.log4j.*;
-import org.apache.logging.log4j.core.appender.*;
-import org.apache.logging.log4j.core.*;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.Layout;
+import org.apache.logging.log4j.core.Filter;
+import org.apache.logging.log4j.core.appender.AbstractAppender;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.Level;
+import org.spongepowered.asm.util.JavaVersion;
+import com.google.common.collect.ImmutableList;
+import org.apache.logging.log4j.LogManager;
+import com.google.common.collect.Sets;
+import org.spongepowered.asm.mixin.transformer.MixinTransformer;
+import org.spongepowered.asm.service.ITransformer;
+import java.util.Iterator;
+import java.util.Collections;
+import org.spongepowered.asm.mixin.extensibility.IEnvironmentTokenProvider;
+import org.spongepowered.asm.launch.GlobalProperties;
+import org.spongepowered.asm.util.PrettyPrinter;
+import org.spongepowered.asm.mixin.throwables.MixinException;
+import org.spongepowered.asm.service.MixinService;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.HashSet;
+import org.spongepowered.asm.service.ILegacyClassTransformer;
+import org.spongepowered.asm.obfuscation.RemapperChain;
+import java.util.Map;
+import java.util.List;
+import org.spongepowered.asm.service.IMixinService;
+import org.spongepowered.asm.util.perf.Profiler;
+import org.apache.logging.log4j.Logger;
+import java.util.Set;
+import org.spongepowered.asm.util.ITokenProvider;
 
 public final class MixinEnvironment implements ITokenProvider
 {
@@ -33,7 +51,7 @@ public final class MixinEnvironment implements ITokenProvider
     private final boolean[] options;
     private final Set<String> tokenProviderClasses;
     private final List<TokenProviderWrapper> tokenProviders;
-    private final Map<String,  Integer> internalTokens;
+    private final Map<String, Integer> internalTokens;
     private final RemapperChain remappers;
     private Side side;
     private List<ILegacyClassTransformer> transformers;
@@ -42,15 +60,15 @@ public final class MixinEnvironment implements ITokenProvider
     MixinEnvironment(final Phase phase) {
         this.tokenProviderClasses = new HashSet<String>();
         this.tokenProviders = new ArrayList<TokenProviderWrapper>();
-        this.internalTokens = new HashMap<String,  Integer>();
+        this.internalTokens = new HashMap<String, Integer>();
         this.remappers = new RemapperChain();
         this.obfuscationContext = null;
         this.service = MixinService.getService();
         this.phase = phase;
         this.configsKey = "mixin.configs." + this.phase.name.toLowerCase();
         final Object version = this.getVersion();
-        if (version == null || !"0.7.11".equals(version)) {
-            throw new MixinException("Environment conflict,  mismatched versions or you didn't call MixinBootstrap.init()");
+        if (version == null || !"0.7.8".equals(version)) {
+            throw new MixinException("Environment conflict, mismatched versions or you didn't call MixinBootstrap.init()");
         }
         this.service.checkEnv(this);
         this.options = new boolean[Option.values().length];
@@ -67,24 +85,24 @@ public final class MixinEnvironment implements ITokenProvider
         final String codeSource = this.getCodeSource();
         final String serviceName = this.service.getName();
         final Side side = this.getSide();
-        MixinEnvironment.logger.info("SpongePowered MIXIN Subsystem Version={} Source={} Service={} Env={}",  new Object[] { version,  codeSource,  serviceName,  side });
+        MixinEnvironment.logger.info("SpongePowered MIXIN Subsystem Version={} Source={} Service={} Env={}", new Object[] { version, codeSource, serviceName, side });
         final boolean verbose = this.getOption(Option.DEBUG_VERBOSE);
         if (verbose || this.getOption(Option.DEBUG_EXPORT) || this.getOption(Option.DEBUG_PROFILER)) {
             final PrettyPrinter printer = new PrettyPrinter(32);
-            printer.add("SpongePowered MIXIN%s",  verbose ? " (Verbose debugging enabled)" : "").centre().hr();
-            printer.kv("Code source",  (Object)codeSource);
-            printer.kv("Internal Version",  version);
-            printer.kv("Java 8 Supported",  CompatibilityLevel.JAVA_8.isSupported()).hr();
-            printer.kv("Service Name",  (Object)serviceName);
-            printer.kv("Service Class",  (Object)this.service.getClass().getName()).hr();
+            printer.add("SpongePowered MIXIN%s", verbose ? " (Verbose debugging enabled)" : "").centre().hr();
+            printer.kv("Code source", (Object)codeSource);
+            printer.kv("Internal Version", version);
+            printer.kv("Java 8 Supported", CompatibilityLevel.JAVA_8.isSupported()).hr();
+            printer.kv("Service Name", (Object)serviceName);
+            printer.kv("Service Class", (Object)this.service.getClass().getName()).hr();
             for (final Option option : Option.values()) {
                 final StringBuilder indent = new StringBuilder();
                 for (int i = 0; i < option.depth; ++i) {
                     indent.append("- ");
                 }
-                printer.kv(option.property,  "%s<%s>",  indent,  option);
+                printer.kv(option.property, "%s<%s>", indent, option);
             }
-            printer.hr().kv("Detected Side",  side);
+            printer.hr().kv("Detected Side", side);
             printer.print(System.err);
         }
     }
@@ -104,10 +122,10 @@ public final class MixinEnvironment implements ITokenProvider
     
     @Deprecated
     public List<String> getMixinConfigs() {
-        List<String> mixinConfigs = (List<String>)GlobalProperties.get(this.configsKey);
+        List<String> mixinConfigs = GlobalProperties.get(this.configsKey);
         if (mixinConfigs == null) {
             mixinConfigs = new ArrayList<String>();
-            GlobalProperties.put(this.configsKey,  (Object)mixinConfigs);
+            GlobalProperties.put(this.configsKey, mixinConfigs);
         }
         return mixinConfigs;
     }
@@ -115,7 +133,7 @@ public final class MixinEnvironment implements ITokenProvider
     @Deprecated
     public MixinEnvironment addConfiguration(final String config) {
         MixinEnvironment.logger.warn("MixinEnvironment::addConfiguration is deprecated and will be removed. Use Mixins::addConfiguration instead!");
-        Mixins.addConfiguration(config,  this);
+        Mixins.addConfiguration(config, this);
         return this;
     }
     
@@ -135,12 +153,12 @@ public final class MixinEnvironment implements ITokenProvider
     public MixinEnvironment registerTokenProviderClass(final String providerName) {
         if (!this.tokenProviderClasses.contains(providerName)) {
             try {
-                final Class<? extends IEnvironmentTokenProvider> providerClass = (Class<? extends IEnvironmentTokenProvider>)this.service.getClassProvider().findClass(providerName,  true);
+                final Class<? extends IEnvironmentTokenProvider> providerClass = (Class<? extends IEnvironmentTokenProvider>)this.service.getClassProvider().findClass(providerName, true);
                 final IEnvironmentTokenProvider provider = (IEnvironmentTokenProvider)providerClass.newInstance();
                 this.registerTokenProvider(provider);
             }
             catch (Throwable th) {
-                MixinEnvironment.logger.error("Error instantiating " + providerName,  th);
+                MixinEnvironment.logger.error("Error instantiating " + providerName, th);
             }
         }
         return this;
@@ -149,8 +167,8 @@ public final class MixinEnvironment implements ITokenProvider
     public MixinEnvironment registerTokenProvider(final IEnvironmentTokenProvider provider) {
         if (provider != null && !this.tokenProviderClasses.contains(provider.getClass().getName())) {
             final String providerName = provider.getClass().getName();
-            final TokenProviderWrapper wrapper = new TokenProviderWrapper(provider,  this);
-            MixinEnvironment.logger.info("Adding new token provider {} to {}",  new Object[] { providerName,  this });
+            final TokenProviderWrapper wrapper = new TokenProviderWrapper(provider, this);
+            MixinEnvironment.logger.info("Adding new token provider {} to {}", new Object[] { providerName, this });
             this.tokenProviders.add(wrapper);
             this.tokenProviderClasses.add(providerName);
             Collections.sort(this.tokenProviders);
@@ -181,7 +199,7 @@ public final class MixinEnvironment implements ITokenProvider
     
     public void setActiveTransformer(final ITransformer transformer) {
         if (transformer != null) {
-            GlobalProperties.put("mixin.transformer",  (Object)transformer);
+            GlobalProperties.put("mixin.transformer", transformer);
         }
     }
     
@@ -205,14 +223,14 @@ public final class MixinEnvironment implements ITokenProvider
     }
     
     public String getVersion() {
-        return (String)GlobalProperties.get("mixin.initialised");
+        return GlobalProperties.get("mixin.initialised");
     }
     
     public boolean getOption(final Option option) {
         return this.options[option.ordinal()];
     }
     
-    public void setOption(final Option option,  final boolean value) {
+    public void setOption(final Option option, final boolean value) {
         this.options[option.ordinal()] = value;
     }
     
@@ -220,7 +238,7 @@ public final class MixinEnvironment implements ITokenProvider
         return option.getStringValue();
     }
     
-    public <E extends Enum<E>> E getOption(final Option option,  final E defaultValue) {
+    public <E extends Enum<E>> E getOption(final Option option, final E defaultValue) {
         return option.getEnumValue(defaultValue);
     }
     
@@ -281,19 +299,19 @@ public final class MixinEnvironment implements ITokenProvider
                 }
             }
             if (include && !legacyTransformer.isDelegationExcluded()) {
-                MixinEnvironment.logger.debug("  Adding:    {}",  new Object[] { transformerName });
+                MixinEnvironment.logger.debug("  Adding:    {}", new Object[] { transformerName });
                 this.transformers.add(legacyTransformer);
             }
             else {
-                MixinEnvironment.logger.debug("  Excluding: {}",  new Object[] { transformerName });
+                MixinEnvironment.logger.debug("  Excluding: {}", new Object[] { transformerName });
             }
         }
-        MixinEnvironment.logger.debug("Transformer delegation list created with {} entries",  new Object[] { this.transformers.size() });
+        MixinEnvironment.logger.debug("Transformer delegation list created with {} entries", new Object[] { this.transformers.size() });
     }
     
     @Override
     public String toString() {
-        return String.format("%s[%s]",  this.getClass().getSimpleName(),  this.phase);
+        return String.format("%s[%s]", this.getClass().getSimpleName(), this.phase);
     }
     
     private static Phase getCurrentPhase() {
@@ -345,7 +363,7 @@ public final class MixinEnvironment implements ITokenProvider
                 throw new IllegalArgumentException("The requested compatibility level " + level + " could not be set. Level is not supported");
             }
             MixinEnvironment.compatibility = level;
-            MixinEnvironment.logger.info("Compatibility level set to {}",  new Object[] { level });
+            MixinEnvironment.logger.info("Compatibility level set to {}", new Object[] { level });
         }
     }
     
@@ -355,7 +373,7 @@ public final class MixinEnvironment implements ITokenProvider
     
     static void gotoPhase(final Phase phase) {
         if (phase == null || phase.ordinal < 0) {
-            throw new IllegalArgumentException("Cannot go to the specified phase,  phase is null or invalid");
+            throw new IllegalArgumentException("Cannot go to the specified phase, phase is null or invalid");
         }
         if (phase.ordinal > getCurrentPhase().ordinal) {
             MixinService.getService().beginPhase();
@@ -368,7 +386,7 @@ public final class MixinEnvironment implements ITokenProvider
     }
     
     static {
-        excludeTransformers = Sets.newHashSet((Object[])new String[] { "net.minecraftforge.fml.common.asm.transformers.EventSubscriptionTransformer",  "cpw.mods.fml.common.asm.transformers.EventSubscriptionTransformer",  "net.minecraftforge.fml.common.asm.transformers.TerminalTransformer",  "cpw.mods.fml.common.asm.transformers.TerminalTransformer" });
+        excludeTransformers = Sets.newHashSet((Object[])new String[] { "net.minecraftforge.fml.common.asm.transformers.EventSubscriptionTransformer", "cpw.mods.fml.common.asm.transformers.EventSubscriptionTransformer", "net.minecraftforge.fml.common.asm.transformers.TerminalTransformer", "cpw.mods.fml.common.asm.transformers.TerminalTransformer" });
         MixinEnvironment.currentPhase = Phase.NOT_INITIALISED;
         MixinEnvironment.compatibility = Option.DEFAULT_COMPATIBILITY_LEVEL.getEnumValue(CompatibilityLevel.JAVA_6);
         MixinEnvironment.showHeader = true;
@@ -387,7 +405,7 @@ public final class MixinEnvironment implements ITokenProvider
         final String name;
         private MixinEnvironment environment;
         
-        private Phase(final int ordinal,  final String name) {
+        private Phase(final int ordinal, final String name) {
             this.ordinal = ordinal;
             this.name = name;
         }
@@ -417,11 +435,11 @@ public final class MixinEnvironment implements ITokenProvider
         }
         
         static {
-            NOT_INITIALISED = new Phase(-1,  "NOT_INITIALISED");
-            PREINIT = new Phase(0,  "PREINIT");
-            INIT = new Phase(1,  "INIT");
-            DEFAULT = new Phase(2,  "DEFAULT");
-            phases = (List)ImmutableList.of((Object)Phase.PREINIT,  (Object)Phase.INIT,  (Object)Phase.DEFAULT);
+            NOT_INITIALISED = new Phase(-1, "NOT_INITIALISED");
+            PREINIT = new Phase(0, "PREINIT");
+            INIT = new Phase(1, "INIT");
+            DEFAULT = new Phase(2, "DEFAULT");
+            phases = (List)ImmutableList.of((Object)Phase.PREINIT, (Object)Phase.INIT, (Object)Phase.DEFAULT);
         }
     }
     
@@ -432,14 +450,14 @@ public final class MixinEnvironment implements ITokenProvider
             protected boolean detect() {
                 return false;
             }
-        },  
+        }, 
         CLIENT {
             @Override
             protected boolean detect() {
                 final String sideName = MixinService.getService().getSideName();
                 return "CLIENT".equals(sideName);
             }
-        },  
+        }, 
         SERVER {
             @Override
             protected boolean detect() {
@@ -453,36 +471,34 @@ public final class MixinEnvironment implements ITokenProvider
     
     public enum Option
     {
-        DEBUG_ALL("debug"),  
-        DEBUG_EXPORT(Option.DEBUG_ALL,  "export"),  
-        DEBUG_EXPORT_FILTER(Option.DEBUG_EXPORT,  "filter",  false),  
-        DEBUG_EXPORT_DECOMPILE(Option.DEBUG_EXPORT,  Inherit.ALLOW_OVERRIDE,  "decompile"),  
-        DEBUG_EXPORT_DECOMPILE_THREADED(Option.DEBUG_EXPORT_DECOMPILE,  Inherit.ALLOW_OVERRIDE,  "async"),  
-        DEBUG_EXPORT_DECOMPILE_MERGESIGNATURES(Option.DEBUG_EXPORT_DECOMPILE,  Inherit.ALLOW_OVERRIDE,  "mergeGenericSignatures"),  
-        DEBUG_VERIFY(Option.DEBUG_ALL,  "verify"),  
-        DEBUG_VERBOSE(Option.DEBUG_ALL,  "verbose"),  
-        DEBUG_INJECTORS(Option.DEBUG_ALL,  "countInjections"),  
-        DEBUG_STRICT(Option.DEBUG_ALL,  Inherit.INDEPENDENT,  "strict"),  
-        DEBUG_UNIQUE(Option.DEBUG_STRICT,  "unique"),  
-        DEBUG_TARGETS(Option.DEBUG_STRICT,  "targets"),  
-        DEBUG_PROFILER(Option.DEBUG_ALL,  Inherit.ALLOW_OVERRIDE,  "profiler"),  
-        DUMP_TARGET_ON_FAILURE("dumpTargetOnFailure"),  
-        CHECK_ALL("checks"),  
-        CHECK_IMPLEMENTS(Option.CHECK_ALL,  "interfaces"),  
-        CHECK_IMPLEMENTS_STRICT(Option.CHECK_IMPLEMENTS,  Inherit.ALLOW_OVERRIDE,  "strict"),  
-        IGNORE_CONSTRAINTS("ignoreConstraints"),  
-        HOT_SWAP("hotSwap"),  
-        ENVIRONMENT(Inherit.ALWAYS_FALSE,  "env"),  
-        OBFUSCATION_TYPE(Option.ENVIRONMENT,  Inherit.ALWAYS_FALSE,  "obf"),  
-        DISABLE_REFMAP(Option.ENVIRONMENT,  Inherit.INDEPENDENT,  "disableRefMap"),  
-        REFMAP_REMAP(Option.ENVIRONMENT,  Inherit.INDEPENDENT,  "remapRefMap"),  
-        REFMAP_REMAP_RESOURCE(Option.ENVIRONMENT,  Inherit.INDEPENDENT,  "refMapRemappingFile",  ""),  
-        REFMAP_REMAP_SOURCE_ENV(Option.ENVIRONMENT,  Inherit.INDEPENDENT,  "refMapRemappingEnv",  "searge"),  
-        REFMAP_REMAP_ALLOW_PERMISSIVE(Option.ENVIRONMENT,  Inherit.INDEPENDENT,  "allowPermissiveMatch",  true,  "true"),  
-        IGNORE_REQUIRED(Option.ENVIRONMENT,  Inherit.INDEPENDENT,  "ignoreRequired"),  
-        DEFAULT_COMPATIBILITY_LEVEL(Option.ENVIRONMENT,  Inherit.INDEPENDENT,  "compatLevel"),  
-        SHIFT_BY_VIOLATION_BEHAVIOUR(Option.ENVIRONMENT,  Inherit.INDEPENDENT,  "shiftByViolation",  "warn"),  
-        INITIALISER_INJECTION_MODE("initialiserInjectionMode",  "default");
+        DEBUG_ALL("debug"), 
+        DEBUG_EXPORT(Option.DEBUG_ALL, "export"), 
+        DEBUG_EXPORT_FILTER(Option.DEBUG_EXPORT, "filter", false), 
+        DEBUG_EXPORT_DECOMPILE(Option.DEBUG_EXPORT, Inherit.ALLOW_OVERRIDE, "decompile"), 
+        DEBUG_EXPORT_DECOMPILE_THREADED(Option.DEBUG_EXPORT_DECOMPILE, Inherit.ALLOW_OVERRIDE, "async"), 
+        DEBUG_VERIFY(Option.DEBUG_ALL, "verify"), 
+        DEBUG_VERBOSE(Option.DEBUG_ALL, "verbose"), 
+        DEBUG_INJECTORS(Option.DEBUG_ALL, "countInjections"), 
+        DEBUG_STRICT(Option.DEBUG_ALL, Inherit.INDEPENDENT, "strict"), 
+        DEBUG_UNIQUE(Option.DEBUG_STRICT, "unique"), 
+        DEBUG_TARGETS(Option.DEBUG_STRICT, "targets"), 
+        DEBUG_PROFILER(Option.DEBUG_ALL, Inherit.ALLOW_OVERRIDE, "profiler"), 
+        DUMP_TARGET_ON_FAILURE("dumpTargetOnFailure"), 
+        CHECK_ALL("checks"), 
+        CHECK_IMPLEMENTS(Option.CHECK_ALL, "interfaces"), 
+        CHECK_IMPLEMENTS_STRICT(Option.CHECK_IMPLEMENTS, Inherit.ALLOW_OVERRIDE, "strict"), 
+        IGNORE_CONSTRAINTS("ignoreConstraints"), 
+        HOT_SWAP("hotSwap"), 
+        ENVIRONMENT(Inherit.ALWAYS_FALSE, "env"), 
+        OBFUSCATION_TYPE(Option.ENVIRONMENT, Inherit.ALWAYS_FALSE, "obf"), 
+        DISABLE_REFMAP(Option.ENVIRONMENT, Inherit.INDEPENDENT, "disableRefMap"), 
+        REFMAP_REMAP(Option.ENVIRONMENT, Inherit.INDEPENDENT, "remapRefMap"), 
+        REFMAP_REMAP_RESOURCE(Option.ENVIRONMENT, Inherit.INDEPENDENT, "refMapRemappingFile", ""), 
+        REFMAP_REMAP_SOURCE_ENV(Option.ENVIRONMENT, Inherit.INDEPENDENT, "refMapRemappingEnv", "searge"), 
+        IGNORE_REQUIRED(Option.ENVIRONMENT, Inherit.INDEPENDENT, "ignoreRequired"), 
+        DEFAULT_COMPATIBILITY_LEVEL(Option.ENVIRONMENT, Inherit.INDEPENDENT, "compatLevel"), 
+        SHIFT_BY_VIOLATION_BEHAVIOUR(Option.ENVIRONMENT, Inherit.INDEPENDENT, "shiftByViolation", "warn"), 
+        INITIALISER_INJECTION_MODE("initialiserInjectionMode", "default");
         
         private static final String PREFIX = "mixin";
         final Option parent;
@@ -493,53 +509,53 @@ public final class MixinEnvironment implements ITokenProvider
         final int depth;
         
         private Option(final String property) {
-            this(null,  property,  true);
+            this(null, property, true);
         }
         
-        private Option(final Inherit inheritance,  final String property) {
-            this(null,  inheritance,  property,  true);
+        private Option(final Inherit inheritance, final String property) {
+            this(null, inheritance, property, true);
         }
         
-        private Option(final String property,  final boolean flag) {
-            this(null,  property,  flag);
+        private Option(final String property, final boolean flag) {
+            this(null, property, flag);
         }
         
-        private Option(final String property,  final String defaultStringValue) {
-            this(null,  Inherit.INDEPENDENT,  property,  false,  defaultStringValue);
+        private Option(final String property, final String defaultStringValue) {
+            this(null, Inherit.INDEPENDENT, property, false, defaultStringValue);
         }
         
-        private Option(final Option parent,  final String property) {
-            this(parent,  Inherit.INHERIT,  property,  true);
+        private Option(final Option parent, final String property) {
+            this(parent, Inherit.INHERIT, property, true);
         }
         
-        private Option(final Option parent,  final Inherit inheritance,  final String property) {
-            this(parent,  inheritance,  property,  true);
+        private Option(final Option parent, final Inherit inheritance, final String property) {
+            this(parent, inheritance, property, true);
         }
         
-        private Option(final Option parent,  final String property,  final boolean isFlag) {
-            this(parent,  Inherit.INHERIT,  property,  isFlag,  null);
+        private Option(final Option parent, final String property, final boolean isFlag) {
+            this(parent, Inherit.INHERIT, property, isFlag, null);
         }
         
-        private Option(final Option parent,  final Inherit inheritance,  final String property,  final boolean isFlag) {
-            this(parent,  inheritance,  property,  isFlag,  null);
+        private Option(final Option parent, final Inherit inheritance, final String property, final boolean isFlag) {
+            this(parent, inheritance, property, isFlag, null);
         }
         
-        private Option(final Option parent,  final String property,  final String defaultStringValue) {
-            this(parent,  Inherit.INHERIT,  property,  false,  defaultStringValue);
+        private Option(final Option parent, final String property, final String defaultStringValue) {
+            this(parent, Inherit.INHERIT, property, false, defaultStringValue);
         }
         
-        private Option(final Option parent,  final Inherit inheritance,  final String property,  final String defaultStringValue) {
-            this(parent,  inheritance,  property,  false,  defaultStringValue);
+        private Option(final Option parent, final Inherit inheritance, final String property, final String defaultStringValue) {
+            this(parent, inheritance, property, false, defaultStringValue);
         }
         
-        private Option(Option parent,  final Inherit inheritance,  final String property,  final boolean isFlag,  final String defaultStringValue) {
+        private Option(Option parent, final Inherit inheritance, final String property, final boolean isFlag, final String defaultStringValue) {
             this.parent = parent;
             this.inheritance = inheritance;
             this.property = ((parent != null) ? parent.property : "mixin") + "." + property;
             this.defaultValue = defaultStringValue;
             this.isFlag = isFlag;
             int depth;
-            for (depth = 0; parent != null; parent = parent.parent,  ++depth) {}
+            for (depth = 0; parent != null; parent = parent.parent, ++depth) {}
             this.depth = depth;
         }
         
@@ -557,7 +573,7 @@ public final class MixinEnvironment implements ITokenProvider
         }
         
         private boolean getLocalBooleanValue(final boolean defaultValue) {
-            return Boolean.parseBoolean(System.getProperty(this.property,  Boolean.toString(defaultValue)));
+            return Boolean.parseBoolean(System.getProperty(this.property, Boolean.toString(defaultValue)));
         }
         
         private boolean getInheritedBooleanValue() {
@@ -577,13 +593,13 @@ public final class MixinEnvironment implements ITokenProvider
         }
         
         final String getStringValue() {
-            return (this.inheritance == Inherit.INDEPENDENT || this.parent == null || this.parent.getBooleanValue()) ? System.getProperty(this.property,  this.defaultValue) : this.defaultValue;
+            return (this.inheritance == Inherit.INDEPENDENT || this.parent == null || this.parent.getBooleanValue()) ? System.getProperty(this.property, this.defaultValue) : this.defaultValue;
         }
         
          <E extends Enum<E>> E getEnumValue(final E defaultValue) {
-            final String value = System.getProperty(this.property,  defaultValue.name());
+            final String value = System.getProperty(this.property, defaultValue.name());
             try {
-                return Enum.valueOf(defaultValue.getClass(),  value.toUpperCase());
+                return Enum.valueOf(defaultValue.getClass(), value.toUpperCase());
             }
             catch (IllegalArgumentException ex) {
                 return defaultValue;
@@ -592,29 +608,29 @@ public final class MixinEnvironment implements ITokenProvider
         
         private enum Inherit
         {
-            INHERIT,  
-            ALLOW_OVERRIDE,  
-            INDEPENDENT,  
+            INHERIT, 
+            ALLOW_OVERRIDE, 
+            INDEPENDENT, 
             ALWAYS_FALSE;
         }
     }
     
     public enum CompatibilityLevel
     {
-        JAVA_6(6,  50,  false),  
-        JAVA_7(7,  51,  false) {
+        JAVA_6(6, 50, false), 
+        JAVA_7(7, 51, false) {
             @Override
             boolean isSupported() {
                 return JavaVersion.current() >= 1.7;
             }
-        },  
-        JAVA_8(8,  52,  true) {
+        }, 
+        JAVA_8(8, 52, true) {
             @Override
             boolean isSupported() {
                 return JavaVersion.current() >= 1.8;
             }
-        },  
-        JAVA_9(9,  53,  true) {
+        }, 
+        JAVA_9(9, 53, true) {
             @Override
             boolean isSupported() {
                 return false;
@@ -627,7 +643,7 @@ public final class MixinEnvironment implements ITokenProvider
         private final boolean supportsMethodsInInterfaces;
         private CompatibilityLevel maxCompatibleLevel;
         
-        private CompatibilityLevel(final int ver,  final int classVersion,  final boolean resolveMethodsInInterfaces) {
+        private CompatibilityLevel(final int ver, final int classVersion, final boolean resolveMethodsInInterfaces) {
             this.ver = ver;
             this.classVersion = classVersion;
             this.supportsMethodsInInterfaces = resolveMethodsInInterfaces;
@@ -670,7 +686,7 @@ public final class MixinEnvironment implements ITokenProvider
         private final IEnvironmentTokenProvider provider;
         private final MixinEnvironment environment;
         
-        public TokenProviderWrapper(final IEnvironmentTokenProvider provider,  final MixinEnvironment environment) {
+        public TokenProviderWrapper(final IEnvironmentTokenProvider provider, final MixinEnvironment environment) {
             this.provider = provider;
             this.environment = environment;
             this.order = TokenProviderWrapper.nextOrder++;
@@ -693,7 +709,7 @@ public final class MixinEnvironment implements ITokenProvider
         }
         
         Integer getToken(final String token) {
-            return this.provider.getToken(token,  this.environment);
+            return this.provider.getToken(token, this.environment);
         }
         
         static {
@@ -733,7 +749,7 @@ public final class MixinEnvironment implements ITokenProvider
         static class MixinAppender extends AbstractAppender
         {
             MixinAppender() {
-                super("MixinLogWatcherAppender",  (Filter)null,  (Layout)null);
+                super("MixinLogWatcherAppender", (Filter)null, (Layout)null);
             }
             
             public void append(final LogEvent event) {

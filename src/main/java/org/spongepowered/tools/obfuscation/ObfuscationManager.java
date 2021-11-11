@@ -4,10 +4,16 @@
 
 package org.spongepowered.tools.obfuscation;
 
-import org.spongepowered.tools.obfuscation.interfaces.*;
-import org.spongepowered.tools.obfuscation.mapping.*;
-import org.spongepowered.tools.obfuscation.service.*;
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import org.spongepowered.tools.obfuscation.service.ObfuscationServices;
+import java.util.ArrayList;
+import org.spongepowered.tools.obfuscation.mapping.IMappingConsumer;
+import org.spongepowered.tools.obfuscation.interfaces.IReferenceManager;
+import org.spongepowered.tools.obfuscation.interfaces.IObfuscationDataProvider;
+import java.util.List;
+import org.spongepowered.tools.obfuscation.interfaces.IMixinAnnotationProcessor;
+import org.spongepowered.tools.obfuscation.interfaces.IObfuscationManager;
 
 public class ObfuscationManager implements IObfuscationManager
 {
@@ -22,10 +28,11 @@ public class ObfuscationManager implements IObfuscationManager
         this.environments = new ArrayList<ObfuscationEnvironment>();
         this.consumers = new ArrayList<IMappingConsumer>();
         this.ap = ap;
-        this.obfs = (IObfuscationDataProvider)new ObfuscationDataProvider(ap,  (List)this.environments);
-        this.refs = (IReferenceManager)new ReferenceManager(ap,  this.environments);
+        this.obfs = new ObfuscationDataProvider(ap, this.environments);
+        this.refs = new ReferenceManager(ap, this.environments);
     }
     
+    @Override
     public void init() {
         if (this.initDone) {
             return;
@@ -39,30 +46,36 @@ public class ObfuscationManager implements IObfuscationManager
         }
     }
     
+    @Override
     public IObfuscationDataProvider getDataProvider() {
         return this.obfs;
     }
     
+    @Override
     public IReferenceManager getReferenceManager() {
         return this.refs;
     }
     
+    @Override
     public IMappingConsumer createMappingConsumer() {
         final Mappings mappings = new Mappings();
-        this.consumers.add((IMappingConsumer)mappings);
-        return (IMappingConsumer)mappings;
+        this.consumers.add(mappings);
+        return mappings;
     }
     
+    @Override
     public List<ObfuscationEnvironment> getEnvironments() {
         return this.environments;
     }
     
+    @Override
     public void writeMappings() {
         for (final ObfuscationEnvironment env : this.environments) {
-            env.writeMappings((Collection)this.consumers);
+            env.writeMappings(this.consumers);
         }
     }
     
+    @Override
     public void writeReferences() {
         this.refs.write();
     }

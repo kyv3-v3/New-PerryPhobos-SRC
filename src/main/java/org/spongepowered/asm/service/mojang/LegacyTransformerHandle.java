@@ -4,9 +4,9 @@
 
 package org.spongepowered.asm.service.mojang;
 
-import org.spongepowered.asm.service.*;
-import net.minecraft.launchwrapper.*;
-import javax.annotation.*;
+import javax.annotation.Resource;
+import net.minecraft.launchwrapper.IClassTransformer;
+import org.spongepowered.asm.service.ILegacyClassTransformer;
 
 class LegacyTransformerHandle implements ILegacyClassTransformer
 {
@@ -16,15 +16,18 @@ class LegacyTransformerHandle implements ILegacyClassTransformer
         this.transformer = transformer;
     }
     
+    @Override
     public String getName() {
         return this.transformer.getClass().getName();
     }
     
+    @Override
     public boolean isDelegationExcluded() {
         return this.transformer.getClass().getAnnotation(Resource.class) != null;
     }
     
-    public byte[] transformClassBytes(final String name,  final String transformedName,  final byte[] basicClass) {
-        return this.transformer.transform(name,  transformedName,  basicClass);
+    @Override
+    public byte[] transformClassBytes(final String name, final String transformedName, final byte[] basicClass) {
+        return this.transformer.transform(name, transformedName, basicClass);
     }
 }

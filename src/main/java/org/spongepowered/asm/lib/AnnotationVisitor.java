@@ -10,10 +10,10 @@ public abstract class AnnotationVisitor
     protected AnnotationVisitor av;
     
     public AnnotationVisitor(final int api) {
-        this(api,  null);
+        this(api, null);
     }
     
-    public AnnotationVisitor(final int api,  final AnnotationVisitor av) {
+    public AnnotationVisitor(final int api, final AnnotationVisitor av) {
         if (api != 262144 && api != 327680) {
             throw new IllegalArgumentException();
         }
@@ -21,21 +21,21 @@ public abstract class AnnotationVisitor
         this.av = av;
     }
     
-    public void visit(final String name,  final Object value) {
+    public void visit(final String name, final Object value) {
         if (this.av != null) {
-            this.av.visit(name,  value);
+            this.av.visit(name, value);
         }
     }
     
-    public void visitEnum(final String name,  final String desc,  final String value) {
+    public void visitEnum(final String name, final String desc, final String value) {
         if (this.av != null) {
-            this.av.visitEnum(name,  desc,  value);
+            this.av.visitEnum(name, desc, value);
         }
     }
     
-    public AnnotationVisitor visitAnnotation(final String name,  final String desc) {
+    public AnnotationVisitor visitAnnotation(final String name, final String desc) {
         if (this.av != null) {
-            return this.av.visitAnnotation(name,  desc);
+            return this.av.visitAnnotation(name, desc);
         }
         return null;
     }

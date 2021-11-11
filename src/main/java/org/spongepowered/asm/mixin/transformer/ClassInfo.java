@@ -4,17 +4,40 @@
 
 package org.spongepowered.asm.mixin.transformer;
 
-import org.spongepowered.asm.util.perf.*;
-import java.util.*;
-import com.google.common.collect.*;
-import org.spongepowered.asm.service.*;
-import org.spongepowered.asm.lib.*;
-import org.apache.logging.log4j.*;
-import org.spongepowered.asm.util.*;
-import java.lang.annotation.*;
-import org.spongepowered.asm.mixin.gen.*;
-import org.spongepowered.asm.lib.tree.*;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.lib.tree.AbstractInsnNode;
+import org.spongepowered.asm.mixin.gen.Invoker;
+import org.spongepowered.asm.mixin.gen.Accessor;
+import java.lang.annotation.Annotation;
+import org.spongepowered.asm.util.Annotations;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.lib.tree.FrameNode;
+import org.apache.logging.log4j.LogManager;
+import org.spongepowered.asm.lib.Type;
+import org.apache.logging.log4j.Level;
+import org.spongepowered.asm.service.MixinService;
+import org.spongepowered.asm.lib.tree.FieldInsnNode;
+import org.spongepowered.asm.lib.tree.MethodInsnNode;
+import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Iterator;
+import org.spongepowered.asm.mixin.MixinEnvironment;
+import org.spongepowered.asm.lib.tree.FieldNode;
+import org.spongepowered.asm.lib.tree.MethodNode;
+import java.util.Collection;
+import org.spongepowered.asm.lib.tree.ClassNode;
+import java.util.Collections;
+import com.google.common.collect.ImmutableSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import org.spongepowered.asm.util.ClassSignature;
+import java.util.Set;
+import java.util.Map;
+import org.spongepowered.asm.util.perf.Profiler;
+import org.apache.logging.log4j.Logger;
 
 public final class ClassInfo
 {
@@ -24,7 +47,7 @@ public final class ClassInfo
     private static final Logger logger;
     private static final Profiler profiler;
     private static final String JAVA_LANG_OBJECT = "java/lang/Object";
-    private static final Map<String,  ClassInfo> cache;
+    private static final Map<String, ClassInfo> cache;
     private static final ClassInfo OBJECT;
     private final String name;
     private final String superName;
@@ -34,7 +57,7 @@ public final class ClassInfo
     private final Set<Method> methods;
     private final Set<Field> fields;
     private final Set<MixinInfo> mixins;
-    private final Map<ClassInfo,  ClassInfo> correspondingTypes;
+    private final Map<ClassInfo, ClassInfo> correspondingTypes;
     private final MixinInfo mixin;
     private final MethodMapper methodMapper;
     private final boolean isMixin;
@@ -46,12 +69,12 @@ public final class ClassInfo
     
     private ClassInfo() {
         this.mixins = new HashSet<MixinInfo>();
-        this.correspondingTypes = new HashMap<ClassInfo,  ClassInfo>();
+        this.correspondingTypes = new HashMap<ClassInfo, ClassInfo>();
         this.name = "java/lang/Object";
         this.superName = null;
         this.outerName = null;
         this.isProbablyStatic = true;
-        this.methods = (Set<Method>)ImmutableSet.of((Object)new Method("getClass",  "()Ljava/lang/Class;"),  (Object)new Method("hashCode",  "()I"),  (Object)new Method("equals",  "(Ljava/lang/Object;)Z"),  (Object)new Method("clone",  "()Ljava/lang/Object;"),  (Object)new Method("toString",  "()Ljava/lang/String;"),  (Object)new Method("notify",  "()V"),  (Object[])new Method[] { new Method("notifyAll",  "()V"),  new Method("wait",  "(J)V"),  new Method("wait",  "(JI)V"),  new Method("wait",  "()V"),  new Method("finalize",  "()V") });
+        this.methods = (Set<Method>)ImmutableSet.of((Object)new Method("getClass", "()Ljava/lang/Class;"), (Object)new Method("hashCode", "()I"), (Object)new Method("equals", "(Ljava/lang/Object;)Z"), (Object)new Method("clone", "()Ljava/lang/Object;"), (Object)new Method("toString", "()Ljava/lang/String;"), (Object)new Method("notify", "()V"), (Object[])new Method[] { new Method("notifyAll", "()V"), new Method("wait", "(J)V"), new Method("wait", "(JI)V"), new Method("wait", "()V"), new Method("finalize", "()V") });
         this.fields = Collections.emptySet();
         this.isInterface = false;
         this.interfaces = Collections.emptySet();
@@ -63,8 +86,8 @@ public final class ClassInfo
     
     private ClassInfo(final ClassNode classNode) {
         this.mixins = new HashSet<MixinInfo>();
-        this.correspondingTypes = new HashMap<ClassInfo,  ClassInfo>();
-        final Profiler.Section timer = ClassInfo.profiler.begin(1,  "class.meta");
+        this.correspondingTypes = new HashMap<ClassInfo, ClassInfo>();
+        final Profiler.Section timer = ClassInfo.profiler.begin(1, "class.meta");
         try {
             this.name = classNode.name;
             this.superName = ((classNode.superName != null) ? classNode.superName : "java/lang/Object");
@@ -77,7 +100,7 @@ public final class ClassInfo
             this.mixin = (this.isMixin ? ((MixinInfo.MixinClassNode)classNode).getMixin() : null);
             this.interfaces.addAll(classNode.interfaces);
             for (final MethodNode method : classNode.methods) {
-                this.addMethod(method,  this.isMixin);
+                this.addMethod(method, this.isMixin);
             }
             boolean isProbablyStatic = true;
             String outerName = classNode.outerClass;
@@ -87,15 +110,15 @@ public final class ClassInfo
                     if (outerName == null) {
                         outerName = field.desc;
                         if (outerName != null && outerName.startsWith("L")) {
-                            outerName = outerName.substring(1,  outerName.length() - 1);
+                            outerName = outerName.substring(1, outerName.length() - 1);
                         }
                     }
                 }
-                this.fields.add(new Field(field,  this.isMixin));
+                this.fields.add(new Field(field, this.isMixin));
             }
             this.isProbablyStatic = isProbablyStatic;
             this.outerName = outerName;
-            this.methodMapper = new MethodMapper(MixinEnvironment.getCurrentEnvironment(),  this);
+            this.methodMapper = new MethodMapper(MixinEnvironment.getCurrentEnvironment(), this);
             this.signature = ClassSignature.ofLazy(classNode);
         }
         finally {
@@ -109,12 +132,12 @@ public final class ClassInfo
     }
     
     void addMethod(final MethodNode method) {
-        this.addMethod(method,  true);
+        this.addMethod(method, true);
     }
     
-    private void addMethod(final MethodNode method,  final boolean injected) {
+    private void addMethod(final MethodNode method, final boolean injected) {
         if (!method.name.startsWith("<")) {
-            this.methods.add(new Method(method,  injected));
+            this.methods.add(new Method(method, injected));
         }
     }
     
@@ -179,7 +202,7 @@ public final class ClassInfo
     }
     
     public String getClassName() {
-        return this.name.replace('/',  '.');
+        return this.name.replace('/', '.');
     }
     
     public String getSuperName() {
@@ -224,10 +247,10 @@ public final class ClassInfo
     
     public Set<Method> getInterfaceMethods(final boolean includeMixins) {
         final Set<Method> methods = new HashSet<Method>();
-        ClassInfo supClass = this.addMethodsRecursive(methods,  includeMixins);
+        ClassInfo supClass = this.addMethodsRecursive(methods, includeMixins);
         if (!this.isInterface) {
             while (supClass != null && supClass != ClassInfo.OBJECT) {
-                supClass = supClass.addMethodsRecursive(methods,  includeMixins);
+                supClass = supClass.addMethodsRecursive(methods, includeMixins);
             }
         }
         final Iterator<Method> it = methods.iterator();
@@ -239,7 +262,7 @@ public final class ClassInfo
         return Collections.unmodifiableSet((Set<? extends Method>)methods);
     }
     
-    private ClassInfo addMethodsRecursive(final Set<Method> methods,  final boolean includeMixins) {
+    private ClassInfo addMethodsRecursive(final Set<Method> methods, final boolean includeMixins) {
         if (this.isInterface) {
             for (final Method method : this.methods) {
                 if (!method.isAbstract()) {
@@ -250,58 +273,58 @@ public final class ClassInfo
         }
         else if (!this.isMixin && includeMixins) {
             for (final MixinInfo mixin : this.mixins) {
-                mixin.getClassInfo().addMethodsRecursive(methods,  includeMixins);
+                mixin.getClassInfo().addMethodsRecursive(methods, includeMixins);
             }
         }
         for (final String iface : this.interfaces) {
-            forName(iface).addMethodsRecursive(methods,  includeMixins);
+            forName(iface).addMethodsRecursive(methods, includeMixins);
         }
         return this.getSuperClass();
     }
     
     public boolean hasSuperClass(final String superClass) {
-        return this.hasSuperClass(superClass,  Traversal.NONE);
+        return this.hasSuperClass(superClass, Traversal.NONE);
     }
     
-    public boolean hasSuperClass(final String superClass,  final Traversal traversal) {
-        return "java/lang/Object".equals(superClass) || this.findSuperClass(superClass,  traversal) != null;
+    public boolean hasSuperClass(final String superClass, final Traversal traversal) {
+        return "java/lang/Object".equals(superClass) || this.findSuperClass(superClass, traversal) != null;
     }
     
     public boolean hasSuperClass(final ClassInfo superClass) {
-        return this.hasSuperClass(superClass,  Traversal.NONE,  false);
+        return this.hasSuperClass(superClass, Traversal.NONE, false);
     }
     
-    public boolean hasSuperClass(final ClassInfo superClass,  final Traversal traversal) {
-        return this.hasSuperClass(superClass,  traversal,  false);
+    public boolean hasSuperClass(final ClassInfo superClass, final Traversal traversal) {
+        return this.hasSuperClass(superClass, traversal, false);
     }
     
-    public boolean hasSuperClass(final ClassInfo superClass,  final Traversal traversal,  final boolean includeInterfaces) {
-        return ClassInfo.OBJECT == superClass || this.findSuperClass(superClass.name,  traversal,  includeInterfaces) != null;
+    public boolean hasSuperClass(final ClassInfo superClass, final Traversal traversal, final boolean includeInterfaces) {
+        return ClassInfo.OBJECT == superClass || this.findSuperClass(superClass.name, traversal, includeInterfaces) != null;
     }
     
     public ClassInfo findSuperClass(final String superClass) {
-        return this.findSuperClass(superClass,  Traversal.NONE);
+        return this.findSuperClass(superClass, Traversal.NONE);
     }
     
-    public ClassInfo findSuperClass(final String superClass,  final Traversal traversal) {
-        return this.findSuperClass(superClass,  traversal,  false,  new HashSet<String>());
+    public ClassInfo findSuperClass(final String superClass, final Traversal traversal) {
+        return this.findSuperClass(superClass, traversal, false, new HashSet<String>());
     }
     
-    public ClassInfo findSuperClass(final String superClass,  final Traversal traversal,  final boolean includeInterfaces) {
+    public ClassInfo findSuperClass(final String superClass, final Traversal traversal, final boolean includeInterfaces) {
         if (ClassInfo.OBJECT.name.equals(superClass)) {
             return null;
         }
-        return this.findSuperClass(superClass,  traversal,  includeInterfaces,  new HashSet<String>());
+        return this.findSuperClass(superClass, traversal, includeInterfaces, new HashSet<String>());
     }
     
-    private ClassInfo findSuperClass(final String superClass,  final Traversal traversal,  final boolean includeInterfaces,  final Set<String> traversed) {
+    private ClassInfo findSuperClass(final String superClass, final Traversal traversal, final boolean includeInterfaces, final Set<String> traversed) {
         final ClassInfo superClassInfo = this.getSuperClass();
         if (superClassInfo != null) {
             for (final ClassInfo superTarget : superClassInfo.getTargets()) {
                 if (superClass.equals(superTarget.getName())) {
                     return superClassInfo;
                 }
-                final ClassInfo found = superTarget.findSuperClass(superClass,  traversal.next(),  includeInterfaces,  traversed);
+                final ClassInfo found = superTarget.findSuperClass(superClass, traversal.next(), includeInterfaces, traversed);
                 if (found != null) {
                     return found;
                 }
@@ -324,7 +347,7 @@ public final class ClassInfo
                 if (superClass.equals(mixinClass.getName())) {
                     return mixinClass;
                 }
-                final ClassInfo targetSuper = mixinClass.findSuperClass(superClass,  Traversal.ALL,  includeInterfaces,  traversed);
+                final ClassInfo targetSuper = mixinClass.findSuperClass(superClass, Traversal.ALL, includeInterfaces, traversed);
                 if (targetSuper != null) {
                     return targetSuper;
                 }
@@ -354,7 +377,7 @@ public final class ClassInfo
         ClassInfo correspondingType = this.correspondingTypes.get(mixin);
         if (correspondingType == null) {
             correspondingType = this.findSuperTypeForMixin(mixin);
-            this.correspondingTypes.put(mixin,  correspondingType);
+            this.correspondingTypes.put(mixin, correspondingType);
         }
         return correspondingType;
     }
@@ -394,71 +417,71 @@ public final class ClassInfo
         return false;
     }
     
-    public Method findMethodInHierarchy(final MethodNode method,  final SearchType searchType) {
-        return this.findMethodInHierarchy(method.name,  method.desc,  searchType,  Traversal.NONE);
+    public Method findMethodInHierarchy(final MethodNode method, final SearchType searchType) {
+        return this.findMethodInHierarchy(method.name, method.desc, searchType, Traversal.NONE);
     }
     
-    public Method findMethodInHierarchy(final MethodNode method,  final SearchType searchType,  final int flags) {
-        return this.findMethodInHierarchy(method.name,  method.desc,  searchType,  Traversal.NONE,  flags);
+    public Method findMethodInHierarchy(final MethodNode method, final SearchType searchType, final int flags) {
+        return this.findMethodInHierarchy(method.name, method.desc, searchType, Traversal.NONE, flags);
     }
     
-    public Method findMethodInHierarchy(final MethodInsnNode method,  final SearchType searchType) {
-        return this.findMethodInHierarchy(method.name,  method.desc,  searchType,  Traversal.NONE);
+    public Method findMethodInHierarchy(final MethodInsnNode method, final SearchType searchType) {
+        return this.findMethodInHierarchy(method.name, method.desc, searchType, Traversal.NONE);
     }
     
-    public Method findMethodInHierarchy(final MethodInsnNode method,  final SearchType searchType,  final int flags) {
-        return this.findMethodInHierarchy(method.name,  method.desc,  searchType,  Traversal.NONE,  flags);
+    public Method findMethodInHierarchy(final MethodInsnNode method, final SearchType searchType, final int flags) {
+        return this.findMethodInHierarchy(method.name, method.desc, searchType, Traversal.NONE, flags);
     }
     
-    public Method findMethodInHierarchy(final String name,  final String desc,  final SearchType searchType) {
-        return this.findMethodInHierarchy(name,  desc,  searchType,  Traversal.NONE);
+    public Method findMethodInHierarchy(final String name, final String desc, final SearchType searchType) {
+        return this.findMethodInHierarchy(name, desc, searchType, Traversal.NONE);
     }
     
-    public Method findMethodInHierarchy(final String name,  final String desc,  final SearchType searchType,  final Traversal traversal) {
-        return this.findMethodInHierarchy(name,  desc,  searchType,  traversal,  0);
+    public Method findMethodInHierarchy(final String name, final String desc, final SearchType searchType, final Traversal traversal) {
+        return this.findMethodInHierarchy(name, desc, searchType, traversal, 0);
     }
     
-    public Method findMethodInHierarchy(final String name,  final String desc,  final SearchType searchType,  final Traversal traversal,  final int flags) {
-        return this.findInHierarchy(name,  desc,  searchType,  traversal,  flags,  Member.Type.METHOD);
+    public Method findMethodInHierarchy(final String name, final String desc, final SearchType searchType, final Traversal traversal, final int flags) {
+        return this.findInHierarchy(name, desc, searchType, traversal, flags, Member.Type.METHOD);
     }
     
-    public Field findFieldInHierarchy(final FieldNode field,  final SearchType searchType) {
-        return this.findFieldInHierarchy(field.name,  field.desc,  searchType,  Traversal.NONE);
+    public Field findFieldInHierarchy(final FieldNode field, final SearchType searchType) {
+        return this.findFieldInHierarchy(field.name, field.desc, searchType, Traversal.NONE);
     }
     
-    public Field findFieldInHierarchy(final FieldNode field,  final SearchType searchType,  final int flags) {
-        return this.findFieldInHierarchy(field.name,  field.desc,  searchType,  Traversal.NONE,  flags);
+    public Field findFieldInHierarchy(final FieldNode field, final SearchType searchType, final int flags) {
+        return this.findFieldInHierarchy(field.name, field.desc, searchType, Traversal.NONE, flags);
     }
     
-    public Field findFieldInHierarchy(final FieldInsnNode field,  final SearchType searchType) {
-        return this.findFieldInHierarchy(field.name,  field.desc,  searchType,  Traversal.NONE);
+    public Field findFieldInHierarchy(final FieldInsnNode field, final SearchType searchType) {
+        return this.findFieldInHierarchy(field.name, field.desc, searchType, Traversal.NONE);
     }
     
-    public Field findFieldInHierarchy(final FieldInsnNode field,  final SearchType searchType,  final int flags) {
-        return this.findFieldInHierarchy(field.name,  field.desc,  searchType,  Traversal.NONE,  flags);
+    public Field findFieldInHierarchy(final FieldInsnNode field, final SearchType searchType, final int flags) {
+        return this.findFieldInHierarchy(field.name, field.desc, searchType, Traversal.NONE, flags);
     }
     
-    public Field findFieldInHierarchy(final String name,  final String desc,  final SearchType searchType) {
-        return this.findFieldInHierarchy(name,  desc,  searchType,  Traversal.NONE);
+    public Field findFieldInHierarchy(final String name, final String desc, final SearchType searchType) {
+        return this.findFieldInHierarchy(name, desc, searchType, Traversal.NONE);
     }
     
-    public Field findFieldInHierarchy(final String name,  final String desc,  final SearchType searchType,  final Traversal traversal) {
-        return this.findFieldInHierarchy(name,  desc,  searchType,  traversal,  0);
+    public Field findFieldInHierarchy(final String name, final String desc, final SearchType searchType, final Traversal traversal) {
+        return this.findFieldInHierarchy(name, desc, searchType, traversal, 0);
     }
     
-    public Field findFieldInHierarchy(final String name,  final String desc,  final SearchType searchType,  final Traversal traversal,  final int flags) {
-        return this.findInHierarchy(name,  desc,  searchType,  traversal,  flags,  Member.Type.FIELD);
+    public Field findFieldInHierarchy(final String name, final String desc, final SearchType searchType, final Traversal traversal, final int flags) {
+        return this.findInHierarchy(name, desc, searchType, traversal, flags, Member.Type.FIELD);
     }
     
-    private <M extends Member> M findInHierarchy(final String name,  final String desc,  final SearchType searchType,  final Traversal traversal,  final int flags,  final Member.Type type) {
+    private <M extends Member> M findInHierarchy(final String name, final String desc, final SearchType searchType, final Traversal traversal, final int flags, final Member.Type type) {
         if (searchType == SearchType.ALL_CLASSES) {
-            final M member = this.findMember(name,  desc,  flags,  type);
+            final M member = this.findMember(name, desc, flags, type);
             if (member != null) {
                 return member;
             }
             if (traversal.canTraverse()) {
                 for (final MixinInfo mixin : this.mixins) {
-                    final M mixinMember = mixin.getClassInfo().findMember(name,  desc,  flags,  type);
+                    final M mixinMember = mixin.getClassInfo().findMember(name, desc, flags, type);
                     if (mixinMember != null) {
                         return this.cloneMember(mixinMember);
                     }
@@ -468,7 +491,7 @@ public final class ClassInfo
         final ClassInfo superClassInfo = this.getSuperClass();
         if (superClassInfo != null) {
             for (final ClassInfo superTarget : superClassInfo.getTargets()) {
-                final M member2 = (M)superTarget.findInHierarchy(name,  desc,  SearchType.ALL_CLASSES,  traversal.next(),  flags & 0xFFFFFFFD,  type);
+                final M member2 = (M)superTarget.findInHierarchy(name, desc, SearchType.ALL_CLASSES, traversal.next(), flags & 0xFFFFFFFD, type);
                 if (member2 != null) {
                     return member2;
                 }
@@ -478,10 +501,10 @@ public final class ClassInfo
             for (final String implemented : this.interfaces) {
                 final ClassInfo iface = forName(implemented);
                 if (iface == null) {
-                    ClassInfo.logger.debug("Failed to resolve declared interface {} on {}",  new Object[] { implemented,  this.name });
+                    ClassInfo.logger.debug("Failed to resolve declared interface {} on {}", new Object[] { implemented, this.name });
                 }
                 else {
-                    final M member3 = (M)iface.findInHierarchy(name,  desc,  SearchType.ALL_CLASSES,  traversal.next(),  flags & 0xFFFFFFFD,  type);
+                    final M member3 = (M)iface.findInHierarchy(name, desc, SearchType.ALL_CLASSES, traversal.next(), flags & 0xFFFFFFFD, type);
                     if (member3 != null) {
                         return (M)(this.isInterface ? member3 : new InterfaceMethod(member3));
                     }
@@ -500,41 +523,41 @@ public final class ClassInfo
     }
     
     public Method findMethod(final MethodNode method) {
-        return this.findMethod(method.name,  method.desc,  method.access);
+        return this.findMethod(method.name, method.desc, method.access);
     }
     
-    public Method findMethod(final MethodNode method,  final int flags) {
-        return this.findMethod(method.name,  method.desc,  flags);
+    public Method findMethod(final MethodNode method, final int flags) {
+        return this.findMethod(method.name, method.desc, flags);
     }
     
     public Method findMethod(final MethodInsnNode method) {
-        return this.findMethod(method.name,  method.desc,  0);
+        return this.findMethod(method.name, method.desc, 0);
     }
     
-    public Method findMethod(final MethodInsnNode method,  final int flags) {
-        return this.findMethod(method.name,  method.desc,  flags);
+    public Method findMethod(final MethodInsnNode method, final int flags) {
+        return this.findMethod(method.name, method.desc, flags);
     }
     
-    public Method findMethod(final String name,  final String desc,  final int flags) {
-        return this.findMember(name,  desc,  flags,  Member.Type.METHOD);
+    public Method findMethod(final String name, final String desc, final int flags) {
+        return this.findMember(name, desc, flags, Member.Type.METHOD);
     }
     
     public Field findField(final FieldNode field) {
-        return this.findField(field.name,  field.desc,  field.access);
+        return this.findField(field.name, field.desc, field.access);
     }
     
-    public Field findField(final FieldInsnNode field,  final int flags) {
-        return this.findField(field.name,  field.desc,  flags);
+    public Field findField(final FieldInsnNode field, final int flags) {
+        return this.findField(field.name, field.desc, flags);
     }
     
-    public Field findField(final String name,  final String desc,  final int flags) {
-        return this.findMember(name,  desc,  flags,  Member.Type.FIELD);
+    public Field findField(final String name, final String desc, final int flags) {
+        return this.findMember(name, desc, flags, Member.Type.FIELD);
     }
     
-    private <M extends Member> M findMember(final String name,  final String desc,  final int flags,  final Member.Type memberType) {
+    private <M extends Member> M findMember(final String name, final String desc, final int flags, final Member.Type memberType) {
         final Set<M> members = (Set<M>)((memberType == Member.Type.METHOD) ? this.methods : this.fields);
         for (final M member : members) {
-            if (member.equals(name,  desc) && member.matchesFlags(flags)) {
+            if (member.equals(name, desc) && member.matchesFlags(flags)) {
                 return member;
             }
         }
@@ -555,13 +578,13 @@ public final class ClassInfo
         ClassInfo info = ClassInfo.cache.get(classNode.name);
         if (info == null) {
             info = new ClassInfo(classNode);
-            ClassInfo.cache.put(classNode.name,  info);
+            ClassInfo.cache.put(classNode.name, info);
         }
         return info;
     }
     
     public static ClassInfo forName(String className) {
-        className = className.replace('.',  '/');
+        className = className.replace('.', '/');
         ClassInfo info = ClassInfo.cache.get(className);
         if (info == null) {
             try {
@@ -569,11 +592,11 @@ public final class ClassInfo
                 info = new ClassInfo(classNode);
             }
             catch (Exception ex) {
-                ClassInfo.logger.catching(Level.TRACE,  (Throwable)ex);
-                ClassInfo.logger.warn("Error loading class: {} ({}: {})",  new Object[] { className,  ex.getClass().getName(),  ex.getMessage() });
+                ClassInfo.logger.catching(Level.TRACE, (Throwable)ex);
+                ClassInfo.logger.warn("Error loading class: {} ({}: {})", new Object[] { className, ex.getClass().getName(), ex.getMessage() });
             }
-            ClassInfo.cache.put(className,  info);
-            ClassInfo.logger.trace("Added class metadata for {} to metadata cache",  new Object[] { className });
+            ClassInfo.cache.put(className, info);
+            ClassInfo.logger.trace("Added class metadata for {} to metadata cache", new Object[] { className });
         }
         return info;
     }
@@ -585,50 +608,50 @@ public final class ClassInfo
         if (type.getSort() < 9) {
             return null;
         }
-        return forName(type.getClassName().replace('.',  '/'));
+        return forName(type.getClassName().replace('.', '/'));
     }
     
-    public static ClassInfo getCommonSuperClass(final String type1,  final String type2) {
+    public static ClassInfo getCommonSuperClass(final String type1, final String type2) {
         if (type1 == null || type2 == null) {
             return ClassInfo.OBJECT;
         }
-        return getCommonSuperClass(forName(type1),  forName(type2));
+        return getCommonSuperClass(forName(type1), forName(type2));
     }
     
-    public static ClassInfo getCommonSuperClass(final Type type1,  final Type type2) {
+    public static ClassInfo getCommonSuperClass(final Type type1, final Type type2) {
         if (type1 == null || type2 == null || type1.getSort() != 10 || type2.getSort() != 10) {
             return ClassInfo.OBJECT;
         }
-        return getCommonSuperClass(forType(type1),  forType(type2));
+        return getCommonSuperClass(forType(type1), forType(type2));
     }
     
-    private static ClassInfo getCommonSuperClass(final ClassInfo type1,  final ClassInfo type2) {
-        return getCommonSuperClass(type1,  type2,  false);
+    private static ClassInfo getCommonSuperClass(final ClassInfo type1, final ClassInfo type2) {
+        return getCommonSuperClass(type1, type2, false);
     }
     
-    public static ClassInfo getCommonSuperClassOrInterface(final String type1,  final String type2) {
+    public static ClassInfo getCommonSuperClassOrInterface(final String type1, final String type2) {
         if (type1 == null || type2 == null) {
             return ClassInfo.OBJECT;
         }
-        return getCommonSuperClassOrInterface(forName(type1),  forName(type2));
+        return getCommonSuperClassOrInterface(forName(type1), forName(type2));
     }
     
-    public static ClassInfo getCommonSuperClassOrInterface(final Type type1,  final Type type2) {
+    public static ClassInfo getCommonSuperClassOrInterface(final Type type1, final Type type2) {
         if (type1 == null || type2 == null || type1.getSort() != 10 || type2.getSort() != 10) {
             return ClassInfo.OBJECT;
         }
-        return getCommonSuperClassOrInterface(forType(type1),  forType(type2));
+        return getCommonSuperClassOrInterface(forType(type1), forType(type2));
     }
     
-    public static ClassInfo getCommonSuperClassOrInterface(final ClassInfo type1,  final ClassInfo type2) {
-        return getCommonSuperClass(type1,  type2,  true);
+    public static ClassInfo getCommonSuperClassOrInterface(final ClassInfo type1, final ClassInfo type2) {
+        return getCommonSuperClass(type1, type2, true);
     }
     
-    private static ClassInfo getCommonSuperClass(ClassInfo type1,  final ClassInfo type2,  final boolean includeInterfaces) {
-        if (type1.hasSuperClass(type2,  Traversal.NONE,  includeInterfaces)) {
+    private static ClassInfo getCommonSuperClass(ClassInfo type1, final ClassInfo type2, final boolean includeInterfaces) {
+        if (type1.hasSuperClass(type2, Traversal.NONE, includeInterfaces)) {
             return type2;
         }
-        if (type2.hasSuperClass(type1,  Traversal.NONE,  includeInterfaces)) {
+        if (type2.hasSuperClass(type1, Traversal.NONE, includeInterfaces)) {
             return type1;
         }
         if (type1.isInterface() || type2.isInterface()) {
@@ -639,36 +662,36 @@ public final class ClassInfo
             if (type1 == null) {
                 return ClassInfo.OBJECT;
             }
-        } while (!type2.hasSuperClass(type1,  Traversal.NONE,  includeInterfaces));
+        } while (!type2.hasSuperClass(type1, Traversal.NONE, includeInterfaces));
         return type1;
     }
     
     static {
         logger = LogManager.getLogger("mixin");
         profiler = MixinEnvironment.getProfiler();
-        cache = new HashMap<String,  ClassInfo>();
+        cache = new HashMap<String, ClassInfo>();
         OBJECT = new ClassInfo();
-        ClassInfo.cache.put("java/lang/Object",  ClassInfo.OBJECT);
+        ClassInfo.cache.put("java/lang/Object", ClassInfo.OBJECT);
     }
     
     public enum SearchType
     {
-        ALL_CLASSES,  
+        ALL_CLASSES, 
         SUPER_CLASSES_ONLY;
     }
     
     public enum Traversal
     {
-        NONE((Traversal)null,  false,  SearchType.SUPER_CLASSES_ONLY),  
-        ALL((Traversal)null,  true,  SearchType.ALL_CLASSES),  
-        IMMEDIATE(Traversal.NONE,  true,  SearchType.SUPER_CLASSES_ONLY),  
-        SUPER(Traversal.ALL,  false,  SearchType.SUPER_CLASSES_ONLY);
+        NONE((Traversal)null, false, SearchType.SUPER_CLASSES_ONLY), 
+        ALL((Traversal)null, true, SearchType.ALL_CLASSES), 
+        IMMEDIATE(Traversal.NONE, true, SearchType.SUPER_CLASSES_ONLY), 
+        SUPER(Traversal.ALL, false, SearchType.SUPER_CLASSES_ONLY);
         
         private final Traversal next;
         private final boolean traverse;
         private final SearchType searchType;
         
-        private Traversal(final Traversal next,  final boolean traverse,  final SearchType searchType) {
+        private Traversal(final Traversal next, final boolean traverse, final SearchType searchType) {
             this.next = ((next != null) ? next : this);
             this.traverse = traverse;
             this.searchType = searchType;
@@ -694,13 +717,13 @@ public final class ClassInfo
         public final int type;
         public final int locals;
         
-        FrameData(final int index,  final int type,  final int locals) {
+        FrameData(final int index, final int type, final int locals) {
             this.index = index;
             this.type = type;
             this.locals = locals;
         }
         
-        FrameData(final int index,  final FrameNode frameNode) {
+        FrameData(final int index, final FrameNode frameNode) {
             this.index = index;
             this.type = frameNode.type;
             this.locals = ((frameNode.local != null) ? frameNode.local.size() : 0);
@@ -708,11 +731,11 @@ public final class ClassInfo
         
         @Override
         public String toString() {
-            return String.format("FrameData[index=%d,  type=%s,  locals=%d]",  this.index,  FrameData.FRAMETYPES[this.type + 1],  this.locals);
+            return String.format("FrameData[index=%d, type=%s, locals=%d]", this.index, FrameData.FRAMETYPES[this.type + 1], this.locals);
         }
         
         static {
-            FRAMETYPES = new String[] { "NEW",  "FULL",  "APPEND",  "CHOP",  "SAME",  "SAME1" };
+            FRAMETYPES = new String[] { "NEW", "FULL", "APPEND", "CHOP", "SAME", "SAME1" };
         }
     }
     
@@ -730,17 +753,17 @@ public final class ClassInfo
         private boolean unique;
         
         protected Member(final Member member) {
-            this(member.type,  member.memberName,  member.memberDesc,  member.modifiers,  member.isInjected);
+            this(member.type, member.memberName, member.memberDesc, member.modifiers, member.isInjected);
             this.currentName = member.currentName;
             this.currentDesc = member.currentDesc;
             this.unique = member.unique;
         }
         
-        protected Member(final Type type,  final String name,  final String desc,  final int access) {
-            this(type,  name,  desc,  access,  false);
+        protected Member(final Type type, final String name, final String desc, final int access) {
+            this(type, name, desc, access, false);
         }
         
-        protected Member(final Type type,  final String name,  final String desc,  final int access,  final boolean injected) {
+        protected Member(final Type type, final String name, final String desc, final int access, final boolean injected) {
             this.type = type;
             this.memberName = name;
             this.memberDesc = desc;
@@ -814,7 +837,7 @@ public final class ClassInfo
             return this.decoratedMutable;
         }
         
-        public void setDecoratedFinal(final boolean decoratedFinal,  final boolean decoratedMutable) {
+        public void setDecoratedFinal(final boolean decoratedFinal, final boolean decoratedMutable) {
             this.decoratedFinal = decoratedFinal;
             this.decoratedMutable = decoratedMutable;
         }
@@ -841,7 +864,7 @@ public final class ClassInfo
             return this.currentDesc = desc;
         }
         
-        public boolean equals(final String name,  final String desc) {
+        public boolean equals(final String name, final String desc) {
             return (this.memberName.equals(name) || this.currentName.equals(name)) && (this.memberDesc.equals(desc) || this.currentDesc.equals(desc));
         }
         
@@ -861,7 +884,7 @@ public final class ClassInfo
         
         @Override
         public String toString() {
-            return String.format(this.getDisplayFormat(),  this.memberName,  this.memberDesc);
+            return String.format(this.getDisplayFormat(), this.memberName, this.memberDesc);
         }
         
         protected String getDisplayFormat() {
@@ -870,7 +893,7 @@ public final class ClassInfo
         
         enum Type
         {
-            METHOD,  
+            METHOD, 
             FIELD;
         }
     }
@@ -885,31 +908,31 @@ public final class ClassInfo
             this.frames = ((member instanceof Method) ? ((Method)member).frames : null);
         }
         
-        public Method(final ClassInfo this$0,  final MethodNode method) {
-            this(this$0,  method,  false);
-            this.setUnique(Annotations.getVisible(method,  Unique.class) != null);
-            this.isAccessor = (Annotations.getSingleVisible(method,  Accessor.class,  Invoker.class) != null);
+        public Method(final ClassInfo this$0, final MethodNode method) {
+            this(this$0, method, false);
+            this.setUnique(Annotations.getVisible(method, Unique.class) != null);
+            this.isAccessor = (Annotations.getSingleVisible(method, Accessor.class, Invoker.class) != null);
         }
         
-        public Method(final MethodNode method,  final boolean injected) {
-            super(Type.METHOD,  method.name,  method.desc,  method.access,  injected);
+        public Method(final MethodNode method, final boolean injected) {
+            super(Type.METHOD, method.name, method.desc, method.access, injected);
             this.frames = this.gatherFrames(method);
-            this.setUnique(Annotations.getVisible(method,  Unique.class) != null);
-            this.isAccessor = (Annotations.getSingleVisible(method,  Accessor.class,  Invoker.class) != null);
+            this.setUnique(Annotations.getVisible(method, Unique.class) != null);
+            this.isAccessor = (Annotations.getSingleVisible(method, Accessor.class, Invoker.class) != null);
         }
         
-        public Method(final String name,  final String desc) {
-            super(Type.METHOD,  name,  desc,  1,  false);
+        public Method(final String name, final String desc) {
+            super(Type.METHOD, name, desc, 1, false);
             this.frames = null;
         }
         
-        public Method(final String name,  final String desc,  final int access) {
-            super(Type.METHOD,  name,  desc,  access,  false);
+        public Method(final String name, final String desc, final int access) {
+            super(Type.METHOD, name, desc, access, false);
             this.frames = null;
         }
         
-        public Method(final String name,  final String desc,  final int access,  final boolean injected) {
-            super(Type.METHOD,  name,  desc,  access,  injected);
+        public Method(final String name, final String desc, final int access, final boolean injected) {
+            super(Type.METHOD, name, desc, access, injected);
             this.frames = null;
         }
         
@@ -917,7 +940,7 @@ public final class ClassInfo
             final List<FrameData> frames = new ArrayList<FrameData>();
             for (final AbstractInsnNode insn : method.instructions) {
                 if (insn instanceof FrameNode) {
-                    frames.add(new FrameData(method.instructions.indexOf(insn),  (FrameNode)insn));
+                    frames.add(new FrameData(method.instructions.indexOf(insn), (FrameNode)insn));
                 }
             }
             return frames;
@@ -968,26 +991,26 @@ public final class ClassInfo
             super(member);
         }
         
-        public Field(final ClassInfo this$0,  final FieldNode field) {
-            this(this$0,  field,  false);
+        public Field(final ClassInfo this$0, final FieldNode field) {
+            this(this$0, field, false);
         }
         
-        public Field(final FieldNode field,  final boolean injected) {
-            super(Type.FIELD,  field.name,  field.desc,  field.access,  injected);
-            this.setUnique(Annotations.getVisible(field,  Unique.class) != null);
-            if (Annotations.getVisible(field,  (Class<? extends Annotation>)Shadow.class) != null) {
-                final boolean decoratedFinal = Annotations.getVisible(field,  (Class<? extends Annotation>)Final.class) != null;
-                final boolean decoratedMutable = Annotations.getVisible(field,  (Class<? extends Annotation>)Mutable.class) != null;
-                this.setDecoratedFinal(decoratedFinal,  decoratedMutable);
+        public Field(final FieldNode field, final boolean injected) {
+            super(Type.FIELD, field.name, field.desc, field.access, injected);
+            this.setUnique(Annotations.getVisible(field, Unique.class) != null);
+            if (Annotations.getVisible(field, Shadow.class) != null) {
+                final boolean decoratedFinal = Annotations.getVisible(field, Final.class) != null;
+                final boolean decoratedMutable = Annotations.getVisible(field, Mutable.class) != null;
+                this.setDecoratedFinal(decoratedFinal, decoratedMutable);
             }
         }
         
-        public Field(final String name,  final String desc,  final int access) {
-            super(Type.FIELD,  name,  desc,  access,  false);
+        public Field(final String name, final String desc, final int access) {
+            super(Type.FIELD, name, desc, access, false);
         }
         
-        public Field(final String name,  final String desc,  final int access,  final boolean injected) {
-            super(Type.FIELD,  name,  desc,  access,  injected);
+        public Field(final String name, final String desc, final int access, final boolean injected) {
+            super(Type.FIELD, name, desc, access, injected);
         }
         
         @Override

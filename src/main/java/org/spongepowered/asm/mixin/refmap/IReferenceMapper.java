@@ -16,7 +16,7 @@ public interface IReferenceMapper
     
     void setContext(final String p0);
     
-    String remap(final String p0,  final String p1);
+    String remap(final String p0, final String p1);
     
-    String remapWithContext(final String p0,  final String p1,  final String p2);
+    String remapWithContext(final String p0, final String p1, final String p2);
 }

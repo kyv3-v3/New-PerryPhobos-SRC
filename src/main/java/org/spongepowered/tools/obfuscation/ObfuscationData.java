@@ -1,6 +1,12 @@
+
+
+
+
 package org.spongepowered.tools.obfuscation;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ObfuscationData<T> implements Iterable<ObfuscationType>
 {

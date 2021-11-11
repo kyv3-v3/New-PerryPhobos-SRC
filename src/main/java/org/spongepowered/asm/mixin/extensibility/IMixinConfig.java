@@ -4,8 +4,8 @@
 
 package org.spongepowered.asm.mixin.extensibility;
 
-import org.spongepowered.asm.mixin.*;
-import java.util.*;
+import java.util.Set;
+import org.spongepowered.asm.mixin.MixinEnvironment;
 
 public interface IMixinConfig
 {

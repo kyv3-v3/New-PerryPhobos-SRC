@@ -4,18 +4,19 @@
 
 package org.spongepowered.tools.obfuscation.interfaces;
 
-import javax.lang.model.element.*;
-import java.util.*;
-import org.spongepowered.tools.obfuscation.mirror.*;
+import org.spongepowered.tools.obfuscation.mirror.TypeHandle;
+import java.util.Collection;
+import org.spongepowered.tools.obfuscation.mirror.AnnotationHandle;
+import javax.lang.model.element.TypeElement;
 
 public interface IMixinValidator
 {
-    boolean validate(final ValidationPass p0,  final TypeElement p1,  final AnnotationHandle p2,  final Collection<TypeHandle> p3);
+    boolean validate(final ValidationPass p0, final TypeElement p1, final AnnotationHandle p2, final Collection<TypeHandle> p3);
     
     public enum ValidationPass
     {
-        EARLY,  
-        LATE,  
+        EARLY, 
+        LATE, 
         FINAL;
     }
 }

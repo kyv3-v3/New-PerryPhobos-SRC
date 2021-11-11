@@ -16,7 +16,7 @@ public class MixinPrepareError extends Error
         super(cause);
     }
     
-    public MixinPrepareError(final String message,  final Throwable cause) {
-        super(message,  cause);
+    public MixinPrepareError(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }

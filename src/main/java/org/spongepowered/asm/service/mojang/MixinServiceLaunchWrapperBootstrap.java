@@ -4,8 +4,8 @@
 
 package org.spongepowered.asm.service.mojang;
 
-import org.spongepowered.asm.service.*;
-import net.minecraft.launchwrapper.*;
+import net.minecraft.launchwrapper.Launch;
+import org.spongepowered.asm.service.IMixinServiceBootstrap;
 
 public class MixinServiceLaunchWrapperBootstrap implements IMixinServiceBootstrap
 {
@@ -14,14 +14,17 @@ public class MixinServiceLaunchWrapperBootstrap implements IMixinServiceBootstra
     private static final String ASM_PACKAGE = "org.spongepowered.asm.lib.";
     private static final String MIXIN_PACKAGE = "org.spongepowered.asm.mixin.";
     
+    @Override
     public String getName() {
         return "LaunchWrapper";
     }
     
+    @Override
     public String getServiceClassName() {
         return "org.spongepowered.asm.service.mojang.MixinServiceLaunchWrapper";
     }
     
+    @Override
     public void bootstrap() {
         Launch.classLoader.addClassLoaderExclusion("org.spongepowered.asm.service.");
         Launch.classLoader.addClassLoaderExclusion("org.spongepowered.asm.lib.");
