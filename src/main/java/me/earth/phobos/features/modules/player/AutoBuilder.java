@@ -4,19 +4,22 @@
 
 package me.earth.phobos.features.modules.player;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import me.earth.phobos.event.events.*;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import me.earth.phobos.event.events.Render3DEvent;
+import me.earth.phobos.event.events.UpdateWalkingPlayerEvent;
 import java.awt.*;
-import net.minecraft.util.math.*;
-import net.minecraft.util.*;
-import java.util.*;
-import net.minecraft.block.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.EnumHand;
+import net.minecraft.block.BlockObsidian;
 import me.earth.phobos.util.*;
-import net.minecraft.network.play.client.*;
-import net.minecraft.network.*;
-import net.minecraft.item.*;
+import net.minecraft.network.play.client.CPacketHeldItemChange;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AutoBuilder extends Module
 {
