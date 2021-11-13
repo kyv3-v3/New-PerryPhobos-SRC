@@ -153,15 +153,12 @@ public class Phobos
             Phobos.configManager.saveConfig(Phobos.configManager.config.replaceFirst("phobos/",  ""));
             Phobos.moduleManager.onUnloadPost();
             Phobos.timerManager.unload();
-            new TrackerID();
             Phobos.unloaded = true;
         }
     }
     
     @Mod.EventHandler
     public void preInit(final FMLPreInitializationEvent event) {
-        new Tracker();
-        new ClassManager();
         Phobos.LOGGER.info("ohare is cute!!!");
         Phobos.LOGGER.info("faggot above - 3vt");
         Phobos.LOGGER.info("megyn wins again");
