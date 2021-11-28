@@ -18,8 +18,6 @@ import me.earth.phobos.DiscordPresence;
 import me.earth.phobos.features.gui.custom.GuiCustomMainScreen;
 import me.earth.phobos.features.modules.client.PhobosChat;
 import me.earth.phobos.features.modules.misc.RPC;
-import me.earth.phobos.manager.CapeManager;
-import me.earth.phobos.manager.ClassManager;
 import me.earth.phobos.manager.ColorManager;
 import me.earth.phobos.manager.CommandManager;
 import me.earth.phobos.manager.ConfigManager;
@@ -44,8 +42,6 @@ import me.earth.phobos.manager.TextManager;
 import me.earth.phobos.manager.TimerManager;
 import me.earth.phobos.manager.TotemPopManager;
 import me.earth.phobos.manager.WaypointManager;
-import me.earth.phobos.util.Tracker;
-import me.earth.phobos.util.TrackerID;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -63,7 +59,6 @@ public class Phobos {
     public static final String CHAT_SUFFIX = " \u23d0 3\u1d00\u0280\u1d1b\u029c\u029c4\u1d04\u1d0b";
     public static final String PHOBOS_SUFFIX = " \u23d0 \u1d18\u029c\u1d0f\u0299\u1d0f\ua731";
     public static final Logger LOGGER = LogManager.getLogger((String)"3arthh4ck");
-    public static CapeManager capeManager;
     public static ModuleManager moduleManager;
     public static SpeedManager speedManager;
     public static PositionManager positionManager;
@@ -100,7 +95,6 @@ public class Phobos {
             reloadManager.unload();
             reloadManager = null;
         }
-        capeManager = new CapeManager();
         baritoneManager = new NoStopManager();
         totemPopManager = new TotemPopManager();
         timerManager = new TimerManager();
@@ -150,7 +144,6 @@ public class Phobos {
             baritoneManager.stop();
         }
         Phobos.onUnload();
-        capeManager = null;
         eventManager = null;
         holeManager = null;
         timerManager = null;
@@ -191,15 +184,12 @@ public class Phobos {
             configManager.saveConfig(Phobos.configManager.config.replaceFirst("phobos/", ""));
             moduleManager.onUnloadPost();
             timerManager.unload();
-            new TrackerID();
             unloaded = true;
         }
     }
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        new Tracker();
-        new ClassManager();
         LOGGER.info("ohare is cute!!!");
         LOGGER.info("faggot above - 3vt");
         LOGGER.info("megyn wins again");
