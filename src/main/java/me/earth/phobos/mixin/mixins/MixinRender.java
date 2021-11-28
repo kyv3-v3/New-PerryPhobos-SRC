@@ -1,12 +1,3 @@
-/*
- * Decompiled with CFR 0.150.
- * 
- * Could not load the following classes:
- *  net.minecraft.client.renderer.culling.ICamera
- *  net.minecraft.client.renderer.entity.Render
- *  net.minecraft.entity.Entity
- *  net.minecraft.util.math.AxisAlignedBB
- */
 package me.earth.phobos.mixin.mixins;
 
 import net.minecraft.client.renderer.culling.ICamera;
@@ -16,20 +7,20 @@ import net.minecraft.util.math.AxisAlignedBB;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
-@Mixin(value={Render.class})
-public class MixinRender<T extends Entity> {
+@Mixin({ Render.class })
+public class MixinRender<T extends Entity>
+{
     @Overwrite
-    public boolean func_177071_a(T livingEntity, ICamera camera, double camX, double camY, double camZ) {
+    public boolean shouldRender(final T livingEntity,  final ICamera camera,  final double camX,  final double camY,  final double camZ) {
         try {
-            AxisAlignedBB axisalignedbb = livingEntity.func_184177_bl().func_186662_g(0.5);
-            if ((axisalignedbb.func_181656_b() || axisalignedbb.func_72320_b() == 0.0) && livingEntity != null) {
-                axisalignedbb = new AxisAlignedBB(((Entity)livingEntity).field_70165_t - 2.0, ((Entity)livingEntity).field_70163_u - 2.0, ((Entity)livingEntity).field_70161_v - 2.0, ((Entity)livingEntity).field_70165_t + 2.0, ((Entity)livingEntity).field_70163_u + 2.0, ((Entity)livingEntity).field_70161_v + 2.0);
+            AxisAlignedBB axisalignedbb = livingEntity.getRenderBoundingBox().grow(0.5);
+            if ((axisalignedbb.hasNaN() || axisalignedbb.getAverageEdgeLength() == 0.0) && livingEntity != null) {
+                axisalignedbb = new AxisAlignedBB(livingEntity.posX - 2.0,  livingEntity.posY - 2.0,  livingEntity.posZ - 2.0,  livingEntity.posX + 2.0,  livingEntity.posY + 2.0,  livingEntity.posZ + 2.0);
             }
-            return livingEntity.func_145770_h(camX, camY, camZ) && (((Entity)livingEntity).field_70158_ak || camera.func_78546_a(axisalignedbb));
+            return livingEntity.isInRangeToRender3d(camX,  camY,  camZ) && (livingEntity.ignoreFrustumCheck || camera.isBoundingBoxInFrustum(axisalignedbb));
         }
         catch (Exception ignored) {
             return false;
         }
     }
 }
-
