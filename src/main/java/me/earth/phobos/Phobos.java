@@ -1,4 +1,5 @@
 package me.earth.phobos;
+
 import java.io.IOException;
 import me.earth.phobos.DiscordPresence;
 import me.earth.phobos.features.gui.custom.GuiCustomMainScreen;
@@ -37,6 +38,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.Display;
+
 @Mod(modid = "phobos",  name = "Phobos",  version = "1.9.0")
 public class Phobos
 {
