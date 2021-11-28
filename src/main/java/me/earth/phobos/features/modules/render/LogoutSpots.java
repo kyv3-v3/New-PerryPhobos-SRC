@@ -1,23 +1,24 @@
-
-
-
-
 package me.earth.phobos.features.modules.render;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import java.util.concurrent.*;
-import me.earth.phobos.features.modules.client.*;
-import java.awt.*;
-import net.minecraft.util.math.*;
-import net.minecraft.entity.*;
-import me.earth.phobos.event.events.*;
-import me.earth.phobos.features.command.*;
-import java.util.*;
-import net.minecraft.entity.player.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import net.minecraft.client.renderer.*;
-import me.earth.phobos.util.*;
+import java.awt.Color;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
+import me.earth.phobos.event.events.ConnectionEvent;
+import me.earth.phobos.event.events.Render3DEvent;
+import me.earth.phobos.features.command.Command;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.modules.client.Colors;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.ColorUtil;
+import me.earth.phobos.util.MathUtil;
+import me.earth.phobos.util.RenderUtil;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class LogoutSpots extends Module
 {

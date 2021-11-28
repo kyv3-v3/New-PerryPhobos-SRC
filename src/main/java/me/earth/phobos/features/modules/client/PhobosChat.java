@@ -1,28 +1,39 @@
-
-
-
-
 package me.earth.phobos.features.modules.client;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import java.awt.*;
-import net.minecraft.item.*;
-import java.io.*;
-import me.earth.phobos.features.gui.*;
-import org.lwjgl.input.*;
-import me.earth.phobos.features.*;
-import me.earth.phobos.*;
-import me.earth.phobos.manager.*;
-import net.minecraft.client.renderer.*;
-import net.minecraft.util.math.*;
-import java.util.*;
-import me.earth.phobos.event.events.*;
-import java.net.*;
-import me.earth.phobos.features.command.*;
-import me.earth.phobos.util.*;
-import net.minecraft.init.*;
-import net.minecraft.util.*;
+import java.awt.Color;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.event.events.Render2DEvent;
+import me.earth.phobos.event.events.Render3DEvent;
+import me.earth.phobos.features.Feature;
+import me.earth.phobos.features.command.Command;
+import me.earth.phobos.features.gui.PhobosGui;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Bind;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.manager.WaypointManager;
+import me.earth.phobos.util.ColorUtil;
+import me.earth.phobos.util.RenderUtil;
+import me.earth.phobos.util.TimerUtil;
+import me.earth.phobos.util.Util;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import org.lwjgl.input.Keyboard;
 
 public class PhobosChat extends Module
 {

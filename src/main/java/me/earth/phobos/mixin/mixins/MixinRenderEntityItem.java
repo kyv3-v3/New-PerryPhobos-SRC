@@ -1,25 +1,29 @@
-
-
-
-
 package me.earth.phobos.mixin.mixins;
 
-import net.minecraft.entity.item.*;
-import net.minecraft.client.renderer.entity.*;
-import net.minecraft.client.*;
-import java.util.*;
-import net.minecraft.util.*;
-import me.earth.phobos.features.modules.render.*;
-import net.minecraft.client.renderer.block.model.*;
-import org.spongepowered.asm.mixin.*;
-import net.minecraft.client.renderer.texture.*;
-import net.minecraft.util.math.*;
-import net.minecraft.block.material.*;
-import org.lwjgl.opengl.*;
-import net.minecraft.item.*;
-import net.minecraft.client.renderer.*;
-import net.minecraft.entity.*;
-import net.minecraftforge.client.*;
+import java.util.Random;
+import me.earth.phobos.features.modules.render.ItemPhysics;
+import me.earth.phobos.mixin.mixins.MixinRenderer;
+import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.entity.RenderEntityItem;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.client.ForgeHooksClient;
+import org.lwjgl.opengl.GL11;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin({ RenderEntityItem.class })
 public abstract class MixinRenderEntityItem extends MixinRenderer<EntityItem>

@@ -1,27 +1,25 @@
-
-
-
-
 package me.earth.phobos.features.modules.render;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import java.util.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import java.util.stream.*;
-import net.minecraft.client.renderer.*;
-import me.earth.phobos.event.events.*;
-import me.earth.phobos.features.modules.client.*;
-import java.awt.*;
-import me.earth.phobos.util.*;
-import org.lwjgl.opengl.*;
-import net.minecraft.entity.player.*;
-import net.minecraft.util.*;
-import com.mojang.authlib.*;
-import net.minecraft.client.entity.*;
-import net.minecraft.world.*;
-import net.minecraft.client.model.*;
-import net.minecraft.entity.*;
+import com.mojang.authlib.GameProfile;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import me.earth.phobos.event.events.Render3DEvent;
+import me.earth.phobos.event.events.RenderEntityModelEvent;
+import me.earth.phobos.event.events.TotemPopEvent;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.modules.client.Colors;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.MathUtil;
+import me.earth.phobos.util.RenderUtil;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
+import net.minecraft.client.model.ModelPlayer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumHandSide;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.lwjgl.opengl.GL11;
 
 public class PopChams extends Module
 {

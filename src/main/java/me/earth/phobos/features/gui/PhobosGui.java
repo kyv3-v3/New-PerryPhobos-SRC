@@ -1,24 +1,20 @@
-
-
-
-
 package me.earth.phobos.features.gui;
 
-import net.minecraft.client.gui.*;
-import me.earth.phobos.features.gui.components.*;
-import me.earth.phobos.*;
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.gui.components.items.buttons.*;
-import me.earth.phobos.features.*;
-import java.util.function.*;
-import java.util.*;
-import me.earth.phobos.features.gui.components.items.*;
-import me.earth.phobos.features.modules.client.*;
-import org.lwjgl.opengl.*;
-import java.awt.*;
-import me.earth.phobos.util.*;
-import org.lwjgl.input.*;
-import java.io.*;
+import java.awt.Color;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.features.Feature;
+import me.earth.phobos.features.gui.components.Component;
+import me.earth.phobos.features.gui.components.items.Item;
+import me.earth.phobos.features.gui.components.items.buttons.ModuleButton;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.modules.client.ClickGui;
+import me.earth.phobos.util.RenderUtil;
+import net.minecraft.client.gui.GuiScreen;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 
 public class PhobosGui extends GuiScreen
 {

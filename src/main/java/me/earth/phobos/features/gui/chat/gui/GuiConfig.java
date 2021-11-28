@@ -1,19 +1,24 @@
-
-
-
-
 package me.earth.phobos.features.gui.chat.gui;
 
-import net.minecraftforge.fml.client.config.*;
-import me.earth.phobos.features.gui.chat.*;
-import net.minecraft.client.resources.*;
-import me.earth.phobos.features.gui.chat.handlers.*;
-import net.minecraft.util.text.*;
-import net.minecraft.util.math.*;
-import net.minecraft.client.renderer.*;
-import net.minecraft.client.gui.*;
-import java.util.*;
-import java.io.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import me.earth.phobos.features.gui.chat.BetterChat;
+import me.earth.phobos.features.gui.chat.ChatSettings;
+import me.earth.phobos.features.gui.chat.handlers.InjectHandler;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiNewChat;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiUtilRenderComponents;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.client.config.GuiSlider;
 
 public class GuiConfig extends GuiScreen
 {

@@ -1,14 +1,11 @@
-
-
-
-
 package me.earth.phobos.mixin.mixins;
 
-import net.minecraft.entity.*;
-import net.minecraft.client.renderer.entity.*;
-import net.minecraft.client.renderer.culling.*;
-import net.minecraft.util.math.*;
-import org.spongepowered.asm.mixin.*;
+import net.minecraft.client.renderer.culling.ICamera;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.AxisAlignedBB;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin({ Render.class })
 public class MixinRender<T extends Entity>

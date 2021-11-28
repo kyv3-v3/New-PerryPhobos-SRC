@@ -1,26 +1,31 @@
-
-
-
-
 package me.earth.phobos.features.modules.player;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import net.minecraftforge.event.world.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import net.minecraftforge.event.entity.player.*;
-import me.earth.phobos.event.events.*;
-import net.minecraft.network.play.client.*;
-import net.minecraft.world.*;
-import me.earth.phobos.*;
-import net.minecraft.util.math.*;
-import net.minecraft.util.*;
-import net.minecraft.block.state.*;
-import net.minecraft.init.*;
-import net.minecraft.enchantment.*;
-import me.earth.phobos.util.*;
-import net.minecraft.entity.*;
-import net.minecraft.item.*;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.event.events.PacketEvent;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.modules.player.Speedmine;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.EntityUtil;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EnumCreatureAttribute;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Enchantments;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemSword;
+import net.minecraft.item.ItemTool;
+import net.minecraft.network.play.client.CPacketUseEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class BlockTweaks extends Module
 {

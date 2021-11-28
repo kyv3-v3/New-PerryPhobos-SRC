@@ -1,22 +1,22 @@
-
-
-
-
 package me.earth.phobos.features.gui.components;
 
-import me.earth.phobos.features.*;
-import me.earth.phobos.features.gui.components.items.*;
-import me.earth.phobos.features.modules.client.*;
-import me.earth.phobos.util.*;
-import net.minecraft.client.renderer.*;
-import org.lwjgl.opengl.*;
-import java.awt.*;
-import me.earth.phobos.*;
-import me.earth.phobos.features.gui.*;
-import java.util.*;
-import net.minecraft.init.*;
-import net.minecraft.client.audio.*;
-import me.earth.phobos.features.gui.components.items.buttons.*;
+import java.awt.Color;
+import java.util.ArrayList;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.features.Feature;
+import me.earth.phobos.features.gui.PhobosGui;
+import me.earth.phobos.features.gui.components.items.Item;
+import me.earth.phobos.features.gui.components.items.buttons.Button;
+import me.earth.phobos.features.modules.client.ClickGui;
+import me.earth.phobos.features.modules.client.Colors;
+import me.earth.phobos.features.modules.client.HUD;
+import me.earth.phobos.util.ColorUtil;
+import me.earth.phobos.util.MathUtil;
+import me.earth.phobos.util.RenderUtil;
+import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.init.SoundEvents;
+import org.lwjgl.opengl.GL11;
 
 public class Component extends Feature
 {

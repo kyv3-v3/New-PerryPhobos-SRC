@@ -1,21 +1,19 @@
-
-
-
-
 package me.earth.phobos.features.modules.render;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import net.minecraft.util.math.*;
-import java.util.concurrent.*;
-import me.earth.phobos.event.events.*;
-import java.awt.*;
-import java.util.*;
-import net.minecraft.entity.player.*;
-import me.earth.phobos.util.*;
-import java.util.function.*;
-import java.util.stream.*;
-import net.minecraft.init.*;
+import java.awt.Color;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
+import me.earth.phobos.event.events.Render3DEvent;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.BlockUtil;
+import me.earth.phobos.util.EntityUtil;
+import me.earth.phobos.util.RenderUtil;
+import me.earth.phobos.util.RotationUtil;
+import me.earth.phobos.util.TimerUtil;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.math.BlockPos;
 
 public class VoidESP extends Module
 {

@@ -1,35 +1,49 @@
-
-
-
-
 package me.earth.phobos.features.modules.client;
 
-import me.earth.phobos.features.modules.*;
-import net.minecraft.entity.player.*;
-import net.minecraft.entity.*;
-import me.earth.phobos.features.setting.*;
-import java.awt.*;
-import me.earth.phobos.features.command.*;
-import net.minecraft.network.play.server.*;
-import com.mojang.realmsclient.gui.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import net.minecraft.item.*;
-import net.minecraft.nbt.*;
-import me.earth.phobos.util.*;
-import net.minecraft.entity.monster.*;
-import net.minecraft.entity.passive.*;
-import java.text.*;
-import me.earth.phobos.*;
-import net.minecraft.entity.item.*;
-import net.minecraft.potion.*;
-import java.util.*;
-import java.util.stream.*;
-import net.minecraft.util.*;
-import net.minecraft.util.math.*;
-import net.minecraft.init.*;
-import me.earth.phobos.manager.*;
-import me.earth.phobos.event.events.*;
-import net.minecraft.util.text.*;
+import com.mojang.realmsclient.gui.ChatFormatting;
+import java.awt.Image;
+import java.awt.SystemTray;
+import java.awt.Toolkit;
+import java.awt.TrayIcon;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.WeakHashMap;
+import java.util.stream.Collectors;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.event.events.ChorusEvent;
+import me.earth.phobos.event.events.ClientEvent;
+import me.earth.phobos.event.events.PacketEvent;
+import me.earth.phobos.features.command.Command;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.manager.FileManager;
+import me.earth.phobos.util.MathUtil;
+import me.earth.phobos.util.TimerUtil;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityEnderPearl;
+import net.minecraft.entity.monster.EntityGhast;
+import net.minecraft.entity.passive.EntityDonkey;
+import net.minecraft.entity.passive.EntityLlama;
+import net.minecraft.entity.passive.EntityMule;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.MobEffects;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemSword;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.play.server.SPacketPlayerPosLook;
+import net.minecraft.potion.Potion;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class Notifications extends Module
 {

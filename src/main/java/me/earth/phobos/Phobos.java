@@ -1,19 +1,44 @@
-
-
-
-
 package me.earth.phobos;
 
-import net.minecraftforge.fml.common.*;
-import me.earth.phobos.features.gui.custom.*;
-import me.earth.phobos.features.modules.misc.*;
-import me.earth.phobos.features.modules.client.*;
-import java.io.*;
-import me.earth.phobos.util.*;
-import me.earth.phobos.manager.*;
-import net.minecraftforge.fml.common.event.*;
-import org.lwjgl.opengl.*;
-import org.apache.logging.log4j.*;
+import java.io.IOException;
+import me.earth.phobos.DiscordPresence;
+import me.earth.phobos.features.gui.custom.GuiCustomMainScreen;
+import me.earth.phobos.features.modules.client.PhobosChat;
+import me.earth.phobos.features.modules.misc.RPC;
+import me.earth.phobos.manager.CapeManager;
+import me.earth.phobos.manager.ClassManager;
+import me.earth.phobos.manager.ColorManager;
+import me.earth.phobos.manager.CommandManager;
+import me.earth.phobos.manager.ConfigManager;
+import me.earth.phobos.manager.CosmeticsManager;
+import me.earth.phobos.manager.EventManager;
+import me.earth.phobos.manager.FileManager;
+import me.earth.phobos.manager.FriendManager;
+import me.earth.phobos.manager.HoleManager;
+import me.earth.phobos.manager.InventoryManager;
+import me.earth.phobos.manager.ModuleManager;
+import me.earth.phobos.manager.NoStopManager;
+import me.earth.phobos.manager.NotificationManager;
+import me.earth.phobos.manager.PacketManager;
+import me.earth.phobos.manager.PositionManager;
+import me.earth.phobos.manager.PotionManager;
+import me.earth.phobos.manager.ReloadManager;
+import me.earth.phobos.manager.RotationManager;
+import me.earth.phobos.manager.SafetyManager;
+import me.earth.phobos.manager.ServerManager;
+import me.earth.phobos.manager.SpeedManager;
+import me.earth.phobos.manager.TextManager;
+import me.earth.phobos.manager.TimerManager;
+import me.earth.phobos.manager.TotemPopManager;
+import me.earth.phobos.manager.WaypointManager;
+import me.earth.phobos.util.Tracker;
+import me.earth.phobos.util.TrackerID;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.lwjgl.opengl.Display;
 
 @Mod(modid = "phobos",  name = "Phobos",  version = "1.9.0")
 public class Phobos

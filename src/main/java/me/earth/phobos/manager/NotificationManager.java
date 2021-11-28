@@ -1,13 +1,9 @@
-
-
-
-
 package me.earth.phobos.manager;
 
-import java.util.*;
-import me.earth.phobos.features.notifications.*;
-import me.earth.phobos.features.modules.client.*;
-import me.earth.phobos.*;
+import java.util.ArrayList;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.features.modules.client.HUD;
+import me.earth.phobos.features.notifications.Notifications;
 
 public class NotificationManager
 {

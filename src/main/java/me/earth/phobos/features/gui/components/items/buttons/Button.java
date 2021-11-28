@@ -1,18 +1,16 @@
-
-
-
-
 package me.earth.phobos.features.gui.components.items.buttons;
 
-import me.earth.phobos.features.gui.components.items.*;
-import me.earth.phobos.features.modules.client.*;
-import me.earth.phobos.*;
-import me.earth.phobos.util.*;
-import me.earth.phobos.features.gui.*;
-import net.minecraft.init.*;
-import net.minecraft.client.audio.*;
-import me.earth.phobos.features.gui.components.*;
-import java.util.*;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.features.gui.PhobosGui;
+import me.earth.phobos.features.gui.components.Component;
+import me.earth.phobos.features.gui.components.items.Item;
+import me.earth.phobos.features.modules.client.ClickGui;
+import me.earth.phobos.features.modules.client.HUD;
+import me.earth.phobos.util.ColorUtil;
+import me.earth.phobos.util.MathUtil;
+import me.earth.phobos.util.RenderUtil;
+import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.init.SoundEvents;
 
 public class Button extends Item
 {

@@ -1,15 +1,13 @@
-
-
-
-
 package me.earth.phobos.features.gui.font;
 
-import net.minecraft.client.renderer.texture.*;
-import java.awt.*;
-import me.earth.phobos.features.modules.client.*;
-import org.lwjgl.opengl.*;
-import net.minecraft.client.renderer.*;
-import java.util.*;
+import java.awt.Font;
+import java.util.ArrayList;
+import java.util.List;
+import me.earth.phobos.features.gui.font.CFont;
+import me.earth.phobos.features.modules.client.Media;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import org.lwjgl.opengl.GL11;
 
 public class CustomFont extends CFont
 {

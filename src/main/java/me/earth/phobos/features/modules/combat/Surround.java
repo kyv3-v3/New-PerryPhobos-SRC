@@ -1,27 +1,41 @@
-
-
-
-
 package me.earth.phobos.features.modules.combat;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import net.minecraft.util.math.*;
-import me.earth.phobos.*;
-import net.minecraft.init.*;
-import net.minecraft.network.play.client.*;
-import net.minecraft.network.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import me.earth.phobos.event.events.*;
-import java.awt.*;
-import me.earth.phobos.features.modules.client.*;
-import net.minecraft.entity.*;
-import me.earth.phobos.util.*;
-import me.earth.phobos.features.modules.player.*;
-import net.minecraft.block.*;
-import me.earth.phobos.features.command.*;
-import net.minecraft.util.*;
-import java.util.*;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.event.events.Render3DEvent;
+import me.earth.phobos.event.events.UpdateWalkingPlayerEvent;
+import me.earth.phobos.features.command.Command;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.modules.client.ClickGui;
+import me.earth.phobos.features.modules.client.Colors;
+import me.earth.phobos.features.modules.client.PingBypass;
+import me.earth.phobos.features.modules.player.BlockTweaks;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.BlockUtil;
+import me.earth.phobos.util.EntityUtil;
+import me.earth.phobos.util.InventoryUtil;
+import me.earth.phobos.util.MathUtil;
+import me.earth.phobos.util.RenderUtil;
+import me.earth.phobos.util.TimerUtil;
+import net.minecraft.block.BlockAir;
+import net.minecraft.block.BlockEndPortalFrame;
+import net.minecraft.block.BlockEnderChest;
+import net.minecraft.block.BlockObsidian;
+import net.minecraft.init.Blocks;
+import net.minecraft.network.play.client.CPacketChatMessage;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class Surround extends Module
 {
