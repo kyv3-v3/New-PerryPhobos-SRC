@@ -1,124 +1,136 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.Minecraft
+ *  net.minecraft.entity.EntityLivingBase
+ *  net.minecraft.entity.player.EntityPlayer
+ *  net.minecraft.potion.Potion
+ *  net.minecraft.util.math.RayTraceResult
+ *  net.minecraft.util.math.RayTraceResult$Type
+ *  net.minecraft.util.math.Vec2f
+ *  net.minecraft.util.math.Vec3d
+ */
 package me.earth.phobos.util;
 
-import net.minecraft.entity.player.*;
-import net.minecraft.util.math.*;
-import net.minecraft.client.*;
-import net.minecraft.entity.*;
-import java.util.*;
-import net.minecraft.potion.*;
+import java.util.Objects;
+import me.earth.phobos.util.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.potion.Potion;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.Vec3d;
 
-public class MovementUtil implements Util
-{
-    public static Vec3d calculateLine(final Vec3d x1,  final Vec3d x2,  final double distance) {
-        final double length = Math.sqrt(multiply(x2.x - x1.x) + multiply(x2.y - x1.y) + multiply(x2.z - x1.z));
-        final double unitSlopeX = (x2.x - x1.x) / length;
-        final double unitSlopeY = (x2.y - x1.y) / length;
-        final double unitSlopeZ = (x2.z - x1.z) / length;
-        final double x3 = x1.x + unitSlopeX * distance;
-        final double y = x1.y + unitSlopeY * distance;
-        final double z = x1.z + unitSlopeZ * distance;
-        return new Vec3d(x3,  y,  z);
+public class MovementUtil
+implements Util {
+    public static Vec3d calculateLine(Vec3d x1, Vec3d x2, double distance) {
+        double length = Math.sqrt(MovementUtil.multiply(x2.field_72450_a - x1.field_72450_a) + MovementUtil.multiply(x2.field_72448_b - x1.field_72448_b) + MovementUtil.multiply(x2.field_72449_c - x1.field_72449_c));
+        double unitSlopeX = (x2.field_72450_a - x1.field_72450_a) / length;
+        double unitSlopeY = (x2.field_72448_b - x1.field_72448_b) / length;
+        double unitSlopeZ = (x2.field_72449_c - x1.field_72449_c) / length;
+        double x = x1.field_72450_a + unitSlopeX * distance;
+        double y = x1.field_72448_b + unitSlopeY * distance;
+        double z = x1.field_72449_c + unitSlopeZ * distance;
+        return new Vec3d(x, y, z);
     }
-    
-    public static Vec2f calculateLineNoY(final Vec2f x1,  final Vec2f x2,  final double distance) {
-        final double length = Math.sqrt(multiply(x2.x - x1.x) + multiply(x2.y - x1.y));
-        final double unitSlopeX = (x2.x - x1.x) / length;
-        final double unitSlopeZ = (x2.y - x1.y) / length;
-        final float x3 = (float)(x1.x + unitSlopeX * distance);
-        final float z = (float)(x1.y + unitSlopeZ * distance);
-        return new Vec2f(x3,  z);
+
+    public static Vec2f calculateLineNoY(Vec2f x1, Vec2f x2, double distance) {
+        double length = Math.sqrt(MovementUtil.multiply(x2.field_189982_i - x1.field_189982_i) + MovementUtil.multiply(x2.field_189983_j - x1.field_189983_j));
+        double unitSlopeX = (double)(x2.field_189982_i - x1.field_189982_i) / length;
+        double unitSlopeZ = (double)(x2.field_189983_j - x1.field_189983_j) / length;
+        float x = (float)((double)x1.field_189982_i + unitSlopeX * distance);
+        float z = (float)((double)x1.field_189983_j + unitSlopeZ * distance);
+        return new Vec2f(x, z);
     }
-    
-    public static double multiply(final double one) {
+
+    public static double multiply(double one) {
         return one * one;
     }
-    
-    public static Vec3d extrapolatePlayerPositionWithGravity(final EntityPlayer player,  final int ticks) {
+
+    public static Vec3d extrapolatePlayerPositionWithGravity(EntityPlayer player, int ticks) {
         double totalDistance = 0.0;
-        double extrapolatedMotionY = player.motionY;
+        double extrapolatedMotionY = player.field_70181_x;
         for (int i = 0; i < ticks; ++i) {
-            totalDistance += multiply(player.motionX) + multiply(extrapolatedMotionY) + multiply(player.motionZ);
+            totalDistance += MovementUtil.multiply(player.field_70159_w) + MovementUtil.multiply(extrapolatedMotionY) + MovementUtil.multiply(player.field_70179_y);
             extrapolatedMotionY -= 0.1;
         }
-        final double horizontalDistance = multiply(player.motionX) + multiply(player.motionZ) * ticks;
-        final Vec2f horizontalVec = calculateLineNoY(new Vec2f((float)player.lastTickPosX,  (float)player.lastTickPosZ),  new Vec2f((float)player.posX,  (float)player.posZ),  horizontalDistance);
-        double addedY = player.motionY;
-        double finalY = player.posY;
-        final Vec3d tempPos = new Vec3d((double)horizontalVec.x,  player.posY,  (double)horizontalVec.y);
-        for (int j = 0; j < ticks; ++j) {
+        double horizontalDistance = MovementUtil.multiply(player.field_70159_w) + MovementUtil.multiply(player.field_70179_y) * (double)ticks;
+        Vec2f horizontalVec = MovementUtil.calculateLineNoY(new Vec2f((float)player.field_70142_S, (float)player.field_70136_U), new Vec2f((float)player.field_70165_t, (float)player.field_70161_v), horizontalDistance);
+        double addedY = player.field_70181_x;
+        double finalY = player.field_70163_u;
+        Vec3d tempPos = new Vec3d((double)horizontalVec.field_189982_i, player.field_70163_u, (double)horizontalVec.field_189983_j);
+        for (int i = 0; i < ticks; ++i) {
             finalY += addedY;
             addedY -= 0.1;
         }
-        final RayTraceResult result = MovementUtil.mc.world.rayTraceBlocks(player.getPositionVector(),  new Vec3d(tempPos.x,  finalY,  tempPos.z));
-        if (result == null || result.typeOfHit == RayTraceResult.Type.ENTITY) {
-            return new Vec3d(tempPos.x,  finalY,  tempPos.z);
+        RayTraceResult result = MovementUtil.mc.field_71441_e.func_72933_a(player.func_174791_d(), new Vec3d(tempPos.field_72450_a, finalY, tempPos.field_72449_c));
+        if (result == null || result.field_72313_a == RayTraceResult.Type.ENTITY) {
+            return new Vec3d(tempPos.field_72450_a, finalY, tempPos.field_72449_c);
         }
-        return result.hitVec;
+        return result.field_72307_f;
     }
-    
-    public static double[] forward(final double d) {
-        float f = Minecraft.getMinecraft().player.movementInput.moveForward;
-        float f2 = Minecraft.getMinecraft().player.movementInput.moveStrafe;
-        float f3 = Minecraft.getMinecraft().player.prevRotationYaw + (Minecraft.getMinecraft().player.rotationYaw - Minecraft.getMinecraft().player.prevRotationYaw) * Minecraft.getMinecraft().getRenderPartialTicks();
+
+    public static double[] forward(double d) {
+        float f = Minecraft.func_71410_x().field_71439_g.field_71158_b.field_192832_b;
+        float f2 = Minecraft.func_71410_x().field_71439_g.field_71158_b.field_78902_a;
+        float f3 = Minecraft.func_71410_x().field_71439_g.field_70126_B + (Minecraft.func_71410_x().field_71439_g.field_70177_z - Minecraft.func_71410_x().field_71439_g.field_70126_B) * Minecraft.func_71410_x().func_184121_ak();
         if (f != 0.0f) {
             if (f2 > 0.0f) {
-                f3 += ((f > 0.0f) ? -45 : 45);
-            }
-            else if (f2 < 0.0f) {
-                f3 += ((f > 0.0f) ? 45 : -45);
+                f3 += (float)(f > 0.0f ? -45 : 45);
+            } else if (f2 < 0.0f) {
+                f3 += (float)(f > 0.0f ? 45 : -45);
             }
             f2 = 0.0f;
             if (f > 0.0f) {
                 f = 1.0f;
-            }
-            else if (f < 0.0f) {
+            } else if (f < 0.0f) {
                 f = -1.0f;
             }
         }
-        final double d2 = Math.sin(Math.toRadians(f3 + 90.0f));
-        final double d3 = Math.cos(Math.toRadians(f3 + 90.0f));
-        final double d4 = f * d * d3 + f2 * d * d2;
-        final double d5 = f * d * d2 - f2 * d * d3;
-        return new double[] { d4,  d5 };
+        double d2 = Math.sin(Math.toRadians(f3 + 90.0f));
+        double d3 = Math.cos(Math.toRadians(f3 + 90.0f));
+        double d4 = (double)f * d * d3 + (double)f2 * d * d2;
+        double d5 = (double)f * d * d2 - (double)f2 * d * d3;
+        return new double[]{d4, d5};
     }
-    
-    public static boolean isMoving(final EntityLivingBase entityLivingBase) {
-        return entityLivingBase.moveForward != 0.0f || entityLivingBase.moveStrafing != 0.0f;
+
+    public static boolean isMoving(EntityLivingBase entityLivingBase) {
+        return entityLivingBase.field_191988_bg != 0.0f || entityLivingBase.field_70702_br != 0.0f;
     }
-    
-    public static void setSpeed(final EntityLivingBase entityLivingBase,  final double d) {
-        final double[] dArray = forward(d);
-        entityLivingBase.motionX = dArray[0];
-        entityLivingBase.motionZ = dArray[1];
+
+    public static void setSpeed(EntityLivingBase entityLivingBase, double d) {
+        double[] dArray = MovementUtil.forward(d);
+        entityLivingBase.field_70159_w = dArray[0];
+        entityLivingBase.field_70179_y = dArray[1];
     }
-    
+
     public static double getBaseMoveSpeed() {
         double d = 0.2873;
-        if (Minecraft.getMinecraft().player != null && Minecraft.getMinecraft().player.isPotionActive((Potion)Objects.requireNonNull(Potion.getPotionById(1)))) {
-            final int n = Objects.requireNonNull(Minecraft.getMinecraft().player.getActivePotionEffect((Potion)Objects.requireNonNull(Potion.getPotionById(1)))).getAmplifier();
-            d *= 1.0 + 0.2 * (n + 1);
+        if (Minecraft.func_71410_x().field_71439_g != null && Minecraft.func_71410_x().field_71439_g.func_70644_a(Objects.requireNonNull(Potion.func_188412_a((int)1)))) {
+            int n = Objects.requireNonNull(Minecraft.func_71410_x().field_71439_g.func_70660_b(Objects.requireNonNull(Potion.func_188412_a((int)1)))).func_76458_c();
+            d *= 1.0 + 0.2 * (double)(n + 1);
         }
         return d;
     }
-    
-    public static Vec3d extrapolatePlayerPosition(final EntityPlayer player,  final int ticks) {
-        final double totalDistance = 0.0;
-        final double extrapolatedMotionY = player.motionY;
-        for (int i = 0; i < ticks; ++i) {}
-        final Vec3d lastPos = new Vec3d(player.lastTickPosX,  player.lastTickPosY,  player.lastTickPosZ);
-        final Vec3d currentPos = new Vec3d(player.posX,  player.posY,  player.posZ);
-        final double distance = multiply(player.motionX) + multiply(player.motionY) + multiply(player.motionZ);
-        double extrapolatedPosY = player.posY;
-        if (!player.hasNoGravity()) {
+
+    public static Vec3d extrapolatePlayerPosition(EntityPlayer player, int ticks) {
+        double totalDistance = 0.0;
+        double extrapolatedMotionY = player.field_70181_x;
+        for (int i = 0; i < ticks; ++i) {
+        }
+        Vec3d lastPos = new Vec3d(player.field_70142_S, player.field_70137_T, player.field_70136_U);
+        Vec3d currentPos = new Vec3d(player.field_70165_t, player.field_70163_u, player.field_70161_v);
+        double distance = MovementUtil.multiply(player.field_70159_w) + MovementUtil.multiply(player.field_70181_x) + MovementUtil.multiply(player.field_70179_y);
+        double extrapolatedPosY = player.field_70163_u;
+        if (!player.func_189652_ae()) {
             extrapolatedPosY -= 0.1;
         }
-        final Vec3d tempVec = calculateLine(lastPos,  currentPos,  distance * ticks);
-        final Vec3d finalVec = new Vec3d(tempVec.x,  extrapolatedPosY,  tempVec.z);
-        MovementUtil.mc.world.rayTraceBlocks(player.getPositionVector(),  finalVec);
-        return new Vec3d(tempVec.x,  player.posY,  tempVec.z);
+        Vec3d tempVec = MovementUtil.calculateLine(lastPos, currentPos, distance * (double)ticks);
+        Vec3d finalVec = new Vec3d(tempVec.field_72450_a, extrapolatedPosY, tempVec.field_72449_c);
+        MovementUtil.mc.field_71441_e.func_72933_a(player.func_174791_d(), finalVec);
+        return new Vec3d(tempVec.field_72450_a, player.field_70163_u, tempVec.field_72449_c);
     }
 }
+

@@ -1,46 +1,53 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.entity.passive.EntityOcelot
+ *  net.minecraft.nbt.NBTBase
+ *  net.minecraft.nbt.NBTTagCompound
+ *  net.minecraft.nbt.NBTTagInt
+ *  net.minecraft.util.ResourceLocation
+ *  net.minecraft.world.World
+ */
 package me.earth.phobos.features.modules.client;
 
-import me.earth.phobos.features.modules.*;
-import net.minecraft.util.*;
-import net.minecraft.entity.passive.*;
-import net.minecraft.world.*;
-import net.minecraft.entity.*;
-import net.minecraft.nbt.*;
+import me.earth.phobos.features.modules.Module;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.passive.EntityOcelot;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagInt;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 
-public class ShoulderEntity extends Module
-{
-    private static final ResourceLocation BLACK_OCELOT_TEXTURES;
-    
+public class ShoulderEntity
+extends Module {
+    private static final ResourceLocation BLACK_OCELOT_TEXTURES = new ResourceLocation("textures/entity/cat/black.png");
+
     public ShoulderEntity() {
-        super("ShoulderEntity",  "Test.",  Category.CLIENT,  true,  false,  false);
+        super("ShoulderEntity", "Test.", Module.Category.CLIENT, true, false, false);
     }
-    
+
     @Override
     public void onEnable() {
-        ShoulderEntity.mc.world.addEntityToWorld(-101,  (Entity)new EntityOcelot((World)ShoulderEntity.mc.world));
-        final NBTTagCompound tag = new NBTTagCompound();
-        tag.setTag("id",  (NBTBase)new NBTTagInt(-101));
-        ShoulderEntity.mc.player.addShoulderEntity(tag);
+        ShoulderEntity.mc.field_71441_e.func_73027_a(-101, (Entity)new EntityOcelot((World)ShoulderEntity.mc.field_71441_e));
+        NBTTagCompound tag = new NBTTagCompound();
+        tag.func_74782_a("id", (NBTBase)new NBTTagInt(-101));
+        ShoulderEntity.mc.field_71439_g.func_192027_g(tag);
     }
-    
+
     @Override
     public void onDisable() {
-        ShoulderEntity.mc.world.removeEntityFromWorld(-101);
+        ShoulderEntity.mc.field_71441_e.func_73028_b(-101);
     }
-    
-    public float interpolate(final float yaw1,  final float yaw2,  final float percent) {
+
+    public float interpolate(float yaw1, float yaw2, float percent) {
         float rotation = (yaw1 + (yaw2 - yaw1) * percent) % 360.0f;
         if (rotation < 0.0f) {
             rotation += 360.0f;
         }
         return rotation;
     }
-    
-    static {
-        BLACK_OCELOT_TEXTURES = new ResourceLocation("textures/entity/cat/black.png");
-    }
 }
+

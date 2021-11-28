@@ -1,124 +1,125 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.util.math.MathHelper
+ */
 package me.earth.phobos.manager;
 
-import me.earth.phobos.features.*;
-import me.earth.phobos.features.gui.font.*;
-import me.earth.phobos.*;
-import java.awt.*;
-import me.earth.phobos.util.*;
-import net.minecraft.util.math.*;
+import java.awt.Color;
+import java.awt.Font;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.features.Feature;
+import me.earth.phobos.features.modules.client.CustomFont;
+import me.earth.phobos.util.MathUtil;
+import me.earth.phobos.util.TimerUtil;
+import net.minecraft.util.math.MathHelper;
 
-public class TextManager extends Feature
-{
-    private final TimerUtil idleTimer;
+public class TextManager
+extends Feature {
+    private final TimerUtil idleTimer = new TimerUtil();
     public int scaledWidth;
     public int scaledHeight;
     public int scaleFactor;
-    private CustomFont customFont;
+    private me.earth.phobos.features.gui.font.CustomFont customFont = new me.earth.phobos.features.gui.font.CustomFont(new Font("Verdana", 0, 17), true, false);
     private boolean idling;
-    
+
     public TextManager() {
-        this.idleTimer = new TimerUtil();
-        this.customFont = new CustomFont(new Font("Verdana",  0,  17),  true,  false);
         this.updateResolution();
     }
-    
-    public void init(final boolean startup) {
-        final me.earth.phobos.features.modules.client.CustomFont cFont = (me.earth.phobos.features.modules.client.CustomFont)Phobos.moduleManager.getModuleByClass((Class)me.earth.phobos.features.modules.client.CustomFont.class);
+
+    public void init(boolean startup) {
+        CustomFont cFont = Phobos.moduleManager.getModuleByClass(CustomFont.class);
         try {
-            this.setFontRenderer(new Font((String)cFont.fontName.getValue(),  (int)cFont.fontStyle.getValue(),  (int)cFont.fontSize.getValue()),  (boolean)cFont.antiAlias.getValue(),  (boolean)cFont.fractionalMetrics.getValue());
+            this.setFontRenderer(new Font(cFont.fontName.getValue(), (int)cFont.fontStyle.getValue(), cFont.fontSize.getValue()), cFont.antiAlias.getValue(), cFont.fractionalMetrics.getValue());
         }
-        catch (Exception ex) {}
-    }
-    
-    public void drawStringWithShadow(final String text,  final float x,  final float y,  final int color) {
-        this.drawString(text,  x,  y,  color,  true);
-    }
-    
-    public float drawString(final String text,  final float x,  final float y,  final int color,  final boolean shadow) {
-        if (!Phobos.moduleManager.isModuleEnabled((Class)me.earth.phobos.features.modules.client.CustomFont.class)) {
-            return (float)TextManager.mc.fontRenderer.drawString(text,  x,  y,  color,  shadow);
+        catch (Exception exception) {
+            // empty catch block
         }
-        if (shadow) {
-            return this.customFont.drawStringWithShadow(text,  (double)x,  (double)y,  color);
-        }
-        return this.customFont.drawString(text,  x,  y,  color);
     }
-    
-    public void drawRainbowString(final String text,  final float x,  final float y,  final int startColor,  final float factor,  final boolean shadow) {
+
+    public void drawStringWithShadow(String text, float x, float y, int color) {
+        this.drawString(text, x, y, color, true);
+    }
+
+    public float drawString(String text, float x, float y, int color, boolean shadow) {
+        if (Phobos.moduleManager.isModuleEnabled(CustomFont.class)) {
+            if (shadow) {
+                return this.customFont.drawStringWithShadow(text, x, y, color);
+            }
+            return this.customFont.drawString(text, x, y, color);
+        }
+        return TextManager.mc.field_71466_p.func_175065_a(text, x, y, color, shadow);
+    }
+
+    public void drawRainbowString(String text, float x, float y, int startColor, float factor, boolean shadow) {
         Color currentColor = new Color(startColor);
-        final float hueIncrement = 1.0f / factor;
-        final String[] rainbowStrings = text.split("§.");
-        float currentHue = Color.RGBtoHSB(currentColor.getRed(),  currentColor.getGreen(),  currentColor.getBlue(),  null)[0];
-        final float saturation = Color.RGBtoHSB(currentColor.getRed(),  currentColor.getGreen(),  currentColor.getBlue(),  null)[1];
-        final float brightness = Color.RGBtoHSB(currentColor.getRed(),  currentColor.getGreen(),  currentColor.getBlue(),  null)[2];
+        float hueIncrement = 1.0f / factor;
+        String[] rainbowStrings = text.split("\u00a7.");
+        float currentHue = Color.RGBtoHSB(currentColor.getRed(), currentColor.getGreen(), currentColor.getBlue(), null)[0];
+        float saturation = Color.RGBtoHSB(currentColor.getRed(), currentColor.getGreen(), currentColor.getBlue(), null)[1];
+        float brightness = Color.RGBtoHSB(currentColor.getRed(), currentColor.getGreen(), currentColor.getBlue(), null)[2];
         int currentWidth = 0;
         boolean shouldRainbow = true;
         boolean shouldContinue = false;
         for (int i = 0; i < text.length(); ++i) {
-            final char currentChar = text.charAt(i);
-            final char nextChar = text.charAt(MathUtil.clamp(i + 1,  0,  text.length() - 1));
-            final boolean equals = (String.valueOf(currentChar) + nextChar).equals("§r");
+            char currentChar = text.charAt(i);
+            char nextChar = text.charAt(MathUtil.clamp(i + 1, 0, text.length() - 1));
+            boolean equals = (String.valueOf(currentChar) + nextChar).equals("\u00a7r");
             if (equals) {
                 shouldRainbow = false;
-            }
-            else if ((String.valueOf(currentChar) + nextChar).equals("§+")) {
+            } else if ((String.valueOf(currentChar) + nextChar).equals("\u00a7+")) {
                 shouldRainbow = true;
             }
             if (shouldContinue) {
                 shouldContinue = false;
+                continue;
             }
-            else {
-                if (equals) {
-                    final String escapeString = text.substring(i);
-                    this.drawString(escapeString,  x + currentWidth,  y,  Color.WHITE.getRGB(),  shadow);
-                    break;
-                }
-                this.drawString(String.valueOf(currentChar).equals("§") ? "" : String.valueOf(currentChar),  x + currentWidth,  y,  shouldRainbow ? currentColor.getRGB() : Color.WHITE.getRGB(),  shadow);
-                if (String.valueOf(currentChar).equals("§")) {
-                    shouldContinue = true;
-                }
-                currentWidth += this.getStringWidth(String.valueOf(currentChar));
-                if (!String.valueOf(currentChar).equals(" ")) {
-                    currentColor = new Color(Color.HSBtoRGB(currentHue,  saturation,  brightness));
-                    currentHue += hueIncrement;
-                }
+            if (equals) {
+                String escapeString = text.substring(i);
+                this.drawString(escapeString, x + (float)currentWidth, y, Color.WHITE.getRGB(), shadow);
+                break;
             }
+            this.drawString(String.valueOf(currentChar).equals("\u00a7") ? "" : String.valueOf(currentChar), x + (float)currentWidth, y, shouldRainbow ? currentColor.getRGB() : Color.WHITE.getRGB(), shadow);
+            if (String.valueOf(currentChar).equals("\u00a7")) {
+                shouldContinue = true;
+            }
+            currentWidth += this.getStringWidth(String.valueOf(currentChar));
+            if (String.valueOf(currentChar).equals(" ")) continue;
+            currentColor = new Color(Color.HSBtoRGB(currentHue, saturation, brightness));
+            currentHue += hueIncrement;
         }
     }
-    
-    public int getStringWidth(final String text) {
-        if (Phobos.moduleManager.isModuleEnabled((Class)me.earth.phobos.features.modules.client.CustomFont.class)) {
+
+    public int getStringWidth(String text) {
+        if (Phobos.moduleManager.isModuleEnabled(CustomFont.class)) {
             return this.customFont.getStringWidth(text);
         }
-        return TextManager.mc.fontRenderer.getStringWidth(text);
+        return TextManager.mc.field_71466_p.func_78256_a(text);
     }
-    
+
     public int getFontHeight() {
-        if (Phobos.moduleManager.isModuleEnabled((Class)me.earth.phobos.features.modules.client.CustomFont.class)) {
-            final String text = "A";
+        if (Phobos.moduleManager.isModuleEnabled(CustomFont.class)) {
+            String text = "A";
             return this.customFont.getStringHeight(text);
         }
-        return TextManager.mc.fontRenderer.FONT_HEIGHT;
+        return TextManager.mc.field_71466_p.field_78288_b;
     }
-    
-    public void setFontRenderer(final Font font,  final boolean antiAlias,  final boolean fractionalMetrics) {
-        this.customFont = new CustomFont(font,  antiAlias,  fractionalMetrics);
+
+    public void setFontRenderer(Font font, boolean antiAlias, boolean fractionalMetrics) {
+        this.customFont = new me.earth.phobos.features.gui.font.CustomFont(font, antiAlias, fractionalMetrics);
     }
-    
+
     public Font getCurrentFont() {
         return this.customFont.getFont();
     }
-    
+
     public void updateResolution() {
-        this.scaledWidth = TextManager.mc.displayWidth;
-        this.scaledHeight = TextManager.mc.displayHeight;
+        this.scaledWidth = TextManager.mc.field_71443_c;
+        this.scaledHeight = TextManager.mc.field_71440_d;
         this.scaleFactor = 1;
-        final boolean flag = TextManager.mc.isUnicode();
-        int i = TextManager.mc.gameSettings.guiScale;
+        boolean flag = mc.func_152349_b();
+        int i = TextManager.mc.field_71474_y.field_74335_Z;
         if (i == 0) {
             i = 1000;
         }
@@ -128,12 +129,12 @@ public class TextManager extends Feature
         if (flag && this.scaleFactor % 2 != 0 && this.scaleFactor != 1) {
             --this.scaleFactor;
         }
-        final double scaledWidthD = this.scaledWidth / (double)this.scaleFactor;
-        final double scaledHeightD = this.scaledHeight / (double)this.scaleFactor;
-        this.scaledWidth = MathHelper.ceil(scaledWidthD);
-        this.scaledHeight = MathHelper.ceil(scaledHeightD);
+        double scaledWidthD = (double)this.scaledWidth / (double)this.scaleFactor;
+        double scaledHeightD = (double)this.scaledHeight / (double)this.scaleFactor;
+        this.scaledWidth = MathHelper.func_76143_f((double)scaledWidthD);
+        this.scaledHeight = MathHelper.func_76143_f((double)scaledHeightD);
     }
-    
+
     public String getIdleSign() {
         if (this.idleTimer.passedMs(500L)) {
             this.idling = !this.idling;
@@ -145,3 +146,4 @@ public class TextManager extends Feature
         return "";
     }
 }
+

@@ -1,22 +1,25 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.misc;
 
-import me.earth.phobos.features.modules.*;
-import net.minecraftforge.fml.common.eventhandler.*;
+import me.earth.phobos.features.modules.Module;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class PackReload extends Module
-{
+public class PackReload
+extends Module {
     public PackReload() {
-        super("PackReload",  "Automatically reloads ur pack.",  Category.MISC,  false,  false,  false);
+        super("PackReload", "Automatically reloads ur pack.", Module.Category.MISC, false, false, false);
     }
-    
-    @SubscribeEvent
+
     @Override
+    @SubscribeEvent
     public void onTick() {
-        PackReload.mc.refreshResources();
+        mc.func_110436_a();
         this.disable();
     }
 }
+

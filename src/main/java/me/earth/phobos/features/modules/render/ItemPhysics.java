@@ -1,35 +1,30 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ */
 package me.earth.phobos.features.modules.render;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
 
-public class ItemPhysics extends Module
-{
-    public static ItemPhysics INSTANCE;
-    public final Setting<Float> Scaling;
-    
+public class ItemPhysics
+extends Module {
+    public static ItemPhysics INSTANCE = new ItemPhysics();
+    public final Setting<Float> Scaling = this.register(new Setting<Float>("Scaling", Float.valueOf(0.5f), Float.valueOf(0.0f), Float.valueOf(10.0f)));
+
     public ItemPhysics() {
-        super("ItemPhysics",  "Apply physics to items.",  Module.Category.RENDER,  false,  false,  false);
-        this.Scaling = (Setting<Float>)this.register(new Setting("Scaling", 0.5f, 0.0f, 10.0f));
+        super("ItemPhysics", "Apply physics to items.", Module.Category.RENDER, false, false, false);
         this.setInstance();
     }
-    
+
     public static ItemPhysics getInstance() {
-        if (ItemPhysics.INSTANCE == null) {
-            ItemPhysics.INSTANCE = new ItemPhysics();
+        if (INSTANCE == null) {
+            INSTANCE = new ItemPhysics();
         }
-        return ItemPhysics.INSTANCE;
+        return INSTANCE;
     }
-    
+
     private void setInstance() {
-        ItemPhysics.INSTANCE = this;
-    }
-    
-    static {
-        ItemPhysics.INSTANCE = new ItemPhysics();
+        INSTANCE = this;
     }
 }
+

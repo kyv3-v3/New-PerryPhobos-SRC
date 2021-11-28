@@ -1,591 +1,552 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.entity.player.EntityPlayer
+ *  net.minecraft.init.Items
+ *  net.minecraft.inventory.EntityEquipmentSlot
+ *  net.minecraft.item.ItemElytra
+ *  net.minecraft.item.ItemStack
+ *  net.minecraft.network.Packet
+ *  net.minecraft.network.play.client.CPacketEntityAction
+ *  net.minecraft.network.play.client.CPacketEntityAction$Action
+ *  net.minecraft.network.play.client.CPacketPlayer
+ *  net.minecraft.util.math.MathHelper
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.movement;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import net.minecraft.entity.*;
-import net.minecraft.network.*;
-import net.minecraft.network.play.client.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import me.earth.phobos.util.*;
-import net.minecraft.inventory.*;
-import net.minecraft.init.*;
-import me.earth.phobos.*;
-import net.minecraft.item.*;
-import net.minecraft.client.entity.*;
-import net.minecraft.client.network.*;
-import java.util.*;
-import net.minecraft.util.math.*;
-import me.earth.phobos.event.events.*;
-import net.minecraft.entity.player.*;
+import java.util.Objects;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.event.events.MoveEvent;
+import me.earth.phobos.event.events.PacketEvent;
+import me.earth.phobos.event.events.UpdateWalkingPlayerEvent;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.MathUtil;
+import me.earth.phobos.util.TimerUtil;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemElytra;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.CPacketEntityAction;
+import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class ElytraFlight extends Module
-{
-    private static ElytraFlight INSTANCE;
-    private final TimerUtil timer;
-    public Setting<Mode> mode;
-    public Setting<Integer> devMode;
-    public Setting<Float> speed;
-    public Setting<Float> vSpeed;
-    public Setting<Float> hSpeed;
-    public Setting<Float> glide;
-    public Setting<Float> tooBeeSpeed;
-    public Setting<Boolean> autoStart;
-    public Setting<Boolean> disableInLiquid;
-    public Setting<Boolean> infiniteDura;
-    public Setting<Boolean> noKick;
-    public Setting<Boolean> allowUp;
-    public Setting<Boolean> lockPitch;
+public class ElytraFlight
+extends Module {
+    private static ElytraFlight INSTANCE = new ElytraFlight();
+    private final TimerUtil timer = new TimerUtil();
+    public Setting<Mode> mode = this.register(new Setting<Mode>("Mode", Mode.FLY));
+    public Setting<Integer> devMode = this.register(new Setting<Object>("Type", 2, 1, 3, v -> this.mode.getValue() == Mode.BYPASS || this.mode.getValue() == Mode.BETTER, "EventMode"));
+    public Setting<Float> speed = this.register(new Setting<Object>("Speed", Float.valueOf(1.0f), Float.valueOf(0.0f), Float.valueOf(10.0f), v -> this.mode.getValue() != Mode.FLY && this.mode.getValue() != Mode.BOOST && this.mode.getValue() != Mode.BETTER && this.mode.getValue() != Mode.OHARE && this.mode.getValue() != Mode.LOOK, "The Speed."));
+    public Setting<Float> vSpeed = this.register(new Setting<Object>("VSpeed", Float.valueOf(0.3f), Float.valueOf(0.0f), Float.valueOf(10.0f), v -> this.mode.getValue() == Mode.BETTER || this.mode.getValue() == Mode.OHARE || this.mode.getValue() == Mode.LOOK, "Vertical Speed"));
+    public Setting<Float> hSpeed = this.register(new Setting<Object>("HSpeed", Float.valueOf(1.0f), Float.valueOf(0.0f), Float.valueOf(10.0f), v -> this.mode.getValue() == Mode.BETTER || this.mode.getValue() == Mode.OHARE || this.mode.getValue() == Mode.LOOK, "Horizontal Speed"));
+    public Setting<Float> glide = this.register(new Setting<Object>("Glide", Float.valueOf(1.0E-4f), Float.valueOf(0.0f), Float.valueOf(0.2f), v -> this.mode.getValue() == Mode.BETTER, "Glide Speed"));
+    public Setting<Float> tooBeeSpeed = this.register(new Setting<Object>("TooBeeSpeed", Float.valueOf(1.8000001f), Float.valueOf(1.0f), Float.valueOf(2.0f), v -> this.mode.getValue() == Mode.TOOBEE, "Speed for flight on 2b2t"));
+    public Setting<Boolean> autoStart = this.register(new Setting<Boolean>("AutoStart", true));
+    public Setting<Boolean> disableInLiquid = this.register(new Setting<Boolean>("NoLiquid", true));
+    public Setting<Boolean> infiniteDura = this.register(new Setting<Boolean>("InfiniteDura", false));
+    public Setting<Boolean> noKick = this.register(new Setting<Object>("NoKick", Boolean.valueOf(false), v -> this.mode.getValue() == Mode.PACKET));
+    public Setting<Boolean> allowUp = this.register(new Setting<Object>("AllowUp", Boolean.valueOf(true), v -> this.mode.getValue() == Mode.BETTER));
+    public Setting<Boolean> lockPitch = this.register(new Setting<Boolean>("LockPitch", false));
     private Double posX;
     private Double flyHeight;
     private Double posZ;
-    
+
     public ElytraFlight() {
-        super("ElytraFlight",  "Makes Elytra Flight better.",  Module.Category.MOVEMENT,  true,  false,  false);
-        this.timer = new TimerUtil();
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.FLY));
-        this.devMode = (Setting<Integer>)this.register(new Setting("Type", 2, 1, 3,  v -> this.mode.getValue() == Mode.BYPASS || this.mode.getValue() == Mode.BETTER,  "EventMode"));
-        this.speed = (Setting<Float>)this.register(new Setting("Speed", 1.0f, 0.0f, 10.0f,  v -> this.mode.getValue() != Mode.FLY && this.mode.getValue() != Mode.BOOST && this.mode.getValue() != Mode.BETTER && this.mode.getValue() != Mode.OHARE && this.mode.getValue() != Mode.LOOK,  "The Speed."));
-        this.vSpeed = (Setting<Float>)this.register(new Setting("VSpeed", 0.3f, 0.0f, 10.0f,  v -> this.mode.getValue() == Mode.BETTER || this.mode.getValue() == Mode.OHARE || this.mode.getValue() == Mode.LOOK,  "Vertical Speed"));
-        this.hSpeed = (Setting<Float>)this.register(new Setting("HSpeed", 1.0f, 0.0f, 10.0f,  v -> this.mode.getValue() == Mode.BETTER || this.mode.getValue() == Mode.OHARE || this.mode.getValue() == Mode.LOOK,  "Horizontal Speed"));
-        this.glide = (Setting<Float>)this.register(new Setting("Glide", 1.0E-4f, 0.0f, 0.2f,  v -> this.mode.getValue() == Mode.BETTER,  "Glide Speed"));
-        this.tooBeeSpeed = (Setting<Float>)this.register(new Setting("TooBeeSpeed", 1.8000001f, 1.0f, 2.0f,  v -> this.mode.getValue() == Mode.TOOBEE,  "Speed for flight on 2b2t"));
-        this.autoStart = (Setting<Boolean>)this.register(new Setting("AutoStart", true));
-        this.disableInLiquid = (Setting<Boolean>)this.register(new Setting("NoLiquid", true));
-        this.infiniteDura = (Setting<Boolean>)this.register(new Setting("InfiniteDura", false));
-        this.noKick = (Setting<Boolean>)this.register(new Setting("NoKick", false,  v -> this.mode.getValue() == Mode.PACKET));
-        this.allowUp = (Setting<Boolean>)this.register(new Setting("AllowUp", true,  v -> this.mode.getValue() == Mode.BETTER));
-        this.lockPitch = (Setting<Boolean>)this.register(new Setting("LockPitch", false));
+        super("ElytraFlight", "Makes Elytra Flight better.", Module.Category.MOVEMENT, true, false, false);
         this.setInstance();
     }
-    
+
     public static ElytraFlight getInstance() {
-        if (ElytraFlight.INSTANCE == null) {
-            ElytraFlight.INSTANCE = new ElytraFlight();
+        if (INSTANCE == null) {
+            INSTANCE = new ElytraFlight();
         }
-        return ElytraFlight.INSTANCE;
+        return INSTANCE;
     }
-    
+
     private void setInstance() {
-        ElytraFlight.INSTANCE = this;
+        INSTANCE = this;
     }
-    
+
+    @Override
     public void onEnable() {
-        if (this.mode.getValue() == Mode.BETTER && !this.autoStart.getValue() && this.devMode.getValue() == 1) {
-            ElytraFlight.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)ElytraFlight.mc.player,  CPacketEntityAction.Action.START_FALL_FLYING));
+        if (this.mode.getValue() == Mode.BETTER && !this.autoStart.getValue().booleanValue() && this.devMode.getValue() == 1) {
+            ElytraFlight.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketEntityAction((Entity)ElytraFlight.mc.field_71439_g, CPacketEntityAction.Action.START_FALL_FLYING));
         }
         this.flyHeight = null;
         this.posX = null;
         this.posZ = null;
     }
-    
+
+    @Override
     public String getDisplayInfo() {
         return this.mode.currentEnumName();
     }
-    
+
+    @Override
     public void onUpdate() {
-        if (this.mode.getValue() == Mode.BYPASS && this.devMode.getValue() == 1 && ElytraFlight.mc.player.isElytraFlying()) {
-            ElytraFlight.mc.player.motionX = 0.0;
-            ElytraFlight.mc.player.motionY = -1.0E-4;
-            ElytraFlight.mc.player.motionZ = 0.0;
-            final double forwardInput = ElytraFlight.mc.player.movementInput.moveForward;
-            final double strafeInput = ElytraFlight.mc.player.movementInput.moveStrafe;
-            final double[] result = this.forwardStrafeYaw(forwardInput,  strafeInput,  ElytraFlight.mc.player.rotationYaw);
-            final double forward = result[0];
-            final double strafe = result[1];
-            final double yaw = result[2];
+        if (this.mode.getValue() == Mode.BYPASS && this.devMode.getValue() == 1 && ElytraFlight.mc.field_71439_g.func_184613_cA()) {
+            ElytraFlight.mc.field_71439_g.field_70159_w = 0.0;
+            ElytraFlight.mc.field_71439_g.field_70181_x = -1.0E-4;
+            ElytraFlight.mc.field_71439_g.field_70179_y = 0.0;
+            double forwardInput = ElytraFlight.mc.field_71439_g.field_71158_b.field_192832_b;
+            double strafeInput = ElytraFlight.mc.field_71439_g.field_71158_b.field_78902_a;
+            double[] result = this.forwardStrafeYaw(forwardInput, strafeInput, ElytraFlight.mc.field_71439_g.field_70177_z);
+            double forward = result[0];
+            double strafe = result[1];
+            double yaw = result[2];
             if (forwardInput != 0.0 || strafeInput != 0.0) {
-                final double cos = Math.cos(Math.toRadians(yaw + 90.0));
-                final double sin = Math.sin(Math.toRadians(yaw + 90.0));
-                ElytraFlight.mc.player.motionX = forward * this.speed.getValue() * cos + strafe * this.speed.getValue() * sin;
-                ElytraFlight.mc.player.motionZ = forward * this.speed.getValue() * sin - strafe * this.speed.getValue() * cos;
+                double cos = Math.cos(Math.toRadians(yaw + 90.0));
+                double sin = Math.sin(Math.toRadians(yaw + 90.0));
+                ElytraFlight.mc.field_71439_g.field_70159_w = forward * (double)this.speed.getValue().floatValue() * cos + strafe * (double)this.speed.getValue().floatValue() * sin;
+                ElytraFlight.mc.field_71439_g.field_70179_y = forward * (double)this.speed.getValue().floatValue() * sin - strafe * (double)this.speed.getValue().floatValue() * cos;
             }
-            if (ElytraFlight.mc.gameSettings.keyBindSneak.isKeyDown()) {
-                ElytraFlight.mc.player.motionY = -1.0;
+            if (ElytraFlight.mc.field_71474_y.field_74311_E.func_151470_d()) {
+                ElytraFlight.mc.field_71439_g.field_70181_x = -1.0;
             }
         }
     }
-    
+
     @SubscribeEvent
-    public void onSendPacket(final PacketEvent.Send event) {
+    public void onSendPacket(PacketEvent.Send event) {
         if (event.getPacket() instanceof CPacketPlayer && this.mode.getValue() == Mode.TOOBEE) {
             event.getPacket();
-            ElytraFlight.mc.player.isElytraFlying();
+            ElytraFlight.mc.field_71439_g.func_184613_cA();
         }
         if (event.getPacket() instanceof CPacketPlayer && this.mode.getValue() == Mode.TOOBEEBYPASS) {
             event.getPacket();
-            ElytraFlight.mc.player.isElytraFlying();
+            ElytraFlight.mc.field_71439_g.func_184613_cA();
         }
     }
-    
+
     @SubscribeEvent
-    public void onMove(final MoveEvent event) {
-        if (this.mode.getValue() == Mode.LOOK && ElytraFlight.mc.player.isElytraFlying()) {
-            ElytraFlight.mc.player.motionY = 0.0;
-            ElytraFlight.mc.player.motionX = 0.0;
-            ElytraFlight.mc.player.motionZ = 0.0;
-            if (ElytraFlight.mc.player.movementInput.moveForward != 0.0f) {
-                ElytraFlight.mc.player.motionY = this.hSpeed.getValue() * -(ElytraFlight.mc.player.movementInput.moveForward * Math.sin(MathUtil.degToRad(ElytraFlight.mc.player.rotationPitch)));
+    public void onMove(MoveEvent event) {
+        if (this.mode.getValue() == Mode.LOOK && ElytraFlight.mc.field_71439_g.func_184613_cA()) {
+            ElytraFlight.mc.field_71439_g.field_70181_x = 0.0;
+            ElytraFlight.mc.field_71439_g.field_70159_w = 0.0;
+            ElytraFlight.mc.field_71439_g.field_70179_y = 0.0;
+            if (ElytraFlight.mc.field_71439_g.field_71158_b.field_192832_b != 0.0f) {
+                ElytraFlight.mc.field_71439_g.field_70181_x = (double)this.hSpeed.getValue().floatValue() * -((double)ElytraFlight.mc.field_71439_g.field_71158_b.field_192832_b * Math.sin(MathUtil.degToRad(ElytraFlight.mc.field_71439_g.field_70125_A)));
             }
-            if (ElytraFlight.mc.player.movementInput.jump) {
-                ElytraFlight.mc.player.motionY = this.vSpeed.getValue();
+            if (ElytraFlight.mc.field_71439_g.field_71158_b.field_78901_c) {
+                ElytraFlight.mc.field_71439_g.field_70181_x = this.vSpeed.getValue().floatValue();
+            } else if (ElytraFlight.mc.field_71439_g.field_71158_b.field_78899_d) {
+                ElytraFlight.mc.field_71439_g.field_70181_x = -1.0f * this.vSpeed.getValue().floatValue();
             }
-            else if (ElytraFlight.mc.player.movementInput.sneak) {
-                ElytraFlight.mc.player.motionY = -1.0f * this.vSpeed.getValue();
-            }
-            double forward = ElytraFlight.mc.player.movementInput.moveForward;
-            double strafe = ElytraFlight.mc.player.movementInput.moveStrafe;
-            float yaw = ElytraFlight.mc.player.rotationYaw;
+            double forward = ElytraFlight.mc.field_71439_g.field_71158_b.field_192832_b;
+            double strafe = ElytraFlight.mc.field_71439_g.field_71158_b.field_78902_a;
+            float yaw = ElytraFlight.mc.field_71439_g.field_70177_z;
             if (forward != 0.0) {
                 if (strafe > 0.0) {
-                    yaw += ((forward > 0.0) ? -45 : 45);
-                }
-                else if (strafe < 0.0) {
-                    yaw += ((forward > 0.0) ? 45 : -45);
+                    yaw += (float)(forward > 0.0 ? -45 : 45);
+                } else if (strafe < 0.0) {
+                    yaw += (float)(forward > 0.0 ? 45 : -45);
                 }
                 strafe = 0.0;
                 if (forward > 0.0) {
                     forward = 1.0;
-                }
-                else if (forward < 0.0) {
+                } else if (forward < 0.0) {
                     forward = -1.0;
                 }
             }
-            final double cos = Math.cos(Math.toRadians(yaw + 90.0f));
-            final double sin = Math.sin(Math.toRadians(yaw + 90.0f));
-            if (ElytraFlight.mc.player.movementInput.moveStrafe != 0.0f && ElytraFlight.mc.player.movementInput.moveForward == 0.0f) {
-                ElytraFlight.mc.player.motionX = forward * this.hSpeed.getValue() * cos + strafe * this.hSpeed.getValue() * sin;
-                ElytraFlight.mc.player.motionZ = forward * this.hSpeed.getValue() * sin - strafe * this.hSpeed.getValue() * cos;
+            double cos = Math.cos(Math.toRadians(yaw + 90.0f));
+            double sin = Math.sin(Math.toRadians(yaw + 90.0f));
+            if (ElytraFlight.mc.field_71439_g.field_71158_b.field_78902_a != 0.0f && ElytraFlight.mc.field_71439_g.field_71158_b.field_192832_b == 0.0f) {
+                ElytraFlight.mc.field_71439_g.field_70159_w = forward * (double)this.hSpeed.getValue().floatValue() * cos + strafe * (double)this.hSpeed.getValue().floatValue() * sin;
+                ElytraFlight.mc.field_71439_g.field_70179_y = forward * (double)this.hSpeed.getValue().floatValue() * sin - strafe * (double)this.hSpeed.getValue().floatValue() * cos;
+            } else if (ElytraFlight.mc.field_71439_g.field_71158_b.field_78902_a != 0.0f || ElytraFlight.mc.field_71439_g.field_71158_b.field_192832_b != 0.0f) {
+                ElytraFlight.mc.field_71439_g.field_70159_w = (forward * (double)this.hSpeed.getValue().floatValue() * cos + strafe * (double)this.hSpeed.getValue().floatValue() * sin) * Math.cos(Math.abs(MathUtil.degToRad(ElytraFlight.mc.field_71439_g.field_70125_A)));
+                ElytraFlight.mc.field_71439_g.field_70179_y = (forward * (double)this.hSpeed.getValue().floatValue() * sin - strafe * (double)this.hSpeed.getValue().floatValue() * cos) * Math.cos(Math.abs(MathUtil.degToRad(ElytraFlight.mc.field_71439_g.field_70125_A)));
             }
-            else if (ElytraFlight.mc.player.movementInput.moveStrafe != 0.0f || ElytraFlight.mc.player.movementInput.moveForward != 0.0f) {
-                ElytraFlight.mc.player.motionX = (forward * this.hSpeed.getValue() * cos + strafe * this.hSpeed.getValue() * sin) * Math.cos(Math.abs(MathUtil.degToRad(ElytraFlight.mc.player.rotationPitch)));
-                ElytraFlight.mc.player.motionZ = (forward * this.hSpeed.getValue() * sin - strafe * this.hSpeed.getValue() * cos) * Math.cos(Math.abs(MathUtil.degToRad(ElytraFlight.mc.player.rotationPitch)));
-            }
-            event.setX(ElytraFlight.mc.player.motionX);
-            event.setY(ElytraFlight.mc.player.motionY);
-            event.setZ(ElytraFlight.mc.player.motionZ);
+            event.setX(ElytraFlight.mc.field_71439_g.field_70159_w);
+            event.setY(ElytraFlight.mc.field_71439_g.field_70181_x);
+            event.setZ(ElytraFlight.mc.field_71439_g.field_70179_y);
         }
         if (this.mode.getValue() == Mode.OHARE) {
-            final ItemStack itemstack = ElytraFlight.mc.player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
-            if (itemstack.getItem() == Items.ELYTRA && ItemElytra.isUsable(itemstack) && ElytraFlight.mc.player.isElytraFlying()) {
-                event.setY(ElytraFlight.mc.gameSettings.keyBindJump.isKeyDown() ? ((double)this.vSpeed.getValue()) : (ElytraFlight.mc.gameSettings.keyBindSneak.isKeyDown() ? (-this.vSpeed.getValue()) : 0.0));
-                ElytraFlight.mc.player.addVelocity(0.0,  ElytraFlight.mc.gameSettings.keyBindJump.isKeyDown() ? ((double)this.vSpeed.getValue()) : (ElytraFlight.mc.gameSettings.keyBindSneak.isKeyDown() ? (-this.vSpeed.getValue()) : 0.0),  0.0);
-                ElytraFlight.mc.player.rotateElytraX = 0.0f;
-                ElytraFlight.mc.player.rotateElytraY = 0.0f;
-                ElytraFlight.mc.player.rotateElytraZ = 0.0f;
-                ElytraFlight.mc.player.moveVertical = (ElytraFlight.mc.gameSettings.keyBindJump.isKeyDown() ? this.vSpeed.getValue() : (ElytraFlight.mc.gameSettings.keyBindSneak.isKeyDown() ? (-this.vSpeed.getValue()) : 0.0f));
-                double forward2 = ElytraFlight.mc.player.movementInput.moveForward;
-                double strafe2 = ElytraFlight.mc.player.movementInput.moveStrafe;
-                float yaw2 = ElytraFlight.mc.player.rotationYaw;
-                if (forward2 == 0.0 && strafe2 == 0.0) {
+            ItemStack itemstack = ElytraFlight.mc.field_71439_g.func_184582_a(EntityEquipmentSlot.CHEST);
+            if (itemstack.func_77973_b() == Items.field_185160_cR && ItemElytra.func_185069_d((ItemStack)itemstack) && ElytraFlight.mc.field_71439_g.func_184613_cA()) {
+                event.setY(ElytraFlight.mc.field_71474_y.field_74314_A.func_151470_d() ? (double)this.vSpeed.getValue().floatValue() : (ElytraFlight.mc.field_71474_y.field_74311_E.func_151470_d() ? (double)(-this.vSpeed.getValue().floatValue()) : 0.0));
+                ElytraFlight.mc.field_71439_g.func_70024_g(0.0, ElytraFlight.mc.field_71474_y.field_74314_A.func_151470_d() ? (double)this.vSpeed.getValue().floatValue() : (ElytraFlight.mc.field_71474_y.field_74311_E.func_151470_d() ? (double)(-this.vSpeed.getValue().floatValue()) : 0.0), 0.0);
+                ElytraFlight.mc.field_71439_g.field_184835_a = 0.0f;
+                ElytraFlight.mc.field_71439_g.field_184836_b = 0.0f;
+                ElytraFlight.mc.field_71439_g.field_184837_c = 0.0f;
+                ElytraFlight.mc.field_71439_g.field_70701_bs = ElytraFlight.mc.field_71474_y.field_74314_A.func_151470_d() ? this.vSpeed.getValue().floatValue() : (ElytraFlight.mc.field_71474_y.field_74311_E.func_151470_d() ? -this.vSpeed.getValue().floatValue() : 0.0f);
+                double forward = ElytraFlight.mc.field_71439_g.field_71158_b.field_192832_b;
+                double strafe = ElytraFlight.mc.field_71439_g.field_71158_b.field_78902_a;
+                float yaw = ElytraFlight.mc.field_71439_g.field_70177_z;
+                if (forward == 0.0 && strafe == 0.0) {
                     event.setX(0.0);
                     event.setZ(0.0);
-                }
-                else {
-                    if (forward2 != 0.0) {
-                        if (strafe2 > 0.0) {
-                            yaw2 += ((forward2 > 0.0) ? -45 : 45);
+                } else {
+                    if (forward != 0.0) {
+                        if (strafe > 0.0) {
+                            yaw += (float)(forward > 0.0 ? -45 : 45);
+                        } else if (strafe < 0.0) {
+                            yaw += (float)(forward > 0.0 ? 45 : -45);
                         }
-                        else if (strafe2 < 0.0) {
-                            yaw2 += ((forward2 > 0.0) ? 45 : -45);
-                        }
-                        strafe2 = 0.0;
-                        if (forward2 > 0.0) {
-                            forward2 = 1.0;
-                        }
-                        else if (forward2 < 0.0) {
-                            forward2 = -1.0;
+                        strafe = 0.0;
+                        if (forward > 0.0) {
+                            forward = 1.0;
+                        } else if (forward < 0.0) {
+                            forward = -1.0;
                         }
                     }
-                    final double cos2 = Math.cos(Math.toRadians(yaw2 + 90.0f));
-                    final double sin2 = Math.sin(Math.toRadians(yaw2 + 90.0f));
-                    event.setX(forward2 * this.hSpeed.getValue() * cos2 + strafe2 * this.hSpeed.getValue() * sin2);
-                    event.setZ(forward2 * this.hSpeed.getValue() * sin2 - strafe2 * this.hSpeed.getValue() * cos2);
+                    double cos = Math.cos(Math.toRadians(yaw + 90.0f));
+                    double sin = Math.sin(Math.toRadians(yaw + 90.0f));
+                    event.setX(forward * (double)this.hSpeed.getValue().floatValue() * cos + strafe * (double)this.hSpeed.getValue().floatValue() * sin);
+                    event.setZ(forward * (double)this.hSpeed.getValue().floatValue() * sin - strafe * (double)this.hSpeed.getValue().floatValue() * cos);
                 }
             }
-        }
-        else if (event.getStage() == 0 && this.mode.getValue() == Mode.BYPASS && this.devMode.getValue() == 3) {
-            if (ElytraFlight.mc.player.isElytraFlying()) {
+        } else if (event.getStage() == 0 && this.mode.getValue() == Mode.BYPASS && this.devMode.getValue() == 3) {
+            if (ElytraFlight.mc.field_71439_g.func_184613_cA()) {
                 event.setX(0.0);
                 event.setY(-1.0E-4);
                 event.setZ(0.0);
-                final double forwardInput = ElytraFlight.mc.player.movementInput.moveForward;
-                final double strafeInput = ElytraFlight.mc.player.movementInput.moveStrafe;
-                final double[] result = this.forwardStrafeYaw(forwardInput,  strafeInput,  ElytraFlight.mc.player.rotationYaw);
-                final double forward3 = result[0];
-                final double strafe3 = result[1];
-                final double yaw3 = result[2];
+                double forwardInput = ElytraFlight.mc.field_71439_g.field_71158_b.field_192832_b;
+                double strafeInput = ElytraFlight.mc.field_71439_g.field_71158_b.field_78902_a;
+                double[] result = this.forwardStrafeYaw(forwardInput, strafeInput, ElytraFlight.mc.field_71439_g.field_70177_z);
+                double forward = result[0];
+                double strafe = result[1];
+                double yaw = result[2];
                 if (forwardInput != 0.0 || strafeInput != 0.0) {
-                    final double cos3 = Math.cos(Math.toRadians(yaw3 + 90.0));
-                    final double sin3 = Math.sin(Math.toRadians(yaw3 + 90.0));
-                    event.setX(forward3 * this.speed.getValue() * cos3 + strafe3 * this.speed.getValue() * sin3);
-                    event.setY(forward3 * this.speed.getValue() * sin3 - strafe3 * this.speed.getValue() * cos3);
+                    double cos = Math.cos(Math.toRadians(yaw + 90.0));
+                    double sin = Math.sin(Math.toRadians(yaw + 90.0));
+                    event.setX(forward * (double)this.speed.getValue().floatValue() * cos + strafe * (double)this.speed.getValue().floatValue() * sin);
+                    event.setY(forward * (double)this.speed.getValue().floatValue() * sin - strafe * (double)this.speed.getValue().floatValue() * cos);
                 }
-                if (ElytraFlight.mc.gameSettings.keyBindSneak.isKeyDown()) {
+                if (ElytraFlight.mc.field_71474_y.field_74311_E.func_151470_d()) {
                     event.setY(-1.0);
                 }
             }
-        }
-        else if (this.mode.getValue() == Mode.TOOBEE) {
-            if (!ElytraFlight.mc.player.isElytraFlying()) {
+        } else if (this.mode.getValue() == Mode.TOOBEE) {
+            if (!ElytraFlight.mc.field_71439_g.func_184613_cA()) {
                 return;
             }
-            if (ElytraFlight.mc.player.movementInput.jump) {
+            if (!ElytraFlight.mc.field_71439_g.field_71158_b.field_78901_c) {
+                if (ElytraFlight.mc.field_71439_g.field_71158_b.field_78899_d) {
+                    ElytraFlight.mc.field_71439_g.field_70181_x = -(this.tooBeeSpeed.getValue().floatValue() / 2.0f);
+                    event.setY(-(this.speed.getValue().floatValue() / 2.0f));
+                } else if (event.getY() != -1.01E-4) {
+                    event.setY(-1.01E-4);
+                    ElytraFlight.mc.field_71439_g.field_70181_x = -1.01E-4;
+                }
+            } else {
                 return;
             }
-            if (ElytraFlight.mc.player.movementInput.sneak) {
-                ElytraFlight.mc.player.motionY = -(this.tooBeeSpeed.getValue() / 2.0f);
-                event.setY((double)(-(this.speed.getValue() / 2.0f)));
-            }
-            else if (event.getY() != -1.01E-4) {
-                event.setY(-1.01E-4);
-                ElytraFlight.mc.player.motionY = -1.01E-4;
-            }
-            this.setMoveSpeed(event,  this.tooBeeSpeed.getValue());
-        }
-        else if (this.mode.getValue() == Mode.TOOBEEBYPASS) {
-            if (!ElytraFlight.mc.player.isElytraFlying()) {
+            this.setMoveSpeed(event, this.tooBeeSpeed.getValue().floatValue());
+        } else if (this.mode.getValue() == Mode.TOOBEEBYPASS) {
+            if (!ElytraFlight.mc.field_71439_g.func_184613_cA()) {
                 return;
             }
-            if (ElytraFlight.mc.player.movementInput.jump) {
+            if (!ElytraFlight.mc.field_71439_g.field_71158_b.field_78901_c) {
+                if (this.lockPitch.getValue().booleanValue()) {
+                    ElytraFlight.mc.field_71439_g.field_70125_A = 4.0f;
+                }
+            } else {
                 return;
-            }
-            if (this.lockPitch.getValue()) {
-                ElytraFlight.mc.player.rotationPitch = 4.0f;
             }
             if (Phobos.speedManager.getSpeedKpH() > 180.0) {
                 return;
             }
-            final double yaw4 = Math.toRadians(ElytraFlight.mc.player.rotationYaw);
-            final EntityPlayerSP player = ElytraFlight.mc.player;
-            player.motionX -= ElytraFlight.mc.player.movementInput.moveForward * Math.sin(yaw4) * 0.04;
-            final EntityPlayerSP player2 = ElytraFlight.mc.player;
-            player2.motionZ += ElytraFlight.mc.player.movementInput.moveForward * Math.cos(yaw4) * 0.04;
+            double yaw = Math.toRadians(ElytraFlight.mc.field_71439_g.field_70177_z);
+            ElytraFlight.mc.field_71439_g.field_70159_w -= (double)ElytraFlight.mc.field_71439_g.field_71158_b.field_192832_b * Math.sin(yaw) * 0.04;
+            ElytraFlight.mc.field_71439_g.field_70179_y += (double)ElytraFlight.mc.field_71439_g.field_71158_b.field_192832_b * Math.cos(yaw) * 0.04;
         }
     }
-    
-    private void setMoveSpeed(final MoveEvent event,  final double speed) {
-        double forward = ElytraFlight.mc.player.movementInput.moveForward;
-        double strafe = ElytraFlight.mc.player.movementInput.moveStrafe;
-        float yaw = ElytraFlight.mc.player.rotationYaw;
+
+    private void setMoveSpeed(MoveEvent event, double speed) {
+        double forward = ElytraFlight.mc.field_71439_g.field_71158_b.field_192832_b;
+        double strafe = ElytraFlight.mc.field_71439_g.field_71158_b.field_78902_a;
+        float yaw = ElytraFlight.mc.field_71439_g.field_70177_z;
         if (forward == 0.0 && strafe == 0.0) {
             event.setX(0.0);
             event.setZ(0.0);
-            ElytraFlight.mc.player.motionX = 0.0;
-            ElytraFlight.mc.player.motionZ = 0.0;
-        }
-        else {
+            ElytraFlight.mc.field_71439_g.field_70159_w = 0.0;
+            ElytraFlight.mc.field_71439_g.field_70179_y = 0.0;
+        } else {
             if (forward != 0.0) {
                 if (strafe > 0.0) {
-                    yaw += ((forward > 0.0) ? -45 : 45);
-                }
-                else if (strafe < 0.0) {
-                    yaw += ((forward > 0.0) ? 45 : -45);
+                    yaw += (float)(forward > 0.0 ? -45 : 45);
+                } else if (strafe < 0.0) {
+                    yaw += (float)(forward > 0.0 ? 45 : -45);
                 }
                 strafe = 0.0;
                 if (forward > 0.0) {
                     forward = 1.0;
-                }
-                else if (forward < 0.0) {
+                } else if (forward < 0.0) {
                     forward = -1.0;
                 }
             }
-            final double x = forward * speed * -Math.sin(Math.toRadians(yaw)) + strafe * speed * Math.cos(Math.toRadians(yaw));
-            final double z = forward * speed * Math.cos(Math.toRadians(yaw)) - strafe * speed * -Math.sin(Math.toRadians(yaw));
+            double x = forward * speed * -Math.sin(Math.toRadians(yaw)) + strafe * speed * Math.cos(Math.toRadians(yaw));
+            double z = forward * speed * Math.cos(Math.toRadians(yaw)) - strafe * speed * -Math.sin(Math.toRadians(yaw));
             event.setX(x);
             event.setZ(z);
-            ElytraFlight.mc.player.motionX = x;
-            ElytraFlight.mc.player.motionZ = z;
+            ElytraFlight.mc.field_71439_g.field_70159_w = x;
+            ElytraFlight.mc.field_71439_g.field_70179_y = z;
         }
     }
-    
+
+    @Override
     public void onTick() {
-        if (!ElytraFlight.mc.player.isElytraFlying()) {
+        if (!ElytraFlight.mc.field_71439_g.func_184613_cA()) {
             return;
         }
         switch (this.mode.getValue()) {
             case BOOST: {
-                if (ElytraFlight.mc.player.isInWater()) {
-                    Objects.requireNonNull(ElytraFlight.mc.getConnection()).sendPacket((Packet)new CPacketEntityAction((Entity)ElytraFlight.mc.player,  CPacketEntityAction.Action.START_FALL_FLYING));
+                if (ElytraFlight.mc.field_71439_g.func_70090_H()) {
+                    Objects.requireNonNull(mc.func_147114_u()).func_147297_a((Packet)new CPacketEntityAction((Entity)ElytraFlight.mc.field_71439_g, CPacketEntityAction.Action.START_FALL_FLYING));
                     return;
                 }
-                if (ElytraFlight.mc.gameSettings.keyBindJump.isKeyDown()) {
-                    final EntityPlayerSP player = ElytraFlight.mc.player;
-                    player.motionY += 0.08;
+                if (ElytraFlight.mc.field_71474_y.field_74314_A.func_151470_d()) {
+                    ElytraFlight.mc.field_71439_g.field_70181_x += 0.08;
+                } else if (ElytraFlight.mc.field_71474_y.field_74311_E.func_151470_d()) {
+                    ElytraFlight.mc.field_71439_g.field_70181_x -= 0.04;
                 }
-                else if (ElytraFlight.mc.gameSettings.keyBindSneak.isKeyDown()) {
-                    final EntityPlayerSP player2 = ElytraFlight.mc.player;
-                    player2.motionY -= 0.04;
-                }
-                if (ElytraFlight.mc.gameSettings.keyBindForward.isKeyDown()) {
-                    final float yaw = (float)Math.toRadians(ElytraFlight.mc.player.rotationYaw);
-                    final EntityPlayerSP player3 = ElytraFlight.mc.player;
-                    player3.motionX -= MathHelper.sin(yaw) * 0.05f;
-                    final EntityPlayerSP player4 = ElytraFlight.mc.player;
-                    player4.motionZ += MathHelper.cos(yaw) * 0.05f;
+                if (ElytraFlight.mc.field_71474_y.field_74351_w.func_151470_d()) {
+                    float yaw = (float)Math.toRadians(ElytraFlight.mc.field_71439_g.field_70177_z);
+                    ElytraFlight.mc.field_71439_g.field_70159_w -= (double)(MathHelper.func_76126_a((float)yaw) * 0.05f);
+                    ElytraFlight.mc.field_71439_g.field_70179_y += (double)(MathHelper.func_76134_b((float)yaw) * 0.05f);
                     break;
                 }
-                if (!ElytraFlight.mc.gameSettings.keyBindBack.isKeyDown()) {
-                    break;
-                }
-                final float yaw = (float)Math.toRadians(ElytraFlight.mc.player.rotationYaw);
-                final EntityPlayerSP player5 = ElytraFlight.mc.player;
-                player5.motionX += MathHelper.sin(yaw) * 0.05f;
-                final EntityPlayerSP player6 = ElytraFlight.mc.player;
-                player6.motionZ -= MathHelper.cos(yaw) * 0.05f;
+                if (!ElytraFlight.mc.field_71474_y.field_74368_y.func_151470_d()) break;
+                float yaw = (float)Math.toRadians(ElytraFlight.mc.field_71439_g.field_70177_z);
+                ElytraFlight.mc.field_71439_g.field_70159_w += (double)(MathHelper.func_76126_a((float)yaw) * 0.05f);
+                ElytraFlight.mc.field_71439_g.field_70179_y -= (double)(MathHelper.func_76134_b((float)yaw) * 0.05f);
                 break;
             }
             case FLY: {
-                ElytraFlight.mc.player.capabilities.isFlying = true;
-                break;
+                ElytraFlight.mc.field_71439_g.field_71075_bZ.field_75100_b = true;
             }
         }
     }
-    
+
     @SubscribeEvent
-    public void onUpdateWalkingPlayer(final UpdateWalkingPlayerEvent event) {
-        if (ElytraFlight.mc.player.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() != Items.ELYTRA) {
+    public void onUpdateWalkingPlayer(UpdateWalkingPlayerEvent event) {
+        if (ElytraFlight.mc.field_71439_g.func_184582_a(EntityEquipmentSlot.CHEST).func_77973_b() != Items.field_185160_cR) {
             return;
         }
         switch (event.getStage()) {
             case 0: {
-                if (this.disableInLiquid.getValue() && (ElytraFlight.mc.player.isInWater() || ElytraFlight.mc.player.isInLava())) {
-                    if (ElytraFlight.mc.player.isElytraFlying()) {
-                        Objects.requireNonNull(ElytraFlight.mc.getConnection()).sendPacket((Packet)new CPacketEntityAction((Entity)ElytraFlight.mc.player,  CPacketEntityAction.Action.START_FALL_FLYING));
+                if (this.disableInLiquid.getValue().booleanValue() && (ElytraFlight.mc.field_71439_g.func_70090_H() || ElytraFlight.mc.field_71439_g.func_180799_ab())) {
+                    if (ElytraFlight.mc.field_71439_g.func_184613_cA()) {
+                        Objects.requireNonNull(mc.func_147114_u()).func_147297_a((Packet)new CPacketEntityAction((Entity)ElytraFlight.mc.field_71439_g, CPacketEntityAction.Action.START_FALL_FLYING));
                     }
                     return;
                 }
-                if (this.autoStart.getValue() && ElytraFlight.mc.gameSettings.keyBindJump.isKeyDown() && !ElytraFlight.mc.player.isElytraFlying() && ElytraFlight.mc.player.motionY < 0.0 && this.timer.passedMs(250L)) {
-                    Objects.requireNonNull(ElytraFlight.mc.getConnection()).sendPacket((Packet)new CPacketEntityAction((Entity)ElytraFlight.mc.player,  CPacketEntityAction.Action.START_FALL_FLYING));
+                if (this.autoStart.getValue().booleanValue() && ElytraFlight.mc.field_71474_y.field_74314_A.func_151470_d() && !ElytraFlight.mc.field_71439_g.func_184613_cA() && ElytraFlight.mc.field_71439_g.field_70181_x < 0.0 && this.timer.passedMs(250L)) {
+                    Objects.requireNonNull(mc.func_147114_u()).func_147297_a((Packet)new CPacketEntityAction((Entity)ElytraFlight.mc.field_71439_g, CPacketEntityAction.Action.START_FALL_FLYING));
                     this.timer.reset();
                 }
                 if (this.mode.getValue() == Mode.BETTER) {
-                    final double[] dir = MathUtil.directionSpeed((this.devMode.getValue() == 1) ? ((double)this.speed.getValue()) : ((double)this.hSpeed.getValue()));
+                    double[] dir = MathUtil.directionSpeed(this.devMode.getValue() == 1 ? (double)this.speed.getValue().floatValue() : (double)this.hSpeed.getValue().floatValue());
                     switch (this.devMode.getValue()) {
                         case 1: {
-                            ElytraFlight.mc.player.setVelocity(0.0,  0.0,  0.0);
-                            ElytraFlight.mc.player.jumpMovementFactor = this.speed.getValue();
-                            if (ElytraFlight.mc.gameSettings.keyBindJump.isKeyDown()) {
-                                final EntityPlayerSP player = ElytraFlight.mc.player;
-                                player.motionY += this.speed.getValue();
+                            ElytraFlight.mc.field_71439_g.func_70016_h(0.0, 0.0, 0.0);
+                            ElytraFlight.mc.field_71439_g.field_70747_aH = this.speed.getValue().floatValue();
+                            if (ElytraFlight.mc.field_71474_y.field_74314_A.func_151470_d()) {
+                                ElytraFlight.mc.field_71439_g.field_70181_x += (double)this.speed.getValue().floatValue();
                             }
-                            if (ElytraFlight.mc.gameSettings.keyBindSneak.isKeyDown()) {
-                                final EntityPlayerSP player2 = ElytraFlight.mc.player;
-                                player2.motionY -= this.speed.getValue();
+                            if (ElytraFlight.mc.field_71474_y.field_74311_E.func_151470_d()) {
+                                ElytraFlight.mc.field_71439_g.field_70181_x -= (double)this.speed.getValue().floatValue();
                             }
-                            if (ElytraFlight.mc.player.movementInput.moveStrafe != 0.0f || ElytraFlight.mc.player.movementInput.moveForward != 0.0f) {
-                                ElytraFlight.mc.player.motionX = dir[0];
-                                ElytraFlight.mc.player.motionZ = dir[1];
+                            if (ElytraFlight.mc.field_71439_g.field_71158_b.field_78902_a != 0.0f || ElytraFlight.mc.field_71439_g.field_71158_b.field_192832_b != 0.0f) {
+                                ElytraFlight.mc.field_71439_g.field_70159_w = dir[0];
+                                ElytraFlight.mc.field_71439_g.field_70179_y = dir[1];
                                 break;
                             }
-                            ElytraFlight.mc.player.motionX = 0.0;
-                            ElytraFlight.mc.player.motionZ = 0.0;
+                            ElytraFlight.mc.field_71439_g.field_70159_w = 0.0;
+                            ElytraFlight.mc.field_71439_g.field_70179_y = 0.0;
                             break;
                         }
                         case 2: {
-                            if (ElytraFlight.mc.player.isElytraFlying()) {
+                            if (ElytraFlight.mc.field_71439_g.func_184613_cA()) {
                                 if (this.flyHeight == null) {
-                                    this.flyHeight = ElytraFlight.mc.player.posY;
+                                    this.flyHeight = ElytraFlight.mc.field_71439_g.field_70163_u;
                                 }
-                                if (this.noKick.getValue()) {
-                                    this.flyHeight -= (Double)this.glide.getValue();
-                                }
-                                this.posX = 0.0;
-                                this.posZ = 0.0;
-                                if (ElytraFlight.mc.player.movementInput.moveStrafe != 0.0f || ElytraFlight.mc.player.movementInput.moveForward != 0.0f) {
-                                    this.posX = dir[0];
-                                    this.posZ = dir[1];
-                                }
-                                if (ElytraFlight.mc.gameSettings.keyBindJump.isKeyDown()) {
-                                    this.flyHeight = ElytraFlight.mc.player.posY + this.vSpeed.getValue();
-                                }
-                                if (ElytraFlight.mc.gameSettings.keyBindSneak.isKeyDown()) {
-                                    this.flyHeight = ElytraFlight.mc.player.posY - this.vSpeed.getValue();
-                                }
-                                ElytraFlight.mc.player.setPosition(ElytraFlight.mc.player.posX + this.posX,  (double)this.flyHeight,  ElytraFlight.mc.player.posZ + this.posZ);
-                                ElytraFlight.mc.player.setVelocity(0.0,  0.0,  0.0);
-                                break;
+                            } else {
+                                this.flyHeight = null;
+                                return;
                             }
-                            this.flyHeight = null;
-                            return;
+                            if (this.noKick.getValue().booleanValue()) {
+                                this.flyHeight = this.flyHeight - (double)this.glide.getValue().floatValue();
+                            }
+                            this.posX = 0.0;
+                            this.posZ = 0.0;
+                            if (ElytraFlight.mc.field_71439_g.field_71158_b.field_78902_a != 0.0f || ElytraFlight.mc.field_71439_g.field_71158_b.field_192832_b != 0.0f) {
+                                this.posX = dir[0];
+                                this.posZ = dir[1];
+                            }
+                            if (ElytraFlight.mc.field_71474_y.field_74314_A.func_151470_d()) {
+                                this.flyHeight = ElytraFlight.mc.field_71439_g.field_70163_u + (double)this.vSpeed.getValue().floatValue();
+                            }
+                            if (ElytraFlight.mc.field_71474_y.field_74311_E.func_151470_d()) {
+                                this.flyHeight = ElytraFlight.mc.field_71439_g.field_70163_u - (double)this.vSpeed.getValue().floatValue();
+                            }
+                            ElytraFlight.mc.field_71439_g.func_70107_b(ElytraFlight.mc.field_71439_g.field_70165_t + this.posX, this.flyHeight.doubleValue(), ElytraFlight.mc.field_71439_g.field_70161_v + this.posZ);
+                            ElytraFlight.mc.field_71439_g.func_70016_h(0.0, 0.0, 0.0);
+                            break;
                         }
                         case 3: {
-                            if (ElytraFlight.mc.player.isElytraFlying()) {
+                            if (ElytraFlight.mc.field_71439_g.func_184613_cA()) {
                                 if (this.flyHeight == null || this.posX == null || this.posX == 0.0 || this.posZ == null || this.posZ == 0.0) {
-                                    this.flyHeight = ElytraFlight.mc.player.posY;
-                                    this.posX = ElytraFlight.mc.player.posX;
-                                    this.posZ = ElytraFlight.mc.player.posZ;
+                                    this.flyHeight = ElytraFlight.mc.field_71439_g.field_70163_u;
+                                    this.posX = ElytraFlight.mc.field_71439_g.field_70165_t;
+                                    this.posZ = ElytraFlight.mc.field_71439_g.field_70161_v;
                                 }
-                                if (this.noKick.getValue()) {
-                                    this.flyHeight -= (Double)this.glide.getValue();
-                                }
-                                if (ElytraFlight.mc.player.movementInput.moveStrafe != 0.0f || ElytraFlight.mc.player.movementInput.moveForward != 0.0f) {
-                                    this.posX += dir[0];
-                                    this.posZ += dir[1];
-                                }
-                                if (this.allowUp.getValue() && ElytraFlight.mc.gameSettings.keyBindJump.isKeyDown()) {
-                                    this.flyHeight = ElytraFlight.mc.player.posY + this.vSpeed.getValue() / 10.0f;
-                                }
-                                if (ElytraFlight.mc.gameSettings.keyBindSneak.isKeyDown()) {
-                                    this.flyHeight = ElytraFlight.mc.player.posY - this.vSpeed.getValue() / 10.0f;
-                                }
-                                ElytraFlight.mc.player.setPosition((double)this.posX,  (double)this.flyHeight,  (double)this.posZ);
-                                ElytraFlight.mc.player.setVelocity(0.0,  0.0,  0.0);
-                                break;
+                            } else {
+                                this.flyHeight = null;
+                                this.posX = null;
+                                this.posZ = null;
+                                return;
                             }
-                            this.flyHeight = null;
-                            this.posX = null;
-                            this.posZ = null;
-                            return;
+                            if (this.noKick.getValue().booleanValue()) {
+                                this.flyHeight = this.flyHeight - (double)this.glide.getValue().floatValue();
+                            }
+                            if (ElytraFlight.mc.field_71439_g.field_71158_b.field_78902_a != 0.0f || ElytraFlight.mc.field_71439_g.field_71158_b.field_192832_b != 0.0f) {
+                                this.posX = this.posX + dir[0];
+                                this.posZ = this.posZ + dir[1];
+                            }
+                            if (this.allowUp.getValue().booleanValue() && ElytraFlight.mc.field_71474_y.field_74314_A.func_151470_d()) {
+                                this.flyHeight = ElytraFlight.mc.field_71439_g.field_70163_u + (double)(this.vSpeed.getValue().floatValue() / 10.0f);
+                            }
+                            if (ElytraFlight.mc.field_71474_y.field_74311_E.func_151470_d()) {
+                                this.flyHeight = ElytraFlight.mc.field_71439_g.field_70163_u - (double)(this.vSpeed.getValue().floatValue() / 10.0f);
+                            }
+                            ElytraFlight.mc.field_71439_g.func_70107_b(this.posX.doubleValue(), this.flyHeight.doubleValue(), this.posZ.doubleValue());
+                            ElytraFlight.mc.field_71439_g.func_70016_h(0.0, 0.0, 0.0);
                         }
                     }
                 }
-                final double rotationYaw = Math.toRadians(ElytraFlight.mc.player.rotationYaw);
-                if (ElytraFlight.mc.player.isElytraFlying()) {
+                double rotationYaw = Math.toRadians(ElytraFlight.mc.field_71439_g.field_70177_z);
+                if (ElytraFlight.mc.field_71439_g.func_184613_cA()) {
                     switch (this.mode.getValue()) {
                         case VANILLA: {
-                            final float speedScaled = this.speed.getValue() * 0.05f;
-                            if (ElytraFlight.mc.gameSettings.keyBindJump.isKeyDown()) {
-                                final EntityPlayerSP player3 = ElytraFlight.mc.player;
-                                player3.motionY += speedScaled;
+                            float speedScaled = this.speed.getValue().floatValue() * 0.05f;
+                            if (ElytraFlight.mc.field_71474_y.field_74314_A.func_151470_d()) {
+                                ElytraFlight.mc.field_71439_g.field_70181_x += (double)speedScaled;
                             }
-                            if (ElytraFlight.mc.gameSettings.keyBindSneak.isKeyDown()) {
-                                final EntityPlayerSP player4 = ElytraFlight.mc.player;
-                                player4.motionY -= speedScaled;
+                            if (ElytraFlight.mc.field_71474_y.field_74311_E.func_151470_d()) {
+                                ElytraFlight.mc.field_71439_g.field_70181_x -= (double)speedScaled;
                             }
-                            if (ElytraFlight.mc.gameSettings.keyBindForward.isKeyDown()) {
-                                final EntityPlayerSP player5 = ElytraFlight.mc.player;
-                                player5.motionX -= Math.sin(rotationYaw) * speedScaled;
-                                final EntityPlayerSP player6 = ElytraFlight.mc.player;
-                                player6.motionZ += Math.cos(rotationYaw) * speedScaled;
+                            if (ElytraFlight.mc.field_71474_y.field_74351_w.func_151470_d()) {
+                                ElytraFlight.mc.field_71439_g.field_70159_w -= Math.sin(rotationYaw) * (double)speedScaled;
+                                ElytraFlight.mc.field_71439_g.field_70179_y += Math.cos(rotationYaw) * (double)speedScaled;
                             }
-                            if (!ElytraFlight.mc.gameSettings.keyBindBack.isKeyDown()) {
-                                break;
-                            }
-                            final EntityPlayerSP player7 = ElytraFlight.mc.player;
-                            player7.motionX += Math.sin(rotationYaw) * speedScaled;
-                            final EntityPlayerSP player8 = ElytraFlight.mc.player;
-                            player8.motionZ -= Math.cos(rotationYaw) * speedScaled;
+                            if (!ElytraFlight.mc.field_71474_y.field_74368_y.func_151470_d()) break;
+                            ElytraFlight.mc.field_71439_g.field_70159_w += Math.sin(rotationYaw) * (double)speedScaled;
+                            ElytraFlight.mc.field_71439_g.field_70179_y -= Math.cos(rotationYaw) * (double)speedScaled;
                             break;
                         }
                         case PACKET: {
-                            this.freezePlayer((EntityPlayer)ElytraFlight.mc.player);
-                            this.runNoKick((EntityPlayer)ElytraFlight.mc.player);
-                            final double[] directionSpeedPacket = MathUtil.directionSpeed(this.speed.getValue());
-                            if (ElytraFlight.mc.player.movementInput.jump) {
-                                ElytraFlight.mc.player.motionY = this.speed.getValue();
+                            this.freezePlayer((EntityPlayer)ElytraFlight.mc.field_71439_g);
+                            this.runNoKick((EntityPlayer)ElytraFlight.mc.field_71439_g);
+                            double[] directionSpeedPacket = MathUtil.directionSpeed(this.speed.getValue().floatValue());
+                            if (ElytraFlight.mc.field_71439_g.field_71158_b.field_78901_c) {
+                                ElytraFlight.mc.field_71439_g.field_70181_x = this.speed.getValue().floatValue();
                             }
-                            if (ElytraFlight.mc.player.movementInput.sneak) {
-                                ElytraFlight.mc.player.motionY = -this.speed.getValue();
+                            if (ElytraFlight.mc.field_71439_g.field_71158_b.field_78899_d) {
+                                ElytraFlight.mc.field_71439_g.field_70181_x = -this.speed.getValue().floatValue();
                             }
-                            if (ElytraFlight.mc.player.movementInput.moveStrafe != 0.0f || ElytraFlight.mc.player.movementInput.moveForward != 0.0f) {
-                                ElytraFlight.mc.player.motionX = directionSpeedPacket[0];
-                                ElytraFlight.mc.player.motionZ = directionSpeedPacket[1];
+                            if (ElytraFlight.mc.field_71439_g.field_71158_b.field_78902_a != 0.0f || ElytraFlight.mc.field_71439_g.field_71158_b.field_192832_b != 0.0f) {
+                                ElytraFlight.mc.field_71439_g.field_70159_w = directionSpeedPacket[0];
+                                ElytraFlight.mc.field_71439_g.field_70179_y = directionSpeedPacket[1];
                             }
-                            Objects.requireNonNull(ElytraFlight.mc.getConnection()).sendPacket((Packet)new CPacketEntityAction((Entity)ElytraFlight.mc.player,  CPacketEntityAction.Action.START_FALL_FLYING));
-                            ElytraFlight.mc.getConnection().sendPacket((Packet)new CPacketEntityAction((Entity)ElytraFlight.mc.player,  CPacketEntityAction.Action.START_FALL_FLYING));
+                            Objects.requireNonNull(mc.func_147114_u()).func_147297_a((Packet)new CPacketEntityAction((Entity)ElytraFlight.mc.field_71439_g, CPacketEntityAction.Action.START_FALL_FLYING));
+                            mc.func_147114_u().func_147297_a((Packet)new CPacketEntityAction((Entity)ElytraFlight.mc.field_71439_g, CPacketEntityAction.Action.START_FALL_FLYING));
                             break;
                         }
                         case BYPASS: {
-                            if (this.devMode.getValue() != 3) {
+                            if (this.devMode.getValue() != 3) break;
+                            if (ElytraFlight.mc.field_71474_y.field_74314_A.func_151470_d()) {
+                                ElytraFlight.mc.field_71439_g.field_70181_x = 0.02f;
+                            }
+                            if (ElytraFlight.mc.field_71474_y.field_74311_E.func_151470_d()) {
+                                ElytraFlight.mc.field_71439_g.field_70181_x = -0.2f;
+                            }
+                            if (ElytraFlight.mc.field_71439_g.field_70173_aa % 8 == 0 && ElytraFlight.mc.field_71439_g.field_70163_u <= 240.0) {
+                                ElytraFlight.mc.field_71439_g.field_70181_x = 0.02f;
+                            }
+                            ElytraFlight.mc.field_71439_g.field_71075_bZ.field_75100_b = true;
+                            ElytraFlight.mc.field_71439_g.field_71075_bZ.func_75092_a(0.025f);
+                            double[] directionSpeedBypass = MathUtil.directionSpeed(0.52f);
+                            if (ElytraFlight.mc.field_71439_g.field_71158_b.field_78902_a != 0.0f || ElytraFlight.mc.field_71439_g.field_71158_b.field_192832_b != 0.0f) {
+                                ElytraFlight.mc.field_71439_g.field_70159_w = directionSpeedBypass[0];
+                                ElytraFlight.mc.field_71439_g.field_70179_y = directionSpeedBypass[1];
                                 break;
                             }
-                            if (ElytraFlight.mc.gameSettings.keyBindJump.isKeyDown()) {
-                                ElytraFlight.mc.player.motionY = 0.019999999552965164;
-                            }
-                            if (ElytraFlight.mc.gameSettings.keyBindSneak.isKeyDown()) {
-                                ElytraFlight.mc.player.motionY = -0.20000000298023224;
-                            }
-                            if (ElytraFlight.mc.player.ticksExisted % 8 == 0 && ElytraFlight.mc.player.posY <= 240.0) {
-                                ElytraFlight.mc.player.motionY = 0.019999999552965164;
-                            }
-                            ElytraFlight.mc.player.capabilities.isFlying = true;
-                            ElytraFlight.mc.player.capabilities.setFlySpeed(0.025f);
-                            final double[] directionSpeedBypass = MathUtil.directionSpeed(0.5199999809265137);
-                            if (ElytraFlight.mc.player.movementInput.moveStrafe != 0.0f || ElytraFlight.mc.player.movementInput.moveForward != 0.0f) {
-                                ElytraFlight.mc.player.motionX = directionSpeedBypass[0];
-                                ElytraFlight.mc.player.motionZ = directionSpeedBypass[1];
-                                break;
-                            }
-                            ElytraFlight.mc.player.motionX = 0.0;
-                            ElytraFlight.mc.player.motionZ = 0.0;
-                            break;
+                            ElytraFlight.mc.field_71439_g.field_70159_w = 0.0;
+                            ElytraFlight.mc.field_71439_g.field_70179_y = 0.0;
                         }
                     }
                 }
-                if (!this.infiniteDura.getValue()) {
-                    break;
-                }
-                ElytraFlight.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)ElytraFlight.mc.player,  CPacketEntityAction.Action.START_FALL_FLYING));
+                if (!this.infiniteDura.getValue().booleanValue()) break;
+                ElytraFlight.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketEntityAction((Entity)ElytraFlight.mc.field_71439_g, CPacketEntityAction.Action.START_FALL_FLYING));
                 break;
             }
             case 1: {
-                if (!this.infiniteDura.getValue()) {
-                    break;
-                }
-                ElytraFlight.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)ElytraFlight.mc.player,  CPacketEntityAction.Action.START_FALL_FLYING));
-                break;
+                if (!this.infiniteDura.getValue().booleanValue()) break;
+                ElytraFlight.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketEntityAction((Entity)ElytraFlight.mc.field_71439_g, CPacketEntityAction.Action.START_FALL_FLYING));
             }
         }
     }
-    
-    private double[] forwardStrafeYaw(final double forward,  final double strafe,  final double yaw) {
-        final double[] result = { forward,  strafe,  yaw };
+
+    private double[] forwardStrafeYaw(double forward, double strafe, double yaw) {
+        double[] result = new double[]{forward, strafe, yaw};
         if ((forward != 0.0 || strafe != 0.0) && forward != 0.0) {
             if (strafe > 0.0) {
-                result[2] += ((forward > 0.0) ? -45 : 45);
-            }
-            else if (strafe < 0.0) {
-                result[2] += ((forward > 0.0) ? 45 : -45);
+                result[2] = result[2] + (double)(forward > 0.0 ? -45 : 45);
+            } else if (strafe < 0.0) {
+                result[2] = result[2] + (double)(forward > 0.0 ? 45 : -45);
             }
             result[1] = 0.0;
             if (forward > 0.0) {
                 result[0] = 1.0;
-            }
-            else if (forward < 0.0) {
+            } else if (forward < 0.0) {
                 result[0] = -1.0;
             }
         }
         return result;
     }
-    
-    private void freezePlayer(final EntityPlayer player) {
-        player.motionX = 0.0;
-        player.motionY = 0.0;
-        player.motionZ = 0.0;
+
+    private void freezePlayer(EntityPlayer player) {
+        player.field_70159_w = 0.0;
+        player.field_70181_x = 0.0;
+        player.field_70179_y = 0.0;
     }
-    
-    private void runNoKick(final EntityPlayer player) {
-        if (this.noKick.getValue() && !player.isElytraFlying() && player.ticksExisted % 4 == 0) {
-            player.motionY = -0.03999999910593033;
+
+    private void runNoKick(EntityPlayer player) {
+        if (this.noKick.getValue().booleanValue() && !player.func_184613_cA() && player.field_70173_aa % 4 == 0) {
+            player.field_70181_x = -0.04f;
         }
     }
-    
+
+    @Override
     public void onDisable() {
-        if (fullNullCheck() || ElytraFlight.mc.player.capabilities.isCreativeMode) {
+        if (ElytraFlight.fullNullCheck() || ElytraFlight.mc.field_71439_g.field_71075_bZ.field_75098_d) {
             return;
         }
-        ElytraFlight.mc.player.capabilities.isFlying = false;
+        ElytraFlight.mc.field_71439_g.field_71075_bZ.field_75100_b = false;
     }
-    
-    static {
-        ElytraFlight.INSTANCE = new ElytraFlight();
-    }
-    
-    public enum Mode
-    {
-        VANILLA,  
-        PACKET,  
-        BOOST,  
-        FLY,  
-        BYPASS,  
-        BETTER,  
-        OHARE,  
-        TOOBEE,  
-        TOOBEEBYPASS,  
+
+    public static enum Mode {
+        VANILLA,
+        PACKET,
+        BOOST,
+        FLY,
+        BYPASS,
+        BETTER,
+        OHARE,
+        TOOBEE,
+        TOOBEEBYPASS,
         LOOK;
+
     }
 }
+

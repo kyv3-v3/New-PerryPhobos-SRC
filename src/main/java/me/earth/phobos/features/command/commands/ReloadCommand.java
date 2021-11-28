@@ -1,19 +1,20 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ */
 package me.earth.phobos.features.command.commands;
 
-import me.earth.phobos.features.command.*;
-import me.earth.phobos.*;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.features.command.Command;
 
-public class ReloadCommand extends Command
-{
+public class ReloadCommand
+extends Command {
     public ReloadCommand() {
-        super("reload",  new String[0]);
+        super("reload", new String[0]);
     }
-    
-    public void execute(final String[] commands) {
+
+    @Override
+    public void execute(String[] commands) {
         Phobos.reload();
     }
 }
+

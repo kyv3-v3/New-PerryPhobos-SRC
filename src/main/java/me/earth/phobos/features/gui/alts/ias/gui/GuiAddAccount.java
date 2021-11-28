@@ -1,19 +1,21 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ */
 package me.earth.phobos.features.gui.alts.ias.gui;
 
-import me.earth.phobos.features.gui.alts.ias.account.*;
-import me.earth.phobos.features.gui.alts.tools.alt.*;
+import me.earth.phobos.features.gui.alts.ias.account.ExtendedAccountData;
+import me.earth.phobos.features.gui.alts.ias.gui.AbstractAccountGui;
+import me.earth.phobos.features.gui.alts.tools.alt.AltDatabase;
 
-public class GuiAddAccount extends AbstractAccountGui
-{
+public class GuiAddAccount
+extends AbstractAccountGui {
     public GuiAddAccount() {
         super("ias.addaccount");
     }
-    
+
+    @Override
     public void complete() {
-        AltDatabase.getInstance().getAlts().add((AccountData)new ExtendedAccountData(this.getUsername(),  this.getPassword(),  this.getUsername()));
+        AltDatabase.getInstance().getAlts().add(new ExtendedAccountData(this.getUsername(), this.getPassword(), this.getUsername()));
     }
 }
+

@@ -1,13 +1,15 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.model.ModelPlayer
+ */
 package me.earth.phobos.mixin.mixins;
 
-import org.spongepowered.asm.mixin.*;
-import net.minecraft.client.model.*;
+import net.minecraft.client.model.ModelPlayer;
+import org.spongepowered.asm.mixin.Mixin;
 
-@Mixin({ ModelPlayer.class })
-public class MixinModelPlayer
-{
+@Mixin(value={ModelPlayer.class})
+public class MixinModelPlayer {
 }
+

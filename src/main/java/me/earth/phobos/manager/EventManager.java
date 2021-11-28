@@ -1,64 +1,106 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  com.google.common.base.Strings
+ *  net.minecraft.client.Minecraft
+ *  net.minecraft.client.gui.ScaledResolution
+ *  net.minecraft.client.renderer.GLAllocation
+ *  net.minecraft.client.renderer.GlStateManager
+ *  net.minecraft.entity.player.EntityPlayer
+ *  net.minecraft.init.SoundEvents
+ *  net.minecraft.network.play.client.CPacketChatMessage
+ *  net.minecraft.network.play.client.CPacketHeldItemChange
+ *  net.minecraft.network.play.server.SPacketEntityStatus
+ *  net.minecraft.network.play.server.SPacketPlayerListItem
+ *  net.minecraft.network.play.server.SPacketPlayerListItem$Action
+ *  net.minecraft.network.play.server.SPacketSoundEffect
+ *  net.minecraft.network.play.server.SPacketTimeUpdate
+ *  net.minecraft.world.World
+ *  net.minecraftforge.client.event.ClientChatEvent
+ *  net.minecraftforge.client.event.RenderGameOverlayEvent$ElementType
+ *  net.minecraftforge.client.event.RenderGameOverlayEvent$Post
+ *  net.minecraftforge.client.event.RenderGameOverlayEvent$Text
+ *  net.minecraftforge.client.event.RenderWorldLastEvent
+ *  net.minecraftforge.common.MinecraftForge
+ *  net.minecraftforge.event.entity.living.LivingEvent$LivingUpdateEvent
+ *  net.minecraftforge.fml.common.eventhandler.Event
+ *  net.minecraftforge.fml.common.eventhandler.EventPriority
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ *  net.minecraftforge.fml.common.gameevent.TickEvent$ClientTickEvent
+ *  net.minecraftforge.fml.common.gameevent.TickEvent$Phase
+ *  net.minecraftforge.fml.common.network.FMLNetworkEvent$ClientConnectedToServerEvent
+ *  net.minecraftforge.fml.common.network.FMLNetworkEvent$ClientDisconnectionFromServerEvent
+ *  org.lwjgl.opengl.GL11
+ */
 package me.earth.phobos.manager;
 
-import me.earth.phobos.features.*;
-import java.util.concurrent.atomic.*;
-import net.minecraftforge.common.*;
-import net.minecraftforge.event.entity.living.*;
-import me.earth.phobos.*;
-import me.earth.phobos.features.modules.client.*;
-import net.minecraftforge.fml.common.gameevent.*;
-import me.earth.phobos.features.modules.combat.*;
-import net.minecraftforge.fml.common.network.*;
-import net.minecraft.network.play.client.*;
-import net.minecraft.entity.player.*;
-import net.minecraft.world.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import java.util.function.*;
-import com.google.common.base.*;
-import net.minecraft.network.play.server.*;
-import net.minecraft.init.*;
-import java.util.*;
-import me.earth.phobos.util.*;
-import net.minecraft.client.renderer.*;
-import org.lwjgl.opengl.*;
-import net.minecraft.client.*;
-import net.minecraft.client.gui.*;
-import java.nio.*;
-import me.earth.phobos.event.events.*;
-import net.minecraftforge.client.event.*;
-import me.earth.phobos.features.command.*;
+import com.google.common.base.Strings;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.event.events.ChorusEvent;
+import me.earth.phobos.event.events.ClientEvent;
+import me.earth.phobos.event.events.ConnectionEvent;
+import me.earth.phobos.event.events.PacketEvent;
+import me.earth.phobos.event.events.Render2DEvent;
+import me.earth.phobos.event.events.Render3DEvent;
+import me.earth.phobos.event.events.TotemPopEvent;
+import me.earth.phobos.event.events.UpdateWalkingPlayerEvent;
+import me.earth.phobos.features.Feature;
+import me.earth.phobos.features.command.Command;
+import me.earth.phobos.features.modules.client.Management;
+import me.earth.phobos.features.modules.client.PingBypass;
+import me.earth.phobos.features.modules.combat.AutoCrystal;
+import me.earth.phobos.util.GLUProjection;
+import me.earth.phobos.util.TimerUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GLAllocation;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.network.play.client.CPacketChatMessage;
+import net.minecraft.network.play.client.CPacketHeldItemChange;
+import net.minecraft.network.play.server.SPacketEntityStatus;
+import net.minecraft.network.play.server.SPacketPlayerListItem;
+import net.minecraft.network.play.server.SPacketSoundEffect;
+import net.minecraft.network.play.server.SPacketTimeUpdate;
+import net.minecraft.world.World;
+import net.minecraftforge.client.event.ClientChatEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent;
+import org.lwjgl.opengl.GL11;
 
-public class EventManager extends Feature
-{
-    private final TimerUtil timer;
-    private final TimerUtil logoutTimer;
-    private final TimerUtil switchTimer;
-    private final TimerUtil chorusTimer;
-    private final AtomicBoolean tickOngoing;
-    
-    public EventManager() {
-        this.timer = new TimerUtil();
-        this.logoutTimer = new TimerUtil();
-        this.switchTimer = new TimerUtil();
-        this.chorusTimer = new TimerUtil();
-        this.tickOngoing = new AtomicBoolean(false);
-    }
-    
+public class EventManager
+extends Feature {
+    private final TimerUtil timer = new TimerUtil();
+    private final TimerUtil logoutTimer = new TimerUtil();
+    private final TimerUtil switchTimer = new TimerUtil();
+    private final TimerUtil chorusTimer = new TimerUtil();
+    private final AtomicBoolean tickOngoing = new AtomicBoolean(false);
+
     public void init() {
         MinecraftForge.EVENT_BUS.register((Object)this);
     }
-    
+
     public void onUnload() {
         MinecraftForge.EVENT_BUS.unregister((Object)this);
     }
-    
+
     @SubscribeEvent
-    public void onUpdate(final LivingEvent.LivingUpdateEvent event) {
-        if (!fullNullCheck() && event.getEntity().getEntityWorld().isRemote && event.getEntityLiving().equals((Object)EventManager.mc.player)) {
+    public void onUpdate(LivingEvent.LivingUpdateEvent event) {
+        if (!EventManager.fullNullCheck() && event.getEntity().func_130014_f_().field_72995_K && event.getEntityLiving().equals((Object)EventManager.mc.field_71439_g)) {
             Phobos.potionManager.update();
             Phobos.totemPopManager.onUpdate();
             Phobos.inventoryManager.update();
@@ -66,65 +108,65 @@ public class EventManager extends Feature
             Phobos.safetyManager.onUpdate();
             Phobos.moduleManager.onUpdate();
             Phobos.timerManager.update();
-            if (this.timer.passedMs((int)Management.getInstance().moduleListUpdates.getValue())) {
+            if (this.timer.passedMs(Management.getInstance().moduleListUpdates.getValue().intValue())) {
                 Phobos.moduleManager.sortModules(true);
                 Phobos.moduleManager.alphabeticallySortModules();
                 this.timer.reset();
             }
         }
     }
-    
+
     @SubscribeEvent
-    public void onSettingChange(final ClientEvent event) {
-        if (event.getStage() == 2 && EventManager.mc.getConnection() != null && PingBypass.getInstance().isConnected() && EventManager.mc.world != null) {
-            final String command = "@Server" + PingBypass.getInstance().getServerPrefix() + "module " + event.getSetting().getFeature().getName() + " set " + event.getSetting().getName() + " " + event.getSetting().getPlannedValue().toString();
+    public void onSettingChange(ClientEvent event) {
+        if (event.getStage() == 2 && mc.func_147114_u() != null && PingBypass.getInstance().isConnected() && EventManager.mc.field_71441_e != null) {
+            String command = "@Server" + PingBypass.getInstance().getServerPrefix() + "module " + event.getSetting().getFeature().getName() + " set " + event.getSetting().getName() + " " + event.getSetting().getPlannedValue().toString();
             new CPacketChatMessage(command);
         }
     }
-    
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onTickHighest(final TickEvent.ClientTickEvent event) {
+
+    @SubscribeEvent(priority=EventPriority.HIGHEST)
+    public void onTickHighest(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
             this.tickOngoing.set(true);
         }
     }
-    
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onTickLowest(final TickEvent.ClientTickEvent event) {
+
+    @SubscribeEvent(priority=EventPriority.LOWEST)
+    public void onTickLowest(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             this.tickOngoing.set(false);
             AutoCrystal.getInstance().postTick();
         }
     }
-    
+
     public boolean ticksOngoing() {
         return this.tickOngoing.get();
     }
-    
+
     @SubscribeEvent
-    public void onClientConnect(final FMLNetworkEvent.ClientConnectedToServerEvent event) {
+    public void onClientConnect(FMLNetworkEvent.ClientConnectedToServerEvent event) {
         this.logoutTimer.reset();
         Phobos.moduleManager.onLogin();
     }
-    
+
     @SubscribeEvent
-    public void onClientDisconnect(final FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
+    public void onClientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
         Phobos.moduleManager.onLogout();
         Phobos.totemPopManager.onLogout();
         Phobos.potionManager.onLogout();
     }
-    
+
     @SubscribeEvent
-    public void onTick(final TickEvent.ClientTickEvent event) {
-        if (fullNullCheck()) {
+    public void onTick(TickEvent.ClientTickEvent event) {
+        if (EventManager.fullNullCheck()) {
             return;
         }
         Phobos.moduleManager.onTick();
     }
-    
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onUpdateWalkingPlayer(final UpdateWalkingPlayerEvent event) {
-        if (fullNullCheck()) {
+
+    @SubscribeEvent(priority=EventPriority.HIGHEST)
+    public void onUpdateWalkingPlayer(UpdateWalkingPlayerEvent event) {
+        if (EventManager.fullNullCheck()) {
             return;
         }
         if (event.getStage() == 0) {
@@ -138,152 +180,140 @@ public class EventManager extends Feature
             Phobos.positionManager.restorePosition();
         }
     }
-    
+
     @SubscribeEvent
-    public void onPacketSend(final PacketEvent.Send event) {
+    public void onPacketSend(PacketEvent.Send event) {
         if (event.getPacket() instanceof CPacketHeldItemChange) {
             this.switchTimer.reset();
         }
     }
-    
+
     public boolean isOnSwitchCoolDown() {
         return !this.switchTimer.passedMs(500L);
     }
-    
+
     @SubscribeEvent
-    public void onPacketReceive(final PacketEvent.Receive event) {
+    public void onPacketReceive(PacketEvent.Receive event) {
         if (event.getStage() != 0) {
             return;
         }
         Phobos.serverManager.onPacketReceived();
         if (event.getPacket() instanceof SPacketEntityStatus) {
-            final SPacketEntityStatus packet = (SPacketEntityStatus)event.getPacket();
-            if (packet.getOpCode() == 35 && packet.getEntity((World)EventManager.mc.world) instanceof EntityPlayer) {
-                final EntityPlayer player = (EntityPlayer)packet.getEntity((World)EventManager.mc.world);
+            SPacketEntityStatus packet = (SPacketEntityStatus)event.getPacket();
+            if (packet.func_149160_c() == 35 && packet.func_149161_a((World)EventManager.mc.field_71441_e) instanceof EntityPlayer) {
+                EntityPlayer player = (EntityPlayer)packet.func_149161_a((World)EventManager.mc.field_71441_e);
                 MinecraftForge.EVENT_BUS.post((Event)new TotemPopEvent(player));
                 Phobos.totemPopManager.onTotemPop(player);
                 Phobos.potionManager.onTotemPop(player);
             }
-        }
-        else if (event.getPacket() instanceof SPacketPlayerListItem && !fullNullCheck() && this.logoutTimer.passedS(1.0)) {
-            final SPacketPlayerListItem packet2 = (SPacketPlayerListItem)event.getPacket();
-            if (!SPacketPlayerListItem.Action.ADD_PLAYER.equals((Object)packet2.getAction()) && !SPacketPlayerListItem.Action.REMOVE_PLAYER.equals((Object)packet2.getAction())) {
+        } else if (event.getPacket() instanceof SPacketPlayerListItem && !EventManager.fullNullCheck() && this.logoutTimer.passedS(1.0)) {
+            SPacketPlayerListItem packet = (SPacketPlayerListItem)event.getPacket();
+            if (!SPacketPlayerListItem.Action.ADD_PLAYER.equals((Object)packet.func_179768_b()) && !SPacketPlayerListItem.Action.REMOVE_PLAYER.equals((Object)packet.func_179768_b())) {
                 return;
             }
-            final UUID id;
-            final SPacketPlayerListItem sPacketPlayerListItem;
-            final String name;
-            final EntityPlayer entity;
-            String logoutName;
-            packet2.getEntries().stream().filter(Objects::nonNull).filter(data -> !Strings.isNullOrEmpty(data.getProfile().getName()) || data.getProfile().getId() != null).forEach(data -> {
-                id = data.getProfile().getId();
-                switch (sPacketPlayerListItem.getAction()) {
+            packet.func_179767_a().stream().filter(Objects::nonNull).filter(data -> !Strings.isNullOrEmpty((String)data.func_179962_a().getName()) || data.func_179962_a().getId() != null).forEach(data -> {
+                UUID id = data.func_179962_a().getId();
+                switch (packet.func_179768_b()) {
                     case ADD_PLAYER: {
-                        name = data.getProfile().getName();
-                        MinecraftForge.EVENT_BUS.post((Event)new ConnectionEvent(0,  id,  name));
+                        String name = data.func_179962_a().getName();
+                        MinecraftForge.EVENT_BUS.post((Event)new ConnectionEvent(0, id, name));
                         break;
                     }
                     case REMOVE_PLAYER: {
-                        entity = EventManager.mc.world.getPlayerEntityByUUID(id);
+                        EntityPlayer entity = EventManager.mc.field_71441_e.func_152378_a(id);
                         if (entity != null) {
-                            logoutName = entity.getName();
-                            MinecraftForge.EVENT_BUS.post((Event)new ConnectionEvent(1,  entity,  id,  logoutName));
+                            String logoutName = entity.func_70005_c_();
+                            MinecraftForge.EVENT_BUS.post((Event)new ConnectionEvent(1, entity, id, logoutName));
                             break;
                         }
-                        else {
-                            MinecraftForge.EVENT_BUS.post((Event)new ConnectionEvent(2,  id,  (String)null));
-                            break;
-                        }
-                        break;
+                        MinecraftForge.EVENT_BUS.post((Event)new ConnectionEvent(2, id, null));
                     }
                 }
             });
-        }
-        else if (event.getPacket() instanceof SPacketTimeUpdate) {
+        } else if (event.getPacket() instanceof SPacketTimeUpdate) {
             Phobos.serverManager.update();
-        }
-        else if (event.getPacket() instanceof SPacketSoundEffect && ((SPacketSoundEffect)event.getPacket()).getSound() == SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT) {
+        } else if (event.getPacket() instanceof SPacketSoundEffect && ((SPacketSoundEffect)event.getPacket()).func_186978_a() == SoundEvents.field_187544_ad) {
             if (!this.chorusTimer.passedMs(100L)) {
-                MinecraftForge.EVENT_BUS.post((Event)new ChorusEvent(((SPacketSoundEffect)event.getPacket()).getX(),  ((SPacketSoundEffect)event.getPacket()).getY(),  ((SPacketSoundEffect)event.getPacket()).getZ()));
+                MinecraftForge.EVENT_BUS.post((Event)new ChorusEvent(((SPacketSoundEffect)event.getPacket()).func_149207_d(), ((SPacketSoundEffect)event.getPacket()).func_149211_e(), ((SPacketSoundEffect)event.getPacket()).func_149210_f()));
             }
             this.chorusTimer.reset();
         }
     }
-    
+
     @SubscribeEvent
-    public void onWorldRender(final RenderWorldLastEvent event) {
+    public void onWorldRender(RenderWorldLastEvent event) {
         if (event.isCanceled()) {
             return;
         }
-        EventManager.mc.profiler.startSection("phobos");
-        GlStateManager.disableTexture2D();
-        GlStateManager.enableBlend();
-        GlStateManager.disableAlpha();
-        GlStateManager.tryBlendFuncSeparate(770,  771,  1,  0);
-        GlStateManager.shadeModel(7425);
-        GlStateManager.disableDepth();
-        GlStateManager.glLineWidth(1.0f);
-        final Render3DEvent render3dEvent = new Render3DEvent(event.getPartialTicks());
-        final GLUProjection projection = GLUProjection.getInstance();
-        final IntBuffer viewPort = GLAllocation.createDirectIntBuffer(16);
-        final FloatBuffer modelView = GLAllocation.createDirectFloatBuffer(16);
-        final FloatBuffer projectionPort = GLAllocation.createDirectFloatBuffer(16);
-        GL11.glGetFloat(2982,  modelView);
-        GL11.glGetFloat(2983,  projectionPort);
-        GL11.glGetInteger(2978,  viewPort);
-        final ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-        projection.updateMatrices(viewPort,  modelView,  projectionPort,  scaledResolution.getScaledWidth() / (double)Minecraft.getMinecraft().displayWidth,  scaledResolution.getScaledHeight() / (double)Minecraft.getMinecraft().displayHeight);
+        EventManager.mc.field_71424_I.func_76320_a("phobos");
+        GlStateManager.func_179090_x();
+        GlStateManager.func_179147_l();
+        GlStateManager.func_179118_c();
+        GlStateManager.func_179120_a((int)770, (int)771, (int)1, (int)0);
+        GlStateManager.func_179103_j((int)7425);
+        GlStateManager.func_179097_i();
+        GlStateManager.func_187441_d((float)1.0f);
+        Render3DEvent render3dEvent = new Render3DEvent(event.getPartialTicks());
+        GLUProjection projection = GLUProjection.getInstance();
+        IntBuffer viewPort = GLAllocation.func_74527_f((int)16);
+        FloatBuffer modelView = GLAllocation.func_74529_h((int)16);
+        FloatBuffer projectionPort = GLAllocation.func_74529_h((int)16);
+        GL11.glGetFloat((int)2982, (FloatBuffer)modelView);
+        GL11.glGetFloat((int)2983, (FloatBuffer)projectionPort);
+        GL11.glGetInteger((int)2978, (IntBuffer)viewPort);
+        ScaledResolution scaledResolution = new ScaledResolution(Minecraft.func_71410_x());
+        projection.updateMatrices(viewPort, modelView, projectionPort, (double)scaledResolution.func_78326_a() / (double)Minecraft.func_71410_x().field_71443_c, (double)scaledResolution.func_78328_b() / (double)Minecraft.func_71410_x().field_71440_d);
         Phobos.moduleManager.onRender3D(render3dEvent);
-        GlStateManager.glLineWidth(1.0f);
-        GlStateManager.shadeModel(7424);
-        GlStateManager.disableBlend();
-        GlStateManager.enableAlpha();
-        GlStateManager.enableTexture2D();
-        GlStateManager.enableDepth();
-        GlStateManager.enableCull();
-        GlStateManager.enableCull();
-        GlStateManager.depthMask(true);
-        GlStateManager.enableTexture2D();
-        GlStateManager.enableBlend();
-        GlStateManager.enableDepth();
-        EventManager.mc.profiler.endSection();
+        GlStateManager.func_187441_d((float)1.0f);
+        GlStateManager.func_179103_j((int)7424);
+        GlStateManager.func_179084_k();
+        GlStateManager.func_179141_d();
+        GlStateManager.func_179098_w();
+        GlStateManager.func_179126_j();
+        GlStateManager.func_179089_o();
+        GlStateManager.func_179089_o();
+        GlStateManager.func_179132_a((boolean)true);
+        GlStateManager.func_179098_w();
+        GlStateManager.func_179147_l();
+        GlStateManager.func_179126_j();
+        EventManager.mc.field_71424_I.func_76319_b();
     }
-    
+
     @SubscribeEvent
-    public void renderHUD(final RenderGameOverlayEvent.Post event) {
+    public void renderHUD(RenderGameOverlayEvent.Post event) {
         if (event.getType() == RenderGameOverlayEvent.ElementType.HOTBAR) {
             Phobos.textManager.updateResolution();
         }
     }
-    
-    @SubscribeEvent(priority = EventPriority.LOW)
-    public void onRenderGameOverlayEvent(final RenderGameOverlayEvent.Text event) {
+
+    @SubscribeEvent(priority=EventPriority.LOW)
+    public void onRenderGameOverlayEvent(RenderGameOverlayEvent.Text event) {
         if (event.getType().equals((Object)RenderGameOverlayEvent.ElementType.TEXT)) {
-            final ScaledResolution resolution = new ScaledResolution(EventManager.mc);
-            final Render2DEvent render2DEvent = new Render2DEvent(event.getPartialTicks(),  resolution);
+            ScaledResolution resolution = new ScaledResolution(mc);
+            Render2DEvent render2DEvent = new Render2DEvent(event.getPartialTicks(), resolution);
             Phobos.moduleManager.onRender2D(render2DEvent);
-            GlStateManager.color(1.0f,  1.0f,  1.0f,  1.0f);
+            GlStateManager.func_179131_c((float)1.0f, (float)1.0f, (float)1.0f, (float)1.0f);
         }
     }
-    
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onChatSent(final ClientChatEvent event) {
+
+    @SubscribeEvent(priority=EventPriority.HIGHEST)
+    public void onChatSent(ClientChatEvent event) {
         if (event.getMessage().startsWith(Command.getCommandPrefix())) {
             event.setCanceled(true);
             try {
-                EventManager.mc.ingameGUI.getChatGUI().addToSentMessages(event.getMessage());
+                EventManager.mc.field_71456_v.func_146158_b().func_146239_a(event.getMessage());
                 if (event.getMessage().length() > 1) {
                     Phobos.commandManager.executeCommand(event.getMessage().substring(Command.getCommandPrefix().length() - 1));
-                }
-                else {
+                } else {
                     Command.sendMessage("Please enter a command.");
                 }
             }
             catch (Exception e) {
                 e.printStackTrace();
-                Command.sendMessage("§cAn error occurred while running this command. Check the log!");
+                Command.sendMessage("\u00a7cAn error occurred while running this command. Check the log!");
             }
             event.setMessage("");
         }
     }
 }
+

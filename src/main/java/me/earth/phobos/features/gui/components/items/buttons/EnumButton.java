@@ -1,59 +1,76 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.audio.ISound
+ *  net.minecraft.client.audio.PositionedSoundRecord
+ *  net.minecraft.init.SoundEvents
+ *  net.minecraft.util.SoundEvent
+ */
 package me.earth.phobos.features.gui.components.items.buttons;
 
-import me.earth.phobos.features.setting.*;
-import me.earth.phobos.features.modules.client.*;
-import me.earth.phobos.*;
-import me.earth.phobos.util.*;
-import me.earth.phobos.features.gui.*;
-import net.minecraft.init.*;
-import net.minecraft.client.audio.*;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.features.gui.PhobosGui;
+import me.earth.phobos.features.gui.components.items.buttons.Button;
+import me.earth.phobos.features.modules.client.ClickGui;
+import me.earth.phobos.features.modules.client.HUD;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.ColorUtil;
+import me.earth.phobos.util.MathUtil;
+import me.earth.phobos.util.RenderUtil;
+import net.minecraft.client.audio.ISound;
+import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.util.SoundEvent;
 
-public class EnumButton extends Button
-{
+public class EnumButton
+extends Button {
     public Setting setting;
-    
-    public EnumButton(final Setting setting) {
+
+    public EnumButton(Setting setting) {
         super(setting.getName());
         this.setting = setting;
         this.width = 15;
     }
-    
-    public void drawScreen(final int mouseX,  final int mouseY,  final float partialTicks) {
-        if (ClickGui.getInstance().rainbowRolling.getValue()) {
-            final int color = ColorUtil.changeAlpha(HUD.getInstance().colorMap.get(MathUtil.clamp((int)this.y,  0,  this.renderer.scaledHeight)),  Phobos.moduleManager.getModuleByClass(ClickGui.class).hoverAlpha.getValue());
-            final int color2 = ColorUtil.changeAlpha(HUD.getInstance().colorMap.get(MathUtil.clamp((int)this.y + this.height,  0,  this.renderer.scaledHeight)),  Phobos.moduleManager.getModuleByClass(ClickGui.class).hoverAlpha.getValue());
-            RenderUtil.drawGradientRect(this.x,  this.y,  this.width + 7.4f,  this.height - 0.5f,  this.getState() ? (this.isHovering(mouseX,  mouseY) ? color : HUD.getInstance().colorMap.get(MathUtil.clamp((int)this.y,  0,  this.renderer.scaledHeight))) : (this.isHovering(mouseX,  mouseY) ? -2007673515 : 290805077),  this.getState() ? (this.isHovering(mouseX,  mouseY) ? color2 : HUD.getInstance().colorMap.get(MathUtil.clamp((int)this.y + this.height,  0,  this.renderer.scaledHeight))) : (this.isHovering(mouseX,  mouseY) ? -2007673515 : 290805077));
+
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        if (ClickGui.getInstance().rainbowRolling.getValue().booleanValue()) {
+            int color = ColorUtil.changeAlpha(HUD.getInstance().colorMap.get(MathUtil.clamp((int)this.y, 0, this.renderer.scaledHeight)), Phobos.moduleManager.getModuleByClass(ClickGui.class).hoverAlpha.getValue());
+            int color1 = ColorUtil.changeAlpha(HUD.getInstance().colorMap.get(MathUtil.clamp((int)this.y + this.height, 0, this.renderer.scaledHeight)), Phobos.moduleManager.getModuleByClass(ClickGui.class).hoverAlpha.getValue());
+            RenderUtil.drawGradientRect(this.x, this.y, (float)this.width + 7.4f, (float)this.height - 0.5f, this.getState() ? (!this.isHovering(mouseX, mouseY) ? HUD.getInstance().colorMap.get(MathUtil.clamp((int)this.y, 0, this.renderer.scaledHeight)) : color) : (!this.isHovering(mouseX, mouseY) ? 0x11555555 : -2007673515), this.getState() ? (!this.isHovering(mouseX, mouseY) ? HUD.getInstance().colorMap.get(MathUtil.clamp((int)this.y + this.height, 0, this.renderer.scaledHeight)) : color1) : (!this.isHovering(mouseX, mouseY) ? 0x11555555 : -2007673515));
+        } else {
+            RenderUtil.drawRect(this.x, this.y, this.x + (float)this.width + 7.4f, this.y + (float)this.height - 0.5f, this.getState() ? (!this.isHovering(mouseX, mouseY) ? Phobos.colorManager.getColorWithAlpha(Phobos.moduleManager.getModuleByClass(ClickGui.class).hoverAlpha.getValue()) : Phobos.colorManager.getColorWithAlpha(Phobos.moduleManager.getModuleByClass(ClickGui.class).alpha.getValue())) : (!this.isHovering(mouseX, mouseY) ? 0x11555555 : -2007673515));
         }
-        else {
-            RenderUtil.drawRect(this.x,  this.y,  this.x + this.width + 7.4f,  this.y + this.height - 0.5f,  this.getState() ? (this.isHovering(mouseX,  mouseY) ? Phobos.colorManager.getColorWithAlpha(Phobos.moduleManager.getModuleByClass(ClickGui.class).alpha.getValue()) : Phobos.colorManager.getColorWithAlpha(Phobos.moduleManager.getModuleByClass(ClickGui.class).hoverAlpha.getValue())) : (this.isHovering(mouseX,  mouseY) ? -2007673515 : 290805077));
-        }
-        Phobos.textManager.drawStringWithShadow(this.setting.getName() + " §7" + this.setting.currentEnumName(),  this.x + 2.3f,  this.y - 1.7f - PhobosGui.getClickGui().getTextOffset(),  this.getState() ? -1 : -5592406);
+        Phobos.textManager.drawStringWithShadow(this.setting.getName() + " \u00a77" + this.setting.currentEnumName(), this.x + 2.3f, this.y - 1.7f - (float)PhobosGui.getClickGui().getTextOffset(), this.getState() ? -1 : -5592406);
     }
-    
+
+    @Override
     public void update() {
         this.setHidden(this.setting.isVisible());
     }
-    
-    public void mouseClicked(final int mouseX,  final int mouseY,  final int mouseButton) {
-        super.mouseClicked(mouseX,  mouseY,  mouseButton);
-        if (this.isHovering(mouseX,  mouseY)) {
-            EnumButton.mc.getSoundHandler().playSound((ISound)PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK,  1.0f));
+
+    @Override
+    public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+        super.mouseClicked(mouseX, mouseY, mouseButton);
+        if (this.isHovering(mouseX, mouseY)) {
+            mc.func_147118_V().func_147682_a((ISound)PositionedSoundRecord.func_184371_a((SoundEvent)SoundEvents.field_187909_gi, (float)1.0f));
         }
     }
-    
+
+    @Override
     public int getHeight() {
         return 14;
     }
-    
+
+    @Override
     public void toggle() {
         this.setting.increaseEnum();
     }
-    
+
+    @Override
     public boolean getState() {
         return true;
     }
 }
+

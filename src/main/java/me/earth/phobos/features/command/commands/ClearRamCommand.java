@@ -1,19 +1,20 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ */
 package me.earth.phobos.features.command.commands;
 
-import me.earth.phobos.features.command.*;
+import me.earth.phobos.features.command.Command;
 
-public class ClearRamCommand extends Command
-{
+public class ClearRamCommand
+extends Command {
     public ClearRamCommand() {
         super("clearram");
     }
-    
-    public void execute(final String[] commands) {
+
+    @Override
+    public void execute(String[] commands) {
         System.gc();
-        Command.sendMessage("Finished clearing the ram.",  false);
+        Command.sendMessage("Finished clearing the ram.", false);
     }
 }
+

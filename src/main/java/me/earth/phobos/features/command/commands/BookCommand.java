@@ -1,56 +1,70 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  io.netty.buffer.Unpooled
+ *  net.minecraft.init.Items
+ *  net.minecraft.item.ItemStack
+ *  net.minecraft.nbt.NBTBase
+ *  net.minecraft.nbt.NBTTagList
+ *  net.minecraft.nbt.NBTTagString
+ *  net.minecraft.network.Packet
+ *  net.minecraft.network.PacketBuffer
+ *  net.minecraft.network.play.client.CPacketCustomPayload
+ */
 package me.earth.phobos.features.command.commands;
 
-import me.earth.phobos.features.command.*;
-import net.minecraft.init.*;
-import java.util.*;
-import net.minecraft.nbt.*;
-import io.netty.buffer.*;
-import net.minecraft.network.play.client.*;
-import net.minecraft.network.*;
-import me.earth.phobos.*;
-import net.minecraft.item.*;
-import java.util.stream.*;
+import io.netty.buffer.Unpooled;
+import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.features.command.Command;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
+import net.minecraft.network.Packet;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.play.client.CPacketCustomPayload;
 
-public class BookCommand extends Command
-{
+public class BookCommand
+extends Command {
     public BookCommand() {
-        super("book",  new String[0]);
+        super("book", new String[0]);
     }
-    
-    public void execute(final String[] commands) {
-        final ItemStack heldItem = BookCommand.mc.player.getHeldItemMainhand();
-        if (heldItem.getItem() == Items.WRITABLE_BOOK) {
-            final Random rand = new Random();
-            final IntStream characterGenerator = rand.ints(128,  1112063).map(i -> (i < 55296) ? i : (i + 2048));
-            final String joinedPages = characterGenerator.limit(10500L).mapToObj(i -> String.valueOf((char)i)).collect((Collector<? super Object,  ?,  String>)Collectors.joining());
-            final NBTTagList pages = new NBTTagList();
-            for (int page = 0; page < 50; ++page) {
-                pages.appendTag((NBTBase)new NBTTagString(joinedPages.substring(page * 210,  (page + 1) * 210)));
+
+    @Override
+    public void execute(String[] commands) {
+        ItemStack heldItem = BookCommand.mc.field_71439_g.func_184614_ca();
+        if (heldItem.func_77973_b() == Items.field_151099_bA) {
+            Random rand = new Random();
+            IntStream characterGenerator = rand.ints(128, 1112063).map(i -> i < 55296 ? i : i + 2048);
+            String joinedPages = characterGenerator.limit(10500L).mapToObj(i -> String.valueOf((char)i)).collect(Collectors.joining());
+            NBTTagList pages = new NBTTagList();
+            for (int page2 = 0; page2 < 50; ++page2) {
+                pages.func_74742_a((NBTBase)new NBTTagString(joinedPages.substring(page2 * 210, (page2 + 1) * 210)));
             }
-            if (heldItem.hasTagCompound()) {
-                assert heldItem.getTagCompound() != null;
-                heldItem.getTagCompound().setTag("pages",  (NBTBase)pages);
+            if (heldItem.func_77942_o()) {
+                assert (heldItem.func_77978_p() != null);
+                heldItem.func_77978_p().func_74782_a("pages", (NBTBase)pages);
+            } else {
+                heldItem.func_77983_a("pages", (NBTBase)pages);
             }
-            else {
-                heldItem.setTagInfo("pages",  (NBTBase)pages);
-            }
-            final StringBuilder stackName = new StringBuilder();
+            StringBuilder stackName = new StringBuilder();
             for (int i2 = 0; i2 < 16; ++i2) {
                 stackName.append("\u0014\f");
             }
-            heldItem.setTagInfo("author",  (NBTBase)new NBTTagString(BookCommand.mc.player.getName()));
-            heldItem.setTagInfo("title",  (NBTBase)new NBTTagString(stackName.toString()));
-            final PacketBuffer buf = new PacketBuffer(Unpooled.buffer());
-            buf.writeItemStack(heldItem);
-            BookCommand.mc.player.connection.sendPacket((Packet)new CPacketCustomPayload("MC|BSign",  buf));
-            sendMessage(Phobos.commandManager.getPrefix() + "Book Hack Success!");
-        }
-        else {
-            sendMessage(Phobos.commandManager.getPrefix() + "b1g 3rr0r!");
+            heldItem.func_77983_a("author", (NBTBase)new NBTTagString(BookCommand.mc.field_71439_g.func_70005_c_()));
+            heldItem.func_77983_a("title", (NBTBase)new NBTTagString(stackName.toString()));
+            PacketBuffer buf = new PacketBuffer(Unpooled.buffer());
+            buf.func_150788_a(heldItem);
+            BookCommand.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketCustomPayload("MC|BSign", buf));
+            BookCommand.sendMessage(Phobos.commandManager.getPrefix() + "Book Hack Success!");
+        } else {
+            BookCommand.sendMessage(Phobos.commandManager.getPrefix() + "b1g 3rr0r!");
         }
     }
 }
+

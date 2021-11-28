@@ -1,151 +1,125 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.gui.GuiScreen
+ *  net.minecraft.client.settings.GameSettings$Options
+ *  net.minecraft.util.ResourceLocation
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.client;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import net.minecraft.client.settings.*;
-import me.earth.phobos.event.events.*;
-import me.earth.phobos.*;
-import me.earth.phobos.features.command.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import me.earth.phobos.features.gui.*;
-import net.minecraft.client.gui.*;
-import net.minecraft.util.*;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.event.events.ClientEvent;
+import me.earth.phobos.features.command.Command;
+import me.earth.phobos.features.gui.PhobosGui;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.modules.client.Colors;
+import me.earth.phobos.features.setting.Setting;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.settings.GameSettings;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class ClickGui extends Module
-{
-    private static ClickGui INSTANCE;
-    public Setting<Boolean> colorSync;
-    public Setting<Boolean> outline;
-    public Setting<Boolean> rainbowRolling;
-    public Setting<String> prefix;
-    public Setting<Boolean> blurEffect;
-    public Setting<Boolean> boxing;
-    public Setting<Boolean> gear;
-    public Setting<Boolean> desc;
-    public Setting<Boolean> bg;
-    public Setting<Integer> bgtint;
-    public Setting<Boolean> scroll;
-    public Setting<Integer> scrollval;
-    public Setting<Integer> red;
-    public Setting<Integer> green;
-    public Setting<Integer> blue;
-    public Setting<Integer> hoverAlpha;
-    public Setting<Integer> alpha;
-    public Setting<Boolean> customFov;
-    public Setting<Float> fov;
-    public Setting<Boolean> openCloseChange;
-    public Setting<String> open;
-    public Setting<String> close;
-    public Setting<String> moduleButton;
-    public Setting<Boolean> devSettings;
-    public Setting<Integer> topRed;
-    public Setting<Integer> topGreen;
-    public Setting<Integer> topBlue;
-    public Setting<Integer> topAlpha;
-    
+public class ClickGui
+extends Module {
+    private static ClickGui INSTANCE = new ClickGui();
+    public Setting<Boolean> colorSync = this.register(new Setting<Boolean>("Sync", false));
+    public Setting<Boolean> outline = this.register(new Setting<Boolean>("Outline", false));
+    public Setting<Boolean> rainbowRolling = this.register(new Setting<Object>("RollingRainbow", Boolean.valueOf(false), v -> this.colorSync.getValue() != false && Colors.INSTANCE.rainbow.getValue() != false));
+    public Setting<String> prefix = this.register(new Setting<String>("Prefix", ".").setRenderName(true));
+    public Setting<Boolean> blurEffect = this.register(new Setting<Boolean>("Blur", false));
+    public Setting<Boolean> boxing = this.register(new Setting<Boolean>("Boxing", true));
+    public Setting<Boolean> gear = this.register(new Setting<Boolean>("Gears", false));
+    public Setting<Boolean> desc = this.register(new Setting<Boolean>("Descriptions", true));
+    public Setting<Boolean> bg = this.register(new Setting<Boolean>("Background", true));
+    public Setting<Integer> bgtint = this.register(new Setting<Integer>("Tint", Integer.valueOf(127), Integer.valueOf(0), Integer.valueOf(127), v -> this.bg.getValue()));
+    public Setting<Boolean> scroll = this.register(new Setting<Boolean>("Scroll", true));
+    public Setting<Integer> scrollval = this.register(new Setting<Integer>("Scroll Speed", Integer.valueOf(10), Integer.valueOf(1), Integer.valueOf(20), v -> this.scroll.getValue()));
+    public Setting<Integer> red = this.register(new Setting<Integer>("Red", 255, 0, 255));
+    public Setting<Integer> green = this.register(new Setting<Integer>("Green", 0, 0, 255));
+    public Setting<Integer> blue = this.register(new Setting<Integer>("Blue", 0, 0, 255));
+    public Setting<Integer> hoverAlpha = this.register(new Setting<Integer>("Alpha", 180, 0, 255));
+    public Setting<Integer> alpha = this.register(new Setting<Integer>("HoverAlpha", 240, 0, 255));
+    public Setting<Boolean> customFov = this.register(new Setting<Boolean>("CustomFov", false));
+    public Setting<Float> fov = this.register(new Setting<Object>("Fov", Float.valueOf(150.0f), Float.valueOf(-180.0f), Float.valueOf(180.0f), v -> this.customFov.getValue()));
+    public Setting<Boolean> openCloseChange = this.register(new Setting<Boolean>("Open/Close", false));
+    public Setting<String> open = this.register(new Setting<Object>("Open:", "", v -> this.openCloseChange.getValue()).setRenderName(true));
+    public Setting<String> close = this.register(new Setting<Object>("Close:", "", v -> this.openCloseChange.getValue()).setRenderName(true));
+    public Setting<String> moduleButton = this.register(new Setting<Object>("Buttons:", "", v -> this.openCloseChange.getValue() == false).setRenderName(true));
+    public Setting<Boolean> devSettings = this.register(new Setting<Boolean>("DevSettings", false));
+    public Setting<Integer> topRed = this.register(new Setting<Object>("TopRed", Integer.valueOf(255), Integer.valueOf(0), Integer.valueOf(255), v -> this.devSettings.getValue()));
+    public Setting<Integer> topGreen = this.register(new Setting<Object>("TopGreen", Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(255), v -> this.devSettings.getValue()));
+    public Setting<Integer> topBlue = this.register(new Setting<Object>("TopBlue", Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(255), v -> this.devSettings.getValue()));
+    public Setting<Integer> topAlpha = this.register(new Setting<Object>("TopAlpha", Integer.valueOf(255), Integer.valueOf(0), Integer.valueOf(255), v -> this.devSettings.getValue()));
+
     public ClickGui() {
-        super("ClickGui",  "Opens the ClickGui.",  Category.CLIENT,  true,  false,  false);
-        this.colorSync = (Setting<Boolean>)this.register(new Setting("Sync", false));
-        this.outline = (Setting<Boolean>)this.register(new Setting("Outline", false));
-        this.rainbowRolling = (Setting<Boolean>)this.register(new Setting("RollingRainbow", false,  v -> this.colorSync.getValue() && Colors.INSTANCE.rainbow.getValue()));
-        this.prefix = (Setting<String>)this.register((Setting)new Setting<String>("Prefix",  ".").setRenderName(true));
-        this.blurEffect = (Setting<Boolean>)this.register(new Setting("Blur", false));
-        this.boxing = (Setting<Boolean>)this.register(new Setting("Boxing", true));
-        this.gear = (Setting<Boolean>)this.register(new Setting("Gears", false));
-        this.desc = (Setting<Boolean>)this.register(new Setting("Descriptions", true));
-        this.bg = (Setting<Boolean>)this.register(new Setting("Background", true));
-        this.bgtint = (Setting<Integer>)this.register(new Setting("Tint", 127, 0, 127,  v -> this.bg.getValue()));
-        this.scroll = (Setting<Boolean>)this.register(new Setting("Scroll", true));
-        this.scrollval = (Setting<Integer>)this.register(new Setting("Scroll Speed", 10, 1, 20,  v -> this.scroll.getValue()));
-        this.red = (Setting<Integer>)this.register(new Setting("Red", 255, 0, 255));
-        this.green = (Setting<Integer>)this.register(new Setting("Green", 0, 0, 255));
-        this.blue = (Setting<Integer>)this.register(new Setting("Blue", 0, 0, 255));
-        this.hoverAlpha = (Setting<Integer>)this.register(new Setting("Alpha", 180, 0, 255));
-        this.alpha = (Setting<Integer>)this.register(new Setting("HoverAlpha", 240, 0, 255));
-        this.customFov = (Setting<Boolean>)this.register(new Setting("CustomFov", false));
-        this.fov = (Setting<Float>)this.register(new Setting("Fov", 150.0f, (-180.0f), 180.0f,  v -> this.customFov.getValue()));
-        this.openCloseChange = (Setting<Boolean>)this.register(new Setting("Open/Close", false));
-        this.open = (Setting<String>)this.register((Setting)new Setting<Object>("Open:",  "",  v -> this.openCloseChange.getValue()).setRenderName(true));
-        this.close = (Setting<String>)this.register((Setting)new Setting<Object>("Close:",  "",  v -> this.openCloseChange.getValue()).setRenderName(true));
-        this.moduleButton = (Setting<String>)this.register((Setting)new Setting<Object>("Buttons:",  "",  v -> !this.openCloseChange.getValue()).setRenderName(true));
-        this.devSettings = (Setting<Boolean>)this.register(new Setting("DevSettings", false));
-        this.topRed = (Setting<Integer>)this.register(new Setting("TopRed", 255, 0, 255,  v -> this.devSettings.getValue()));
-        this.topGreen = (Setting<Integer>)this.register(new Setting("TopGreen", 0, 0, 255,  v -> this.devSettings.getValue()));
-        this.topBlue = (Setting<Integer>)this.register(new Setting("TopBlue", 0, 0, 255,  v -> this.devSettings.getValue()));
-        this.topAlpha = (Setting<Integer>)this.register(new Setting("TopAlpha", 255, 0, 255,  v -> this.devSettings.getValue()));
+        super("ClickGui", "Opens the ClickGui.", Module.Category.CLIENT, true, false, false);
         this.setInstance();
     }
-    
+
     public static ClickGui getInstance() {
-        if (ClickGui.INSTANCE == null) {
-            ClickGui.INSTANCE = new ClickGui();
+        if (INSTANCE == null) {
+            INSTANCE = new ClickGui();
         }
-        return ClickGui.INSTANCE;
+        return INSTANCE;
     }
-    
+
     private void setInstance() {
-        ClickGui.INSTANCE = this;
+        INSTANCE = this;
     }
-    
+
     @Override
     public void onUpdate() {
-        if (this.customFov.getValue()) {
-            ClickGui.mc.gameSettings.setOptionFloatValue(GameSettings.Options.FOV,  (float)this.fov.getValue());
+        if (this.customFov.getValue().booleanValue()) {
+            ClickGui.mc.field_71474_y.func_74304_a(GameSettings.Options.FOV, this.fov.getValue().floatValue());
         }
     }
-    
+
     @SubscribeEvent
-    public void onSettingChange(final ClientEvent event) {
+    public void onSettingChange(ClientEvent event) {
         if (event.getStage() == 2 && event.getSetting().getFeature().equals(this)) {
             if (event.getSetting().equals(this.prefix)) {
                 Phobos.commandManager.setPrefix(this.prefix.getPlannedValue());
-                Command.sendMessage("Prefix set to §a" + Phobos.commandManager.getPrefix());
+                Command.sendMessage("Prefix set to \u00a7a" + Phobos.commandManager.getPrefix());
             }
-            Phobos.colorManager.setColor(this.red.getPlannedValue(),  this.green.getPlannedValue(),  this.blue.getPlannedValue(),  this.hoverAlpha.getPlannedValue());
+            Phobos.colorManager.setColor(this.red.getPlannedValue(), this.green.getPlannedValue(), this.blue.getPlannedValue(), this.hoverAlpha.getPlannedValue());
         }
     }
-    
+
     @Override
     public void onEnable() {
-        ClickGui.mc.displayGuiScreen((GuiScreen)new PhobosGui());
-        if (this.blurEffect.getValue()) {
-            ClickGui.mc.entityRenderer.loadShader(new ResourceLocation("shaders/post/blur.json"));
+        mc.func_147108_a((GuiScreen)new PhobosGui());
+        if (this.blurEffect.getValue().booleanValue()) {
+            ClickGui.mc.field_71460_t.func_175069_a(new ResourceLocation("shaders/post/blur.json"));
         }
     }
-    
+
     @Override
     public void onLoad() {
-        if (this.colorSync.getValue()) {
-            Phobos.colorManager.setColor(Colors.INSTANCE.getCurrentColor().getRed(),  Colors.INSTANCE.getCurrentColor().getGreen(),  Colors.INSTANCE.getCurrentColor().getBlue(),  this.hoverAlpha.getValue());
-        }
-        else {
-            Phobos.colorManager.setColor(this.red.getValue(),  this.green.getValue(),  this.blue.getValue(),  this.hoverAlpha.getValue());
+        if (this.colorSync.getValue().booleanValue()) {
+            Phobos.colorManager.setColor(Colors.INSTANCE.getCurrentColor().getRed(), Colors.INSTANCE.getCurrentColor().getGreen(), Colors.INSTANCE.getCurrentColor().getBlue(), this.hoverAlpha.getValue());
+        } else {
+            Phobos.colorManager.setColor(this.red.getValue(), this.green.getValue(), this.blue.getValue(), this.hoverAlpha.getValue());
         }
         Phobos.commandManager.setPrefix(this.prefix.getValue());
     }
-    
+
     @Override
     public void onTick() {
-        if (!(ClickGui.mc.currentScreen instanceof PhobosGui)) {
+        if (!(ClickGui.mc.field_71462_r instanceof PhobosGui)) {
             this.disable();
-            if (ClickGui.mc.entityRenderer.getShaderGroup() != null) {
-                ClickGui.mc.entityRenderer.getShaderGroup().deleteShaderGroup();
+            if (ClickGui.mc.field_71460_t.func_147706_e() != null) {
+                ClickGui.mc.field_71460_t.func_147706_e().func_148021_a();
             }
         }
     }
-    
+
     @Override
     public void onDisable() {
-        if (ClickGui.mc.currentScreen instanceof PhobosGui) {
-            ClickGui.mc.displayGuiScreen((GuiScreen)null);
+        if (ClickGui.mc.field_71462_r instanceof PhobosGui) {
+            mc.func_147108_a(null);
         }
     }
-    
-    static {
-        ClickGui.INSTANCE = new ClickGui();
-    }
 }
+

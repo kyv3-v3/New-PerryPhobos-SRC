@@ -1,38 +1,39 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ */
 package me.earth.phobos.features.command.commands;
 
-import me.earth.phobos.features.command.*;
-import me.earth.phobos.*;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.features.command.Command;
 
-public class BaritoneNoStop extends Command
-{
+public class BaritoneNoStop
+extends Command {
     public BaritoneNoStop() {
-        super("noStop",  new String[] { "<prefix>",  "<x>",  "<y>",  "<z>" });
+        super("noStop", new String[]{"<prefix>", "<x>", "<y>", "<z>"});
     }
-    
-    public void execute(final String[] commands) {
+
+    @Override
+    public void execute(String[] commands) {
         if (commands.length == 5) {
-            Phobos.baritoneManager.setPrefix(commands[0]);
-            int x;
-            int y;
             int z;
+            int y;
+            int x;
+            Phobos.baritoneManager.setPrefix(commands[0]);
             try {
                 x = Integer.parseInt(commands[1]);
                 y = Integer.parseInt(commands[2]);
                 z = Integer.parseInt(commands[3]);
             }
             catch (NumberFormatException e) {
-                sendMessage("Invalid Input for x,  y or z!");
+                BaritoneNoStop.sendMessage("Invalid Input for x, y or z!");
                 Phobos.baritoneManager.stop();
                 return;
             }
-            Phobos.baritoneManager.start(x,  y,  z);
+            Phobos.baritoneManager.start(x, y, z);
             return;
         }
-        sendMessage("Stoping Baritone-Nostop.");
+        BaritoneNoStop.sendMessage("Stoping Baritone-Nostop.");
         Phobos.baritoneManager.stop();
     }
 }
+

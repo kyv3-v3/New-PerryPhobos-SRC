@@ -1,17 +1,17 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ */
 package me.earth.phobos.features.modules.movement;
 
-import me.earth.phobos.features.modules.*;
+import me.earth.phobos.features.modules.Module;
 
-public class EntityControl extends Module
-{
+public class EntityControl
+extends Module {
     public static EntityControl INSTANCE;
-    
+
     public EntityControl() {
-        super("EntityControl",  "Control non saddled entities.",  Module.Category.MOVEMENT,  false,  false,  false);
-        EntityControl.INSTANCE = this;
+        super("EntityControl", "Control non saddled entities.", Module.Category.MOVEMENT, false, false, false);
+        INSTANCE = this;
     }
 }
+

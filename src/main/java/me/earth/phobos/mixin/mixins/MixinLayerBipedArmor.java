@@ -1,18 +1,25 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.model.ModelBiped
+ *  net.minecraft.client.renderer.entity.RenderLivingBase
+ *  net.minecraft.client.renderer.entity.layers.LayerArmorBase
+ *  net.minecraft.client.renderer.entity.layers.LayerBipedArmor
+ */
 package me.earth.phobos.mixin.mixins;
 
-import net.minecraft.client.model.*;
-import org.spongepowered.asm.mixin.*;
-import net.minecraft.client.renderer.entity.layers.*;
-import net.minecraft.client.renderer.entity.*;
+import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.renderer.entity.RenderLivingBase;
+import net.minecraft.client.renderer.entity.layers.LayerArmorBase;
+import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
+import org.spongepowered.asm.mixin.Mixin;
 
-@Mixin({ LayerBipedArmor.class })
-public abstract class MixinLayerBipedArmor extends LayerArmorBase<ModelBiped>
-{
-    public MixinLayerBipedArmor(final RenderLivingBase<?> rendererIn) {
-        super((RenderLivingBase)rendererIn);
+@Mixin(value={LayerBipedArmor.class})
+public abstract class MixinLayerBipedArmor
+extends LayerArmorBase<ModelBiped> {
+    public MixinLayerBipedArmor(RenderLivingBase<?> rendererIn) {
+        super(rendererIn);
     }
 }
+

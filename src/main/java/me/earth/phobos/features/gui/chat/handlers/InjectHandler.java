@@ -1,25 +1,32 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.Minecraft
+ *  net.minecraft.client.gui.GuiIngame
+ *  net.minecraftforge.common.MinecraftForge
+ *  net.minecraftforge.fml.common.ObfuscationReflectionHelper
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ *  net.minecraftforge.fml.common.gameevent.TickEvent$ClientTickEvent
+ */
 package me.earth.phobos.features.gui.chat.handlers;
 
-import me.earth.phobos.features.gui.chat.gui.*;
-import net.minecraftforge.fml.common.gameevent.*;
-import net.minecraftforge.common.*;
-import net.minecraft.client.*;
-import net.minecraft.client.gui.*;
-import net.minecraftforge.fml.common.*;
-import net.minecraftforge.fml.common.eventhandler.*;
+import me.earth.phobos.features.gui.chat.gui.GuiBetterChat;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiIngame;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-public class InjectHandler
-{
+public class InjectHandler {
     public static GuiBetterChat chatGUI;
-    
+
     @SubscribeEvent
-    public void onClientTick(final TickEvent.ClientTickEvent event) {
+    public void onClientTick(TickEvent.ClientTickEvent event) {
         MinecraftForge.EVENT_BUS.unregister((Object)this);
-        InjectHandler.chatGUI = new GuiBetterChat(Minecraft.getMinecraft());
-        ObfuscationReflectionHelper.setPrivateValue((Class)GuiIngame.class,  (Object)Minecraft.getMinecraft().ingameGUI,  (Object)InjectHandler.chatGUI,  "persistantChatGUI");
+        chatGUI = new GuiBetterChat(Minecraft.func_71410_x());
+        ObfuscationReflectionHelper.setPrivateValue(GuiIngame.class, (Object)Minecraft.func_71410_x().field_71456_v, (Object)((Object)chatGUI), (String)"field_73840_e");
     }
 }
+

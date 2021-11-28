@@ -1,49 +1,67 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.block.BlockWeb
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.entity.player.EntityPlayer
+ *  net.minecraft.network.Packet
+ *  net.minecraft.network.play.client.CPacketChatMessage
+ *  net.minecraft.util.EnumHand
+ *  net.minecraft.util.math.BlockPos
+ *  net.minecraft.util.math.Vec3d
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.combat;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import net.minecraft.entity.player.*;
-import net.minecraft.entity.*;
-import me.earth.phobos.features.modules.client.*;
-import net.minecraft.network.play.client.*;
-import net.minecraft.network.*;
-import me.earth.phobos.event.events.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import net.minecraft.util.math.*;
-import me.earth.phobos.util.*;
-import java.util.*;
-import net.minecraft.block.*;
-import me.earth.phobos.features.command.*;
-import me.earth.phobos.*;
-import net.minecraft.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.event.events.UpdateWalkingPlayerEvent;
+import me.earth.phobos.features.command.Command;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.modules.client.ClickGui;
+import me.earth.phobos.features.modules.client.PingBypass;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.BlockUtil;
+import me.earth.phobos.util.EntityUtil;
+import me.earth.phobos.util.InventoryUtil;
+import me.earth.phobos.util.MathUtil;
+import me.earth.phobos.util.TimerUtil;
+import net.minecraft.block.BlockWeb;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.CPacketChatMessage;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class Webaura extends Module
-{
+public class Webaura
+extends Module {
     public static boolean isPlacing;
-    private final Setting<Boolean> server;
-    private final Setting<Integer> delay;
-    private final Setting<Integer> blocksPerPlace;
-    private final Setting<Double> targetRange;
-    private final Setting<Double> range;
-    private final Setting<TargetMode> targetMode;
-    private final Setting<InventoryUtil.Switch> switchMode;
-    private final Setting<Boolean> rotate;
-    private final Setting<Boolean> raytrace;
-    private final Setting<Double> speed;
-    private final Setting<Boolean> upperBody;
-    private final Setting<Boolean> lowerbody;
-    private final Setting<Boolean> ylower;
-    private final Setting<Boolean> antiSelf;
-    private final Setting<Integer> eventMode;
-    private final Setting<Boolean> freecam;
-    private final Setting<Boolean> info;
-    private final Setting<Boolean> disable;
-    private final Setting<Boolean> packet;
-    private final TimerUtil timer;
+    private final Setting<Boolean> server = this.register(new Setting<Boolean>("Server", false));
+    private final Setting<Integer> delay = this.register(new Setting<Integer>("Delay/Place", 50, 0, 250));
+    private final Setting<Integer> blocksPerPlace = this.register(new Setting<Integer>("Block/Place", 8, 1, 30));
+    private final Setting<Double> targetRange = this.register(new Setting<Double>("TargetRange", 10.0, 0.0, 20.0));
+    private final Setting<Double> range = this.register(new Setting<Double>("PlaceRange", 6.0, 0.0, 10.0));
+    private final Setting<TargetMode> targetMode = this.register(new Setting<TargetMode>("Target", TargetMode.CLOSEST));
+    private final Setting<InventoryUtil.Switch> switchMode = this.register(new Setting<InventoryUtil.Switch>("Switch", InventoryUtil.Switch.NORMAL));
+    private final Setting<Boolean> rotate = this.register(new Setting<Boolean>("Rotate", true));
+    private final Setting<Boolean> raytrace = this.register(new Setting<Boolean>("Raytrace", false));
+    private final Setting<Double> speed = this.register(new Setting<Double>("Speed", 30.0, 0.0, 30.0));
+    private final Setting<Boolean> upperBody = this.register(new Setting<Boolean>("Upper", false));
+    private final Setting<Boolean> lowerbody = this.register(new Setting<Boolean>("Lower", true));
+    private final Setting<Boolean> ylower = this.register(new Setting<Boolean>("Y-1", false));
+    private final Setting<Boolean> antiSelf = this.register(new Setting<Boolean>("AntiSelf", false));
+    private final Setting<Integer> eventMode = this.register(new Setting<Integer>("Updates", 3, 1, 3));
+    private final Setting<Boolean> freecam = this.register(new Setting<Boolean>("Freecam", false));
+    private final Setting<Boolean> info = this.register(new Setting<Boolean>("Info", false));
+    private final Setting<Boolean> disable = this.register(new Setting<Boolean>("TSelfMove", false));
+    private final Setting<Boolean> packet = this.register(new Setting<Boolean>("Packet", false));
+    private final TimerUtil timer = new TimerUtil();
     public EntityPlayer target;
     private boolean didPlace;
     private boolean switchedItem;
@@ -52,48 +70,28 @@ public class Webaura extends Module
     private int placements;
     private boolean smartRotate;
     private BlockPos startPos;
-    
+
     public Webaura() {
-        super("Webaura",  "Traps other players in webs.",  Category.COMBAT,  true,  false,  false);
-        this.server = (Setting<Boolean>)this.register(new Setting("Server", false));
-        this.delay = (Setting<Integer>)this.register(new Setting("Delay/Place", 50, 0, 250));
-        this.blocksPerPlace = (Setting<Integer>)this.register(new Setting("Block/Place", 8, 1, 30));
-        this.targetRange = (Setting<Double>)this.register(new Setting("TargetRange", 10.0, 0.0, 20.0));
-        this.range = (Setting<Double>)this.register(new Setting("PlaceRange", 6.0, 0.0, 10.0));
-        this.targetMode = (Setting<TargetMode>)this.register(new Setting("Target", TargetMode.CLOSEST));
-        this.switchMode = (Setting<InventoryUtil.Switch>)this.register(new Setting("Switch", InventoryUtil.Switch.NORMAL));
-        this.rotate = (Setting<Boolean>)this.register(new Setting("Rotate", true));
-        this.raytrace = (Setting<Boolean>)this.register(new Setting("Raytrace", false));
-        this.speed = (Setting<Double>)this.register(new Setting("Speed", 30.0, 0.0, 30.0));
-        this.upperBody = (Setting<Boolean>)this.register(new Setting("Upper", false));
-        this.lowerbody = (Setting<Boolean>)this.register(new Setting("Lower", true));
-        this.ylower = (Setting<Boolean>)this.register(new Setting("Y-1", false));
-        this.antiSelf = (Setting<Boolean>)this.register(new Setting("AntiSelf", false));
-        this.eventMode = (Setting<Integer>)this.register(new Setting("Updates", 3, 1, 3));
-        this.freecam = (Setting<Boolean>)this.register(new Setting("Freecam", false));
-        this.info = (Setting<Boolean>)this.register(new Setting("Info", false));
-        this.disable = (Setting<Boolean>)this.register(new Setting("TSelfMove", false));
-        this.packet = (Setting<Boolean>)this.register(new Setting("Packet", false));
-        this.timer = new TimerUtil();
+        super("Webaura", "Traps other players in webs.", Module.Category.COMBAT, true, false, false);
     }
-    
+
     private boolean shouldServer() {
-        return PingBypass.getInstance().isConnected() && this.server.getValue();
+        return PingBypass.getInstance().isConnected() && this.server.getValue() != false;
     }
-    
+
     @Override
     public void onEnable() {
-        if (fullNullCheck()) {
+        if (Webaura.fullNullCheck()) {
             return;
         }
-        this.startPos = EntityUtil.getRoundedBlockPos((Entity)Webaura.mc.player);
-        this.lastHotbarSlot = Webaura.mc.player.inventory.currentItem;
+        this.startPos = EntityUtil.getRoundedBlockPos((Entity)Webaura.mc.field_71439_g);
+        this.lastHotbarSlot = Webaura.mc.field_71439_g.field_71071_by.field_70461_c;
         if (this.shouldServer()) {
-            Webaura.mc.player.connection.sendPacket((Packet)new CPacketChatMessage("@Serverprefix" + ClickGui.getInstance().prefix.getValue()));
-            Webaura.mc.player.connection.sendPacket((Packet)new CPacketChatMessage("@Server" + ClickGui.getInstance().prefix.getValue() + "module Webaura set Enabled true"));
+            Webaura.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketChatMessage("@Serverprefix" + ClickGui.getInstance().prefix.getValue()));
+            Webaura.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketChatMessage("@Server" + ClickGui.getInstance().prefix.getValue() + "module Webaura set Enabled true"));
         }
     }
-    
+
     @Override
     public void onTick() {
         if (this.eventMode.getValue() == 3) {
@@ -101,15 +99,15 @@ public class Webaura extends Module
             this.doTrap();
         }
     }
-    
+
     @SubscribeEvent
-    public void onUpdateWalkingPlayer(final UpdateWalkingPlayerEvent event) {
+    public void onUpdateWalkingPlayer(UpdateWalkingPlayerEvent event) {
         if (event.getStage() == 0 && this.eventMode.getValue() == 2) {
-            this.smartRotate = (this.rotate.getValue() && this.blocksPerPlace.getValue() == 1);
+            this.smartRotate = this.rotate.getValue() != false && this.blocksPerPlace.getValue() == 1;
             this.doTrap();
         }
     }
-    
+
     @Override
     public void onUpdate() {
         if (this.eventMode.getValue() == 1) {
@@ -117,27 +115,27 @@ public class Webaura extends Module
             this.doTrap();
         }
     }
-    
+
     @Override
     public String getDisplayInfo() {
-        if (this.info.getValue() && this.target != null) {
-            return this.target.getName();
+        if (this.info.getValue().booleanValue() && this.target != null) {
+            return this.target.func_70005_c_();
         }
         return null;
     }
-    
+
     @Override
     public void onDisable() {
         if (this.shouldServer()) {
-            Webaura.mc.player.connection.sendPacket((Packet)new CPacketChatMessage("@Serverprefix" + ClickGui.getInstance().prefix.getValue()));
-            Webaura.mc.player.connection.sendPacket((Packet)new CPacketChatMessage("@Server" + ClickGui.getInstance().prefix.getValue() + "module Webaura set Enabled false"));
+            Webaura.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketChatMessage("@Serverprefix" + ClickGui.getInstance().prefix.getValue()));
+            Webaura.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketChatMessage("@Server" + ClickGui.getInstance().prefix.getValue() + "module Webaura set Enabled false"));
             return;
         }
-        Webaura.isPlacing = false;
+        isPlacing = false;
         this.isSneaking = EntityUtil.stopSneaking(this.isSneaking);
         this.switchItem(true);
     }
-    
+
     private void doTrap() {
         if (this.shouldServer() || this.check()) {
             return;
@@ -147,114 +145,104 @@ public class Webaura extends Module
             this.timer.reset();
         }
     }
-    
+
     private void doWebTrap() {
-        final List<Vec3d> placeTargets = this.getPlacements();
+        List<Vec3d> placeTargets = this.getPlacements();
         this.placeList(placeTargets);
     }
-    
+
     private List<Vec3d> getPlacements() {
-        final ArrayList<Vec3d> list = new ArrayList<Vec3d>();
-        final Vec3d baseVec = this.target.getPositionVector();
-        if (this.ylower.getValue()) {
-            list.add(baseVec.add(0.0,  -1.0,  0.0));
+        ArrayList<Vec3d> list = new ArrayList<Vec3d>();
+        Vec3d baseVec = this.target.func_174791_d();
+        if (this.ylower.getValue().booleanValue()) {
+            list.add(baseVec.func_72441_c(0.0, -1.0, 0.0));
         }
-        if (this.lowerbody.getValue()) {
+        if (this.lowerbody.getValue().booleanValue()) {
             list.add(baseVec);
         }
-        if (this.upperBody.getValue()) {
-            list.add(baseVec.add(0.0,  1.0,  0.0));
+        if (this.upperBody.getValue().booleanValue()) {
+            list.add(baseVec.func_72441_c(0.0, 1.0, 0.0));
         }
         return list;
     }
-    
-    private void placeList(final List<Vec3d> list) {
-        list.sort((vec3d,  vec3d2) -> Double.compare(Webaura.mc.player.getDistanceSq(vec3d2.x,  vec3d2.y,  vec3d2.z),  Webaura.mc.player.getDistanceSq(vec3d.x,  vec3d.y,  vec3d.z)));
-        list.sort(Comparator.comparingDouble(vec3d -> vec3d.y));
-        for (final Vec3d vec3d3 : list) {
-            final BlockPos position = new BlockPos(vec3d3);
-            final int placeability = BlockUtil.isPositionPlaceable(position,  this.raytrace.getValue());
-            if (placeability == 3 || placeability == 1) {
-                if (this.antiSelf.getValue() && MathUtil.areVec3dsAligned(Webaura.mc.player.getPositionVector(),  vec3d3)) {
-                    continue;
-                }
-                this.placeBlock(position);
-            }
+
+    private void placeList(List<Vec3d> list) {
+        list.sort((vec3d, vec3d2) -> Double.compare(Webaura.mc.field_71439_g.func_70092_e(vec3d2.field_72450_a, vec3d2.field_72448_b, vec3d2.field_72449_c), Webaura.mc.field_71439_g.func_70092_e(vec3d.field_72450_a, vec3d.field_72448_b, vec3d.field_72449_c)));
+        list.sort(Comparator.comparingDouble(vec3d -> vec3d.field_72448_b));
+        for (Vec3d vec3d3 : list) {
+            BlockPos position = new BlockPos(vec3d3);
+            int placeability = BlockUtil.isPositionPlaceable(position, this.raytrace.getValue());
+            if (placeability != 3 && placeability != 1 || this.antiSelf.getValue().booleanValue() && MathUtil.areVec3dsAligned(Webaura.mc.field_71439_g.func_174791_d(), vec3d3)) continue;
+            this.placeBlock(position);
         }
     }
-    
+
     private boolean check() {
-        Webaura.isPlacing = false;
+        isPlacing = false;
         this.didPlace = false;
         this.placements = 0;
-        final int obbySlot = InventoryUtil.findHotbarBlock(BlockWeb.class);
+        int obbySlot = InventoryUtil.findHotbarBlock(BlockWeb.class);
         if (this.isOff()) {
             return true;
         }
-        if (this.disable.getValue() && !this.startPos.equals((Object)EntityUtil.getRoundedBlockPos((Entity)Webaura.mc.player))) {
+        if (this.disable.getValue().booleanValue() && !this.startPos.equals((Object)EntityUtil.getRoundedBlockPos((Entity)Webaura.mc.field_71439_g))) {
             this.disable();
             return true;
         }
         if (obbySlot == -1) {
             if (this.switchMode.getValue() != InventoryUtil.Switch.NONE) {
-                if (this.info.getValue()) {
-                    Command.sendMessage("<" + this.getDisplayName() + "> §cYou are out of Webs.");
+                if (this.info.getValue().booleanValue()) {
+                    Command.sendMessage("<" + this.getDisplayName() + "> \u00a7cYou are out of Webs.");
                 }
                 this.disable();
             }
             return true;
         }
-        if (Webaura.mc.player.inventory.currentItem != this.lastHotbarSlot && Webaura.mc.player.inventory.currentItem != obbySlot) {
-            this.lastHotbarSlot = Webaura.mc.player.inventory.currentItem;
+        if (Webaura.mc.field_71439_g.field_71071_by.field_70461_c != this.lastHotbarSlot && Webaura.mc.field_71439_g.field_71071_by.field_70461_c != obbySlot) {
+            this.lastHotbarSlot = Webaura.mc.field_71439_g.field_71071_by.field_70461_c;
         }
         this.switchItem(true);
         this.isSneaking = EntityUtil.stopSneaking(this.isSneaking);
-        this.target = this.getTarget(this.targetRange.getValue(),  this.targetMode.getValue() == TargetMode.UNTRAPPED);
-        return this.target == null || (Phobos.moduleManager.isModuleEnabled("Freecam") && !this.freecam.getValue()) || !this.timer.passedMs(this.delay.getValue()) || (this.switchMode.getValue() == InventoryUtil.Switch.NONE && Webaura.mc.player.inventory.currentItem != InventoryUtil.findHotbarBlock(BlockWeb.class));
+        this.target = this.getTarget(this.targetRange.getValue(), this.targetMode.getValue() == TargetMode.UNTRAPPED);
+        return this.target == null || Phobos.moduleManager.isModuleEnabled("Freecam") && this.freecam.getValue() == false || !this.timer.passedMs(this.delay.getValue().intValue()) || this.switchMode.getValue() == InventoryUtil.Switch.NONE && Webaura.mc.field_71439_g.field_71071_by.field_70461_c != InventoryUtil.findHotbarBlock(BlockWeb.class);
     }
-    
-    private EntityPlayer getTarget(final double range,  final boolean trapped) {
+
+    private EntityPlayer getTarget(double range, boolean trapped) {
         EntityPlayer target = null;
-        double distance = Math.pow(range,  2.0) + 1.0;
-        for (final EntityPlayer player : Webaura.mc.world.playerEntities) {
-            if (!EntityUtil.isntValid((Entity)player,  range) && (!trapped || !player.isInWeb) && (!EntityUtil.getRoundedBlockPos((Entity)Webaura.mc.player).equals((Object)EntityUtil.getRoundedBlockPos((Entity)player)) || !this.antiSelf.getValue())) {
-                if (Phobos.speedManager.getPlayerSpeed(player) > this.speed.getValue()) {
-                    continue;
-                }
-                if (target == null) {
-                    target = player;
-                    distance = Webaura.mc.player.getDistanceSq((Entity)player);
-                }
-                else {
-                    if (Webaura.mc.player.getDistanceSq((Entity)player) >= distance) {
-                        continue;
-                    }
-                    target = player;
-                    distance = Webaura.mc.player.getDistanceSq((Entity)player);
-                }
+        double distance = Math.pow(range, 2.0) + 1.0;
+        for (EntityPlayer player : Webaura.mc.field_71441_e.field_73010_i) {
+            if (EntityUtil.isntValid((Entity)player, range) || trapped && player.field_70134_J || EntityUtil.getRoundedBlockPos((Entity)Webaura.mc.field_71439_g).equals((Object)EntityUtil.getRoundedBlockPos((Entity)player)) && this.antiSelf.getValue().booleanValue() || Phobos.speedManager.getPlayerSpeed(player) > this.speed.getValue()) continue;
+            if (target == null) {
+                target = player;
+                distance = Webaura.mc.field_71439_g.func_70068_e((Entity)player);
+                continue;
             }
+            if (!(Webaura.mc.field_71439_g.func_70068_e((Entity)player) < distance)) continue;
+            target = player;
+            distance = Webaura.mc.field_71439_g.func_70068_e((Entity)player);
         }
         return target;
     }
-    
-    private void placeBlock(final BlockPos pos) {
-        if (this.placements < this.blocksPerPlace.getValue() && Webaura.mc.player.getDistanceSq(pos) <= MathUtil.square(this.range.getValue()) && this.switchItem(false)) {
-            Webaura.isPlacing = true;
-            this.isSneaking = (this.smartRotate ? BlockUtil.placeBlockSmartRotate(pos,  EnumHand.MAIN_HAND,  true,  this.packet.getValue(),  this.isSneaking) : BlockUtil.placeBlock(pos,  EnumHand.MAIN_HAND,  this.rotate.getValue(),  this.packet.getValue(),  this.isSneaking));
+
+    private void placeBlock(BlockPos pos) {
+        if (this.placements < this.blocksPerPlace.getValue() && Webaura.mc.field_71439_g.func_174818_b(pos) <= MathUtil.square(this.range.getValue()) && this.switchItem(false)) {
+            isPlacing = true;
+            this.isSneaking = this.smartRotate ? BlockUtil.placeBlockSmartRotate(pos, EnumHand.MAIN_HAND, true, this.packet.getValue(), this.isSneaking) : BlockUtil.placeBlock(pos, EnumHand.MAIN_HAND, this.rotate.getValue(), this.packet.getValue(), this.isSneaking);
             this.didPlace = true;
             ++this.placements;
         }
     }
-    
-    private boolean switchItem(final boolean back) {
-        final boolean[] value = InventoryUtil.switchItem(back,  this.lastHotbarSlot,  this.switchedItem,  this.switchMode.getValue(),  BlockWeb.class);
+
+    private boolean switchItem(boolean back) {
+        boolean[] value = InventoryUtil.switchItem(back, this.lastHotbarSlot, this.switchedItem, this.switchMode.getValue(), BlockWeb.class);
         this.switchedItem = value[0];
         return value[1];
     }
-    
-    public enum TargetMode
-    {
-        CLOSEST,  
+
+    public static enum TargetMode {
+        CLOSEST,
         UNTRAPPED;
+
     }
 }
+

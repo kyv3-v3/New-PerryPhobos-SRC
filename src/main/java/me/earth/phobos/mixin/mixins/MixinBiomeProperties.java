@@ -1,13 +1,15 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.world.biome.Biome$BiomeProperties
+ */
 package me.earth.phobos.mixin.mixins;
 
-import org.spongepowered.asm.mixin.*;
-import net.minecraft.world.biome.*;
+import net.minecraft.world.biome.Biome;
+import org.spongepowered.asm.mixin.Mixin;
 
-@Mixin({ Biome.BiomeProperties.class })
-public class MixinBiomeProperties
-{
+@Mixin(value={Biome.BiomeProperties.class})
+public class MixinBiomeProperties {
 }
+

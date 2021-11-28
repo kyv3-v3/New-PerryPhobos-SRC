@@ -1,130 +1,128 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.entity.projectile.EntityFishHook
+ *  net.minecraft.init.Blocks
+ *  net.minecraft.network.play.server.SPacketEntityStatus
+ *  net.minecraft.network.play.server.SPacketEntityVelocity
+ *  net.minecraft.network.play.server.SPacketExplosion
+ *  net.minecraft.world.World
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.movement;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import net.minecraft.init.*;
-import net.minecraft.entity.projectile.*;
-import net.minecraft.world.*;
-import net.minecraft.network.play.server.*;
-import net.minecraft.entity.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import me.earth.phobos.event.events.*;
+import me.earth.phobos.event.events.PacketEvent;
+import me.earth.phobos.event.events.PushEvent;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.modules.movement.IceSpeed;
+import me.earth.phobos.features.setting.Setting;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.projectile.EntityFishHook;
+import net.minecraft.init.Blocks;
+import net.minecraft.network.play.server.SPacketEntityStatus;
+import net.minecraft.network.play.server.SPacketEntityVelocity;
+import net.minecraft.network.play.server.SPacketExplosion;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class Velocity extends Module
-{
-    private static Velocity INSTANCE;
-    public Setting<Boolean> knockBack;
-    public Setting<Boolean> noPush;
-    public Setting<Float> horizontal;
-    public Setting<Float> vertical;
-    public Setting<Boolean> explosions;
-    public Setting<Boolean> bobbers;
-    public Setting<Boolean> water;
-    public Setting<Boolean> blocks;
-    public Setting<Boolean> ice;
-    
+public class Velocity
+extends Module {
+    private static Velocity INSTANCE = new Velocity();
+    public Setting<Boolean> knockBack = this.register(new Setting<Boolean>("KnockBack", true));
+    public Setting<Boolean> noPush = this.register(new Setting<Boolean>("NoPush", true));
+    public Setting<Float> horizontal = this.register(new Setting<Float>("Horizontal", Float.valueOf(0.0f), Float.valueOf(0.0f), Float.valueOf(100.0f)));
+    public Setting<Float> vertical = this.register(new Setting<Float>("Vertical", Float.valueOf(0.0f), Float.valueOf(0.0f), Float.valueOf(100.0f)));
+    public Setting<Boolean> explosions = this.register(new Setting<Boolean>("Explosions", true));
+    public Setting<Boolean> bobbers = this.register(new Setting<Boolean>("Bobbers", true));
+    public Setting<Boolean> water = this.register(new Setting<Boolean>("Water", false));
+    public Setting<Boolean> blocks = this.register(new Setting<Boolean>("Blocks", false));
+    public Setting<Boolean> ice = this.register(new Setting<Boolean>("Ice", false));
+
     public Velocity() {
-        super("Velocity",  "Allows you to control your velocity.",  Module.Category.MOVEMENT,  true,  false,  false);
-        this.knockBack = (Setting<Boolean>)this.register(new Setting("KnockBack", true));
-        this.noPush = (Setting<Boolean>)this.register(new Setting("NoPush", true));
-        this.horizontal = (Setting<Float>)this.register(new Setting("Horizontal", 0.0f, 0.0f, 100.0f));
-        this.vertical = (Setting<Float>)this.register(new Setting("Vertical", 0.0f, 0.0f, 100.0f));
-        this.explosions = (Setting<Boolean>)this.register(new Setting("Explosions", true));
-        this.bobbers = (Setting<Boolean>)this.register(new Setting("Bobbers", true));
-        this.water = (Setting<Boolean>)this.register(new Setting("Water", false));
-        this.blocks = (Setting<Boolean>)this.register(new Setting("Blocks", false));
-        this.ice = (Setting<Boolean>)this.register(new Setting("Ice", false));
+        super("Velocity", "Allows you to control your velocity.", Module.Category.MOVEMENT, true, false, false);
         this.setInstance();
     }
-    
+
     public static Velocity getINSTANCE() {
-        if (Velocity.INSTANCE == null) {
-            Velocity.INSTANCE = new Velocity();
+        if (INSTANCE == null) {
+            INSTANCE = new Velocity();
         }
-        return Velocity.INSTANCE;
+        return INSTANCE;
     }
-    
+
     private void setInstance() {
-        Velocity.INSTANCE = this;
+        INSTANCE = this;
     }
-    
+
+    @Override
     public void onUpdate() {
-        if (IceSpeed.getINSTANCE().isOff() && this.ice.getValue()) {
-            Blocks.ICE.slipperiness = 0.6f;
-            Blocks.PACKED_ICE.slipperiness = 0.6f;
-            Blocks.FROSTED_ICE.slipperiness = 0.6f;
+        if (IceSpeed.getINSTANCE().isOff() && this.ice.getValue().booleanValue()) {
+            Blocks.field_150432_aD.field_149765_K = 0.6f;
+            Blocks.field_150403_cj.field_149765_K = 0.6f;
+            Blocks.field_185778_de.field_149765_K = 0.6f;
         }
     }
-    
+
+    @Override
     public void onDisable() {
         if (IceSpeed.getINSTANCE().isOff()) {
-            Blocks.ICE.slipperiness = 0.98f;
-            Blocks.PACKED_ICE.slipperiness = 0.98f;
-            Blocks.FROSTED_ICE.slipperiness = 0.98f;
+            Blocks.field_150432_aD.field_149765_K = 0.98f;
+            Blocks.field_150403_cj.field_149765_K = 0.98f;
+            Blocks.field_185778_de.field_149765_K = 0.98f;
         }
     }
-    
+
     @SubscribeEvent
-    public void onPacketReceived(final PacketEvent.Receive event) {
-        if (event.getStage() == 0 && Velocity.mc.player != null) {
-            final SPacketEntityVelocity velocity;
-            if (this.knockBack.getValue() && event.getPacket() instanceof SPacketEntityVelocity && (velocity = (SPacketEntityVelocity)event.getPacket()).getEntityID() == Velocity.mc.player.entityId) {
-                if (this.horizontal.getValue() == 0.0f && this.vertical.getValue() == 0.0f) {
+    public void onPacketReceived(PacketEvent.Receive event) {
+        if (event.getStage() == 0 && Velocity.mc.field_71439_g != null) {
+            Entity entity;
+            SPacketEntityStatus packet;
+            SPacketEntityVelocity velocity;
+            if (this.knockBack.getValue().booleanValue() && event.getPacket() instanceof SPacketEntityVelocity && (velocity = (SPacketEntityVelocity)event.getPacket()).func_149412_c() == Velocity.mc.field_71439_g.field_145783_c) {
+                if (this.horizontal.getValue().floatValue() == 0.0f && this.vertical.getValue().floatValue() == 0.0f) {
                     event.setCanceled(true);
                     return;
                 }
-                velocity.motionX *= (int)(Object)this.horizontal.getValue();
-                velocity.motionY *= (int)(Object)this.vertical.getValue();
-                velocity.motionZ *= (int)(Object)this.horizontal.getValue();
+                velocity.field_149415_b = (int)((float)velocity.field_149415_b * this.horizontal.getValue().floatValue());
+                velocity.field_149416_c = (int)((float)velocity.field_149416_c * this.vertical.getValue().floatValue());
+                velocity.field_149414_d = (int)((float)velocity.field_149414_d * this.horizontal.getValue().floatValue());
             }
-            final SPacketEntityStatus packet;
-            final Entity entity;
-            if (event.getPacket() instanceof SPacketEntityStatus && this.bobbers.getValue() && (packet = (SPacketEntityStatus)event.getPacket()).getOpCode() == 31 && (entity = packet.getEntity((World)Velocity.mc.world)) instanceof EntityFishHook) {
-                final EntityFishHook fishHook = (EntityFishHook)entity;
-                if (fishHook.caughtEntity == Velocity.mc.player) {
+            if (event.getPacket() instanceof SPacketEntityStatus && this.bobbers.getValue().booleanValue() && (packet = (SPacketEntityStatus)event.getPacket()).func_149160_c() == 31 && (entity = packet.func_149161_a((World)Velocity.mc.field_71441_e)) instanceof EntityFishHook) {
+                EntityFishHook fishHook = (EntityFishHook)entity;
+                if (fishHook.field_146043_c == Velocity.mc.field_71439_g) {
                     event.setCanceled(true);
                 }
             }
-            if (this.explosions.getValue() && event.getPacket() instanceof SPacketExplosion) {
-                if (this.horizontal.getValue() == 0.0f && this.vertical.getValue() == 0.0f) {
+            if (this.explosions.getValue().booleanValue() && event.getPacket() instanceof SPacketExplosion) {
+                if (this.horizontal.getValue().floatValue() == 0.0f && this.vertical.getValue().floatValue() == 0.0f) {
                     event.setCanceled(true);
                     return;
                 }
-                final SPacketExplosion sPacketExplosion;
-                final SPacketExplosion velocity_ = sPacketExplosion = (SPacketExplosion)event.getPacket();
-                sPacketExplosion.motionX *= this.horizontal.getValue();
-                final SPacketExplosion sPacketExplosion2 = velocity_;
-                sPacketExplosion2.motionY *= this.vertical.getValue();
-                final SPacketExplosion sPacketExplosion3 = velocity_;
-                sPacketExplosion3.motionZ *= this.horizontal.getValue();
+                SPacketExplosion velocity_ = (SPacketExplosion)event.getPacket();
+                velocity_.field_149152_f *= this.horizontal.getValue().floatValue();
+                velocity_.field_149153_g *= this.vertical.getValue().floatValue();
+                velocity_.field_149159_h *= this.horizontal.getValue().floatValue();
             }
         }
     }
-    
+
     @SubscribeEvent
-    public void onPush(final PushEvent event) {
-        if (event.getStage() == 0 && this.noPush.getValue() && event.entity.equals((Object)Velocity.mc.player)) {
-            if (this.horizontal.getValue() == 0.0f && this.vertical.getValue() == 0.0f) {
+    public void onPush(PushEvent event) {
+        if (event.getStage() == 0 && this.noPush.getValue().booleanValue() && event.entity.equals((Object)Velocity.mc.field_71439_g)) {
+            if (this.horizontal.getValue().floatValue() == 0.0f && this.vertical.getValue().floatValue() == 0.0f) {
                 event.setCanceled(true);
                 return;
             }
-            event.x = -event.x * this.horizontal.getValue();
-            event.y = -event.y * this.vertical.getValue();
-            event.z = -event.z * this.horizontal.getValue();
-        }
-        else if (event.getStage() == 1 && this.blocks.getValue()) {
+            event.x = -event.x * (double)this.horizontal.getValue().floatValue();
+            event.y = -event.y * (double)this.vertical.getValue().floatValue();
+            event.z = -event.z * (double)this.horizontal.getValue().floatValue();
+        } else if (event.getStage() == 1 && this.blocks.getValue().booleanValue()) {
+            event.setCanceled(true);
+        } else if (event.getStage() == 2 && this.water.getValue().booleanValue() && Velocity.mc.field_71439_g != null && Velocity.mc.field_71439_g.equals((Object)event.entity)) {
             event.setCanceled(true);
         }
-        else if (event.getStage() == 2 && this.water.getValue() && Velocity.mc.player != null && Velocity.mc.player.equals((Object)event.entity)) {
-            event.setCanceled(true);
-        }
-    }
-    
-    static {
-        Velocity.INSTANCE = new Velocity();
     }
 }
+

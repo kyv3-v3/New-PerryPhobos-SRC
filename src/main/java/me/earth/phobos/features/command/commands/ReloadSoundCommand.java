@@ -1,29 +1,36 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.audio.SoundHandler
+ *  net.minecraft.client.audio.SoundManager
+ *  net.minecraftforge.fml.common.ObfuscationReflectionHelper
+ */
 package me.earth.phobos.features.command.commands;
 
-import me.earth.phobos.features.command.*;
-import net.minecraft.client.audio.*;
-import net.minecraftforge.fml.common.*;
+import me.earth.phobos.features.command.Command;
+import net.minecraft.client.audio.SoundHandler;
+import net.minecraft.client.audio.SoundManager;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
-public class ReloadSoundCommand extends Command
-{
+public class ReloadSoundCommand
+extends Command {
     public ReloadSoundCommand() {
-        super("reloadsound",  new String[0]);
+        super("reloadsound", new String[0]);
     }
-    
-    public void execute(final String[] commands) {
+
+    @Override
+    public void execute(String[] commands) {
         try {
-            final SoundManager sndManager = (SoundManager)ObfuscationReflectionHelper.getPrivateValue((Class)SoundHandler.class,  (Object)ReloadSoundCommand.mc.getSoundHandler(),  new String[] { "sndManager",  "sndManager" });
-            sndManager.reloadSoundSystem();
-            sendMessage("§aReloaded Sound System.");
+            SoundManager sndManager = (SoundManager)ObfuscationReflectionHelper.getPrivateValue(SoundHandler.class, (Object)mc.func_147118_V(), (String[])new String[]{"sndManager", "field_147694_f"});
+            sndManager.func_148596_a();
+            ReloadSoundCommand.sendMessage("\u00a7aReloaded Sound System.");
         }
         catch (Exception e) {
             System.out.println("Could not restart sound manager: " + e);
             e.printStackTrace();
-            sendMessage("§cCouldn't Reload Sound System!");
+            ReloadSoundCommand.sendMessage("\u00a7cCouldn't Reload Sound System!");
         }
     }
 }
+

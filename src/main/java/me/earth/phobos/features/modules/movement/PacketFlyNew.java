@@ -1,256 +1,230 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.network.Packet
+ *  net.minecraft.network.play.INetHandlerPlayServer
+ *  net.minecraft.network.play.client.CPacketConfirmTeleport
+ *  net.minecraft.network.play.client.CPacketPlayer
+ *  net.minecraft.network.play.client.CPacketPlayer$Position
+ *  net.minecraft.network.play.client.CPacketPlayer$PositionRotation
+ *  net.minecraft.network.play.client.CPacketPlayer$Rotation
+ *  net.minecraft.network.play.server.SPacketEntityVelocity
+ *  net.minecraft.network.play.server.SPacketPlayerPosLook
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.movement;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import net.minecraft.network.*;
-import net.minecraft.network.play.*;
-import net.minecraft.client.network.*;
-import java.util.*;
-import net.minecraft.entity.*;
-import me.earth.phobos.util.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import me.earth.phobos.event.events.*;
-import net.minecraft.network.play.client.*;
-import net.minecraft.network.play.server.*;
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.Random;
+import me.earth.phobos.event.events.MoveEvent;
+import me.earth.phobos.event.events.PacketEvent;
+import me.earth.phobos.event.events.PushEvent;
+import me.earth.phobos.event.events.UpdateWalkingPlayerEvent;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.MathUtil;
+import net.minecraft.entity.Entity;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.INetHandlerPlayServer;
+import net.minecraft.network.play.client.CPacketConfirmTeleport;
+import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.network.play.server.SPacketEntityVelocity;
+import net.minecraft.network.play.server.SPacketPlayerPosLook;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class PacketFlyNew extends Module
-{
-    private final Setting<types> type;
-    private final Setting<modes> mode;
+public class PacketFlyNew
+extends Module {
+    private final Setting<types> type = this.register(new Setting<types>("Type", types.DOWN));
+    private final Setting<modes> mode = this.register(new Setting<modes>("Mode", modes.FAST));
     private final ArrayList<Packet<INetHandlerPlayServer>> packets;
-    public Setting<Integer> factorAmount;
-    public Setting<Boolean> limit;
-    private int teleportID;
-    private int frequency;
-    private boolean frequencyUp;
-    private float rotationYaw;
-    private float rotationPitch;
-    
+    public Setting<Integer> factorAmount = this.register(new Setting<Float>("Factor", Float.valueOf(1.0f), Float.valueOf(0.1f), Float.valueOf(10.0f)));
+    public Setting<Boolean> limit = this.register(new Setting<Boolean>("Limit", true));
+    private int teleportID = -1;
+    private int frequency = 1;
+    private boolean frequencyUp = true;
+    private float rotationYaw = -1.0f;
+    private float rotationPitch = -1.0f;
+
     public PacketFlyNew() {
-        super("PacketFlyNew",  "Uses packets to allow you to fly and move.",  Module.Category.MOVEMENT,  true,  false,  false);
-        this.type = (Setting<types>)this.register(new Setting("Type", types.DOWN));
-        this.mode = (Setting<modes>)this.register(new Setting("Mode", modes.FAST));
-        this.factorAmount = (Setting<Integer>)this.register(new Setting("Factor", 1.0f, 0.1f, 10.0f));
-        this.limit = (Setting<Boolean>)this.register(new Setting("Limit", true));
-        this.teleportID = -1;
-        this.frequency = 1;
-        this.frequencyUp = true;
-        this.rotationYaw = -1.0f;
-        this.rotationPitch = -1.0f;
-        this.packets = new ArrayList<Packet<INetHandlerPlayServer>>();
+        super("PacketFlyNew", "Uses packets to allow you to fly and move.", Module.Category.MOVEMENT, true, false, false);
+        this.packets = new ArrayList();
     }
-    
-    public void sendOffsets(final double x,  final double y,  final double z) {
+
+    public void sendOffsets(double x, double y, double z) {
         CPacketPlayer.PositionRotation spoofPos = null;
         switch (this.type.getValue()) {
             case UP: {
-                spoofPos = new CPacketPlayer.PositionRotation(x,  y + 1337.0,  z,  this.rotationYaw,  this.rotationPitch,  PacketFlyNew.mc.player.onGround);
+                spoofPos = new CPacketPlayer.PositionRotation(x, y + 1337.0, z, this.rotationYaw, this.rotationPitch, PacketFlyNew.mc.field_71439_g.field_70122_E);
                 break;
             }
             case DOWN: {
-                spoofPos = new CPacketPlayer.PositionRotation(x,  y - 1337.0,  z,  this.rotationYaw,  this.rotationPitch,  PacketFlyNew.mc.player.onGround);
+                spoofPos = new CPacketPlayer.PositionRotation(x, y - 1337.0, z, this.rotationYaw, this.rotationPitch, PacketFlyNew.mc.field_71439_g.field_70122_E);
                 break;
             }
             case BOUNDED: {
-                spoofPos = new CPacketPlayer.PositionRotation(x,  256.0,  z,  this.rotationYaw,  this.rotationPitch,  PacketFlyNew.mc.player.onGround);
+                spoofPos = new CPacketPlayer.PositionRotation(x, 256.0, z, this.rotationYaw, this.rotationPitch, PacketFlyNew.mc.field_71439_g.field_70122_E);
                 break;
             }
             case CONCEAL: {
-                spoofPos = new CPacketPlayer.PositionRotation(x + new Random().nextInt(2000000) - 1000000.0,  y + new Random().nextInt(2000000) - 1000000.0,  z + new Random().nextInt(2000000) - 1000000.0,  this.rotationYaw,  this.rotationPitch,  PacketFlyNew.mc.player.onGround);
+                spoofPos = new CPacketPlayer.PositionRotation(x + (double)new Random().nextInt(2000000) - 1000000.0, y + (double)new Random().nextInt(2000000) - 1000000.0, z + (double)new Random().nextInt(2000000) - 1000000.0, this.rotationYaw, this.rotationPitch, PacketFlyNew.mc.field_71439_g.field_70122_E);
                 break;
             }
             case LIMITJITTER: {
-                spoofPos = new CPacketPlayer.PositionRotation(x,  y + new Random().nextInt(512) - 256.0,  z,  this.rotationYaw,  this.rotationPitch,  PacketFlyNew.mc.player.onGround);
+                spoofPos = new CPacketPlayer.PositionRotation(x, y + (double)new Random().nextInt(512) - 256.0, z, this.rotationYaw, this.rotationPitch, PacketFlyNew.mc.field_71439_g.field_70122_E);
                 break;
             }
             case PRESERVE: {
-                spoofPos = new CPacketPlayer.PositionRotation(x + new Random().nextInt(2000000) - 1000000.0,  y,  z + new Random().nextInt(2000000) - 1000000.0,  this.rotationYaw,  this.rotationPitch,  PacketFlyNew.mc.player.onGround);
-                break;
+                spoofPos = new CPacketPlayer.PositionRotation(x + (double)new Random().nextInt(2000000) - 1000000.0, y, z + (double)new Random().nextInt(2000000) - 1000000.0, this.rotationYaw, this.rotationPitch, PacketFlyNew.mc.field_71439_g.field_70122_E);
             }
         }
         if (spoofPos == null) {
             return;
         }
         this.packets.add((Packet<INetHandlerPlayServer>)spoofPos);
-        Objects.requireNonNull(PacketFlyNew.mc.getConnection()).sendPacket((Packet)spoofPos);
+        Objects.requireNonNull(mc.func_147114_u()).func_147297_a(spoofPos);
     }
-    
+
+    @Override
     public void onEnable() {
         this.packets.clear();
-        this.rotationYaw = PacketFlyNew.mc.player.rotationYaw;
-        this.rotationPitch = PacketFlyNew.mc.player.rotationPitch;
-        this.sendOffsets(PacketFlyNew.mc.player.posX,  PacketFlyNew.mc.player.posY,  PacketFlyNew.mc.player.posZ);
+        this.rotationYaw = PacketFlyNew.mc.field_71439_g.field_70177_z;
+        this.rotationPitch = PacketFlyNew.mc.field_71439_g.field_70125_A;
+        this.sendOffsets(PacketFlyNew.mc.field_71439_g.field_70165_t, PacketFlyNew.mc.field_71439_g.field_70163_u, PacketFlyNew.mc.field_71439_g.field_70161_v);
     }
-    
+
     private boolean isInsideBlock() {
-        return !PacketFlyNew.mc.world.getCollisionBoxes((Entity)PacketFlyNew.mc.player,  PacketFlyNew.mc.player.getEntityBoundingBox().expand(-0.0625,  -0.0625,  -0.0625)).isEmpty();
+        return !PacketFlyNew.mc.field_71441_e.func_184144_a((Entity)PacketFlyNew.mc.field_71439_g, PacketFlyNew.mc.field_71439_g.func_174813_aQ().func_72321_a(-0.0625, -0.0625, -0.0625)).isEmpty();
     }
-    
+
     @SubscribeEvent
-    public void onMove(final MoveEvent event) {
-        PacketFlyNew.mc.player.motionX = 0.0;
-        PacketFlyNew.mc.player.motionY = 0.0;
-        PacketFlyNew.mc.player.motionZ = 0.0;
+    public void onMove(MoveEvent event) {
+        PacketFlyNew.mc.field_71439_g.field_70159_w = 0.0;
+        PacketFlyNew.mc.field_71439_g.field_70181_x = 0.0;
+        PacketFlyNew.mc.field_71439_g.field_70179_y = 0.0;
         if (event.getStage() == 1) {
             event.setCanceled(true);
             return;
         }
         double motionY = 0.0;
-        if (PacketFlyNew.mc.player.movementInput.jump) {
-            if (this.isInsideBlock()) {
-                motionY = 0.016;
-            }
-            else {
-                motionY = 0.032;
-            }
-            if (!PacketFlyNew.mc.player.onGround && !this.isInsideBlock() && PacketFlyNew.mc.player.ticksExisted % 15 == 0) {
+        if (PacketFlyNew.mc.field_71439_g.field_71158_b.field_78901_c) {
+            motionY = this.isInsideBlock() ? 0.016 : 0.032;
+            if (!PacketFlyNew.mc.field_71439_g.field_70122_E && !this.isInsideBlock() && PacketFlyNew.mc.field_71439_g.field_70173_aa % 15 == 0) {
                 motionY = -0.032;
             }
-        }
-        else if (PacketFlyNew.mc.player.movementInput.sneak) {
-            if (this.isInsideBlock()) {
-                motionY = -0.032;
-            }
-            else {
-                motionY = -0.062;
-            }
-        }
-        else if (!PacketFlyNew.mc.player.onGround && !this.isInsideBlock() && PacketFlyNew.mc.player.ticksExisted % 15 == 0) {
+        } else if (PacketFlyNew.mc.field_71439_g.field_71158_b.field_78899_d) {
+            motionY = this.isInsideBlock() ? -0.032 : -0.062;
+        } else if (!PacketFlyNew.mc.field_71439_g.field_70122_E && !this.isInsideBlock() && PacketFlyNew.mc.field_71439_g.field_70173_aa % 15 == 0) {
             motionY = -0.032;
         }
         int currentFactor = 1;
         int clock = 0;
-        while (currentFactor <= (this.mode.getValue().equals(modes.FACTOR) ? this.factorAmount.getValue() : 1)) {
-            if (clock++ > (this.limit.getValue() ? 5 : 1)) {
-                double vSpeed;
-                if (this.isInsideBlock()) {
-                    if (PacketFlyNew.mc.player.movementInput.jump || PacketFlyNew.mc.player.movementInput.sneak) {
-                        vSpeed = 0.016;
-                    }
-                    else {
-                        vSpeed = 0.032;
-                    }
-                }
-                else if (PacketFlyNew.mc.player.movementInput.jump) {
-                    vSpeed = 0.0032;
-                }
-                else if (PacketFlyNew.mc.player.movementInput.sneak) {
-                    vSpeed = 0.032;
-                }
-                else {
-                    vSpeed = 0.062;
-                }
-                final double[] strafing = MathUtil.directionSpeed(vSpeed);
-                final double motionX = strafing[0] * currentFactor;
-                final double motionZ = strafing[1] * currentFactor;
-                event.setX(motionX);
-                event.setY(motionY);
-                event.setZ(motionZ);
-                this.doMovement(motionX,  motionY,  motionZ);
-                ++currentFactor;
-                if (motionX == 0.0 && motionY == 0.0 && motionZ == 0.0) {
-                    return;
-                }
-                if (this.frequencyUp) {
-                    ++this.frequency;
-                    if (this.frequency != 3) {
-                        continue;
-                    }
-                    this.frequencyUp = false;
-                }
-                else {
-                    --this.frequency;
-                    if (this.frequency != 1) {
-                        continue;
-                    }
-                    this.frequencyUp = true;
-                }
+        while (currentFactor <= (this.mode.getValue().equals((Object)modes.FACTOR) ? this.factorAmount.getValue() : 1)) {
+            if (clock++ <= (this.limit.getValue() != false ? 5 : 1)) continue;
+            double vSpeed = this.isInsideBlock() ? (PacketFlyNew.mc.field_71439_g.field_71158_b.field_78901_c || PacketFlyNew.mc.field_71439_g.field_71158_b.field_78899_d ? 0.016 : 0.032) : (PacketFlyNew.mc.field_71439_g.field_71158_b.field_78901_c ? 0.0032 : (PacketFlyNew.mc.field_71439_g.field_71158_b.field_78899_d ? 0.032 : 0.062));
+            double[] strafing = MathUtil.directionSpeed(vSpeed);
+            double motionX = strafing[0] * (double)currentFactor;
+            double motionZ = strafing[1] * (double)currentFactor;
+            event.setX(motionX);
+            event.setY(motionY);
+            event.setZ(motionZ);
+            this.doMovement(motionX, motionY, motionZ);
+            ++currentFactor;
+            if (motionX == 0.0 && motionY == 0.0 && motionZ == 0.0) {
+                return;
             }
+            if (this.frequencyUp) {
+                ++this.frequency;
+                if (this.frequency != 3) continue;
+                this.frequencyUp = false;
+                continue;
+            }
+            --this.frequency;
+            if (this.frequency != 1) continue;
+            this.frequencyUp = true;
         }
     }
-    
+
     @SubscribeEvent
-    public void onUpdateWalkingPlayer(final UpdateWalkingPlayerEvent event) {
+    public void onUpdateWalkingPlayer(UpdateWalkingPlayerEvent event) {
         if (event.getStage() == 1) {
             return;
         }
-        PacketFlyNew.mc.player.motionX = 0.0;
-        PacketFlyNew.mc.player.motionY = 0.0;
-        PacketFlyNew.mc.player.motionZ = 0.0;
-        PacketFlyNew.mc.player.setVelocity(0.0,  0.0,  0.0);
+        PacketFlyNew.mc.field_71439_g.field_70159_w = 0.0;
+        PacketFlyNew.mc.field_71439_g.field_70181_x = 0.0;
+        PacketFlyNew.mc.field_71439_g.field_70179_y = 0.0;
+        PacketFlyNew.mc.field_71439_g.func_70016_h(0.0, 0.0, 0.0);
     }
-    
+
     @SubscribeEvent
-    public void onPushOutOfBlocks(final PushEvent event) {
+    public void onPushOutOfBlocks(PushEvent event) {
         if (event.getStage() == 1) {
             event.setCanceled(true);
         }
     }
-    
-    private void doMovement(final double x,  final double y,  final double z) {
-        final CPacketPlayer.PositionRotation newPos = new CPacketPlayer.PositionRotation(PacketFlyNew.mc.player.posX + x,  PacketFlyNew.mc.player.posY + y,  PacketFlyNew.mc.player.posZ + z,  this.rotationYaw,  this.rotationPitch,  PacketFlyNew.mc.player.onGround);
+
+    private void doMovement(double x, double y, double z) {
+        CPacketPlayer.PositionRotation newPos = new CPacketPlayer.PositionRotation(PacketFlyNew.mc.field_71439_g.field_70165_t + x, PacketFlyNew.mc.field_71439_g.field_70163_u + y, PacketFlyNew.mc.field_71439_g.field_70161_v + z, this.rotationYaw, this.rotationPitch, PacketFlyNew.mc.field_71439_g.field_70122_E);
         this.packets.add((Packet<INetHandlerPlayServer>)newPos);
-        Objects.requireNonNull(PacketFlyNew.mc.getConnection()).sendPacket((Packet)newPos);
+        Objects.requireNonNull(mc.func_147114_u()).func_147297_a((Packet)newPos);
         for (int i = 0; i < this.frequency; ++i) {
-            this.sendOffsets(PacketFlyNew.mc.player.posX,  PacketFlyNew.mc.player.posY,  PacketFlyNew.mc.player.posZ);
+            this.sendOffsets(PacketFlyNew.mc.field_71439_g.field_70165_t, PacketFlyNew.mc.field_71439_g.field_70163_u, PacketFlyNew.mc.field_71439_g.field_70161_v);
         }
     }
-    
+
     @SubscribeEvent
-    public void onPacketSend(final PacketEvent.Send event) {
+    public void onPacketSend(PacketEvent.Send event) {
         if (event.getPacket() instanceof CPacketPlayer.Position || event.getPacket() instanceof CPacketPlayer.Rotation) {
             event.setCanceled(true);
         }
         if (event.getPacket() instanceof CPacketPlayer) {
-            final CPacketPlayer packetPlayer = (CPacketPlayer)event.getPacket();
-            if (this.packets.contains(packetPlayer)) {
-                this.packets.remove(packetPlayer);
-            }
-            else {
+            CPacketPlayer packetPlayer = (CPacketPlayer)event.getPacket();
+            if (this.packets.contains((Object)packetPlayer)) {
+                this.packets.remove((Object)packetPlayer);
+            } else {
                 event.setCanceled(true);
             }
         }
     }
-    
+
     @SubscribeEvent
-    public void onPacketReceive(final PacketEvent.Receive event) {
-        if (PacketFlyNew.mc.player == null || PacketFlyNew.mc.world == null) {
+    public void onPacketReceive(PacketEvent.Receive event) {
+        if (PacketFlyNew.mc.field_71439_g == null || PacketFlyNew.mc.field_71441_e == null) {
             return;
         }
         if (event.getPacket() instanceof SPacketPlayerPosLook) {
-            final SPacketPlayerPosLook flag = (SPacketPlayerPosLook)event.getPacket();
-            this.teleportID = flag.getTeleportId();
-            PacketFlyNew.mc.player.setPosition(flag.getX(),  flag.getY(),  flag.getZ());
-            PacketFlyNew.mc.player.connection.sendPacket((Packet)new CPacketConfirmTeleport(this.teleportID++));
+            SPacketPlayerPosLook flag = (SPacketPlayerPosLook)event.getPacket();
+            this.teleportID = flag.func_186965_f();
+            PacketFlyNew.mc.field_71439_g.func_70107_b(flag.func_148932_c(), flag.func_148928_d(), flag.func_148933_e());
+            PacketFlyNew.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketConfirmTeleport(this.teleportID++));
             event.setCanceled(true);
         }
         if (event.getPacket() instanceof SPacketEntityVelocity) {
-            final SPacketEntityVelocity packet = (SPacketEntityVelocity)event.getPacket();
-            if (packet.entityID == PacketFlyNew.mc.player.entityId) {
-                packet.motionX = 0;
-                packet.motionY = 0;
-                packet.motionZ = 0;
+            SPacketEntityVelocity packet = (SPacketEntityVelocity)event.getPacket();
+            if (packet.field_149417_a == PacketFlyNew.mc.field_71439_g.field_145783_c) {
+                packet.field_149415_b = 0;
+                packet.field_149416_c = 0;
+                packet.field_149414_d = 0;
             }
         }
     }
-    
-    private enum modes
-    {
-        FAST,  
-        FACTOR;
-    }
-    
-    private enum types
-    {
-        UP,  
-        DOWN,  
-        PRESERVE,  
-        LIMITJITTER,  
-        BOUNDED,  
+
+    private static enum types {
+        UP,
+        DOWN,
+        PRESERVE,
+        LIMITJITTER,
+        BOUNDED,
         CONCEAL;
+
+    }
+
+    private static enum modes {
+        FAST,
+        FACTOR;
+
     }
 }
+

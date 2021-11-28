@@ -1,44 +1,49 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.entity.player.EntityPlayer
+ *  net.minecraft.item.ItemShulkerBox
+ *  net.minecraft.item.ItemStack
+ */
 package me.earth.phobos.features.command.commands;
 
-import me.earth.phobos.features.command.*;
-import me.earth.phobos.features.modules.misc.*;
-import net.minecraft.entity.player.*;
-import net.minecraft.item.*;
-import java.util.*;
+import java.util.Map;
+import me.earth.phobos.features.command.Command;
+import me.earth.phobos.features.modules.misc.ToolTips;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemShulkerBox;
+import net.minecraft.item.ItemStack;
 
-public class PeekCommand extends Command
-{
+public class PeekCommand
+extends Command {
     public PeekCommand() {
-        super("peek",  new String[] { "<player>" });
+        super("peek", new String[]{"<player>"});
     }
-    
-    public void execute(final String[] commands) {
+
+    @Override
+    public void execute(String[] commands) {
         if (commands.length == 1) {
-            final ItemStack stack = PeekCommand.mc.player.getHeldItemMainhand();
-            if (!(stack.getItem() instanceof ItemShulkerBox)) {
-                Command.sendMessage("§cYou need to hold a Shulker in your mainhand.");
+            ItemStack stack = PeekCommand.mc.field_71439_g.func_184614_ca();
+            if (stack.func_77973_b() instanceof ItemShulkerBox) {
+                ToolTips.displayInv(stack, null);
+            } else {
+                Command.sendMessage("\u00a7cYou need to hold a Shulker in your mainhand.");
                 return;
             }
-            ToolTips.displayInv(stack,  null);
         }
         if (commands.length > 1) {
-            if (ToolTips.getInstance().isOn() && ToolTips.getInstance().shulkerSpy.getValue()) {
-                for (final Map.Entry<EntityPlayer,  ItemStack> entry : ToolTips.getInstance().spiedPlayers.entrySet()) {
-                    if (!entry.getKey().getName().equalsIgnoreCase(commands[0])) {
-                        continue;
-                    }
-                    final ItemStack stack2 = entry.getValue();
-                    ToolTips.displayInv(stack2,  entry.getKey().getName());
+            if (ToolTips.getInstance().isOn() && ToolTips.getInstance().shulkerSpy.getValue().booleanValue()) {
+                for (Map.Entry<EntityPlayer, ItemStack> entry : ToolTips.getInstance().spiedPlayers.entrySet()) {
+                    if (!entry.getKey().func_70005_c_().equalsIgnoreCase(commands[0])) continue;
+                    ItemStack stack = entry.getValue();
+                    ToolTips.displayInv(stack, entry.getKey().func_70005_c_());
                     break;
                 }
-            }
-            else {
-                Command.sendMessage("§cYou need to turn on Tooltips - ShulkerSpy");
+            } else {
+                Command.sendMessage("\u00a7cYou need to turn on Tooltips - ShulkerSpy");
             }
         }
     }
 }
+

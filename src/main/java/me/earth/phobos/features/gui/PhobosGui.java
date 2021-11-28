@@ -1,3 +1,11 @@
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.gui.GuiScreen
+ *  org.lwjgl.input.Mouse
+ *  org.lwjgl.opengl.Display
+ */
 package me.earth.phobos.features.gui;
 
 import java.awt.Color;
@@ -16,127 +24,112 @@ import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
-public class PhobosGui extends GuiScreen
-{
-    private static PhobosGui INSTANCE;
-    private final ArrayList<Component> components;
-    
+public class PhobosGui
+extends GuiScreen {
+    private static PhobosGui INSTANCE = new PhobosGui();
+    private final ArrayList<Component> components = new ArrayList();
+
     public PhobosGui() {
-        this.components = new ArrayList<Component>();
         this.setInstance();
         this.load();
     }
-    
+
     public static PhobosGui getInstance() {
-        if (PhobosGui.INSTANCE == null) {
-            PhobosGui.INSTANCE = new PhobosGui();
+        if (INSTANCE == null) {
+            INSTANCE = new PhobosGui();
         }
-        return PhobosGui.INSTANCE;
+        return INSTANCE;
     }
-    
+
     public static PhobosGui getClickGui() {
-        return getInstance();
+        return PhobosGui.getInstance();
     }
-    
+
     private void setInstance() {
-        PhobosGui.INSTANCE = this;
+        INSTANCE = this;
     }
-    
+
     private void load() {
         int x = -84;
         for (final Module.Category category : Phobos.moduleManager.getCategories()) {
-            final ArrayList<Component> components2 = this.components;
-            final String name = category.getName();
-            x += 90;
-            components2.add(new Component(name,  x,  4,  true) {
+            this.components.add(new Component(category.getName(), x += 90, 4, true){
+
+                @Override
                 public void setupItems() {
                     Phobos.moduleManager.getModulesByCategory(category).forEach(module -> {
                         if (!module.hidden) {
-                            this.addButton((Button)new ModuleButton(module));
+                            this.addButton(new ModuleButton((Module)module));
                         }
                     });
                 }
             });
         }
-        this.components.forEach(components -> components.getItems().sort(Comparator.comparing((Function<? super E,  ? extends Comparable>)Feature::getName)));
+        this.components.forEach(components -> components.getItems().sort(Comparator.comparing(Feature::getName)));
     }
-    
-    public void updateModule(final Module module) {
-        for (final Component component : this.components) {
-            for (final Item item : component.getItems()) {
-                if (!(item instanceof ModuleButton)) {
-                    continue;
-                }
-                final ModuleButton button = (ModuleButton)item;
-                final Module mod = button.getModule();
-                if (module == null) {
-                    continue;
-                }
-                if (!module.equals(mod)) {
-                    continue;
-                }
+
+    public void updateModule(Module module) {
+        block0: for (Component component : this.components) {
+            for (Item item : component.getItems()) {
+                if (!(item instanceof ModuleButton)) continue;
+                ModuleButton button = (ModuleButton)item;
+                Module mod = button.getModule();
+                if (module == null || !module.equals(mod)) continue;
                 button.initSettings();
-                break;
+                continue block0;
             }
         }
     }
-    
-    public void drawScreen(final int mouseX,  final int mouseY,  final float partialTicks) {
+
+    public void func_73863_a(int mouseX, int mouseY, float partialTicks) {
         this.checkMouseWheel();
-        if (ClickGui.getInstance().bg.getValue()) {
-            RenderUtil.drawRect(0.0f,  0.0f,  (float)Display.getWidth(),  (float)Display.getHeight(),  new Color(0,  0,  0,  ClickGui.getInstance().bgtint.getValue()).getRGB());
+        if (ClickGui.getInstance().bg.getValue().booleanValue()) {
+            RenderUtil.drawRect(0.0f, 0.0f, Display.getWidth(), Display.getHeight(), new Color(0, 0, 0, ClickGui.getInstance().bgtint.getValue()).getRGB());
         }
-        this.components.forEach(components -> components.drawScreen(mouseX,  mouseY,  partialTicks));
+        this.components.forEach(components -> components.drawScreen(mouseX, mouseY, partialTicks));
     }
-    
-    public void mouseClicked(final int mouseX,  final int mouseY,  final int clickedButton) {
-        this.components.forEach(components -> components.mouseClicked(mouseX,  mouseY,  clickedButton));
+
+    public void func_73864_a(int mouseX, int mouseY, int clickedButton) {
+        this.components.forEach(components -> components.mouseClicked(mouseX, mouseY, clickedButton));
     }
-    
-    public void mouseReleased(final int mouseX,  final int mouseY,  final int releaseButton) {
-        this.components.forEach(components -> components.mouseReleased(mouseX,  mouseY,  releaseButton));
+
+    public void func_146286_b(int mouseX, int mouseY, int releaseButton) {
+        this.components.forEach(components -> components.mouseReleased(mouseX, mouseY, releaseButton));
     }
-    
-    public boolean doesGuiPauseGame() {
+
+    public boolean func_73868_f() {
         return false;
     }
-    
+
     public final ArrayList<Component> getComponents() {
         return this.components;
     }
-    
+
     public void checkMouseWheel() {
-        final int dWheel = Mouse.getDWheel();
+        int dWheel = Mouse.getDWheel();
         if (dWheel < 0) {
-            if (ClickGui.getInstance().scroll.getValue()) {
+            if (ClickGui.getInstance().scroll.getValue().booleanValue()) {
                 this.components.forEach(component -> component.setY(component.getY() - ClickGui.getInstance().scrollval.getValue()));
             }
-        }
-        else if (dWheel > 0 && ClickGui.getInstance().scroll.getValue()) {
+        } else if (dWheel > 0 && ClickGui.getInstance().scroll.getValue().booleanValue()) {
             this.components.forEach(component -> component.setY(component.getY() + ClickGui.getInstance().scrollval.getValue()));
         }
     }
-    
+
     public int getTextOffset() {
         return -6;
     }
-    
-    public Component getComponentByName(final String name) {
-        for (final Component component : this.components) {
-            if (!component.getName().equalsIgnoreCase(name)) {
-                continue;
-            }
+
+    public Component getComponentByName(String name) {
+        for (Component component : this.components) {
+            if (!component.getName().equalsIgnoreCase(name)) continue;
             return component;
         }
         return null;
     }
-    
-    public void keyTyped(final char typedChar,  final int keyCode) throws IOException {
-        super.keyTyped(typedChar,  keyCode);
-        this.components.forEach(component -> component.onKeyTyped(typedChar,  keyCode));
-    }
-    
-    static {
-        PhobosGui.INSTANCE = new PhobosGui();
+
+    public void func_73869_a(char typedChar, int keyCode) throws IOException {
+        super.func_73869_a(typedChar, keyCode);
+        this.components.forEach(component -> component.onKeyTyped(typedChar, keyCode));
     }
 }
+

@@ -1,21 +1,25 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.renderer.ActiveRenderInfo
+ *  net.minecraft.entity.Entity
+ */
 package me.earth.phobos.mixin.mixins;
 
-import org.spongepowered.asm.mixin.*;
-import net.minecraft.client.renderer.*;
-import net.minecraft.entity.*;
-import org.spongepowered.asm.mixin.injection.callback.*;
-import me.earth.phobos.util.*;
-import org.spongepowered.asm.mixin.injection.*;
+import me.earth.phobos.util.RenderUtil;
+import net.minecraft.client.renderer.ActiveRenderInfo;
+import net.minecraft.entity.Entity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin({ ActiveRenderInfo.class })
-public class MixinActiveRenderInfo
-{
-    @Inject(method = { "updateRenderInfo(Lnet/minecraft/entity/Entity;Z)V" },  at = { @At("HEAD") },  remap = false)
-    private static void updateRenderInfo(final Entity entity,  final boolean wtf,  final CallbackInfo ci) {
+@Mixin(value={ActiveRenderInfo.class})
+public class MixinActiveRenderInfo {
+    @Inject(method={"updateRenderInfo(Lnet/minecraft/entity/Entity;Z)V"}, at={@At(value="HEAD")}, remap=false)
+    private static void updateRenderInfo(Entity entity, boolean wtf, CallbackInfo ci) {
         RenderUtil.updateModelViewProjectionMatrix();
     }
 }
+

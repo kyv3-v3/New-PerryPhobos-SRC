@@ -1,46 +1,53 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.entity.passive.AbstractHorse
+ *  net.minecraft.entity.passive.EntityTameable
+ *  net.minecraft.entity.player.EntityPlayer
+ */
 package me.earth.phobos.features.modules.misc;
 
-import me.earth.phobos.features.modules.*;
-import net.minecraft.entity.*;
-import java.util.concurrent.*;
-import me.earth.phobos.util.*;
-import net.minecraft.entity.passive.*;
-import java.util.*;
-import net.minecraft.entity.player.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.util.PlayerUtil;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.passive.AbstractHorse;
+import net.minecraft.entity.passive.EntityTameable;
+import net.minecraft.entity.player.EntityPlayer;
 
-public class MobOwner extends Module
-{
-    private final Map<Entity,  String> owners;
-    private final Map<Entity,  UUID> toLookUp;
-    private final List<Entity> lookedUp;
-    
+public class MobOwner
+extends Module {
+    private final Map<Entity, String> owners = new HashMap<Entity, String>();
+    private final Map<Entity, UUID> toLookUp = new ConcurrentHashMap<Entity, UUID>();
+    private final List<Entity> lookedUp = new ArrayList<Entity>();
+
     public MobOwner() {
-        super("MobOwner",  "Shows you who owns mobs.",  Category.MISC,  false,  false,  false);
-        this.owners = new HashMap<Entity,  String>();
-        this.toLookUp = new ConcurrentHashMap<Entity,  UUID>();
-        this.lookedUp = new ArrayList<Entity>();
+        super("MobOwner", "Shows you who owns mobs.", Module.Category.MISC, false, false, false);
     }
-    
+
     @Override
     public void onUpdate() {
-        if (fullNullCheck()) {
+        if (MobOwner.fullNullCheck()) {
             return;
         }
         if (PlayerUtil.timer.passedS(5.0)) {
-            for (final Map.Entry<Entity,  UUID> entry : this.toLookUp.entrySet()) {
-                final Entity entity = entry.getKey();
-                final UUID uuid = entry.getValue();
+            for (Map.Entry<Object, UUID> entry : this.toLookUp.entrySet()) {
+                Entity entity = (Entity)entry.getKey();
+                UUID uuid = entry.getValue();
                 if (uuid != null) {
-                    final EntityPlayer owner = MobOwner.mc.world.getPlayerEntityByUUID(uuid);
+                    EntityPlayer owner = MobOwner.mc.field_71441_e.func_152378_a(uuid);
                     if (owner == null) {
                         try {
-                            final String name = PlayerUtil.getNameFromUUID(uuid);
+                            String name = PlayerUtil.getNameFromUUID(uuid);
                             if (name != null) {
-                                this.owners.put(entity,  name);
+                                this.owners.put(entity, name);
                                 this.lookedUp.add(entity);
                             }
                         }
@@ -51,72 +58,49 @@ public class MobOwner extends Module
                         PlayerUtil.timer.reset();
                         break;
                     }
-                    this.owners.put(entity,  owner.getName());
+                    this.owners.put(entity, owner.func_70005_c_());
                     this.lookedUp.add(entity);
+                    continue;
                 }
-                else {
-                    this.lookedUp.add(entity);
-                    this.toLookUp.remove(entry);
-                }
+                this.lookedUp.add(entity);
+                this.toLookUp.remove(entry);
             }
         }
-        for (final Entity entity2 : MobOwner.mc.world.getLoadedEntityList()) {
-            if (!entity2.getAlwaysRenderNameTag()) {
-                if (entity2 instanceof EntityTameable) {
-                    final EntityTameable tameableEntity = (EntityTameable)entity2;
-                    if (!tameableEntity.isTamed()) {
-                        continue;
-                    }
-                    if (tameableEntity.getOwnerId() == null) {
-                        continue;
-                    }
-                    if (this.owners.get(tameableEntity) != null) {
-                        tameableEntity.setAlwaysRenderNameTag(true);
-                        tameableEntity.setCustomNameTag((String)this.owners.get(tameableEntity));
-                    }
-                    else {
-                        if (this.lookedUp.contains(entity2)) {
-                            continue;
-                        }
-                        this.toLookUp.put((Entity)tameableEntity,  tameableEntity.getOwnerId());
-                    }
+        for (Entity entity : MobOwner.mc.field_71441_e.func_72910_y()) {
+            AbstractHorse tameableEntity2;
+            if (entity.func_174833_aM()) continue;
+            if (entity instanceof EntityTameable) {
+                EntityTameable tameableEntity = (EntityTameable)entity;
+                if (!tameableEntity.func_70909_n() || tameableEntity.func_184753_b() == null) continue;
+                if (this.owners.get((Object)tameableEntity) != null) {
+                    tameableEntity.func_174805_g(true);
+                    tameableEntity.func_96094_a(this.owners.get((Object)tameableEntity));
+                    continue;
                 }
-                else {
-                    if (!(entity2 instanceof AbstractHorse)) {
-                        continue;
-                    }
-                    final AbstractHorse tameableEntity2 = (AbstractHorse)entity2;
-                    if (!tameableEntity2.isTame()) {
-                        continue;
-                    }
-                    if (tameableEntity2.getOwnerUniqueId() == null) {
-                        continue;
-                    }
-                    if (this.owners.get(tameableEntity2) != null) {
-                        tameableEntity2.setAlwaysRenderNameTag(true);
-                        tameableEntity2.setCustomNameTag((String)this.owners.get(tameableEntity2));
-                    }
-                    else {
-                        if (this.lookedUp.contains(entity2)) {
-                            continue;
-                        }
-                        this.toLookUp.put((Entity)tameableEntity2,  tameableEntity2.getOwnerUniqueId());
-                    }
-                }
-            }
-        }
-    }
-    
-    @Override
-    public void onDisable() {
-        for (final Entity entity : MobOwner.mc.world.loadedEntityList) {
-            if (!(entity instanceof EntityTameable) && !(entity instanceof AbstractHorse)) {
+                if (this.lookedUp.contains((Object)entity)) continue;
+                this.toLookUp.put((Entity)tameableEntity, tameableEntity.func_184753_b());
                 continue;
             }
-            try {
-                entity.setAlwaysRenderNameTag(false);
+            if (!(entity instanceof AbstractHorse) || !(tameableEntity2 = (AbstractHorse)entity).func_110248_bS() || tameableEntity2.func_184780_dh() == null) continue;
+            if (this.owners.get((Object)tameableEntity2) != null) {
+                tameableEntity2.func_174805_g(true);
+                tameableEntity2.func_96094_a(this.owners.get((Object)tameableEntity2));
+                continue;
             }
-            catch (Exception ex) {}
+            if (this.lookedUp.contains((Object)entity)) continue;
+            this.toLookUp.put((Entity)tameableEntity2, tameableEntity2.func_184780_dh());
+        }
+    }
+
+    @Override
+    public void onDisable() {
+        for (Entity entity : MobOwner.mc.field_71441_e.field_72996_f) {
+            if (!(entity instanceof EntityTameable) && !(entity instanceof AbstractHorse)) continue;
+            try {
+                entity.func_174805_g(false);
+            }
+            catch (Exception exception) {}
         }
     }
 }
+

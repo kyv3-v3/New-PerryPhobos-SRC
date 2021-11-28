@@ -1,54 +1,61 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.Minecraft
+ */
 package me.earth.phobos.features.gui.alts.iasencrypt;
 
-import java.io.*;
-import java.nio.file.attribute.*;
-import java.nio.file.*;
-import me.earth.phobos.features.gui.alts.tools.alt.*;
-import java.util.*;
-import me.earth.phobos.features.gui.alts.tools.*;
-import me.earth.phobos.features.gui.alts.ias.account.*;
-import net.minecraft.client.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.attribute.DosFileAttributeView;
+import java.nio.file.attribute.DosFileAttributes;
+import me.earth.phobos.features.gui.alts.ias.account.ExtendedAccountData;
+import me.earth.phobos.features.gui.alts.iasencrypt.EncryptionTools;
+import me.earth.phobos.features.gui.alts.tools.Config;
+import me.earth.phobos.features.gui.alts.tools.alt.AccountData;
+import me.earth.phobos.features.gui.alts.tools.alt.AltDatabase;
+import net.minecraft.client.Minecraft;
 
-public final class Standards
-{
+public final class Standards {
     public static final String cfgn = ".iasx";
     public static final String pwdn = ".iasp";
-    public static File IASFOLDER;
-    
+    public static File IASFOLDER = Minecraft.func_71410_x().field_71412_D;
+
     public static String getPassword() {
-        final File passwordFile = new File(Standards.IASFOLDER,  ".iasp");
-        Exception e = null;
+        File passwordFile = new File(IASFOLDER, pwdn);
         if (passwordFile.exists()) {
             String pass;
             try {
-                final ObjectInputStream stream = new ObjectInputStream(new FileInputStream(passwordFile));
+                ObjectInputStream stream = new ObjectInputStream(new FileInputStream(passwordFile));
                 pass = (String)stream.readObject();
                 stream.close();
             }
-            catch (IOException | ClassNotFoundException ex2) {
-                final Exception ex;
-                e = ex;
+            catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
             return pass;
         }
-        final String newPass = EncryptionTools.generatePassword();
+        String newPass = EncryptionTools.generatePassword();
         try {
-            final ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(passwordFile));
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(passwordFile));
             out.writeObject(newPass);
             out.close();
         }
-        catch (IOException e2) {
-            throw new RuntimeException(e2);
+        catch (IOException e) {
+            throw new RuntimeException(e);
         }
         try {
-            final Path file = passwordFile.toPath();
-            final DosFileAttributes attr = Files.readAttributes(file,  DosFileAttributes.class,  new LinkOption[0]);
-            final DosFileAttributeView view = Files.getFileAttributeView(file,  DosFileAttributeView.class,  new LinkOption[0]);
+            Path file = passwordFile.toPath();
+            DosFileAttributes attr = Files.readAttributes(file, DosFileAttributes.class, new LinkOption[0]);
+            DosFileAttributeView view = Files.getFileAttributeView(file, DosFileAttributeView.class, new LinkOption[0]);
             if (!attr.isHidden()) {
                 view.setHidden(true);
             }
@@ -58,125 +65,111 @@ public final class Standards
         }
         return newPass;
     }
-    
+
     public static void updateFolder() {
-        final String OS = System.getProperty("os.name").toUpperCase();
         String dir;
+        String OS = System.getProperty("os.name").toUpperCase();
         if (OS.contains("WIN")) {
             dir = System.getenv("AppData");
-        }
-        else {
+        } else {
             dir = System.getProperty("user.home");
             if (OS.contains("MAC")) {
-                dir += "/Library/Application Support";
+                dir = dir + "/Library/Application Support";
             }
         }
-        Standards.IASFOLDER = new File(dir);
+        IASFOLDER = new File(dir);
     }
-    
+
     public static void importAccounts() {
-        processData(getConfigV3());
-        processData(getConfigV2());
-        processData(getConfigV1(),  false);
+        Standards.processData(Standards.getConfigV3());
+        Standards.processData(Standards.getConfigV2());
+        Standards.processData(Standards.getConfigV1(), false);
     }
-    
-    private static boolean hasData(final AccountData data) {
-        for (final AccountData edata : AltDatabase.getInstance().getAlts()) {
-            if (edata.equalsBasic(data)) {
-                return true;
-            }
+
+    private static boolean hasData(AccountData data) {
+        for (AccountData edata : AltDatabase.getInstance().getAlts()) {
+            if (!edata.equalsBasic(data)) continue;
+            return true;
         }
         return false;
     }
-    
-    private static void processData(final Config olddata) {
-        processData(olddata,  true);
+
+    private static void processData(Config olddata) {
+        Standards.processData(olddata, true);
     }
-    
-    private static void processData(final Config olddata,  final boolean decrypt) {
+
+    private static void processData(Config olddata, boolean decrypt) {
         if (olddata != null) {
-            for (final AccountData data : ((AltDatabase)olddata.getKey("altaccounts")).getAlts()) {
-                final AccountData data2 = (AccountData)convertData(data,  decrypt);
-                if (!hasData(data2)) {
-                    AltDatabase.getInstance().getAlts().add(data2);
-                }
+            for (AccountData data : ((AltDatabase)olddata.getKey("altaccounts")).getAlts()) {
+                ExtendedAccountData data2 = Standards.convertData(data, decrypt);
+                if (Standards.hasData(data2)) continue;
+                AltDatabase.getInstance().getAlts().add(data2);
             }
         }
     }
-    
-    private static ExtendedAccountData convertData(final AccountData oldData,  final boolean decrypt) {
+
+    private static ExtendedAccountData convertData(AccountData oldData, boolean decrypt) {
         if (decrypt) {
             if (oldData instanceof ExtendedAccountData) {
-                return new ExtendedAccountData(EncryptionTools.decodeOld(oldData.user),  EncryptionTools.decodeOld(oldData.pass),  oldData.alias,  ((ExtendedAccountData)oldData).useCount,  ((ExtendedAccountData)oldData).lastused,  ((ExtendedAccountData)oldData).premium);
+                return new ExtendedAccountData(EncryptionTools.decodeOld(oldData.user), EncryptionTools.decodeOld(oldData.pass), oldData.alias, ((ExtendedAccountData)oldData).useCount, ((ExtendedAccountData)oldData).lastused, ((ExtendedAccountData)oldData).premium);
             }
-            return new ExtendedAccountData(EncryptionTools.decodeOld(oldData.user),  EncryptionTools.decodeOld(oldData.pass),  oldData.alias);
+            return new ExtendedAccountData(EncryptionTools.decodeOld(oldData.user), EncryptionTools.decodeOld(oldData.pass), oldData.alias);
         }
-        else {
-            if (oldData instanceof ExtendedAccountData) {
-                return new ExtendedAccountData(oldData.user,  oldData.pass,  oldData.alias,  ((ExtendedAccountData)oldData).useCount,  ((ExtendedAccountData)oldData).lastused,  ((ExtendedAccountData)oldData).premium);
-            }
-            return new ExtendedAccountData(oldData.user,  oldData.pass,  oldData.alias);
+        if (oldData instanceof ExtendedAccountData) {
+            return new ExtendedAccountData(oldData.user, oldData.pass, oldData.alias, ((ExtendedAccountData)oldData).useCount, ((ExtendedAccountData)oldData).lastused, ((ExtendedAccountData)oldData).premium);
         }
+        return new ExtendedAccountData(oldData.user, oldData.pass, oldData.alias);
     }
-    
+
     private static Config getConfigV3() {
-        final File f = new File(Standards.IASFOLDER,  ".ias");
+        File f = new File(IASFOLDER, ".ias");
         Config cfg = null;
         if (f.exists()) {
             try {
-                final ObjectInputStream stream = new ObjectInputStream(new FileInputStream(f));
+                ObjectInputStream stream = new ObjectInputStream(new FileInputStream(f));
                 cfg = (Config)stream.readObject();
                 stream.close();
             }
-            catch (IOException | ClassNotFoundException ex2) {
-                final Exception ex;
-                final Exception e = ex;
+            catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
             f.delete();
         }
         return cfg;
     }
-    
+
     private static Config getConfigV2() {
-        final File f = new File(Minecraft.getMinecraft().gameDir,  ".ias");
+        File f = new File(Minecraft.func_71410_x().field_71412_D, ".ias");
         Config cfg = null;
         if (f.exists()) {
             try {
-                final ObjectInputStream stream = new ObjectInputStream(new FileInputStream(f));
+                ObjectInputStream stream = new ObjectInputStream(new FileInputStream(f));
                 cfg = (Config)stream.readObject();
                 stream.close();
             }
-            catch (IOException | ClassNotFoundException ex2) {
-                final Exception ex;
-                final Exception e = ex;
+            catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
             f.delete();
         }
         return cfg;
     }
-    
+
     private static Config getConfigV1() {
-        final File f = new File(Minecraft.getMinecraft().gameDir,  "user.cfg");
+        File f = new File(Minecraft.func_71410_x().field_71412_D, "user.cfg");
         Config cfg = null;
         if (f.exists()) {
             try {
-                final ObjectInputStream stream = new ObjectInputStream(new FileInputStream(f));
+                ObjectInputStream stream = new ObjectInputStream(new FileInputStream(f));
                 cfg = (Config)stream.readObject();
                 stream.close();
             }
-            catch (IOException | ClassNotFoundException ex2) {
-                final Exception ex;
-                final Exception e = ex;
+            catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
             f.delete();
         }
         return cfg;
-    }
-    
-    static {
-        Standards.IASFOLDER = Minecraft.getMinecraft().gameDir;
     }
 }
+

@@ -1,123 +1,147 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.block.Block
+ *  net.minecraft.block.state.IBlockState
+ *  net.minecraft.client.gui.BossInfoClient
+ *  net.minecraft.client.gui.GuiBossOverlay
+ *  net.minecraft.client.gui.ScaledResolution
+ *  net.minecraft.client.renderer.BufferBuilder
+ *  net.minecraft.client.renderer.GlStateManager
+ *  net.minecraft.client.renderer.Tessellator
+ *  net.minecraft.client.renderer.vertex.DefaultVertexFormats
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.entity.item.EntityItem
+ *  net.minecraft.entity.passive.EntityBat
+ *  net.minecraft.init.Blocks
+ *  net.minecraft.init.SoundEvents
+ *  net.minecraft.item.Item
+ *  net.minecraft.item.ItemStack
+ *  net.minecraft.network.play.server.SPacketExplosion
+ *  net.minecraft.network.play.server.SPacketTimeUpdate
+ *  net.minecraft.util.EnumParticleTypes
+ *  net.minecraft.util.ResourceLocation
+ *  net.minecraft.util.math.BlockPos
+ *  net.minecraft.util.math.BlockPos$MutableBlockPos
+ *  net.minecraft.world.BossInfo
+ *  net.minecraft.world.GameType
+ *  net.minecraft.world.World
+ *  net.minecraftforge.client.event.RenderGameOverlayEvent$ElementType
+ *  net.minecraftforge.client.event.RenderGameOverlayEvent$Post
+ *  net.minecraftforge.client.event.RenderGameOverlayEvent$Pre
+ *  net.minecraftforge.client.event.RenderLivingEvent$Pre
+ *  net.minecraftforge.event.entity.PlaySoundAtEntityEvent
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ *  org.lwjgl.opengl.GL11
+ */
 package me.earth.phobos.features.modules.render;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import net.minecraft.entity.item.*;
-import net.minecraft.entity.*;
-import java.util.function.*;
-import net.minecraft.client.renderer.vertex.*;
-import me.earth.phobos.event.events.*;
-import net.minecraft.network.play.server.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import net.minecraft.util.math.*;
-import net.minecraft.item.*;
-import net.minecraft.util.*;
-import net.minecraft.block.state.*;
-import org.lwjgl.opengl.*;
-import net.minecraft.client.renderer.*;
-import net.minecraft.client.gui.*;
-import net.minecraft.world.*;
-import java.util.*;
-import net.minecraftforge.client.event.*;
-import net.minecraft.entity.passive.*;
-import net.minecraftforge.event.entity.*;
-import net.minecraft.init.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import me.earth.phobos.event.events.PacketEvent;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.gui.BossInfoClient;
+import net.minecraft.client.gui.GuiBossOverlay;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.passive.EntityBat;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.server.SPacketExplosion;
+import net.minecraft.network.play.server.SPacketTimeUpdate;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.BossInfo;
+import net.minecraft.world.GameType;
+import net.minecraft.world.World;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.event.entity.PlaySoundAtEntityEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.lwjgl.opengl.GL11;
 
-public class NoRender extends Module
-{
-    private static NoRender INSTANCE;
-    private final ResourceLocation fakeMap;
-    public Setting<Boolean> fire;
-    public Setting<Boolean> portal;
-    public Setting<Boolean> pumpkin;
-    public Setting<Boolean> totemPops;
-    public Setting<Boolean> items;
-    public Setting<Boolean> markers;
-    public Setting<Boolean> nausea;
-    public Setting<Boolean> hurtcam;
-    public Setting<Boolean> explosions;
-    public Setting<Fog> fog;
-    public Setting<Boolean> noWeather;
-    public Setting<Boss> boss;
-    public Setting<Float> scale;
-    public Setting<Boolean> bats;
-    public Setting<NoArmor> noArmor;
-    public Setting<Skylight> skylight;
-    public Setting<Boolean> barriers;
-    public Setting<Boolean> blocks;
-    public Setting<Boolean> advancements;
-    public Setting<Boolean> pigmen;
-    public Setting<Boolean> timeChange;
-    public Setting<Integer> time;
-    
+public class NoRender
+extends Module {
+    private static NoRender INSTANCE = new NoRender();
+    private final ResourceLocation fakeMap = new ResourceLocation("phobos.png");
+    public Setting<Boolean> fire = this.register(new Setting<Boolean>("Fire", Boolean.valueOf(false), "Removes the portal overlay."));
+    public Setting<Boolean> portal = this.register(new Setting<Boolean>("Portal", Boolean.valueOf(false), "Removes the portal overlay."));
+    public Setting<Boolean> pumpkin = this.register(new Setting<Boolean>("Pumpkin", Boolean.valueOf(false), "Removes the pumpkin overlay."));
+    public Setting<Boolean> totemPops = this.register(new Setting<Boolean>("TotemPop", Boolean.valueOf(false), "Removes the Totem overlay."));
+    public Setting<Boolean> items = this.register(new Setting<Boolean>("Items", Boolean.valueOf(false), "Removes items on the ground."));
+    public Setting<Boolean> markers = this.register(new Setting<Boolean>("MapMarkers", Boolean.valueOf(false), "Removes the 3d map markers."));
+    public Setting<Boolean> nausea = this.register(new Setting<Boolean>("Nausea", Boolean.valueOf(false), "Removes Portal Nausea."));
+    public Setting<Boolean> hurtcam = this.register(new Setting<Boolean>("HurtCam", Boolean.valueOf(false), "Removes shaking after taking damage."));
+    public Setting<Boolean> explosions = this.register(new Setting<Boolean>("Explosions", Boolean.valueOf(false), "Removes crystal explosions."));
+    public Setting<Fog> fog = this.register(new Setting<Fog>("Fog", Fog.NONE, "Removes Fog."));
+    public Setting<Boolean> noWeather = this.register(new Setting<Boolean>("Weather", Boolean.valueOf(false), "AntiWeather"));
+    public Setting<Boss> boss = this.register(new Setting<Boss>("BossBars", Boss.NONE, "Modifies the bossbars."));
+    public Setting<Float> scale = this.register(new Setting<Object>("Scale", Float.valueOf(0.5f), Float.valueOf(0.5f), Float.valueOf(1.0f), v -> this.boss.getValue() == Boss.MINIMIZE || this.boss.getValue() == Boss.STACK, "Scale of the bars."));
+    public Setting<Boolean> bats = this.register(new Setting<Boolean>("Bats", Boolean.valueOf(false), "Removes bats."));
+    public Setting<NoArmor> noArmor = this.register(new Setting<NoArmor>("NoArmor", NoArmor.NONE, "Doesnt Render Armor on players."));
+    public Setting<Skylight> skylight = this.register(new Setting<Skylight>("Skylight", Skylight.NONE));
+    public Setting<Boolean> barriers = this.register(new Setting<Boolean>("Barriers", Boolean.valueOf(false), "Barriers"));
+    public Setting<Boolean> blocks = this.register(new Setting<Boolean>("Blocks", Boolean.valueOf(false), "Blocks"));
+    public Setting<Boolean> advancements = this.register(new Setting<Boolean>("Advancements", false));
+    public Setting<Boolean> pigmen = this.register(new Setting<Boolean>("Pigmen", false));
+    public Setting<Boolean> timeChange = this.register(new Setting<Boolean>("TimeChange", false));
+    public Setting<Integer> time = this.register(new Setting<Object>("Time", Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(23000), v -> this.timeChange.getValue()));
+
     public NoRender() {
-        super("NoRender",  "Allows you to stop rendering stuff.",  Module.Category.RENDER,  true,  false,  false);
-        this.fakeMap = new ResourceLocation("phobos.png");
-        this.fire = (Setting<Boolean>)this.register(new Setting("Fire", false,  "Removes the portal overlay."));
-        this.portal = (Setting<Boolean>)this.register(new Setting("Portal", false,  "Removes the portal overlay."));
-        this.pumpkin = (Setting<Boolean>)this.register(new Setting("Pumpkin", false,  "Removes the pumpkin overlay."));
-        this.totemPops = (Setting<Boolean>)this.register(new Setting("TotemPop", false,  "Removes the Totem overlay."));
-        this.items = (Setting<Boolean>)this.register(new Setting("Items", false,  "Removes items on the ground."));
-        this.markers = (Setting<Boolean>)this.register(new Setting("MapMarkers", false,  "Removes the 3d map markers."));
-        this.nausea = (Setting<Boolean>)this.register(new Setting("Nausea", false,  "Removes Portal Nausea."));
-        this.hurtcam = (Setting<Boolean>)this.register(new Setting("HurtCam", false,  "Removes shaking after taking damage."));
-        this.explosions = (Setting<Boolean>)this.register(new Setting("Explosions", false,  "Removes crystal explosions."));
-        this.fog = (Setting<Fog>)this.register(new Setting("Fog", Fog.NONE,  "Removes Fog."));
-        this.noWeather = (Setting<Boolean>)this.register(new Setting("Weather", false,  "AntiWeather"));
-        this.boss = (Setting<Boss>)this.register(new Setting("BossBars", Boss.NONE,  "Modifies the bossbars."));
-        this.scale = (Setting<Float>)this.register(new Setting("Scale", 0.5f, 0.5f, 1.0f,  v -> this.boss.getValue() == Boss.MINIMIZE || this.boss.getValue() == Boss.STACK,  "Scale of the bars."));
-        this.bats = (Setting<Boolean>)this.register(new Setting("Bats", false,  "Removes bats."));
-        this.noArmor = (Setting<NoArmor>)this.register(new Setting("NoArmor", NoArmor.NONE,  "Doesnt Render Armor on players."));
-        this.skylight = (Setting<Skylight>)this.register(new Setting("Skylight", Skylight.NONE));
-        this.barriers = (Setting<Boolean>)this.register(new Setting("Barriers", false,  "Barriers"));
-        this.blocks = (Setting<Boolean>)this.register(new Setting("Blocks", false,  "Blocks"));
-        this.advancements = (Setting<Boolean>)this.register(new Setting("Advancements", false));
-        this.pigmen = (Setting<Boolean>)this.register(new Setting("Pigmen", false));
-        this.timeChange = (Setting<Boolean>)this.register(new Setting("TimeChange", false));
-        this.time = (Setting<Integer>)this.register(new Setting("Time", 0, 0, 23000,  v -> this.timeChange.getValue()));
+        super("NoRender", "Allows you to stop rendering stuff.", Module.Category.RENDER, true, false, false);
         this.setInstance();
     }
-    
+
     public static NoRender getInstance() {
-        if (NoRender.INSTANCE == null) {
-            NoRender.INSTANCE = new NoRender();
+        if (INSTANCE == null) {
+            INSTANCE = new NoRender();
         }
-        return NoRender.INSTANCE;
+        return INSTANCE;
     }
-    
+
     private void setInstance() {
-        NoRender.INSTANCE = this;
+        INSTANCE = this;
     }
-    
+
+    @Override
     public void onUpdate() {
-        if (this.items.getValue()) {
-            NoRender.mc.world.loadedEntityList.stream().filter(EntityItem.class::isInstance).map(EntityItem.class::cast).forEach(Entity::setDead);
+        if (this.items.getValue().booleanValue()) {
+            NoRender.mc.field_71441_e.field_72996_f.stream().filter(EntityItem.class::isInstance).map(EntityItem.class::cast).forEach(Entity::func_70106_y);
         }
-        if (this.noWeather.getValue() && NoRender.mc.world.isRaining()) {
-            NoRender.mc.world.setRainStrength(0.0f);
+        if (this.noWeather.getValue().booleanValue() && NoRender.mc.field_71441_e.func_72896_J()) {
+            NoRender.mc.field_71441_e.func_72894_k(0.0f);
         }
-        if (this.timeChange.getValue()) {
-            NoRender.mc.world.setWorldTime((long)this.time.getValue());
+        if (this.timeChange.getValue().booleanValue()) {
+            NoRender.mc.field_71441_e.func_72877_b((long)this.time.getValue().intValue());
         }
-        if (this.markers.getValue()) {
-            final Tessellator tessellator = Tessellator.getInstance();
-            final BufferBuilder bufferBuilder = tessellator.getBuffer();
-            NoRender.mc.getTextureManager().bindTexture(this.fakeMap);
-            bufferBuilder.begin(7,  DefaultVertexFormats.POSITION_TEX);
-            bufferBuilder.pos(0.0,  128.0,  -0.009999999776482582).tex(0.0,  1.0).endVertex();
-            bufferBuilder.pos(128.0,  128.0,  -0.009999999776482582).tex(1.0,  1.0).endVertex();
-            bufferBuilder.pos(128.0,  0.0,  -0.009999999776482582).tex(1.0,  0.0).endVertex();
-            bufferBuilder.pos(0.0,  0.0,  -0.009999999776482582).tex(0.0,  0.0).endVertex();
-            tessellator.draw();
+        if (this.markers.getValue().booleanValue()) {
+            Tessellator tessellator = Tessellator.func_178181_a();
+            BufferBuilder bufferBuilder = tessellator.func_178180_c();
+            mc.func_110434_K().func_110577_a(this.fakeMap);
+            bufferBuilder.func_181668_a(7, DefaultVertexFormats.field_181707_g);
+            bufferBuilder.func_181662_b(0.0, 128.0, (double)-0.01f).func_187315_a(0.0, 1.0).func_181675_d();
+            bufferBuilder.func_181662_b(128.0, 128.0, (double)-0.01f).func_187315_a(1.0, 1.0).func_181675_d();
+            bufferBuilder.func_181662_b(128.0, 0.0, (double)-0.01f).func_187315_a(1.0, 0.0).func_181675_d();
+            bufferBuilder.func_181662_b(0.0, 0.0, (double)-0.01f).func_187315_a(0.0, 0.0).func_181675_d();
+            tessellator.func_78381_a();
         }
     }
-    
+
     @SubscribeEvent
-    public void onPacketReceive(final PacketEvent.Receive event) {
+    public void onPacketReceive(PacketEvent.Receive event) {
         if (event.getPacket() instanceof SPacketTimeUpdate & this.timeChange.getValue()) {
             event.setCanceled(true);
         }
@@ -125,176 +149,177 @@ public class NoRender extends Module
             event.setCanceled(true);
         }
     }
-    
-    public void doVoidFogParticles(final int posX,  final int posY,  final int posZ) {
-        final Random random = new Random();
-        final ItemStack itemstack = NoRender.mc.player.getHeldItemMainhand();
-        final boolean flag = !this.barriers.getValue() || (NoRender.mc.playerController.getCurrentGameType() == GameType.CREATIVE && !itemstack.isEmpty() && itemstack.getItem() == Item.getItemFromBlock(Blocks.BARRIER));
-        final BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+
+    public void doVoidFogParticles(int posX, int posY, int posZ) {
+        Random random = new Random();
+        ItemStack itemstack = NoRender.mc.field_71439_g.func_184614_ca();
+        boolean flag = this.barriers.getValue() == false || NoRender.mc.field_71442_b.func_178889_l() == GameType.CREATIVE && !itemstack.func_190926_b() && itemstack.func_77973_b() == Item.func_150898_a((Block)Blocks.field_180401_cv);
+        BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
         for (int j = 0; j < 667; ++j) {
-            this.showBarrierParticles(posX,  posY,  posZ,  16,  random,  flag,  blockpos$mutableblockpos);
-            this.showBarrierParticles(posX,  posY,  posZ,  32,  random,  flag,  blockpos$mutableblockpos);
+            this.showBarrierParticles(posX, posY, posZ, 16, random, flag, blockpos$mutableblockpos);
+            this.showBarrierParticles(posX, posY, posZ, 32, random, flag, blockpos$mutableblockpos);
         }
     }
-    
-    public void showBarrierParticles(final int x,  final int y,  final int z,  final int offset,  final Random random,  final boolean holdingBarrier,  final BlockPos.MutableBlockPos pos) {
-        final int i = x + NoRender.mc.world.rand.nextInt(offset) - NoRender.mc.world.rand.nextInt(offset);
-        final int j = y + NoRender.mc.world.rand.nextInt(offset) - NoRender.mc.world.rand.nextInt(offset);
-        final int k = z + NoRender.mc.world.rand.nextInt(offset) - NoRender.mc.world.rand.nextInt(offset);
-        pos.setPos(i,  j,  k);
-        final IBlockState iblockstate = NoRender.mc.world.getBlockState((BlockPos)pos);
-        iblockstate.getBlock().randomDisplayTick(iblockstate,  (World)NoRender.mc.world,  (BlockPos)pos,  random);
-        if (!holdingBarrier && iblockstate.getBlock() == Blocks.BARRIER) {
-            NoRender.mc.world.spawnParticle(EnumParticleTypes.BARRIER,  (double)(i + 0.5f),  (double)(j + 0.5f),  (double)(k + 0.5f),  0.0,  0.0,  0.0,  new int[0]);
+
+    public void showBarrierParticles(int x, int y, int z, int offset, Random random, boolean holdingBarrier, BlockPos.MutableBlockPos pos) {
+        int i = x + NoRender.mc.field_71441_e.field_73012_v.nextInt(offset) - NoRender.mc.field_71441_e.field_73012_v.nextInt(offset);
+        int j = y + NoRender.mc.field_71441_e.field_73012_v.nextInt(offset) - NoRender.mc.field_71441_e.field_73012_v.nextInt(offset);
+        int k = z + NoRender.mc.field_71441_e.field_73012_v.nextInt(offset) - NoRender.mc.field_71441_e.field_73012_v.nextInt(offset);
+        pos.func_181079_c(i, j, k);
+        IBlockState iblockstate = NoRender.mc.field_71441_e.func_180495_p((BlockPos)pos);
+        iblockstate.func_177230_c().func_180655_c(iblockstate, (World)NoRender.mc.field_71441_e, (BlockPos)pos, random);
+        if (!holdingBarrier && iblockstate.func_177230_c() == Blocks.field_180401_cv) {
+            NoRender.mc.field_71441_e.func_175688_a(EnumParticleTypes.BARRIER, (double)((float)i + 0.5f), (double)((float)j + 0.5f), (double)((float)k + 0.5f), 0.0, 0.0, 0.0, new int[0]);
         }
     }
-    
+
     @SubscribeEvent
-    public void onRenderPre(final RenderGameOverlayEvent.Pre event) {
+    public void onRenderPre(RenderGameOverlayEvent.Pre event) {
         if (event.getType() == RenderGameOverlayEvent.ElementType.BOSSINFO && this.boss.getValue() != Boss.NONE) {
             event.setCanceled(true);
         }
     }
-    
+
     @SubscribeEvent
-    public void onRenderPost(final RenderGameOverlayEvent.Post event) {
-        if (event.getType() == RenderGameOverlayEvent.ElementType.BOSSINFO && this.boss.getValue() != Boss.NONE) {
-            if (this.boss.getValue() == Boss.MINIMIZE) {
-                final Map<UUID,  BossInfoClient> map = (Map<UUID,  BossInfoClient>)NoRender.mc.ingameGUI.getBossOverlay().mapBossInfos;
+    public void onRenderPost(RenderGameOverlayEvent.Post event) {
+        block7: {
+            block8: {
+                if (event.getType() != RenderGameOverlayEvent.ElementType.BOSSINFO || this.boss.getValue() == Boss.NONE) break block7;
+                if (this.boss.getValue() != Boss.MINIMIZE) break block8;
+                Map map = NoRender.mc.field_71456_v.func_184046_j().field_184060_g;
                 if (map == null) {
                     return;
                 }
-                final ScaledResolution scaledresolution = new ScaledResolution(NoRender.mc);
-                final int i = scaledresolution.getScaledWidth();
+                ScaledResolution scaledresolution = new ScaledResolution(mc);
+                int i = scaledresolution.func_78326_a();
                 int j = 12;
-                for (final Map.Entry<UUID,  BossInfoClient> entry : map.entrySet()) {
-                    final BossInfoClient info = entry.getValue();
-                    final String text = info.getName().getFormattedText();
-                    final int k = (int)(i / this.scale.getValue() / 2.0f - 91.0f);
-                    GL11.glScaled((double)this.scale.getValue(),  (double)this.scale.getValue(),  1.0);
+                for (Map.Entry entry : map.entrySet()) {
+                    BossInfoClient info = (BossInfoClient)entry.getValue();
+                    String text = info.func_186744_e().func_150254_d();
+                    int k = (int)((float)i / this.scale.getValue().floatValue() / 2.0f - 91.0f);
+                    GL11.glScaled((double)this.scale.getValue().floatValue(), (double)this.scale.getValue().floatValue(), (double)1.0);
                     if (!event.isCanceled()) {
-                        GlStateManager.color(1.0f,  1.0f,  1.0f,  1.0f);
-                        NoRender.mc.getTextureManager().bindTexture(GuiBossOverlay.GUI_BARS_TEXTURES);
-                        NoRender.mc.ingameGUI.getBossOverlay().render(k,  j,  (BossInfo)info);
-                        NoRender.mc.fontRenderer.drawStringWithShadow(text,  i / this.scale.getValue() / 2.0f - NoRender.mc.fontRenderer.getStringWidth(text) / 2,  (float)(j - 9),  16777215);
+                        GlStateManager.func_179131_c((float)1.0f, (float)1.0f, (float)1.0f, (float)1.0f);
+                        mc.func_110434_K().func_110577_a(GuiBossOverlay.field_184058_a);
+                        NoRender.mc.field_71456_v.func_184046_j().func_184052_a(k, j, (BossInfo)info);
+                        NoRender.mc.field_71466_p.func_175063_a(text, (float)i / this.scale.getValue().floatValue() / 2.0f - (float)(NoRender.mc.field_71466_p.func_78256_a(text) / 2), (float)(j - 9), 0xFFFFFF);
                     }
-                    GL11.glScaled(1.0 / this.scale.getValue(),  1.0 / this.scale.getValue(),  1.0);
-                    j += 10 + NoRender.mc.fontRenderer.FONT_HEIGHT;
+                    GL11.glScaled((double)(1.0 / (double)this.scale.getValue().floatValue()), (double)(1.0 / (double)this.scale.getValue().floatValue()), (double)1.0);
+                    j += 10 + NoRender.mc.field_71466_p.field_78288_b;
                 }
+                break block7;
             }
-            else if (this.boss.getValue() == Boss.STACK) {
-                final Map<UUID,  BossInfoClient> map = (Map<UUID,  BossInfoClient>)NoRender.mc.ingameGUI.getBossOverlay().mapBossInfos;
-                final HashMap<String,  Pair<BossInfoClient,  Integer>> to = new HashMap<String,  Pair<BossInfoClient,  Integer>>();
-                for (final Map.Entry<UUID,  BossInfoClient> entry2 : map.entrySet()) {
-                    final String s = entry2.getValue().getName().getFormattedText();
-                    if (to.containsKey(s)) {
-                        Pair<BossInfoClient,  Integer> p = to.get(s);
-                        p = new Pair<BossInfoClient,  Integer>(p.getKey(),  p.getValue() + 1);
-                        to.put(s,  p);
-                    }
-                    else {
-                        final Pair<BossInfoClient,  Integer> p = new Pair<BossInfoClient,  Integer>(entry2.getValue(),  1);
-                        to.put(s,  p);
-                    }
+            if (this.boss.getValue() != Boss.STACK) break block7;
+            Map map = NoRender.mc.field_71456_v.func_184046_j().field_184060_g;
+            HashMap to = new HashMap();
+            for (Map.Entry entry2 : map.entrySet()) {
+                Pair p;
+                String s = ((BossInfoClient)entry2.getValue()).func_186744_e().func_150254_d();
+                if (to.containsKey(s)) {
+                    p = (Pair)to.get(s);
+                    p = new Pair(p.getKey(), p.getValue() + 1);
+                    to.put(s, p);
+                    continue;
                 }
-                final ScaledResolution scaledresolution2 = new ScaledResolution(NoRender.mc);
-                final int l = scaledresolution2.getScaledWidth();
-                int m = 12;
-                for (final Map.Entry<String,  Pair<BossInfoClient,  Integer>> entry3 : to.entrySet()) {
-                    String text = entry3.getKey();
-                    final BossInfoClient info2 = entry3.getValue().getKey();
-                    final int a = entry3.getValue().getValue();
-                    text = text + " x" + a;
-                    final int k2 = (int)(l / this.scale.getValue() / 2.0f - 91.0f);
-                    GL11.glScaled((double)this.scale.getValue(),  (double)this.scale.getValue(),  1.0);
-                    if (!event.isCanceled()) {
-                        GlStateManager.color(1.0f,  1.0f,  1.0f,  1.0f);
-                        NoRender.mc.getTextureManager().bindTexture(GuiBossOverlay.GUI_BARS_TEXTURES);
-                        NoRender.mc.ingameGUI.getBossOverlay().render(k2,  m,  (BossInfo)info2);
-                        NoRender.mc.fontRenderer.drawStringWithShadow(text,  l / this.scale.getValue() / 2.0f - NoRender.mc.fontRenderer.getStringWidth(text) / 2,  (float)(m - 9),  16777215);
-                    }
-                    GL11.glScaled(1.0 / this.scale.getValue(),  1.0 / this.scale.getValue(),  1.0);
-                    m += 10 + NoRender.mc.fontRenderer.FONT_HEIGHT;
+                p = new Pair(entry2.getValue(), 1);
+                to.put(s, p);
+            }
+            ScaledResolution scaledresolution2 = new ScaledResolution(mc);
+            int l = scaledresolution2.func_78326_a();
+            int m = 12;
+            for (Map.Entry entry3 : to.entrySet()) {
+                String text = (String)entry3.getKey();
+                BossInfoClient info2 = (BossInfoClient)((Pair)entry3.getValue()).getKey();
+                int a = (Integer)((Pair)entry3.getValue()).getValue();
+                text = text + " x" + a;
+                int k2 = (int)((float)l / this.scale.getValue().floatValue() / 2.0f - 91.0f);
+                GL11.glScaled((double)this.scale.getValue().floatValue(), (double)this.scale.getValue().floatValue(), (double)1.0);
+                if (!event.isCanceled()) {
+                    GlStateManager.func_179131_c((float)1.0f, (float)1.0f, (float)1.0f, (float)1.0f);
+                    mc.func_110434_K().func_110577_a(GuiBossOverlay.field_184058_a);
+                    NoRender.mc.field_71456_v.func_184046_j().func_184052_a(k2, m, (BossInfo)info2);
+                    NoRender.mc.field_71466_p.func_175063_a(text, (float)l / this.scale.getValue().floatValue() / 2.0f - (float)(NoRender.mc.field_71466_p.func_78256_a(text) / 2), (float)(m - 9), 0xFFFFFF);
                 }
+                GL11.glScaled((double)(1.0 / (double)this.scale.getValue().floatValue()), (double)(1.0 / (double)this.scale.getValue().floatValue()), (double)1.0);
+                m += 10 + NoRender.mc.field_71466_p.field_78288_b;
             }
         }
     }
-    
+
     @SubscribeEvent
-    public void onRenderLiving(final RenderLivingEvent.Pre<?> event) {
-        if (this.bats.getValue() && event.getEntity() instanceof EntityBat) {
+    public void onRenderLiving(RenderLivingEvent.Pre<?> event) {
+        if (this.bats.getValue().booleanValue() && event.getEntity() instanceof EntityBat) {
             event.setCanceled(true);
         }
     }
-    
+
     @SubscribeEvent
-    public void onPlaySound(final PlaySoundAtEntityEvent event) {
-        if ((this.bats.getValue() && event.getSound().equals(SoundEvents.ENTITY_BAT_AMBIENT)) || event.getSound().equals(SoundEvents.ENTITY_BAT_DEATH) || event.getSound().equals(SoundEvents.ENTITY_BAT_HURT) || event.getSound().equals(SoundEvents.ENTITY_BAT_LOOP) || event.getSound().equals(SoundEvents.ENTITY_BAT_TAKEOFF)) {
+    public void onPlaySound(PlaySoundAtEntityEvent event) {
+        if (this.bats.getValue().booleanValue() && event.getSound().equals((Object)SoundEvents.field_187740_w) || event.getSound().equals((Object)SoundEvents.field_187742_x) || event.getSound().equals((Object)SoundEvents.field_187743_y) || event.getSound().equals((Object)SoundEvents.field_189108_z) || event.getSound().equals((Object)SoundEvents.field_187744_z)) {
             event.setVolume(0.0f);
             event.setPitch(0.0f);
             event.setCanceled(true);
         }
     }
-    
+
     static {
-        NoRender.INSTANCE = new NoRender();
-        NoRender.INSTANCE = new NoRender();
+        INSTANCE = new NoRender();
     }
-    
-    public enum Skylight
-    {
-        NONE,  
-        WORLD,  
-        ENTITY,  
-        ALL;
-    }
-    
-    public enum Fog
-    {
-        NONE,  
-        AIR,  
-        NOFOG;
-    }
-    
-    public enum Boss
-    {
-        NONE,  
-        REMOVE,  
-        STACK,  
-        MINIMIZE;
-    }
-    
-    public enum NoArmor
-    {
-        NONE,  
-        ALL,  
-        HELMET;
-    }
-    
-    public static class Pair<T,  S>
-    {
+
+    public static class Pair<T, S> {
         private T key;
         private S value;
-        
-        public Pair(final T key,  final S value) {
+
+        public Pair(T key, S value) {
             this.key = key;
             this.value = value;
         }
-        
+
         public T getKey() {
             return this.key;
         }
-        
-        public void setKey(final T key) {
+
+        public void setKey(T key) {
             this.key = key;
         }
-        
+
         public S getValue() {
             return this.value;
         }
-        
-        public void setValue(final S value) {
+
+        public void setValue(S value) {
             this.value = value;
         }
     }
+
+    public static enum NoArmor {
+        NONE,
+        ALL,
+        HELMET;
+
+    }
+
+    public static enum Boss {
+        NONE,
+        REMOVE,
+        STACK,
+        MINIMIZE;
+
+    }
+
+    public static enum Fog {
+        NONE,
+        AIR,
+        NOFOG;
+
+    }
+
+    public static enum Skylight {
+        NONE,
+        WORLD,
+        ENTITY,
+        ALL;
+
+    }
 }
+

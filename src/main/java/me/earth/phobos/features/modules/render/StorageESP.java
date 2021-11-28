@@ -1,87 +1,93 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.entity.item.EntityItemFrame
+ *  net.minecraft.entity.item.EntityMinecartChest
+ *  net.minecraft.item.ItemShulkerBox
+ *  net.minecraft.tileentity.TileEntity
+ *  net.minecraft.tileentity.TileEntityChest
+ *  net.minecraft.tileentity.TileEntityDispenser
+ *  net.minecraft.tileentity.TileEntityEnderChest
+ *  net.minecraft.tileentity.TileEntityFurnace
+ *  net.minecraft.tileentity.TileEntityHopper
+ *  net.minecraft.tileentity.TileEntityShulkerBox
+ *  net.minecraft.util.math.BlockPos
+ */
 package me.earth.phobos.features.modules.render;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import me.earth.phobos.event.events.*;
-import net.minecraft.util.math.*;
-import net.minecraft.tileentity.*;
-import net.minecraft.entity.*;
-import net.minecraft.entity.item.*;
-import me.earth.phobos.features.modules.client.*;
-import java.awt.*;
-import java.util.*;
-import me.earth.phobos.util.*;
-import net.minecraft.item.*;
+import java.awt.Color;
+import java.util.HashMap;
+import java.util.Map;
+import me.earth.phobos.event.events.Render3DEvent;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.modules.client.Colors;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.ColorUtil;
+import me.earth.phobos.util.MathUtil;
+import me.earth.phobos.util.RenderUtil;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItemFrame;
+import net.minecraft.entity.item.EntityMinecartChest;
+import net.minecraft.item.ItemShulkerBox;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.tileentity.TileEntityDispenser;
+import net.minecraft.tileentity.TileEntityEnderChest;
+import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.tileentity.TileEntityHopper;
+import net.minecraft.tileentity.TileEntityShulkerBox;
+import net.minecraft.util.math.BlockPos;
 
-public class StorageESP extends Module
-{
-    private final Setting<Float> range;
-    private final Setting<Boolean> colorSync;
-    private final Setting<Boolean> chest;
-    private final Setting<Boolean> dispenser;
-    private final Setting<Boolean> shulker;
-    private final Setting<Boolean> echest;
-    private final Setting<Boolean> furnace;
-    private final Setting<Boolean> hopper;
-    private final Setting<Boolean> cart;
-    private final Setting<Boolean> frame;
-    private final Setting<Boolean> box;
-    private final Setting<Integer> boxAlpha;
-    private final Setting<Boolean> outline;
-    private final Setting<Float> lineWidth;
-    
+public class StorageESP
+extends Module {
+    private final Setting<Float> range = this.register(new Setting<Float>("Range", Float.valueOf(50.0f), Float.valueOf(1.0f), Float.valueOf(300.0f)));
+    private final Setting<Boolean> colorSync = this.register(new Setting<Boolean>("Sync", false));
+    private final Setting<Boolean> chest = this.register(new Setting<Boolean>("Chest", true));
+    private final Setting<Boolean> dispenser = this.register(new Setting<Boolean>("Dispenser", false));
+    private final Setting<Boolean> shulker = this.register(new Setting<Boolean>("Shulker", true));
+    private final Setting<Boolean> echest = this.register(new Setting<Boolean>("Ender Chest", true));
+    private final Setting<Boolean> furnace = this.register(new Setting<Boolean>("Furnace", false));
+    private final Setting<Boolean> hopper = this.register(new Setting<Boolean>("Hopper", false));
+    private final Setting<Boolean> cart = this.register(new Setting<Boolean>("Minecart", false));
+    private final Setting<Boolean> frame = this.register(new Setting<Boolean>("Item Frame", false));
+    private final Setting<Boolean> box = this.register(new Setting<Boolean>("Box", false));
+    private final Setting<Integer> boxAlpha = this.register(new Setting<Object>("BoxAlpha", Integer.valueOf(125), Integer.valueOf(0), Integer.valueOf(255), v -> this.box.getValue()));
+    private final Setting<Boolean> outline = this.register(new Setting<Boolean>("Outline", true));
+    private final Setting<Float> lineWidth = this.register(new Setting<Object>("LineWidth", Float.valueOf(1.0f), Float.valueOf(0.1f), Float.valueOf(5.0f), v -> this.outline.getValue()));
+
     public StorageESP() {
-        super("StorageESP",  "Highlights Containers.",  Module.Category.RENDER,  false,  false,  false);
-        this.range = (Setting<Float>)this.register(new Setting("Range", 50.0f, 1.0f, 300.0f));
-        this.colorSync = (Setting<Boolean>)this.register(new Setting("Sync", false));
-        this.chest = (Setting<Boolean>)this.register(new Setting("Chest", true));
-        this.dispenser = (Setting<Boolean>)this.register(new Setting("Dispenser", false));
-        this.shulker = (Setting<Boolean>)this.register(new Setting("Shulker", true));
-        this.echest = (Setting<Boolean>)this.register(new Setting("Ender Chest", true));
-        this.furnace = (Setting<Boolean>)this.register(new Setting("Furnace", false));
-        this.hopper = (Setting<Boolean>)this.register(new Setting("Hopper", false));
-        this.cart = (Setting<Boolean>)this.register(new Setting("Minecart", false));
-        this.frame = (Setting<Boolean>)this.register(new Setting("Item Frame", false));
-        this.box = (Setting<Boolean>)this.register(new Setting("Box", false));
-        this.boxAlpha = (Setting<Integer>)this.register(new Setting("BoxAlpha", 125, 0, 255,  v -> this.box.getValue()));
-        this.outline = (Setting<Boolean>)this.register(new Setting("Outline", true));
-        this.lineWidth = (Setting<Float>)this.register(new Setting("LineWidth", 1.0f, 0.1f, 5.0f,  v -> this.outline.getValue()));
+        super("StorageESP", "Highlights Containers.", Module.Category.RENDER, false, false, false);
     }
-    
-    public void onRender3D(final Render3DEvent event) {
-        final HashMap<BlockPos,  Integer> positions = new HashMap<BlockPos,  Integer>();
-        for (final TileEntity tileEntity : StorageESP.mc.world.loadedTileEntityList) {
-            final BlockPos pos;
-            if (((tileEntity instanceof TileEntityChest && this.chest.getValue()) || (tileEntity instanceof TileEntityDispenser && this.dispenser.getValue()) || (tileEntity instanceof TileEntityShulkerBox && this.shulker.getValue()) || (tileEntity instanceof TileEntityEnderChest && this.echest.getValue()) || (tileEntity instanceof TileEntityFurnace && this.furnace.getValue()) || (tileEntity instanceof TileEntityHopper && this.hopper.getValue())) && StorageESP.mc.player.getDistanceSq(pos = tileEntity.getPos()) <= MathUtil.square(this.range.getValue())) {
-                final int color;
-                if ((color = this.getTileEntityColor(tileEntity)) == -1) {
-                    continue;
-                }
-                positions.put(pos,  color);
-            }
+
+    @Override
+    public void onRender3D(Render3DEvent event) {
+        int color;
+        BlockPos pos;
+        HashMap<BlockPos, Integer> positions = new HashMap<BlockPos, Integer>();
+        for (TileEntity tileEntity : StorageESP.mc.field_71441_e.field_147482_g) {
+            BlockPos blockPos;
+            if (!(tileEntity instanceof TileEntityChest && this.chest.getValue() != false || tileEntity instanceof TileEntityDispenser && this.dispenser.getValue() != false || tileEntity instanceof TileEntityShulkerBox && this.shulker.getValue() != false || tileEntity instanceof TileEntityEnderChest && this.echest.getValue() != false || tileEntity instanceof TileEntityFurnace && this.furnace.getValue() != false) && (!(tileEntity instanceof TileEntityHopper) || !this.hopper.getValue().booleanValue())) continue;
+            pos = tileEntity.func_174877_v();
+            if (!(StorageESP.mc.field_71439_g.func_174818_b(blockPos) <= MathUtil.square(this.range.getValue().floatValue())) || (color = this.getTileEntityColor(tileEntity)) == -1) continue;
+            positions.put(pos, color);
         }
-        for (final Entity entity : StorageESP.mc.world.loadedEntityList) {
-            final BlockPos pos;
-            if (((entity instanceof EntityItemFrame && this.frame.getValue()) || (entity instanceof EntityMinecartChest && this.cart.getValue())) && StorageESP.mc.player.getDistanceSq(pos = entity.getPosition()) <= MathUtil.square(this.range.getValue())) {
-                final int color;
-                if ((color = this.getEntityColor(entity)) == -1) {
-                    continue;
-                }
-                positions.put(pos,  color);
-            }
+        for (Entity entity : StorageESP.mc.field_71441_e.field_72996_f) {
+            BlockPos blockPos;
+            if ((!(entity instanceof EntityItemFrame) || !this.frame.getValue().booleanValue()) && (!(entity instanceof EntityMinecartChest) || !this.cart.getValue().booleanValue())) continue;
+            pos = entity.func_180425_c();
+            if (!(StorageESP.mc.field_71439_g.func_174818_b(blockPos) <= MathUtil.square(this.range.getValue().floatValue())) || (color = this.getEntityColor(entity)) == -1) continue;
+            positions.put(pos, color);
         }
-        for (final Map.Entry<BlockPos,  Integer> entry : positions.entrySet()) {
-            final BlockPos blockPos = entry.getKey();
-            final int color = entry.getValue();
-            RenderUtil.drawBoxESP(blockPos,  ((boolean)this.colorSync.getValue()) ? Colors.INSTANCE.getCurrentColor() : new Color(color),  false,  new Color(color),  this.lineWidth.getValue(),  this.outline.getValue(),  this.box.getValue(),  this.boxAlpha.getValue(),  false);
+        for (Map.Entry entry : positions.entrySet()) {
+            BlockPos blockPos = (BlockPos)entry.getKey();
+            color = (Integer)entry.getValue();
+            RenderUtil.drawBoxESP(blockPos, this.colorSync.getValue() != false ? Colors.INSTANCE.getCurrentColor() : new Color(color), false, new Color(color), this.lineWidth.getValue().floatValue(), this.outline.getValue(), this.box.getValue(), this.boxAlpha.getValue(), false);
         }
     }
-    
-    private int getTileEntityColor(final TileEntity tileEntity) {
+
+    private int getTileEntityColor(TileEntity tileEntity) {
         if (tileEntity instanceof TileEntityChest) {
             return ColorUtil.Colors.BLUE;
         }
@@ -102,17 +108,18 @@ public class StorageESP extends Module
         }
         return -1;
     }
-    
-    private int getEntityColor(final Entity entity) {
+
+    private int getEntityColor(Entity entity) {
         if (entity instanceof EntityMinecartChest) {
             return ColorUtil.Colors.ORANGE;
         }
-        if (entity instanceof EntityItemFrame && ((EntityItemFrame)entity).getDisplayedItem().getItem() instanceof ItemShulkerBox) {
+        if (entity instanceof EntityItemFrame && ((EntityItemFrame)entity).func_82335_i().func_77973_b() instanceof ItemShulkerBox) {
             return ColorUtil.Colors.YELLOW;
         }
-        if (entity instanceof EntityItemFrame && !(((EntityItemFrame)entity).getDisplayedItem().getItem() instanceof ItemShulkerBox)) {
+        if (entity instanceof EntityItemFrame && !(((EntityItemFrame)entity).func_82335_i().func_77973_b() instanceof ItemShulkerBox)) {
             return ColorUtil.Colors.ORANGE;
         }
         return -1;
     }
 }
+

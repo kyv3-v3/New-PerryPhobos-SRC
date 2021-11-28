@@ -1,40 +1,42 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.multiplayer.ServerData
+ *  net.minecraft.client.network.ServerPinger
+ */
 package me.earth.phobos.mixin.mixins;
 
-import org.spongepowered.asm.mixin.*;
-import net.minecraft.client.network.*;
-import net.minecraft.client.multiplayer.*;
-import org.spongepowered.asm.mixin.injection.callback.*;
-import me.earth.phobos.features.modules.client.*;
-import me.earth.phobos.features.modules.player.*;
-import me.earth.phobos.*;
-import org.spongepowered.asm.mixin.injection.*;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.features.modules.client.PingBypass;
+import me.earth.phobos.features.modules.player.AntiDDoS;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.network.ServerPinger;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin({ ServerPinger.class })
-public class MixinServerPinger
-{
-    @Inject(method = { "ping" },  at = { @At("HEAD") },  cancellable = true)
-    public void pingHook(final ServerData server,  final CallbackInfo info) {
-        if (server.serverIP.equalsIgnoreCase((String)PingBypass.getInstance().ip.getValue())) {
+@Mixin(value={ServerPinger.class})
+public class MixinServerPinger {
+    @Inject(method={"ping"}, at={@At(value="HEAD")}, cancellable=true)
+    public void pingHook(ServerData server, CallbackInfo info) {
+        if (server.field_78845_b.equalsIgnoreCase(PingBypass.getInstance().ip.getValue())) {
             info.cancel();
-        }
-        else if (AntiDDoS.getInstance().shouldntPing(server.serverIP)) {
-            Phobos.LOGGER.info("AntiDDoS preventing Ping to: " + server.serverIP);
+        } else if (AntiDDoS.getInstance().shouldntPing(server.field_78845_b)) {
+            Phobos.LOGGER.info("AntiDDoS preventing Ping to: " + server.field_78845_b);
             info.cancel();
         }
     }
-    
-    @Inject(method = { "tryCompatibilityPing" },  at = { @At("HEAD") },  cancellable = true)
-    public void tryCompatibilityPingHook(final ServerData server,  final CallbackInfo info) {
-        if (server.serverIP.equalsIgnoreCase((String)PingBypass.getInstance().ip.getValue())) {
+
+    @Inject(method={"tryCompatibilityPing"}, at={@At(value="HEAD")}, cancellable=true)
+    public void tryCompatibilityPingHook(ServerData server, CallbackInfo info) {
+        if (server.field_78845_b.equalsIgnoreCase(PingBypass.getInstance().ip.getValue())) {
             info.cancel();
-        }
-        else if (AntiDDoS.getInstance().shouldntPing(server.serverIP)) {
-            Phobos.LOGGER.info("AntiDDoS preventing Compatibility Ping to: " + server.serverIP);
+        } else if (AntiDDoS.getInstance().shouldntPing(server.field_78845_b)) {
+            Phobos.LOGGER.info("AntiDDoS preventing Compatibility Ping to: " + server.field_78845_b);
             info.cancel();
         }
     }
 }
+

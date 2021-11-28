@@ -1,24 +1,23 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ */
 package me.earth.phobos.features.modules.client;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
 
-public class Screens extends Module
-{
+public class Screens
+extends Module {
     public static Screens INSTANCE;
-    public Setting<Boolean> mainScreen;
-    
+    public Setting<Boolean> mainScreen = this.register(new Setting<Boolean>("MainScreen", false));
+
     public Screens() {
-        super("Screens",  "Controls custom screens used by the client.",  Category.CLIENT,  true,  false,  false);
-        this.mainScreen = (Setting<Boolean>)this.register(new Setting("MainScreen", false));
-        Screens.INSTANCE = this;
+        super("Screens", "Controls custom screens used by the client.", Module.Category.CLIENT, true, false, false);
+        INSTANCE = this;
     }
-    
+
     @Override
     public void onTick() {
     }
 }
+

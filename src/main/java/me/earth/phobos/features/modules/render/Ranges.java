@@ -1,104 +1,106 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.renderer.GlStateManager
+ *  net.minecraft.client.renderer.GlStateManager$DestFactor
+ *  net.minecraft.client.renderer.GlStateManager$SourceFactor
+ *  net.minecraft.client.renderer.entity.RenderManager
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.entity.player.EntityPlayer
+ *  net.minecraft.util.math.RayTraceResult
+ *  net.minecraft.util.math.Vec3d
+ *  org.lwjgl.opengl.GL11
+ */
 package me.earth.phobos.features.modules.render;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import me.earth.phobos.event.events.*;
-import net.minecraft.client.renderer.*;
-import java.awt.*;
-import org.lwjgl.opengl.*;
-import me.earth.phobos.*;
-import net.minecraft.entity.player.*;
-import net.minecraft.entity.*;
-import me.earth.phobos.util.*;
-import net.minecraft.client.renderer.entity.*;
-import net.minecraft.util.math.*;
-import java.util.*;
+import java.awt.Color;
+import java.util.ArrayList;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.event.events.Render3DEvent;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.EntityUtil;
+import me.earth.phobos.util.RenderUtil;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
+import org.lwjgl.opengl.GL11;
 
-public class Ranges extends Module
-{
-    private final Setting<Boolean> hitSpheres;
-    private final Setting<Boolean> circle;
-    private final Setting<Boolean> ownSphere;
-    private final Setting<Boolean> raytrace;
-    private final Setting<Float> lineWidth;
-    private final Setting<Double> radius;
-    
+public class Ranges
+extends Module {
+    private final Setting<Boolean> hitSpheres = this.register(new Setting<Boolean>("HitSpheres", false));
+    private final Setting<Boolean> circle = this.register(new Setting<Boolean>("Circle", true));
+    private final Setting<Boolean> ownSphere = this.register(new Setting<Object>("OwnSphere", Boolean.valueOf(false), v -> this.hitSpheres.getValue()));
+    private final Setting<Boolean> raytrace = this.register(new Setting<Object>("RayTrace", Boolean.valueOf(false), v -> this.circle.getValue()));
+    private final Setting<Float> lineWidth = this.register(new Setting<Float>("LineWidth", Float.valueOf(1.5f), Float.valueOf(0.1f), Float.valueOf(5.0f)));
+    private final Setting<Double> radius = this.register(new Setting<Double>("Radius", 4.5, 0.1, 8.0));
+
     public Ranges() {
-        super("Ranges",  "Draws a circle around the player.",  Module.Category.RENDER,  false,  false,  false);
-        this.hitSpheres = (Setting<Boolean>)this.register(new Setting("HitSpheres", false));
-        this.circle = (Setting<Boolean>)this.register(new Setting("Circle", true));
-        this.ownSphere = (Setting<Boolean>)this.register(new Setting("OwnSphere", false,  v -> this.hitSpheres.getValue()));
-        this.raytrace = (Setting<Boolean>)this.register(new Setting("RayTrace", false,  v -> this.circle.getValue()));
-        this.lineWidth = (Setting<Float>)this.register(new Setting("LineWidth", 1.5f, 0.1f, 5.0f));
-        this.radius = (Setting<Double>)this.register(new Setting("Radius", 4.5, 0.1, 8.0));
+        super("Ranges", "Draws a circle around the player.", Module.Category.RENDER, false, false, false);
     }
-    
+
+    @Override
     public void onUpdate() {
     }
-    
-    public void onRender3D(final Render3DEvent event) {
-        if (this.circle.getValue()) {
-            GlStateManager.pushMatrix();
-            GlStateManager.enableBlend();
-            GlStateManager.disableTexture2D();
-            GlStateManager.enableDepth();
-            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,  GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,  GlStateManager.SourceFactor.ONE,  GlStateManager.DestFactor.ZERO);
-            final RenderManager renderManager = Ranges.mc.getRenderManager();
-            float hue = System.currentTimeMillis() % 7200L / 7200.0f;
-            Color color = new Color(Color.HSBtoRGB(hue,  1.0f,  1.0f));
-            final ArrayList<Vec3d> hVectors = new ArrayList<Vec3d>();
-            final double x = Ranges.mc.player.lastTickPosX + (Ranges.mc.player.posX - Ranges.mc.player.lastTickPosX) * event.getPartialTicks() - renderManager.renderPosX;
-            final double y = Ranges.mc.player.lastTickPosY + (Ranges.mc.player.posY - Ranges.mc.player.lastTickPosY) * event.getPartialTicks() - renderManager.renderPosY;
-            final double z = Ranges.mc.player.lastTickPosZ + (Ranges.mc.player.posZ - Ranges.mc.player.lastTickPosZ) * event.getPartialTicks() - renderManager.renderPosZ;
-            GL11.glLineWidth((float)this.lineWidth.getValue());
-            GL11.glBegin(1);
+
+    @Override
+    public void onRender3D(Render3DEvent event) {
+        if (this.circle.getValue().booleanValue()) {
+            GlStateManager.func_179094_E();
+            GlStateManager.func_179147_l();
+            GlStateManager.func_179090_x();
+            GlStateManager.func_179126_j();
+            GlStateManager.func_187428_a((GlStateManager.SourceFactor)GlStateManager.SourceFactor.SRC_ALPHA, (GlStateManager.DestFactor)GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, (GlStateManager.SourceFactor)GlStateManager.SourceFactor.ONE, (GlStateManager.DestFactor)GlStateManager.DestFactor.ZERO);
+            RenderManager renderManager = mc.func_175598_ae();
+            float hue = (float)(System.currentTimeMillis() % 7200L) / 7200.0f;
+            Color color = new Color(Color.HSBtoRGB(hue, 1.0f, 1.0f));
+            ArrayList<Vec3d> hVectors = new ArrayList<Vec3d>();
+            double x = Ranges.mc.field_71439_g.field_70142_S + (Ranges.mc.field_71439_g.field_70165_t - Ranges.mc.field_71439_g.field_70142_S) * (double)event.getPartialTicks() - renderManager.field_78725_b;
+            double y = Ranges.mc.field_71439_g.field_70137_T + (Ranges.mc.field_71439_g.field_70163_u - Ranges.mc.field_71439_g.field_70137_T) * (double)event.getPartialTicks() - renderManager.field_78726_c;
+            double z = Ranges.mc.field_71439_g.field_70136_U + (Ranges.mc.field_71439_g.field_70161_v - Ranges.mc.field_71439_g.field_70136_U) * (double)event.getPartialTicks() - renderManager.field_78723_d;
+            GL11.glLineWidth((float)this.lineWidth.getValue().floatValue());
+            GL11.glBegin((int)1);
             for (int i = 0; i <= 360; ++i) {
-                final Vec3d vec = new Vec3d(x + Math.sin(i * 3.141592653589793 / 180.0) * this.radius.getValue(),  y + 0.1,  z + Math.cos(i * 3.141592653589793 / 180.0) * this.radius.getValue());
-                final RayTraceResult result = Ranges.mc.world.rayTraceBlocks(new Vec3d(Ranges.mc.player.posX,  Ranges.mc.player.posY + Ranges.mc.player.getEyeHeight(),  Ranges.mc.player.posZ),  vec,  false,  false,  true);
-                if (result != null && this.raytrace.getValue()) {
+                Vec3d vec = new Vec3d(x + Math.sin((double)i * Math.PI / 180.0) * this.radius.getValue(), y + 0.1, z + Math.cos((double)i * Math.PI / 180.0) * this.radius.getValue());
+                RayTraceResult result = Ranges.mc.field_71441_e.func_147447_a(new Vec3d(Ranges.mc.field_71439_g.field_70165_t, Ranges.mc.field_71439_g.field_70163_u + (double)Ranges.mc.field_71439_g.func_70047_e(), Ranges.mc.field_71439_g.field_70161_v), vec, false, false, true);
+                if (result != null && this.raytrace.getValue().booleanValue()) {
                     Phobos.LOGGER.info("raytrace was not null");
-                    hVectors.add(result.hitVec);
+                    hVectors.add(result.field_72307_f);
+                    continue;
                 }
-                else {
-                    hVectors.add(vec);
-                }
+                hVectors.add(vec);
             }
             for (int j = 0; j < hVectors.size() - 1; ++j) {
-                GL11.glColor4f(color.getRed() / 255.0f,  color.getGreen() / 255.0f,  color.getBlue() / 255.0f,  color.getAlpha() / 255.0f);
-                GL11.glVertex3d(hVectors.get(j).x,  hVectors.get(j).y,  hVectors.get(j).z);
-                GL11.glVertex3d(hVectors.get(j + 1).x,  hVectors.get(j + 1).y,  hVectors.get(j + 1).z);
-                color = new Color(Color.HSBtoRGB(hue += 0.0027777778f,  1.0f,  1.0f));
+                GL11.glColor4f((float)((float)color.getRed() / 255.0f), (float)((float)color.getGreen() / 255.0f), (float)((float)color.getBlue() / 255.0f), (float)((float)color.getAlpha() / 255.0f));
+                GL11.glVertex3d((double)((Vec3d)hVectors.get((int)j)).field_72450_a, (double)((Vec3d)hVectors.get((int)j)).field_72448_b, (double)((Vec3d)hVectors.get((int)j)).field_72449_c);
+                GL11.glVertex3d((double)((Vec3d)hVectors.get((int)(j + 1))).field_72450_a, (double)((Vec3d)hVectors.get((int)(j + 1))).field_72448_b, (double)((Vec3d)hVectors.get((int)(j + 1))).field_72449_c);
+                color = new Color(Color.HSBtoRGB(hue += 0.0027777778f, 1.0f, 1.0f));
             }
             GL11.glEnd();
-            GlStateManager.resetColor();
-            GlStateManager.disableDepth();
-            GlStateManager.enableTexture2D();
-            GlStateManager.disableBlend();
-            GlStateManager.popMatrix();
+            GlStateManager.func_179117_G();
+            GlStateManager.func_179097_i();
+            GlStateManager.func_179098_w();
+            GlStateManager.func_179084_k();
+            GlStateManager.func_179121_F();
         }
-        if (this.hitSpheres.getValue()) {
-            for (final EntityPlayer player : Ranges.mc.world.playerEntities) {
-                if (player != null) {
-                    if (player.equals((Object)Ranges.mc.player) && !this.ownSphere.getValue()) {
-                        continue;
-                    }
-                    final Vec3d interpolated = EntityUtil.interpolateEntity((Entity)player,  event.getPartialTicks());
-                    if (Phobos.friendManager.isFriend(player.getName())) {
-                        GL11.glColor4f(0.15f,  0.15f,  1.0f,  1.0f);
-                    }
-                    else if (Ranges.mc.player.getDistance((Entity)player) >= 64.0f) {
-                        GL11.glColor4f(0.0f,  1.0f,  0.0f,  1.0f);
-                    }
-                    else {
-                        GL11.glColor4f(1.0f,  Ranges.mc.player.getDistance((Entity)player) / 150.0f,  0.0f,  1.0f);
-                    }
-                    RenderUtil.drawSphere(interpolated.x,  interpolated.y,  interpolated.z,  this.radius.getValue().floatValue(),  20,  15);
+        if (this.hitSpheres.getValue().booleanValue()) {
+            for (EntityPlayer player : Ranges.mc.field_71441_e.field_73010_i) {
+                if (player == null || player.equals((Object)Ranges.mc.field_71439_g) && !this.ownSphere.getValue().booleanValue()) continue;
+                Vec3d interpolated = EntityUtil.interpolateEntity((Entity)player, event.getPartialTicks());
+                if (Phobos.friendManager.isFriend(player.func_70005_c_())) {
+                    GL11.glColor4f((float)0.15f, (float)0.15f, (float)1.0f, (float)1.0f);
+                } else if (Ranges.mc.field_71439_g.func_70032_d((Entity)player) >= 64.0f) {
+                    GL11.glColor4f((float)0.0f, (float)1.0f, (float)0.0f, (float)1.0f);
+                } else {
+                    GL11.glColor4f((float)1.0f, (float)(Ranges.mc.field_71439_g.func_70032_d((Entity)player) / 150.0f), (float)0.0f, (float)1.0f);
                 }
+                RenderUtil.drawSphere(interpolated.field_72450_a, interpolated.field_72448_b, interpolated.field_72449_c, this.radius.getValue().floatValue(), 20, 15);
             }
         }
     }
 }
+

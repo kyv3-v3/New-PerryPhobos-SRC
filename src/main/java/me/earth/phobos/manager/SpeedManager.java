@@ -1,19 +1,24 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.Minecraft
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.entity.player.EntityPlayer
+ *  net.minecraft.util.math.MathHelper
+ */
 package me.earth.phobos.manager;
 
-import me.earth.phobos.features.*;
-import net.minecraft.entity.player.*;
-import net.minecraft.client.*;
-import me.earth.phobos.features.modules.client.*;
-import net.minecraft.entity.*;
-import java.util.*;
-import net.minecraft.util.math.*;
+import java.util.HashMap;
+import me.earth.phobos.features.Feature;
+import me.earth.phobos.features.modules.client.Management;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.MathHelper;
 
-public class SpeedManager extends Feature
-{
+public class SpeedManager
+extends Feature {
     public static final double LAST_JUMP_INFO_DURATION_DEFAULT = 3.0;
     public static boolean didJumpThisTick;
     public static boolean isJumping;
@@ -23,84 +28,77 @@ public class SpeedManager extends Feature
     public double jumpSpeedChanged;
     public boolean didJumpLastTick;
     public long jumpInfoStartTime;
-    public boolean wasFirstJump;
+    public boolean wasFirstJump = true;
     public double speedometerCurrentSpeed;
-    public HashMap<EntityPlayer,  Double> playerSpeeds;
-    
-    public SpeedManager() {
-        this.wasFirstJump = true;
-        this.playerSpeeds = new HashMap<EntityPlayer,  Double>();
+    public HashMap<EntityPlayer, Double> playerSpeeds = new HashMap();
+
+    public static void setDidJumpThisTick(boolean val) {
+        didJumpThisTick = val;
     }
-    
-    public static void setDidJumpThisTick(final boolean val) {
-        SpeedManager.didJumpThisTick = val;
+
+    public static void setIsJumping(boolean val) {
+        isJumping = val;
     }
-    
-    public static void setIsJumping(final boolean val) {
-        SpeedManager.isJumping = val;
-    }
-    
+
     public float lastJumpInfoTimeRemaining() {
-        return (Minecraft.getSystemTime() - this.jumpInfoStartTime) / 1000.0f;
+        return (float)(Minecraft.func_71386_F() - this.jumpInfoStartTime) / 1000.0f;
     }
-    
+
     public void updateValues() {
-        final double distTraveledLastTickX = SpeedManager.mc.player.posX - SpeedManager.mc.player.prevPosX;
-        final double distTraveledLastTickZ = SpeedManager.mc.player.posZ - SpeedManager.mc.player.prevPosZ;
+        double distTraveledLastTickX = SpeedManager.mc.field_71439_g.field_70165_t - SpeedManager.mc.field_71439_g.field_70169_q;
+        double distTraveledLastTickZ = SpeedManager.mc.field_71439_g.field_70161_v - SpeedManager.mc.field_71439_g.field_70166_s;
         this.speedometerCurrentSpeed = distTraveledLastTickX * distTraveledLastTickX + distTraveledLastTickZ * distTraveledLastTickZ;
-        if (SpeedManager.didJumpThisTick && (!SpeedManager.mc.player.onGround || SpeedManager.isJumping)) {
+        if (didJumpThisTick && (!SpeedManager.mc.field_71439_g.field_70122_E || isJumping)) {
             if (!this.didJumpLastTick) {
-                this.wasFirstJump = (this.lastJumpSpeed == 0.0);
-                this.percentJumpSpeedChanged = ((this.speedometerCurrentSpeed != 0.0) ? (this.speedometerCurrentSpeed / this.lastJumpSpeed - 1.0) : -1.0);
+                this.wasFirstJump = this.lastJumpSpeed == 0.0;
+                this.percentJumpSpeedChanged = this.speedometerCurrentSpeed != 0.0 ? this.speedometerCurrentSpeed / this.lastJumpSpeed - 1.0 : -1.0;
                 this.jumpSpeedChanged = this.speedometerCurrentSpeed - this.lastJumpSpeed;
-                this.jumpInfoStartTime = Minecraft.getSystemTime();
+                this.jumpInfoStartTime = Minecraft.func_71386_F();
                 this.lastJumpSpeed = this.speedometerCurrentSpeed;
-                this.firstJumpSpeed = (this.wasFirstJump ? this.lastJumpSpeed : 0.0);
+                this.firstJumpSpeed = this.wasFirstJump ? this.lastJumpSpeed : 0.0;
             }
-            this.didJumpLastTick = SpeedManager.didJumpThisTick;
-        }
-        else {
+            this.didJumpLastTick = didJumpThisTick;
+        } else {
             this.didJumpLastTick = false;
             this.lastJumpSpeed = 0.0;
         }
-        if (Management.getInstance().speed.getValue()) {
+        if (Management.getInstance().speed.getValue().booleanValue()) {
             this.updatePlayers();
         }
     }
-    
+
     public void updatePlayers() {
-        for (final EntityPlayer player : SpeedManager.mc.world.playerEntities) {
-            final int distancer = 20;
-            if (SpeedManager.mc.player.getDistanceSq((Entity)player) >= distancer * distancer) {
-                continue;
-            }
-            final double distTraveledLastTickX = player.posX - player.prevPosX;
-            final double distTraveledLastTickZ = player.posZ - player.prevPosZ;
-            final double playerSpeed = distTraveledLastTickX * distTraveledLastTickX + distTraveledLastTickZ * distTraveledLastTickZ;
-            this.playerSpeeds.put(player,  playerSpeed);
+        for (EntityPlayer player : SpeedManager.mc.field_71441_e.field_73010_i) {
+            int distancer = 20;
+            if (!(SpeedManager.mc.field_71439_g.func_70068_e((Entity)player) < (double)(distancer * distancer))) continue;
+            double distTraveledLastTickX = player.field_70165_t - player.field_70169_q;
+            double distTraveledLastTickZ = player.field_70161_v - player.field_70166_s;
+            double playerSpeed = distTraveledLastTickX * distTraveledLastTickX + distTraveledLastTickZ * distTraveledLastTickZ;
+            this.playerSpeeds.put(player, playerSpeed);
         }
     }
-    
-    public double getPlayerSpeed(final EntityPlayer player) {
-        if (this.playerSpeeds.get(player) == null) {
+
+    public double getPlayerSpeed(EntityPlayer player) {
+        if (this.playerSpeeds.get((Object)player) == null) {
             return 0.0;
         }
-        return this.turnIntoKpH(this.playerSpeeds.get(player));
+        return this.turnIntoKpH(this.playerSpeeds.get((Object)player));
     }
-    
-    public double turnIntoKpH(final double input) {
-        return MathHelper.sqrt(input) * 71.2729367892;
+
+    public double turnIntoKpH(double input) {
+        return (double)MathHelper.func_76133_a((double)input) * 71.2729367892;
     }
-    
+
     public double getSpeedKpH() {
         double speedometerkphdouble = this.turnIntoKpH(this.speedometerCurrentSpeed);
-        speedometerkphdouble = Math.round(10.0 * speedometerkphdouble) / 10.0;
+        speedometerkphdouble = (double)Math.round(10.0 * speedometerkphdouble) / 10.0;
         return speedometerkphdouble;
     }
-    
+
     public double getSpeedMpS() {
         double speedometerMpsdouble = this.turnIntoKpH(this.speedometerCurrentSpeed) / 3.6;
-        speedometerMpsdouble = Math.round(10.0 * speedometerMpsdouble) / 10.0;
+        speedometerMpsdouble = (double)Math.round(10.0 * speedometerMpsdouble) / 10.0;
         return speedometerMpsdouble;
     }
 }
+

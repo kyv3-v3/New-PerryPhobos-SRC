@@ -1,3 +1,14 @@
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.renderer.GlStateManager
+ *  net.minecraft.client.renderer.RenderHelper
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.entity.player.EntityPlayer
+ *  net.minecraft.util.math.AxisAlignedBB
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.render;
 
 import java.awt.Color;
@@ -20,201 +31,180 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class LogoutSpots extends Module
-{
-    private final Setting<Boolean> colorSync;
-    private final Setting<Integer> red;
-    private final Setting<Integer> green;
-    private final Setting<Integer> blue;
-    private final Setting<Integer> alpha;
-    private final Setting<Boolean> scaleing;
-    private final Setting<Float> scaling;
-    private final Setting<Float> factor;
-    private final Setting<Boolean> smartScale;
-    private final Setting<Boolean> rect;
-    private final Setting<Boolean> coords;
-    private final Setting<Boolean> notification;
-    private final List<LogoutPos> spots;
-    public Setting<Float> range;
-    public Setting<Boolean> message;
-    
+public class LogoutSpots
+extends Module {
+    private final Setting<Boolean> colorSync = this.register(new Setting<Boolean>("Sync", false));
+    private final Setting<Integer> red = this.register(new Setting<Integer>("Red", 255, 0, 255));
+    private final Setting<Integer> green = this.register(new Setting<Integer>("Green", 0, 0, 255));
+    private final Setting<Integer> blue = this.register(new Setting<Integer>("Blue", 0, 0, 255));
+    private final Setting<Integer> alpha = this.register(new Setting<Integer>("Alpha", 255, 0, 255));
+    private final Setting<Boolean> scaleing = this.register(new Setting<Boolean>("Scale", false));
+    private final Setting<Float> scaling = this.register(new Setting<Float>("Size", Float.valueOf(4.0f), Float.valueOf(0.1f), Float.valueOf(20.0f)));
+    private final Setting<Float> factor = this.register(new Setting<Object>("Factor", Float.valueOf(0.3f), Float.valueOf(0.1f), Float.valueOf(1.0f), v -> this.scaleing.getValue()));
+    private final Setting<Boolean> smartScale = this.register(new Setting<Object>("SmartScale", Boolean.valueOf(false), v -> this.scaleing.getValue()));
+    private final Setting<Boolean> rect = this.register(new Setting<Boolean>("Rectangle", true));
+    private final Setting<Boolean> coords = this.register(new Setting<Boolean>("Coords", true));
+    private final Setting<Boolean> notification = this.register(new Setting<Boolean>("Notification", true));
+    private final List<LogoutPos> spots = new CopyOnWriteArrayList<LogoutPos>();
+    public Setting<Float> range = this.register(new Setting<Float>("Range", Float.valueOf(300.0f), Float.valueOf(50.0f), Float.valueOf(500.0f)));
+    public Setting<Boolean> message = this.register(new Setting<Boolean>("Message", false));
+
     public LogoutSpots() {
-        super("LogoutSpots",  "Renders LogoutSpots.",  Module.Category.RENDER,  true,  false,  false);
-        this.colorSync = (Setting<Boolean>)this.register(new Setting("Sync", false));
-        this.red = (Setting<Integer>)this.register(new Setting("Red", 255, 0, 255));
-        this.green = (Setting<Integer>)this.register(new Setting("Green", 0, 0, 255));
-        this.blue = (Setting<Integer>)this.register(new Setting("Blue", 0, 0, 255));
-        this.alpha = (Setting<Integer>)this.register(new Setting("Alpha", 255, 0, 255));
-        this.scaleing = (Setting<Boolean>)this.register(new Setting("Scale", false));
-        this.scaling = (Setting<Float>)this.register(new Setting("Size", 4.0f, 0.1f, 20.0f));
-        this.factor = (Setting<Float>)this.register(new Setting("Factor", 0.3f, 0.1f, 1.0f,  v -> this.scaleing.getValue()));
-        this.smartScale = (Setting<Boolean>)this.register(new Setting("SmartScale", false,  v -> this.scaleing.getValue()));
-        this.rect = (Setting<Boolean>)this.register(new Setting("Rectangle", true));
-        this.coords = (Setting<Boolean>)this.register(new Setting("Coords", true));
-        this.notification = (Setting<Boolean>)this.register(new Setting("Notification", true));
-        this.spots = new CopyOnWriteArrayList<LogoutPos>();
-        this.range = (Setting<Float>)this.register(new Setting("Range", 300.0f, 50.0f, 500.0f));
-        this.message = (Setting<Boolean>)this.register(new Setting("Message", false));
+        super("LogoutSpots", "Renders LogoutSpots.", Module.Category.RENDER, true, false, false);
     }
-    
+
+    @Override
     public void onLogout() {
         this.spots.clear();
     }
-    
+
+    @Override
     public void onDisable() {
         this.spots.clear();
     }
-    
-    public void onRender3D(final Render3DEvent event) {
+
+    /*
+     * WARNING - Removed try catching itself - possible behaviour change.
+     */
+    @Override
+    public void onRender3D(Render3DEvent event) {
         if (!this.spots.isEmpty()) {
-            synchronized (this.spots) {
-                AxisAlignedBB interpolateAxis;
-                AxisAlignedBB bb;
-                Color currentColor = null;
-                double x;
-                double y;
-                double z;
+            List<LogoutPos> list = this.spots;
+            synchronized (list) {
                 this.spots.forEach(spot -> {
                     if (spot.getEntity() != null) {
-                        bb = (interpolateAxis = RenderUtil.interpolateAxis(spot.getEntity().getEntityBoundingBox()));
-                        if (this.colorSync.getValue()) {
-                            currentColor = Colors.INSTANCE.getCurrentColor();
-                        }
-                        else {
-                           // new(java.awt.Color.class)
-                            new Color(this.red.getValue(),  this.green.getValue(),  this.blue.getValue(),  this.alpha.getValue());
-                        }
-                        RenderUtil.drawBlockOutline(interpolateAxis,  currentColor,  1.0f);
-                        x = this.interpolate(spot.getEntity().lastTickPosX,  spot.getEntity().posX,  event.getPartialTicks()) - LogoutSpots.mc.getRenderManager().renderPosX;
-                        y = this.interpolate(spot.getEntity().lastTickPosY,  spot.getEntity().posY,  event.getPartialTicks()) - LogoutSpots.mc.getRenderManager().renderPosY;
-                        z = this.interpolate(spot.getEntity().lastTickPosZ,  spot.getEntity().posZ,  event.getPartialTicks()) - LogoutSpots.mc.getRenderManager().renderPosZ;
-                        this.renderNameTag(spot.getName(),  x,  y,  z,  event.getPartialTicks(),  spot.getX(),  spot.getY(),  spot.getZ());
+                        AxisAlignedBB bb = RenderUtil.interpolateAxis(spot.getEntity().func_174813_aQ());
+                        RenderUtil.drawBlockOutline(bb, this.colorSync.getValue() != false ? Colors.INSTANCE.getCurrentColor() : new Color(this.red.getValue(), this.green.getValue(), this.blue.getValue(), this.alpha.getValue()), 1.0f);
+                        double x = this.interpolate(spot.getEntity().field_70142_S, spot.getEntity().field_70165_t, event.getPartialTicks()) - LogoutSpots.mc.func_175598_ae().field_78725_b;
+                        double y = this.interpolate(spot.getEntity().field_70137_T, spot.getEntity().field_70163_u, event.getPartialTicks()) - LogoutSpots.mc.func_175598_ae().field_78726_c;
+                        double z = this.interpolate(spot.getEntity().field_70136_U, spot.getEntity().field_70161_v, event.getPartialTicks()) - LogoutSpots.mc.func_175598_ae().field_78723_d;
+                        this.renderNameTag(spot.getName(), x, y, z, event.getPartialTicks(), spot.getX(), spot.getY(), spot.getZ());
                     }
                 });
             }
         }
     }
-    
+
+    @Override
     public void onUpdate() {
-        if (!fullNullCheck()) {
-            this.spots.removeIf(spot -> LogoutSpots.mc.player.getDistanceSq((Entity)spot.getEntity()) >= MathUtil.square(this.range.getValue()));
+        if (!LogoutSpots.fullNullCheck()) {
+            this.spots.removeIf(spot -> LogoutSpots.mc.field_71439_g.func_70068_e((Entity)spot.getEntity()) >= MathUtil.square(this.range.getValue().floatValue()));
         }
     }
-    
+
     @SubscribeEvent
-    public void onConnection(final ConnectionEvent event) {
+    public void onConnection(ConnectionEvent event) {
         if (event.getStage() == 0) {
-            final UUID uuid = event.getUuid();
-            final EntityPlayer entity = LogoutSpots.mc.world.getPlayerEntityByUUID(uuid);
-            if (entity != null && this.message.getValue()) {
-                Command.sendMessage("§a" + entity.getName() + " just logged in" + (this.coords.getValue() ? (" at (" + (int)entity.posX + ",  " + (int)entity.posY + ",  " + (int)entity.posZ + ")!") : "!"),  (boolean)this.notification.getValue());
+            UUID uuid = event.getUuid();
+            EntityPlayer entity = LogoutSpots.mc.field_71441_e.func_152378_a(uuid);
+            if (entity != null && this.message.getValue().booleanValue()) {
+                Command.sendMessage("\u00a7a" + entity.func_70005_c_() + " just logged in" + (this.coords.getValue() != false ? " at (" + (int)entity.field_70165_t + ", " + (int)entity.field_70163_u + ", " + (int)entity.field_70161_v + ")!" : "!"), this.notification.getValue());
             }
             this.spots.removeIf(pos -> pos.getName().equalsIgnoreCase(event.getName()));
-        }
-        else if (event.getStage() == 1) {
-            final EntityPlayer entity2 = event.getEntity();
-            final UUID uuid2 = event.getUuid();
-            final String name = event.getName();
-            if (this.message.getValue()) {
-                Command.sendMessage("§c" + event.getName() + " just logged out" + (this.coords.getValue() ? (" at (" + (int)entity2.posX + ",  " + (int)entity2.posY + ",  " + (int)entity2.posZ + ")!") : "!"),  (boolean)this.notification.getValue());
+        } else if (event.getStage() == 1) {
+            EntityPlayer entity = event.getEntity();
+            UUID uuid = event.getUuid();
+            String name = event.getName();
+            if (this.message.getValue().booleanValue()) {
+                Command.sendMessage("\u00a7c" + event.getName() + " just logged out" + (this.coords.getValue() != false ? " at (" + (int)entity.field_70165_t + ", " + (int)entity.field_70163_u + ", " + (int)entity.field_70161_v + ")!" : "!"), this.notification.getValue());
             }
-            if (name != null && entity2 != null && uuid2 != null) {
-                this.spots.add(new LogoutPos(name,  uuid2,  entity2));
+            if (name != null && entity != null && uuid != null) {
+                this.spots.add(new LogoutPos(name, uuid, entity));
             }
         }
     }
-    
-    private void renderNameTag(final String name,  final double x,  final double yi,  final double z,  final float delta,  final double xPos,  final double yPos,  final double zPos) {
-        final double y = yi + 0.7;
-        final Entity camera = LogoutSpots.mc.getRenderViewEntity();
-        assert camera != null;
-        final double originalPositionX = camera.posX;
-        final double originalPositionY = camera.posY;
-        final double originalPositionZ = camera.posZ;
-        camera.posX = this.interpolate(camera.prevPosX,  camera.posX,  delta);
-        camera.posY = this.interpolate(camera.prevPosY,  camera.posY,  delta);
-        camera.posZ = this.interpolate(camera.prevPosZ,  camera.posZ,  delta);
-        final String displayTag = name + " XYZ: " + (int)xPos + ",  " + (int)yPos + ",  " + (int)zPos;
-        final double distance = camera.getDistance(x + LogoutSpots.mc.getRenderManager().viewerPosX,  y + LogoutSpots.mc.getRenderManager().viewerPosY,  z + LogoutSpots.mc.getRenderManager().viewerPosZ);
-        final int width = this.renderer.getStringWidth(displayTag) / 2;
-        double scale = (0.0018 + this.scaling.getValue() * (distance * this.factor.getValue())) / 1000.0;
-        if (distance <= 8.0 && this.smartScale.getValue()) {
+
+    private void renderNameTag(String name, double x, double yi, double z, float delta, double xPos, double yPos, double zPos) {
+        double y = yi + 0.7;
+        Entity camera = mc.func_175606_aa();
+        assert (camera != null);
+        double originalPositionX = camera.field_70165_t;
+        double originalPositionY = camera.field_70163_u;
+        double originalPositionZ = camera.field_70161_v;
+        camera.field_70165_t = this.interpolate(camera.field_70169_q, camera.field_70165_t, delta);
+        camera.field_70163_u = this.interpolate(camera.field_70167_r, camera.field_70163_u, delta);
+        camera.field_70161_v = this.interpolate(camera.field_70166_s, camera.field_70161_v, delta);
+        String displayTag = name + " XYZ: " + (int)xPos + ", " + (int)yPos + ", " + (int)zPos;
+        double distance = camera.func_70011_f(x + LogoutSpots.mc.func_175598_ae().field_78730_l, y + LogoutSpots.mc.func_175598_ae().field_78731_m, z + LogoutSpots.mc.func_175598_ae().field_78728_n);
+        int width = this.renderer.getStringWidth(displayTag) / 2;
+        double scale = (0.0018 + (double)this.scaling.getValue().floatValue() * (distance * (double)this.factor.getValue().floatValue())) / 1000.0;
+        if (distance <= 8.0 && this.smartScale.getValue().booleanValue()) {
             scale = 0.0245;
         }
-        if (!this.scaleing.getValue()) {
-            scale = this.scaling.getValue() / 100.0;
+        if (!this.scaleing.getValue().booleanValue()) {
+            scale = (double)this.scaling.getValue().floatValue() / 100.0;
         }
-        GlStateManager.pushMatrix();
-        RenderHelper.enableStandardItemLighting();
-        GlStateManager.enablePolygonOffset();
-        GlStateManager.doPolygonOffset(1.0f,  -1500000.0f);
-        GlStateManager.disableLighting();
-        GlStateManager.translate((float)x,  (float)y + 1.4f,  (float)z);
-        GlStateManager.rotate(-LogoutSpots.mc.getRenderManager().playerViewY,  0.0f,  1.0f,  0.0f);
-        GlStateManager.rotate(LogoutSpots.mc.getRenderManager().playerViewX,  (LogoutSpots.mc.gameSettings.thirdPersonView == 2) ? -1.0f : 1.0f,  0.0f,  0.0f);
-        GlStateManager.scale(-scale,  -scale,  scale);
-        GlStateManager.disableDepth();
-        GlStateManager.enableBlend();
-        GlStateManager.enableBlend();
-        if (this.rect.getValue()) {
-            RenderUtil.drawRect((float)(-width - 2),  (float)(-(this.renderer.getFontHeight() + 1)),  width + 2.0f,  1.5f,  1426063360);
+        GlStateManager.func_179094_E();
+        RenderHelper.func_74519_b();
+        GlStateManager.func_179088_q();
+        GlStateManager.func_179136_a((float)1.0f, (float)-1500000.0f);
+        GlStateManager.func_179140_f();
+        GlStateManager.func_179109_b((float)((float)x), (float)((float)y + 1.4f), (float)((float)z));
+        GlStateManager.func_179114_b((float)(-LogoutSpots.mc.func_175598_ae().field_78735_i), (float)0.0f, (float)1.0f, (float)0.0f);
+        GlStateManager.func_179114_b((float)LogoutSpots.mc.func_175598_ae().field_78732_j, (float)(LogoutSpots.mc.field_71474_y.field_74320_O == 2 ? -1.0f : 1.0f), (float)0.0f, (float)0.0f);
+        GlStateManager.func_179139_a((double)(-scale), (double)(-scale), (double)scale);
+        GlStateManager.func_179097_i();
+        GlStateManager.func_179147_l();
+        GlStateManager.func_179147_l();
+        if (this.rect.getValue().booleanValue()) {
+            RenderUtil.drawRect(-width - 2, -(this.renderer.getFontHeight() + 1), (float)width + 2.0f, 1.5f, 0x55000000);
         }
-        GlStateManager.disableBlend();
-        this.renderer.drawStringWithShadow(displayTag,  (float)(-width),  (float)(-(this.renderer.getFontHeight() - 1)),  ((boolean)this.colorSync.getValue()) ? Colors.INSTANCE.getCurrentColorHex() : ColorUtil.toRGBA(new Color(this.red.getValue(),  this.green.getValue(),  this.blue.getValue(),  this.alpha.getValue())));
-        camera.posX = originalPositionX;
-        camera.posY = originalPositionY;
-        camera.posZ = originalPositionZ;
-        GlStateManager.enableDepth();
-        GlStateManager.disableBlend();
-        GlStateManager.disablePolygonOffset();
-        GlStateManager.doPolygonOffset(1.0f,  1500000.0f);
-        GlStateManager.popMatrix();
+        GlStateManager.func_179084_k();
+        this.renderer.drawStringWithShadow(displayTag, -width, -(this.renderer.getFontHeight() - 1), this.colorSync.getValue() != false ? Colors.INSTANCE.getCurrentColorHex() : ColorUtil.toRGBA(new Color(this.red.getValue(), this.green.getValue(), this.blue.getValue(), this.alpha.getValue())));
+        camera.field_70165_t = originalPositionX;
+        camera.field_70163_u = originalPositionY;
+        camera.field_70161_v = originalPositionZ;
+        GlStateManager.func_179126_j();
+        GlStateManager.func_179084_k();
+        GlStateManager.func_179113_r();
+        GlStateManager.func_179136_a((float)1.0f, (float)1500000.0f);
+        GlStateManager.func_179121_F();
     }
-    
-    private double interpolate(final double previous,  final double current,  final float delta) {
-        return previous + (current - previous) * delta;
+
+    private double interpolate(double previous, double current, float delta) {
+        return previous + (current - previous) * (double)delta;
     }
-    
-    private static class LogoutPos
-    {
+
+    private static class LogoutPos {
         private final String name;
         private final UUID uuid;
         private final EntityPlayer entity;
         private final double x;
         private final double y;
         private final double z;
-        
-        public LogoutPos(final String name,  final UUID uuid,  final EntityPlayer entity) {
+
+        public LogoutPos(String name, UUID uuid, EntityPlayer entity) {
             this.name = name;
             this.uuid = uuid;
             this.entity = entity;
-            this.x = entity.posX;
-            this.y = entity.posY;
-            this.z = entity.posZ;
+            this.x = entity.field_70165_t;
+            this.y = entity.field_70163_u;
+            this.z = entity.field_70161_v;
         }
-        
+
         public String getName() {
             return this.name;
         }
-        
+
         public UUID getUuid() {
             return this.uuid;
         }
-        
+
         public EntityPlayer getEntity() {
             return this.entity;
         }
-        
+
         public double getX() {
             return this.x;
         }
-        
+
         public double getY() {
             return this.y;
         }
-        
+
         public double getZ() {
             return this.z;
         }
     }
 }
+

@@ -1,156 +1,148 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.block.BlockObsidian
+ *  net.minecraft.block.BlockWeb
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.entity.player.EntityPlayer
+ *  net.minecraft.network.Packet
+ *  net.minecraft.network.play.client.CPacketChatMessage
+ *  net.minecraft.util.EnumHand
+ *  net.minecraft.util.math.BlockPos
+ *  net.minecraftforge.fml.common.eventhandler.EventPriority
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ *  net.minecraftforge.fml.common.gameevent.InputEvent$KeyInputEvent
+ *  org.lwjgl.input.Keyboard
+ */
 package me.earth.phobos.features.modules.combat;
 
-import me.earth.phobos.features.modules.*;
-import net.minecraft.util.math.*;
-import me.earth.phobos.features.setting.*;
-import me.earth.phobos.features.modules.client.*;
-import net.minecraft.network.play.client.*;
-import net.minecraft.network.*;
-import me.earth.phobos.*;
-import net.minecraft.entity.*;
-import me.earth.phobos.event.events.*;
-import net.minecraftforge.fml.common.gameevent.*;
-import org.lwjgl.input.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import me.earth.phobos.util.*;
-import java.util.*;
-import net.minecraft.util.*;
-import net.minecraft.entity.player.*;
-import net.minecraft.block.*;
-import me.earth.phobos.features.modules.player.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.event.events.UpdateWalkingPlayerEvent;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.modules.client.ClickGui;
+import me.earth.phobos.features.modules.client.PingBypass;
+import me.earth.phobos.features.modules.combat.Offhand;
+import me.earth.phobos.features.modules.player.BlockTweaks;
+import me.earth.phobos.features.modules.player.Freecam;
+import me.earth.phobos.features.setting.Bind;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.BlockUtil;
+import me.earth.phobos.util.EntityUtil;
+import me.earth.phobos.util.InventoryUtil;
+import me.earth.phobos.util.MathUtil;
+import me.earth.phobos.util.TimerUtil;
+import net.minecraft.block.BlockObsidian;
+import net.minecraft.block.BlockWeb;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.CPacketChatMessage;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent;
+import org.lwjgl.input.Keyboard;
 
-public class HoleFiller extends Module
-{
-    private static HoleFiller INSTANCE;
-    private final Setting<Boolean> server;
-    private final Setting<Double> range;
-    private final Setting<Integer> delay;
-    private final Setting<Integer> blocksPerTick;
-    private final Setting<Boolean> rotate;
-    private final Setting<Boolean> raytrace;
-    private final Setting<Boolean> disable;
-    private final Setting<Integer> disableTime;
-    private final Setting<Boolean> offhand;
-    private final Setting<InventoryUtil.Switch> switchMode;
-    private final Setting<Boolean> onlySafe;
-    private final Setting<Boolean> webSelf;
-    private final Setting<Boolean> highWeb;
-    private final Setting<Boolean> freecam;
-    private final Setting<Boolean> midSafeHoles;
-    private final Setting<Boolean> packet;
-    private final Setting<Boolean> onGroundCheck;
-    private final TimerUtil offTimer;
-    private final TimerUtil timer;
-    private final Map<BlockPos,  Integer> retries;
-    private final TimerUtil retryTimer;
-    public Setting<Mode> mode;
-    public Setting<PlaceMode> placeMode;
-    private final Setting<Double> smartRange;
-    public Setting<Bind> obbyBind;
-    public Setting<Bind> webBind;
-    public Mode currentMode;
+public class HoleFiller
+extends Module {
+    private static HoleFiller INSTANCE = new HoleFiller();
+    private final Setting<Boolean> server = this.register(new Setting<Boolean>("Server", false));
+    private final Setting<Double> range = this.register(new Setting<Double>("PlaceRange", 6.0, 0.0, 10.0));
+    private final Setting<Integer> delay = this.register(new Setting<Integer>("Delay/Place", 50, 0, 250));
+    private final Setting<Integer> blocksPerTick = this.register(new Setting<Integer>("Block/Place", 8, 1, 20));
+    private final Setting<Boolean> rotate = this.register(new Setting<Boolean>("Rotate", true));
+    private final Setting<Boolean> raytrace = this.register(new Setting<Boolean>("Raytrace", false));
+    private final Setting<Boolean> disable = this.register(new Setting<Boolean>("Disable", true));
+    private final Setting<Integer> disableTime = this.register(new Setting<Integer>("Ms/Disable", 200, 1, 250));
+    private final Setting<Boolean> offhand = this.register(new Setting<Boolean>("OffHand", true));
+    private final Setting<InventoryUtil.Switch> switchMode = this.register(new Setting<InventoryUtil.Switch>("Switch", InventoryUtil.Switch.NORMAL));
+    private final Setting<Boolean> onlySafe = this.register(new Setting<Object>("OnlySafe", Boolean.valueOf(false), v -> this.offhand.getValue()));
+    private final Setting<Boolean> webSelf = this.register(new Setting<Boolean>("SelfWeb", false));
+    private final Setting<Boolean> highWeb = this.register(new Setting<Boolean>("HighWeb", false));
+    private final Setting<Boolean> freecam = this.register(new Setting<Boolean>("Freecam", false));
+    private final Setting<Boolean> midSafeHoles = this.register(new Setting<Boolean>("MidSafe", false));
+    private final Setting<Boolean> packet = this.register(new Setting<Boolean>("Packet", false));
+    private final Setting<Boolean> onGroundCheck = this.register(new Setting<Boolean>("OnGroundCheck", false));
+    private final TimerUtil offTimer = new TimerUtil();
+    private final TimerUtil timer = new TimerUtil();
+    private final Map<BlockPos, Integer> retries = new HashMap<BlockPos, Integer>();
+    private final TimerUtil retryTimer = new TimerUtil();
+    public Setting<Mode> mode = this.register(new Setting<Mode>("Mode", Mode.OBSIDIAN));
+    public Setting<PlaceMode> placeMode = this.register(new Setting<PlaceMode>("PlaceMode", PlaceMode.ALL));
+    private final Setting<Double> smartRange = this.register(new Setting<Object>("SmartRange", Double.valueOf(6.0), Double.valueOf(0.0), Double.valueOf(10.0), v -> this.placeMode.getValue() == PlaceMode.SMART));
+    public Setting<Bind> obbyBind = this.register(new Setting<Bind>("Obsidian", new Bind(-1)));
+    public Setting<Bind> webBind = this.register(new Setting<Bind>("Webs", new Bind(-1)));
+    public Mode currentMode = Mode.OBSIDIAN;
     private boolean accessedViaBind;
-    private int targetSlot;
+    private int targetSlot = -1;
     private int blocksThisTick;
-    private Offhand.Mode offhandMode;
-    private Offhand.Mode2 offhandMode2;
+    private Offhand.Mode offhandMode = Offhand.Mode.CRYSTALS;
+    private Offhand.Mode2 offhandMode2 = Offhand.Mode2.CRYSTALS;
     private boolean isSneaking;
     private boolean hasOffhand;
     private boolean placeHighWeb;
-    private int lastHotbarSlot;
+    private int lastHotbarSlot = -1;
     private boolean switchedItem;
-    
+
     public HoleFiller() {
-        super("HoleFiller",  "Fills holes around you.",  Category.COMBAT,  true,  false,  true);
-        this.server = (Setting<Boolean>)this.register(new Setting("Server", false));
-        this.range = (Setting<Double>)this.register(new Setting("PlaceRange", 6.0, 0.0, 10.0));
-        this.delay = (Setting<Integer>)this.register(new Setting("Delay/Place", 50, 0, 250));
-        this.blocksPerTick = (Setting<Integer>)this.register(new Setting("Block/Place", 8, 1, 20));
-        this.rotate = (Setting<Boolean>)this.register(new Setting("Rotate", true));
-        this.raytrace = (Setting<Boolean>)this.register(new Setting("Raytrace", false));
-        this.disable = (Setting<Boolean>)this.register(new Setting("Disable", true));
-        this.disableTime = (Setting<Integer>)this.register(new Setting("Ms/Disable", 200, 1, 250));
-        this.offhand = (Setting<Boolean>)this.register(new Setting("OffHand", true));
-        this.switchMode = (Setting<InventoryUtil.Switch>)this.register(new Setting("Switch", InventoryUtil.Switch.NORMAL));
-        this.onlySafe = (Setting<Boolean>)this.register(new Setting("OnlySafe", false,  v -> this.offhand.getValue()));
-        this.webSelf = (Setting<Boolean>)this.register(new Setting("SelfWeb", false));
-        this.highWeb = (Setting<Boolean>)this.register(new Setting("HighWeb", false));
-        this.freecam = (Setting<Boolean>)this.register(new Setting("Freecam", false));
-        this.midSafeHoles = (Setting<Boolean>)this.register(new Setting("MidSafe", false));
-        this.packet = (Setting<Boolean>)this.register(new Setting("Packet", false));
-        this.onGroundCheck = (Setting<Boolean>)this.register(new Setting("OnGroundCheck", false));
-        this.offTimer = new TimerUtil();
-        this.timer = new TimerUtil();
-        this.retries = new HashMap<BlockPos,  Integer>();
-        this.retryTimer = new TimerUtil();
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.OBSIDIAN));
-        this.placeMode = (Setting<PlaceMode>)this.register(new Setting("PlaceMode", PlaceMode.ALL));
-        this.smartRange = (Setting<Double>)this.register(new Setting("SmartRange", 6.0, 0.0, 10.0,  v -> this.placeMode.getValue() == PlaceMode.SMART));
-        this.obbyBind = (Setting<Bind>)this.register(new Setting("Obsidian", new Bind(-1)));
-        this.webBind = (Setting<Bind>)this.register(new Setting("Webs", new Bind(-1)));
-        this.currentMode = Mode.OBSIDIAN;
-        this.targetSlot = -1;
-        this.offhandMode = Offhand.Mode.CRYSTALS;
-        this.offhandMode2 = Offhand.Mode2.CRYSTALS;
-        this.lastHotbarSlot = -1;
+        super("HoleFiller", "Fills holes around you.", Module.Category.COMBAT, true, false, true);
         this.setInstance();
     }
-    
+
     public static HoleFiller getInstance() {
-        if (HoleFiller.INSTANCE == null) {
-            HoleFiller.INSTANCE = new HoleFiller();
+        if (INSTANCE == null) {
+            INSTANCE = new HoleFiller();
         }
-        return HoleFiller.INSTANCE;
+        return INSTANCE;
     }
-    
+
     private void setInstance() {
-        HoleFiller.INSTANCE = this;
+        INSTANCE = this;
     }
-    
+
     private boolean shouldServer() {
-        return PingBypass.getInstance().isConnected() && this.server.getValue();
+        return PingBypass.getInstance().isConnected() && this.server.getValue() != false;
     }
-    
+
     @Override
     public void onEnable() {
-        if (fullNullCheck()) {
+        if (HoleFiller.fullNullCheck()) {
             this.disable();
         }
-        if (!HoleFiller.mc.player.onGround && this.onGroundCheck.getValue()) {
+        if (!HoleFiller.mc.field_71439_g.field_70122_E && this.onGroundCheck.getValue().booleanValue()) {
             return;
         }
         if (this.shouldServer()) {
-            HoleFiller.mc.player.connection.sendPacket((Packet)new CPacketChatMessage("@Serverprefix" + ClickGui.getInstance().prefix.getValue()));
-            HoleFiller.mc.player.connection.sendPacket((Packet)new CPacketChatMessage("@Server" + ClickGui.getInstance().prefix.getValue() + "module HoleFiller set Enabled true"));
+            HoleFiller.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketChatMessage("@Serverprefix" + ClickGui.getInstance().prefix.getValue()));
+            HoleFiller.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketChatMessage("@Server" + ClickGui.getInstance().prefix.getValue() + "module HoleFiller set Enabled true"));
             return;
         }
-        this.lastHotbarSlot = HoleFiller.mc.player.inventory.currentItem;
+        this.lastHotbarSlot = HoleFiller.mc.field_71439_g.field_71071_by.field_70461_c;
         if (!this.accessedViaBind) {
             this.currentMode = this.mode.getValue();
         }
-        final Offhand module = Phobos.moduleManager.getModuleByClass(Offhand.class);
+        Offhand module = Phobos.moduleManager.getModuleByClass(Offhand.class);
         this.offhandMode = module.mode;
         this.offhandMode2 = module.currentMode;
-        if (this.offhand.getValue() && (EntityUtil.isSafe((Entity)HoleFiller.mc.player) || !this.onlySafe.getValue())) {
+        if (this.offhand.getValue().booleanValue() && (EntityUtil.isSafe((Entity)HoleFiller.mc.field_71439_g) || !this.onlySafe.getValue().booleanValue())) {
             if (module.type.getValue() == Offhand.Type.NEW) {
                 if (this.currentMode == Mode.WEBS) {
                     module.setSwapToTotem(false);
                     module.setMode(Offhand.Mode.WEBS);
-                }
-                else {
+                } else {
                     module.setSwapToTotem(false);
                     module.setMode(Offhand.Mode.OBSIDIAN);
                 }
-            }
-            else {
+            } else {
                 if (this.currentMode == Mode.WEBS) {
                     module.setMode(Offhand.Mode2.WEBS);
-                }
-                else {
+                } else {
                     module.setMode(Offhand.Mode2.OBSIDIAN);
                 }
                 if (!module.didSwitchThisTick) {
@@ -161,24 +153,24 @@ public class HoleFiller extends Module
         Phobos.holeManager.update();
         this.offTimer.reset();
     }
-    
+
     @Override
     public void onTick() {
-        if (this.isOn() && (this.blocksPerTick.getValue() != 1 || !this.rotate.getValue())) {
+        if (this.isOn() && (this.blocksPerTick.getValue() != 1 || !this.rotate.getValue().booleanValue())) {
             this.doHoleFill();
         }
     }
-    
+
     @SubscribeEvent
-    public void onUpdateWalkingPlayer(final UpdateWalkingPlayerEvent event) {
-        if (this.isOn() && event.getStage() == 0 && this.blocksPerTick.getValue() == 1 && this.rotate.getValue()) {
+    public void onUpdateWalkingPlayer(UpdateWalkingPlayerEvent event) {
+        if (this.isOn() && event.getStage() == 0 && this.blocksPerTick.getValue() == 1 && this.rotate.getValue().booleanValue()) {
             this.doHoleFill();
         }
     }
-    
+
     @Override
     public void onDisable() {
-        if (this.offhand.getValue()) {
+        if (this.offhand.getValue().booleanValue()) {
             Phobos.moduleManager.getModuleByClass(Offhand.class).setMode(this.offhandMode);
             Phobos.moduleManager.getModuleByClass(Offhand.class).setMode(this.offhandMode2);
         }
@@ -188,9 +180,9 @@ public class HoleFiller extends Module
         this.accessedViaBind = false;
         this.hasOffhand = false;
     }
-    
-    @SubscribeEvent(priority = EventPriority.NORMAL,  receiveCanceled = true)
-    public void onKeyInput(final InputEvent.KeyInputEvent event) {
+
+    @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+    public void onKeyInput(InputEvent.KeyInputEvent event) {
         if (Keyboard.getEventKeyState()) {
             if (this.obbyBind.getValue().getKey() == Keyboard.getEventKey()) {
                 this.accessedViaBind = true;
@@ -204,90 +196,81 @@ public class HoleFiller extends Module
             }
         }
     }
-    
+
+    /*
+     * WARNING - Removed try catching itself - possible behaviour change.
+     */
     private void doHoleFill() {
+        ArrayList<BlockPos> targets;
+        Object object;
+        List<BlockPos> object2;
         if (this.check()) {
             return;
         }
         if (this.placeHighWeb) {
-            final BlockPos pos = new BlockPos(HoleFiller.mc.player.posX,  HoleFiller.mc.player.posY + 1.0,  HoleFiller.mc.player.posZ);
+            BlockPos pos = new BlockPos(HoleFiller.mc.field_71439_g.field_70165_t, HoleFiller.mc.field_71439_g.field_70163_u + 1.0, HoleFiller.mc.field_71439_g.field_70161_v);
             this.placeBlock(pos);
             this.placeHighWeb = false;
         }
-        if (this.midSafeHoles.getValue()) {
-            final Object object = Phobos.holeManager.getMidSafety();
+        if (this.midSafeHoles.getValue().booleanValue()) {
+            object2 = Phobos.holeManager.getMidSafety();
+            object = object2;
             synchronized (object) {
             }
-            //monitorexit(object)
         }
-        final Object object = Phobos.holeManager.getHoles();
-        final ArrayList<BlockPos> targets;
+        object2 = Phobos.holeManager.getHoles();
+        object = object2;
         synchronized (object) {
             targets = new ArrayList<BlockPos>(Phobos.holeManager.getHoles());
         }
-        for (final BlockPos position : targets) {
-            if (HoleFiller.mc.player.getDistanceSq(position) <= MathUtil.square(this.range.getValue())) {
-                if (this.placeMode.getValue() == PlaceMode.SMART && !this.isPlayerInRange(position)) {
-                    continue;
-                }
-                if (position.equals((Object)new BlockPos(HoleFiller.mc.player.getPositionVector()))) {
-                    if (this.currentMode != Mode.WEBS) {
-                        continue;
-                    }
-                    if (!this.webSelf.getValue()) {
-                        continue;
-                    }
-                    if (this.highWeb.getValue()) {
-                        this.placeHighWeb = true;
-                    }
-                }
-                final int placeability;
-                if ((placeability = BlockUtil.isPositionPlaceable(position,  this.raytrace.getValue())) == 1 && (this.currentMode == Mode.WEBS || this.switchMode.getValue() == InventoryUtil.Switch.SILENT || (BlockTweaks.getINSTANCE().isOn() && BlockTweaks.getINSTANCE().noBlock.getValue())) && (this.currentMode == Mode.WEBS || this.retries.get(position) == null || this.retries.get(position) < 4)) {
-                    this.placeBlock(position);
-                    if (this.currentMode == Mode.WEBS) {
-                        continue;
-                    }
-                    this.retries.put(position,  (this.retries.get(position) == null) ? 1 : (this.retries.get(position) + 1));
-                }
-                else {
-                    if (placeability != 3) {
-                        continue;
-                    }
-                    this.placeBlock(position);
+        for (BlockPos position : targets) {
+            int placeability;
+            if (HoleFiller.mc.field_71439_g.func_174818_b(position) > MathUtil.square(this.range.getValue()) || this.placeMode.getValue() == PlaceMode.SMART && !this.isPlayerInRange(position)) continue;
+            if (position.equals((Object)new BlockPos(HoleFiller.mc.field_71439_g.func_174791_d()))) {
+                if (this.currentMode != Mode.WEBS || !this.webSelf.getValue().booleanValue()) continue;
+                if (this.highWeb.getValue().booleanValue()) {
+                    this.placeHighWeb = true;
                 }
             }
+            if ((placeability = BlockUtil.isPositionPlaceable(position, this.raytrace.getValue())) == 1 && (this.currentMode == Mode.WEBS || this.switchMode.getValue() == InventoryUtil.Switch.SILENT || BlockTweaks.getINSTANCE().isOn() && BlockTweaks.getINSTANCE().noBlock.getValue().booleanValue()) && (this.currentMode == Mode.WEBS || this.retries.get((Object)position) == null || this.retries.get((Object)position) < 4)) {
+                this.placeBlock(position);
+                if (this.currentMode == Mode.WEBS) continue;
+                this.retries.put(position, this.retries.get((Object)position) == null ? 1 : this.retries.get((Object)position) + 1);
+                continue;
+            }
+            if (placeability != 3) continue;
+            this.placeBlock(position);
         }
     }
-    
-    private void placeBlock(final BlockPos pos) {
+
+    private void placeBlock(BlockPos pos) {
         if (this.blocksThisTick < this.blocksPerTick.getValue() && this.switchItem(false)) {
-            final boolean smartRotate = this.blocksPerTick.getValue() == 1 && this.rotate.getValue();
-            this.isSneaking = (smartRotate ? BlockUtil.placeBlockSmartRotate(pos,  this.hasOffhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND,  true,  this.packet.getValue(),  this.isSneaking) : BlockUtil.placeBlock(pos,  this.hasOffhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND,  this.rotate.getValue(),  this.packet.getValue(),  this.isSneaking));
+            boolean smartRotate;
+            boolean bl = smartRotate = this.blocksPerTick.getValue() == 1 && this.rotate.getValue() != false;
+            this.isSneaking = smartRotate ? BlockUtil.placeBlockSmartRotate(pos, this.hasOffhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, true, this.packet.getValue(), this.isSneaking) : BlockUtil.placeBlock(pos, this.hasOffhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, this.rotate.getValue(), this.packet.getValue(), this.isSneaking);
             this.timer.reset();
             ++this.blocksThisTick;
         }
     }
-    
-    private boolean isPlayerInRange(final BlockPos pos) {
-        for (final EntityPlayer player : HoleFiller.mc.world.playerEntities) {
-            if (EntityUtil.isntValid((Entity)player,  this.smartRange.getValue())) {
-                continue;
-            }
+
+    private boolean isPlayerInRange(BlockPos pos) {
+        for (EntityPlayer player : HoleFiller.mc.field_71441_e.field_73010_i) {
+            if (EntityUtil.isntValid((Entity)player, this.smartRange.getValue())) continue;
             return true;
         }
         return false;
     }
-    
+
     private boolean check() {
-        if (fullNullCheck() || (this.disable.getValue() && this.offTimer.passedMs(this.disableTime.getValue()))) {
+        if (HoleFiller.fullNullCheck() || this.disable.getValue().booleanValue() && this.offTimer.passedMs(this.disableTime.getValue().intValue())) {
             this.disable();
             return true;
         }
-        if (HoleFiller.mc.player.inventory.currentItem != this.lastHotbarSlot && HoleFiller.mc.player.inventory.currentItem != InventoryUtil.findHotbarBlock((Class)((this.currentMode == Mode.WEBS) ? BlockWeb.class : BlockObsidian.class))) {
-            this.lastHotbarSlot = HoleFiller.mc.player.inventory.currentItem;
+        if (HoleFiller.mc.field_71439_g.field_71071_by.field_70461_c != this.lastHotbarSlot && HoleFiller.mc.field_71439_g.field_71071_by.field_70461_c != InventoryUtil.findHotbarBlock(this.currentMode == Mode.WEBS ? BlockWeb.class : BlockObsidian.class)) {
+            this.lastHotbarSlot = HoleFiller.mc.field_71439_g.field_71071_by.field_70461_c;
         }
         this.switchItem(true);
-        if (!this.freecam.getValue() && Phobos.moduleManager.isModuleEnabled(Freecam.class)) {
+        if (!this.freecam.getValue().booleanValue() && Phobos.moduleManager.isModuleEnabled(Freecam.class)) {
             return true;
         }
         this.blocksThisTick = 0;
@@ -298,45 +281,47 @@ public class HoleFiller extends Module
         }
         switch (this.currentMode) {
             case WEBS: {
-                this.hasOffhand = InventoryUtil.isBlock(HoleFiller.mc.player.getHeldItemOffhand().getItem(),  BlockWeb.class);
+                this.hasOffhand = InventoryUtil.isBlock(HoleFiller.mc.field_71439_g.func_184592_cb().func_77973_b(), BlockWeb.class);
                 this.targetSlot = InventoryUtil.findHotbarBlock(BlockWeb.class);
                 break;
             }
             case OBSIDIAN: {
-                this.hasOffhand = InventoryUtil.isBlock(HoleFiller.mc.player.getHeldItemOffhand().getItem(),  BlockObsidian.class);
+                this.hasOffhand = InventoryUtil.isBlock(HoleFiller.mc.field_71439_g.func_184592_cb().func_77973_b(), BlockObsidian.class);
                 this.targetSlot = InventoryUtil.findHotbarBlock(BlockObsidian.class);
-                break;
             }
         }
-        if (this.onlySafe.getValue() && !EntityUtil.isSafe((Entity)HoleFiller.mc.player)) {
+        if (this.onlySafe.getValue().booleanValue() && !EntityUtil.isSafe((Entity)HoleFiller.mc.field_71439_g)) {
             this.disable();
             return true;
         }
-        return (!this.hasOffhand && this.targetSlot == -1 && (!this.offhand.getValue() || (!EntityUtil.isSafe((Entity)HoleFiller.mc.player) && this.onlySafe.getValue()))) || (this.offhand.getValue() && !this.hasOffhand) || !this.timer.passedMs(this.delay.getValue());
-    }
-    
-    private boolean switchItem(final boolean back) {
-        if (this.offhand.getValue()) {
+        if (!this.hasOffhand && this.targetSlot == -1 && (!this.offhand.getValue().booleanValue() || !EntityUtil.isSafe((Entity)HoleFiller.mc.field_71439_g) && this.onlySafe.getValue().booleanValue())) {
             return true;
         }
-        final boolean[] value = InventoryUtil.switchItem(back,  this.lastHotbarSlot,  this.switchedItem,  this.switchMode.getValue(),  (Class)((this.currentMode == Mode.WEBS) ? BlockWeb.class : BlockObsidian.class));
+        if (this.offhand.getValue().booleanValue() && !this.hasOffhand) {
+            return true;
+        }
+        return !this.timer.passedMs(this.delay.getValue().intValue());
+    }
+
+    private boolean switchItem(boolean back) {
+        if (this.offhand.getValue().booleanValue()) {
+            return true;
+        }
+        boolean[] value = InventoryUtil.switchItem(back, this.lastHotbarSlot, this.switchedItem, this.switchMode.getValue(), this.currentMode == Mode.WEBS ? BlockWeb.class : BlockObsidian.class);
         this.switchedItem = value[0];
         return value[1];
     }
-    
-    static {
-        HoleFiller.INSTANCE = new HoleFiller();
-    }
-    
-    public enum PlaceMode
-    {
-        SMART,  
-        ALL;
-    }
-    
-    public enum Mode
-    {
-        WEBS,  
+
+    public static enum Mode {
+        WEBS,
         OBSIDIAN;
+
+    }
+
+    public static enum PlaceMode {
+        SMART,
+        ALL;
+
     }
 }
+

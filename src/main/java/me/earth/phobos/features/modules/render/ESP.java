@@ -1,427 +1,388 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.Minecraft
+ *  net.minecraft.client.renderer.GlStateManager
+ *  net.minecraft.client.renderer.RenderGlobal
+ *  net.minecraft.client.renderer.RenderHelper
+ *  net.minecraft.client.renderer.entity.RenderManager
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.entity.item.EntityEnderPearl
+ *  net.minecraft.entity.item.EntityExpBottle
+ *  net.minecraft.entity.item.EntityItem
+ *  net.minecraft.entity.item.EntityXPOrb
+ *  net.minecraft.entity.player.EntityPlayer
+ *  net.minecraft.init.Blocks
+ *  net.minecraft.util.math.AxisAlignedBB
+ *  net.minecraft.util.math.BlockPos
+ *  net.minecraft.util.math.Vec3d
+ *  org.lwjgl.opengl.GL11
+ *  org.lwjgl.util.glu.Cylinder
+ *  org.lwjgl.util.glu.Sphere
+ */
 package me.earth.phobos.features.modules.render;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import net.minecraft.entity.player.*;
-import net.minecraft.client.*;
-import org.lwjgl.opengl.*;
-import net.minecraft.entity.*;
-import me.earth.phobos.util.*;
-import me.earth.phobos.features.modules.client.*;
-import net.minecraft.client.renderer.*;
-import java.awt.*;
-import net.minecraft.entity.item.*;
-import java.util.*;
-import net.minecraft.client.renderer.entity.*;
-import net.minecraft.util.math.*;
-import org.lwjgl.util.glu.*;
-import me.earth.phobos.event.events.*;
-import me.earth.phobos.*;
-import net.minecraft.init.*;
+import java.awt.Color;
+import java.util.HashMap;
+import java.util.Map;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.event.events.Render3DEvent;
+import me.earth.phobos.event.events.RenderEntityModelEvent;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.modules.client.Colors;
+import me.earth.phobos.features.modules.render.Chams;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.EntityUtil;
+import me.earth.phobos.util.RenderUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityEnderPearl;
+import net.minecraft.entity.item.EntityExpBottle;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityXPOrb;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.Cylinder;
+import org.lwjgl.util.glu.Sphere;
 
-public class ESP extends Module
-{
-    private static ESP INSTANCE;
-    private final Setting<Mode> mode;
-    private final Setting<Boolean> colorSync;
-    private final Setting<Boolean> players;
-    private final Setting<Boolean> animals;
-    private final Setting<Boolean> mobs;
-    private final Setting<Boolean> items;
-    private final Setting<Boolean> xporbs;
-    private final Setting<Boolean> xpbottles;
-    private final Setting<Boolean> pearl;
-    private final Setting<Boolean> penis;
-    private final Setting<Integer> spin;
-    private final Setting<Integer> cumSize;
-    private final Setting<Boolean> burrow;
-    private final Setting<Boolean> name;
-    private final Setting<Boolean> box;
-    private final Setting<Integer> boxRed;
-    private final Setting<Integer> boxGreen;
-    private final Setting<Integer> boxBlue;
-    private final Setting<Integer> burrowAlpha;
-    private final Setting<Boolean> outline;
-    private final Setting<Float> outlineWidth;
-    private final Setting<Boolean> cOutline;
-    private final Setting<Integer> outlineRed;
-    private final Setting<Integer> outlineGreen;
-    private final Setting<Integer> outlineBlue;
-    private final Setting<Integer> outlineAlpha;
-    private final Setting<Integer> red;
-    private final Setting<Integer> green;
-    private final Setting<Integer> blue;
-    private final Setting<Integer> boxAlpha;
-    private final Setting<Integer> alpha;
-    private final Setting<Float> lineWidth;
-    private final Setting<Boolean> colorFriends;
-    private final Setting<Boolean> self;
-    private final Setting<Boolean> onTop;
-    private final Setting<Boolean> invisibles;
-    private final Map<EntityPlayer,  BlockPos> burrowedPlayers;
-    
+public class ESP
+extends Module {
+    private static ESP INSTANCE = new ESP();
+    private final Setting<Mode> mode = this.register(new Setting<Mode>("Mode", Mode.OUTLINE));
+    private final Setting<Boolean> colorSync = this.register(new Setting<Boolean>("Sync", false));
+    private final Setting<Boolean> players = this.register(new Setting<Boolean>("Players", true));
+    private final Setting<Boolean> animals = this.register(new Setting<Boolean>("Animals", false));
+    private final Setting<Boolean> mobs = this.register(new Setting<Boolean>("Mobs", false));
+    private final Setting<Boolean> items = this.register(new Setting<Boolean>("Items", false));
+    private final Setting<Boolean> xporbs = this.register(new Setting<Boolean>("XpOrbs", false));
+    private final Setting<Boolean> xpbottles = this.register(new Setting<Boolean>("XpBottles", false));
+    private final Setting<Boolean> pearl = this.register(new Setting<Boolean>("Pearls", false));
+    private final Setting<Boolean> penis = this.register(new Setting<Boolean>("Penis", false));
+    private final Setting<Integer> spin = this.register(new Setting<Integer>("PSpin", Integer.valueOf(3), Integer.valueOf(0), Integer.valueOf(6), v -> this.penis.getValue()));
+    private final Setting<Integer> cumSize = this.register(new Setting<Integer>("PSize", Integer.valueOf(3), Integer.valueOf(0), Integer.valueOf(6), v -> this.penis.getValue()));
+    private final Setting<Boolean> burrow = this.register(new Setting<Boolean>("Burrow", false));
+    private final Setting<Boolean> name = this.register(new Setting<Boolean>("Name", Boolean.valueOf(true), v -> this.burrow.getValue()));
+    private final Setting<Boolean> box = this.register(new Setting<Boolean>("Box", Boolean.valueOf(true), v -> this.burrow.getValue()));
+    private final Setting<Integer> boxRed = this.register(new Setting<Integer>("BoxRed", Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(255), v -> this.box.getValue() != false && this.burrow.getValue() != false));
+    private final Setting<Integer> boxGreen = this.register(new Setting<Integer>("BoxGreen", Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(255), v -> this.box.getValue() != false && this.burrow.getValue() != false));
+    private final Setting<Integer> boxBlue = this.register(new Setting<Integer>("BoxBlue", Integer.valueOf(255), Integer.valueOf(0), Integer.valueOf(255), v -> this.box.getValue() != false && this.burrow.getValue() != false));
+    private final Setting<Integer> burrowAlpha = this.register(new Setting<Integer>("BoxAlpha", Integer.valueOf(125), Integer.valueOf(0), Integer.valueOf(255), v -> this.box.getValue() != false && this.burrow.getValue() != false));
+    private final Setting<Boolean> outline = this.register(new Setting<Boolean>("Outline", Boolean.valueOf(true), v -> this.burrow.getValue()));
+    private final Setting<Float> outlineWidth = this.register(new Setting<Float>("OutlineWidth", Float.valueOf(1.0f), Float.valueOf(0.0f), Float.valueOf(5.0f), v -> this.outline.getValue() != false && this.burrow.getValue() != false));
+    private final Setting<Boolean> cOutline = this.register(new Setting<Boolean>("CustomOutline", Boolean.valueOf(true), v -> this.outline.getValue() != false && this.burrow.getValue() != false));
+    private final Setting<Integer> outlineRed = this.register(new Setting<Integer>("OutlineRed", Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(255), v -> this.outline.getValue() != false && this.cOutline.getValue() != false && this.burrow.getValue() != false));
+    private final Setting<Integer> outlineGreen = this.register(new Setting<Integer>("OutlineGreen", Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(255), v -> this.outline.getValue() != false && this.cOutline.getValue() != false && this.burrow.getValue() != false));
+    private final Setting<Integer> outlineBlue = this.register(new Setting<Integer>("OutlineBlue", Integer.valueOf(255), Integer.valueOf(0), Integer.valueOf(255), v -> this.outline.getValue() != false && this.cOutline.getValue() != false && this.burrow.getValue() != false));
+    private final Setting<Integer> outlineAlpha = this.register(new Setting<Integer>("OutlineAlpha", Integer.valueOf(255), Integer.valueOf(0), Integer.valueOf(255), v -> this.outline.getValue() != false && this.cOutline.getValue() != false && this.burrow.getValue() != false));
+    private final Setting<Integer> red = this.register(new Setting<Integer>("Red", 255, 0, 255));
+    private final Setting<Integer> green = this.register(new Setting<Integer>("Green", 255, 0, 255));
+    private final Setting<Integer> blue = this.register(new Setting<Integer>("Blue", 255, 0, 255));
+    private final Setting<Integer> boxAlpha = this.register(new Setting<Integer>("BoxAlpha", 120, 0, 255));
+    private final Setting<Integer> alpha = this.register(new Setting<Integer>("Alpha", 255, 0, 255));
+    private final Setting<Float> lineWidth = this.register(new Setting<Float>("LineWidth", Float.valueOf(2.0f), Float.valueOf(0.1f), Float.valueOf(5.0f)));
+    private final Setting<Boolean> colorFriends = this.register(new Setting<Boolean>("Friends", true));
+    private final Setting<Boolean> self = this.register(new Setting<Boolean>("Self", true));
+    private final Setting<Boolean> onTop = this.register(new Setting<Boolean>("onTop", true));
+    private final Setting<Boolean> invisibles = this.register(new Setting<Boolean>("Invisibles", false));
+    private final Map<EntityPlayer, BlockPos> burrowedPlayers = new HashMap<EntityPlayer, BlockPos>();
+
     public ESP() {
-        super("ESP",  "Renders a nice ESP.",  Module.Category.RENDER,  false,  false,  false);
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.OUTLINE));
-        this.colorSync = (Setting<Boolean>)this.register(new Setting("Sync", false));
-        this.players = (Setting<Boolean>)this.register(new Setting("Players", true));
-        this.animals = (Setting<Boolean>)this.register(new Setting("Animals", false));
-        this.mobs = (Setting<Boolean>)this.register(new Setting("Mobs", false));
-        this.items = (Setting<Boolean>)this.register(new Setting("Items", false));
-        this.xporbs = (Setting<Boolean>)this.register(new Setting("XpOrbs", false));
-        this.xpbottles = (Setting<Boolean>)this.register(new Setting("XpBottles", false));
-        this.pearl = (Setting<Boolean>)this.register(new Setting("Pearls", false));
-        this.penis = (Setting<Boolean>)this.register(new Setting("Penis", false));
-        this.spin = (Setting<Integer>)this.register(new Setting("PSpin", 3, 0, 6,  v -> this.penis.getValue()));
-        this.cumSize = (Setting<Integer>)this.register(new Setting("PSize", 3, 0, 6,  v -> this.penis.getValue()));
-        this.burrow = (Setting<Boolean>)this.register(new Setting("Burrow", false));
-        this.name = (Setting<Boolean>)this.register(new Setting("Name", true,  v -> this.burrow.getValue()));
-        this.box = (Setting<Boolean>)this.register(new Setting("Box", true,  v -> this.burrow.getValue()));
-        this.boxRed = (Setting<Integer>)this.register(new Setting("BoxRed", 0, 0, 255,  v -> this.box.getValue() && this.burrow.getValue()));
-        this.boxGreen = (Setting<Integer>)this.register(new Setting("BoxGreen", 0, 0, 255,  v -> this.box.getValue() && this.burrow.getValue()));
-        this.boxBlue = (Setting<Integer>)this.register(new Setting("BoxBlue", 255, 0, 255,  v -> this.box.getValue() && this.burrow.getValue()));
-        this.burrowAlpha = (Setting<Integer>)this.register(new Setting("BoxAlpha", 125, 0, 255,  v -> this.box.getValue() && this.burrow.getValue()));
-        this.outline = (Setting<Boolean>)this.register(new Setting("Outline", true,  v -> this.burrow.getValue()));
-        this.outlineWidth = (Setting<Float>)this.register(new Setting("OutlineWidth", 1.0f, 0.0f, 5.0f,  v -> this.outline.getValue() && this.burrow.getValue()));
-        this.cOutline = (Setting<Boolean>)this.register(new Setting("CustomOutline", true,  v -> this.outline.getValue() && this.burrow.getValue()));
-        this.outlineRed = (Setting<Integer>)this.register(new Setting("OutlineRed", 0, 0, 255,  v -> this.outline.getValue() && this.cOutline.getValue() && this.burrow.getValue()));
-        this.outlineGreen = (Setting<Integer>)this.register(new Setting("OutlineGreen", 0, 0, 255,  v -> this.outline.getValue() && this.cOutline.getValue() && this.burrow.getValue()));
-        this.outlineBlue = (Setting<Integer>)this.register(new Setting("OutlineBlue", 255, 0, 255,  v -> this.outline.getValue() && this.cOutline.getValue() && this.burrow.getValue()));
-        this.outlineAlpha = (Setting<Integer>)this.register(new Setting("OutlineAlpha", 255, 0, 255,  v -> this.outline.getValue() && this.cOutline.getValue() && this.burrow.getValue()));
-        this.red = (Setting<Integer>)this.register(new Setting("Red", 255, 0, 255));
-        this.green = (Setting<Integer>)this.register(new Setting("Green", 255, 0, 255));
-        this.blue = (Setting<Integer>)this.register(new Setting("Blue", 255, 0, 255));
-        this.boxAlpha = (Setting<Integer>)this.register(new Setting("BoxAlpha", 120, 0, 255));
-        this.alpha = (Setting<Integer>)this.register(new Setting("Alpha", 255, 0, 255));
-        this.lineWidth = (Setting<Float>)this.register(new Setting("LineWidth", 2.0f, 0.1f, 5.0f));
-        this.colorFriends = (Setting<Boolean>)this.register(new Setting("Friends", true));
-        this.self = (Setting<Boolean>)this.register(new Setting("Self", true));
-        this.onTop = (Setting<Boolean>)this.register(new Setting("onTop", true));
-        this.invisibles = (Setting<Boolean>)this.register(new Setting("Invisibles", false));
-        this.burrowedPlayers = new HashMap<EntityPlayer,  BlockPos>();
+        super("ESP", "Renders a nice ESP.", Module.Category.RENDER, false, false, false);
         this.setInstance();
     }
-    
+
     public static ESP getInstance() {
-        if (ESP.INSTANCE == null) {
-            ESP.INSTANCE = new ESP();
+        if (INSTANCE == null) {
+            INSTANCE = new ESP();
         }
-        return ESP.INSTANCE;
+        return INSTANCE;
     }
-    
+
     private void setInstance() {
-        ESP.INSTANCE = this;
+        INSTANCE = this;
     }
-    
-    public void onRender3D(final Render3DEvent event) {
-        if (this.penis.getValue()) {
-            for (final Object e : ESP.mc.world.loadedEntityList) {
-                if (!(e instanceof EntityPlayer)) {
-                    continue;
-                }
-                final RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
-                final EntityPlayer entityPlayer = (EntityPlayer)e;
-                final double d = entityPlayer.lastTickPosX + (entityPlayer.posX - entityPlayer.lastTickPosX) * ESP.mc.timer.renderPartialTicks;
-                ESP.mc.getRenderManager();
-                final double d2 = d - renderManager.renderPosX;
-                final double d3 = entityPlayer.lastTickPosY + (entityPlayer.posY - entityPlayer.lastTickPosY) * ESP.mc.timer.renderPartialTicks;
-                ESP.mc.getRenderManager();
-                final double d4 = d3 - renderManager.renderPosY;
-                final double d5 = entityPlayer.lastTickPosZ + (entityPlayer.posZ - entityPlayer.lastTickPosZ) * ESP.mc.timer.renderPartialTicks;
-                ESP.mc.getRenderManager();
-                final double d6 = d5 - renderManager.renderPosZ;
+
+    @Override
+    public void onRender3D(Render3DEvent event) {
+        AxisAlignedBB bb;
+        Vec3d interp;
+        if (this.penis.getValue().booleanValue()) {
+            for (Object e : ESP.mc.field_71441_e.field_72996_f) {
+                if (!(e instanceof EntityPlayer)) continue;
+                RenderManager renderManager = Minecraft.func_71410_x().func_175598_ae();
+                EntityPlayer entityPlayer = (EntityPlayer)e;
+                double d = entityPlayer.field_70142_S + (entityPlayer.field_70165_t - entityPlayer.field_70142_S) * (double)ESP.mc.field_71428_T.field_194147_b;
+                mc.func_175598_ae();
+                double d2 = d - renderManager.field_78725_b;
+                double d3 = entityPlayer.field_70137_T + (entityPlayer.field_70163_u - entityPlayer.field_70137_T) * (double)ESP.mc.field_71428_T.field_194147_b;
+                mc.func_175598_ae();
+                double d4 = d3 - renderManager.field_78726_c;
+                double d5 = entityPlayer.field_70136_U + (entityPlayer.field_70161_v - entityPlayer.field_70136_U) * (double)ESP.mc.field_71428_T.field_194147_b;
+                mc.func_175598_ae();
+                double d6 = d5 - renderManager.field_78723_d;
                 GL11.glPushMatrix();
-                RenderHelper.disableStandardItemLighting();
-                this.esp(entityPlayer,  d2,  d4,  d6);
-                RenderHelper.enableStandardItemLighting();
+                RenderHelper.func_74518_a();
+                this.esp(entityPlayer, d2, d4, d6);
+                RenderHelper.func_74519_b();
                 GL11.glPopMatrix();
             }
         }
-        if (this.burrow.getValue() && !this.burrowedPlayers.isEmpty()) {
-            this.burrowedPlayers.forEach((key,  value) -> {
-                this.renderBurrowedBlock(value);
-                if (this.name.getValue()) {
-                    RenderUtil.drawText(new AxisAlignedBB(value),  key.getGameProfile().getName());
+        if (this.burrow.getValue().booleanValue() && !this.burrowedPlayers.isEmpty()) {
+            this.burrowedPlayers.forEach((key, value) -> {
+                this.renderBurrowedBlock((BlockPos)value);
+                if (this.name.getValue().booleanValue()) {
+                    RenderUtil.drawText(new AxisAlignedBB(value), key.func_146103_bH().getName());
                 }
-                return;
             });
         }
-        if (this.items.getValue()) {
+        if (this.items.getValue().booleanValue()) {
             int i = 0;
-            for (final Entity entity : ESP.mc.world.loadedEntityList) {
-                if (entity instanceof EntityItem) {
-                    if (ESP.mc.player.getDistanceSq(entity) >= 2500.0) {
-                        continue;
-                    }
-                    final Vec3d interp = EntityUtil.getInterpolatedRenderPos(entity,  ESP.mc.getRenderPartialTicks());
-                    final AxisAlignedBB bb = new AxisAlignedBB(entity.getEntityBoundingBox().minX - 0.05 - entity.posX + interp.x,  entity.getEntityBoundingBox().minY - 0.0 - entity.posY + interp.y,  entity.getEntityBoundingBox().minZ - 0.05 - entity.posZ + interp.z,  entity.getEntityBoundingBox().maxX + 0.05 - entity.posX + interp.x,  entity.getEntityBoundingBox().maxY + 0.1 - entity.posY + interp.y,  entity.getEntityBoundingBox().maxZ + 0.05 - entity.posZ + interp.z);
-                    GlStateManager.pushMatrix();
-                    GlStateManager.enableBlend();
-                    GlStateManager.disableDepth();
-                    GlStateManager.tryBlendFuncSeparate(770,  771,  0,  1);
-                    GlStateManager.disableTexture2D();
-                    GlStateManager.depthMask(false);
-                    GL11.glEnable(2848);
-                    GL11.glHint(3154,  4354);
-                    GL11.glLineWidth(1.0f);
-                    RenderGlobal.renderFilledBox(bb,  ((boolean)this.colorSync.getValue()) ? (Colors.INSTANCE.getCurrentColor().getRed() / 255.0f) : (this.red.getValue() / 255.0f),  ((boolean)this.colorSync.getValue()) ? (Colors.INSTANCE.getCurrentColor().getGreen() / 255.0f) : (this.green.getValue() / 255.0f),  ((boolean)this.colorSync.getValue()) ? (Colors.INSTANCE.getCurrentColor().getBlue() / 255.0f) : (this.blue.getValue() / 255.0f),  ((boolean)this.colorSync.getValue()) ? ((float)Colors.INSTANCE.getCurrentColor().getAlpha()) : (this.boxAlpha.getValue() / 255.0f));
-                    GL11.glDisable(2848);
-                    GlStateManager.depthMask(true);
-                    GlStateManager.enableDepth();
-                    GlStateManager.enableTexture2D();
-                    GlStateManager.disableBlend();
-                    GlStateManager.popMatrix();
-                    RenderUtil.drawBlockOutline(bb,  ((boolean)this.colorSync.getValue()) ? Colors.INSTANCE.getCurrentColor() : new Color(this.red.getValue(),  this.green.getValue(),  this.blue.getValue(),  this.alpha.getValue()),  1.0f);
-                    if (++i < 50) {
-                        continue;
-                    }
-                    break;
-                }
+            for (Entity entity : ESP.mc.field_71441_e.field_72996_f) {
+                if (!(entity instanceof EntityItem) || !(ESP.mc.field_71439_g.func_70068_e(entity) < 2500.0)) continue;
+                interp = EntityUtil.getInterpolatedRenderPos(entity, mc.func_184121_ak());
+                bb = new AxisAlignedBB(entity.func_174813_aQ().field_72340_a - 0.05 - entity.field_70165_t + interp.field_72450_a, entity.func_174813_aQ().field_72338_b - 0.0 - entity.field_70163_u + interp.field_72448_b, entity.func_174813_aQ().field_72339_c - 0.05 - entity.field_70161_v + interp.field_72449_c, entity.func_174813_aQ().field_72336_d + 0.05 - entity.field_70165_t + interp.field_72450_a, entity.func_174813_aQ().field_72337_e + 0.1 - entity.field_70163_u + interp.field_72448_b, entity.func_174813_aQ().field_72334_f + 0.05 - entity.field_70161_v + interp.field_72449_c);
+                GlStateManager.func_179094_E();
+                GlStateManager.func_179147_l();
+                GlStateManager.func_179097_i();
+                GlStateManager.func_179120_a((int)770, (int)771, (int)0, (int)1);
+                GlStateManager.func_179090_x();
+                GlStateManager.func_179132_a((boolean)false);
+                GL11.glEnable((int)2848);
+                GL11.glHint((int)3154, (int)4354);
+                GL11.glLineWidth((float)1.0f);
+                RenderGlobal.func_189696_b((AxisAlignedBB)bb, (float)(this.colorSync.getValue() != false ? (float)Colors.INSTANCE.getCurrentColor().getRed() / 255.0f : (float)this.red.getValue().intValue() / 255.0f), (float)(this.colorSync.getValue() != false ? (float)Colors.INSTANCE.getCurrentColor().getGreen() / 255.0f : (float)this.green.getValue().intValue() / 255.0f), (float)(this.colorSync.getValue() != false ? (float)Colors.INSTANCE.getCurrentColor().getBlue() / 255.0f : (float)this.blue.getValue().intValue() / 255.0f), (float)(this.colorSync.getValue() != false ? (float)Colors.INSTANCE.getCurrentColor().getAlpha() : (float)this.boxAlpha.getValue().intValue() / 255.0f));
+                GL11.glDisable((int)2848);
+                GlStateManager.func_179132_a((boolean)true);
+                GlStateManager.func_179126_j();
+                GlStateManager.func_179098_w();
+                GlStateManager.func_179084_k();
+                GlStateManager.func_179121_F();
+                RenderUtil.drawBlockOutline(bb, this.colorSync.getValue() != false ? Colors.INSTANCE.getCurrentColor() : new Color(this.red.getValue(), this.green.getValue(), this.blue.getValue(), this.alpha.getValue()), 1.0f);
+                if (++i < 50) continue;
             }
         }
-        if (this.xporbs.getValue()) {
+        if (this.xporbs.getValue().booleanValue()) {
             int i = 0;
-            for (final Entity entity : ESP.mc.world.loadedEntityList) {
-                if (entity instanceof EntityXPOrb) {
-                    if (ESP.mc.player.getDistanceSq(entity) >= 2500.0) {
-                        continue;
-                    }
-                    final Vec3d interp = EntityUtil.getInterpolatedRenderPos(entity,  ESP.mc.getRenderPartialTicks());
-                    final AxisAlignedBB bb = new AxisAlignedBB(entity.getEntityBoundingBox().minX - 0.05 - entity.posX + interp.x,  entity.getEntityBoundingBox().minY - 0.0 - entity.posY + interp.y,  entity.getEntityBoundingBox().minZ - 0.05 - entity.posZ + interp.z,  entity.getEntityBoundingBox().maxX + 0.05 - entity.posX + interp.x,  entity.getEntityBoundingBox().maxY + 0.1 - entity.posY + interp.y,  entity.getEntityBoundingBox().maxZ + 0.05 - entity.posZ + interp.z);
-                    GlStateManager.pushMatrix();
-                    GlStateManager.enableBlend();
-                    GlStateManager.disableDepth();
-                    GlStateManager.tryBlendFuncSeparate(770,  771,  0,  1);
-                    GlStateManager.disableTexture2D();
-                    GlStateManager.depthMask(false);
-                    GL11.glEnable(2848);
-                    GL11.glHint(3154,  4354);
-                    GL11.glLineWidth(1.0f);
-                    RenderGlobal.renderFilledBox(bb,  ((boolean)this.colorSync.getValue()) ? (Colors.INSTANCE.getCurrentColor().getRed() / 255.0f) : (this.red.getValue() / 255.0f),  ((boolean)this.colorSync.getValue()) ? (Colors.INSTANCE.getCurrentColor().getGreen() / 255.0f) : (this.green.getValue() / 255.0f),  ((boolean)this.colorSync.getValue()) ? (Colors.INSTANCE.getCurrentColor().getBlue() / 255.0f) : (this.blue.getValue() / 255.0f),  ((boolean)this.colorSync.getValue()) ? (Colors.INSTANCE.getCurrentColor().getAlpha() / 255.0f) : (this.boxAlpha.getValue() / 255.0f));
-                    GL11.glDisable(2848);
-                    GlStateManager.depthMask(true);
-                    GlStateManager.enableDepth();
-                    GlStateManager.enableTexture2D();
-                    GlStateManager.disableBlend();
-                    GlStateManager.popMatrix();
-                    RenderUtil.drawBlockOutline(bb,  ((boolean)this.colorSync.getValue()) ? Colors.INSTANCE.getCurrentColor() : new Color(this.red.getValue(),  this.green.getValue(),  this.blue.getValue(),  this.alpha.getValue()),  1.0f);
-                    if (++i < 50) {
-                        continue;
-                    }
-                    break;
-                }
+            for (Entity entity : ESP.mc.field_71441_e.field_72996_f) {
+                if (!(entity instanceof EntityXPOrb) || !(ESP.mc.field_71439_g.func_70068_e(entity) < 2500.0)) continue;
+                interp = EntityUtil.getInterpolatedRenderPos(entity, mc.func_184121_ak());
+                bb = new AxisAlignedBB(entity.func_174813_aQ().field_72340_a - 0.05 - entity.field_70165_t + interp.field_72450_a, entity.func_174813_aQ().field_72338_b - 0.0 - entity.field_70163_u + interp.field_72448_b, entity.func_174813_aQ().field_72339_c - 0.05 - entity.field_70161_v + interp.field_72449_c, entity.func_174813_aQ().field_72336_d + 0.05 - entity.field_70165_t + interp.field_72450_a, entity.func_174813_aQ().field_72337_e + 0.1 - entity.field_70163_u + interp.field_72448_b, entity.func_174813_aQ().field_72334_f + 0.05 - entity.field_70161_v + interp.field_72449_c);
+                GlStateManager.func_179094_E();
+                GlStateManager.func_179147_l();
+                GlStateManager.func_179097_i();
+                GlStateManager.func_179120_a((int)770, (int)771, (int)0, (int)1);
+                GlStateManager.func_179090_x();
+                GlStateManager.func_179132_a((boolean)false);
+                GL11.glEnable((int)2848);
+                GL11.glHint((int)3154, (int)4354);
+                GL11.glLineWidth((float)1.0f);
+                RenderGlobal.func_189696_b((AxisAlignedBB)bb, (float)(this.colorSync.getValue() != false ? (float)Colors.INSTANCE.getCurrentColor().getRed() / 255.0f : (float)this.red.getValue().intValue() / 255.0f), (float)(this.colorSync.getValue() != false ? (float)Colors.INSTANCE.getCurrentColor().getGreen() / 255.0f : (float)this.green.getValue().intValue() / 255.0f), (float)(this.colorSync.getValue() != false ? (float)Colors.INSTANCE.getCurrentColor().getBlue() / 255.0f : (float)this.blue.getValue().intValue() / 255.0f), (float)(this.colorSync.getValue() != false ? (float)Colors.INSTANCE.getCurrentColor().getAlpha() / 255.0f : (float)this.boxAlpha.getValue().intValue() / 255.0f));
+                GL11.glDisable((int)2848);
+                GlStateManager.func_179132_a((boolean)true);
+                GlStateManager.func_179126_j();
+                GlStateManager.func_179098_w();
+                GlStateManager.func_179084_k();
+                GlStateManager.func_179121_F();
+                RenderUtil.drawBlockOutline(bb, this.colorSync.getValue() != false ? Colors.INSTANCE.getCurrentColor() : new Color(this.red.getValue(), this.green.getValue(), this.blue.getValue(), this.alpha.getValue()), 1.0f);
+                if (++i < 50) continue;
             }
         }
-        if (this.pearl.getValue()) {
+        if (this.pearl.getValue().booleanValue()) {
             int i = 0;
-            for (final Entity entity : ESP.mc.world.loadedEntityList) {
-                if (entity instanceof EntityEnderPearl) {
-                    if (ESP.mc.player.getDistanceSq(entity) >= 2500.0) {
-                        continue;
-                    }
-                    final Vec3d interp = EntityUtil.getInterpolatedRenderPos(entity,  ESP.mc.getRenderPartialTicks());
-                    final AxisAlignedBB bb = new AxisAlignedBB(entity.getEntityBoundingBox().minX - 0.05 - entity.posX + interp.x,  entity.getEntityBoundingBox().minY - 0.0 - entity.posY + interp.y,  entity.getEntityBoundingBox().minZ - 0.05 - entity.posZ + interp.z,  entity.getEntityBoundingBox().maxX + 0.05 - entity.posX + interp.x,  entity.getEntityBoundingBox().maxY + 0.1 - entity.posY + interp.y,  entity.getEntityBoundingBox().maxZ + 0.05 - entity.posZ + interp.z);
-                    GlStateManager.pushMatrix();
-                    GlStateManager.enableBlend();
-                    GlStateManager.disableDepth();
-                    GlStateManager.tryBlendFuncSeparate(770,  771,  0,  1);
-                    GlStateManager.disableTexture2D();
-                    GlStateManager.depthMask(false);
-                    GL11.glEnable(2848);
-                    GL11.glHint(3154,  4354);
-                    GL11.glLineWidth(1.0f);
-                    RenderGlobal.renderFilledBox(bb,  ((boolean)this.colorSync.getValue()) ? (Colors.INSTANCE.getCurrentColor().getRed() / 255.0f) : (this.red.getValue() / 255.0f),  ((boolean)this.colorSync.getValue()) ? (Colors.INSTANCE.getCurrentColor().getGreen() / 255.0f) : (this.green.getValue() / 255.0f),  ((boolean)this.colorSync.getValue()) ? (Colors.INSTANCE.getCurrentColor().getBlue() / 255.0f) : (this.blue.getValue() / 255.0f),  ((boolean)this.colorSync.getValue()) ? (Colors.INSTANCE.getCurrentColor().getAlpha() / 255.0f) : (this.boxAlpha.getValue() / 255.0f));
-                    GL11.glDisable(2848);
-                    GlStateManager.depthMask(true);
-                    GlStateManager.enableDepth();
-                    GlStateManager.enableTexture2D();
-                    GlStateManager.disableBlend();
-                    GlStateManager.popMatrix();
-                    RenderUtil.drawBlockOutline(bb,  ((boolean)this.colorSync.getValue()) ? Colors.INSTANCE.getCurrentColor() : new Color(this.red.getValue(),  this.green.getValue(),  this.blue.getValue(),  this.alpha.getValue()),  1.0f);
-                    if (++i < 50) {
-                        continue;
-                    }
-                    break;
-                }
+            for (Entity entity : ESP.mc.field_71441_e.field_72996_f) {
+                if (!(entity instanceof EntityEnderPearl) || !(ESP.mc.field_71439_g.func_70068_e(entity) < 2500.0)) continue;
+                interp = EntityUtil.getInterpolatedRenderPos(entity, mc.func_184121_ak());
+                bb = new AxisAlignedBB(entity.func_174813_aQ().field_72340_a - 0.05 - entity.field_70165_t + interp.field_72450_a, entity.func_174813_aQ().field_72338_b - 0.0 - entity.field_70163_u + interp.field_72448_b, entity.func_174813_aQ().field_72339_c - 0.05 - entity.field_70161_v + interp.field_72449_c, entity.func_174813_aQ().field_72336_d + 0.05 - entity.field_70165_t + interp.field_72450_a, entity.func_174813_aQ().field_72337_e + 0.1 - entity.field_70163_u + interp.field_72448_b, entity.func_174813_aQ().field_72334_f + 0.05 - entity.field_70161_v + interp.field_72449_c);
+                GlStateManager.func_179094_E();
+                GlStateManager.func_179147_l();
+                GlStateManager.func_179097_i();
+                GlStateManager.func_179120_a((int)770, (int)771, (int)0, (int)1);
+                GlStateManager.func_179090_x();
+                GlStateManager.func_179132_a((boolean)false);
+                GL11.glEnable((int)2848);
+                GL11.glHint((int)3154, (int)4354);
+                GL11.glLineWidth((float)1.0f);
+                RenderGlobal.func_189696_b((AxisAlignedBB)bb, (float)(this.colorSync.getValue() != false ? (float)Colors.INSTANCE.getCurrentColor().getRed() / 255.0f : (float)this.red.getValue().intValue() / 255.0f), (float)(this.colorSync.getValue() != false ? (float)Colors.INSTANCE.getCurrentColor().getGreen() / 255.0f : (float)this.green.getValue().intValue() / 255.0f), (float)(this.colorSync.getValue() != false ? (float)Colors.INSTANCE.getCurrentColor().getBlue() / 255.0f : (float)this.blue.getValue().intValue() / 255.0f), (float)(this.colorSync.getValue() != false ? (float)Colors.INSTANCE.getCurrentColor().getAlpha() / 255.0f : (float)this.boxAlpha.getValue().intValue() / 255.0f));
+                GL11.glDisable((int)2848);
+                GlStateManager.func_179132_a((boolean)true);
+                GlStateManager.func_179126_j();
+                GlStateManager.func_179098_w();
+                GlStateManager.func_179084_k();
+                GlStateManager.func_179121_F();
+                RenderUtil.drawBlockOutline(bb, this.colorSync.getValue() != false ? Colors.INSTANCE.getCurrentColor() : new Color(this.red.getValue(), this.green.getValue(), this.blue.getValue(), this.alpha.getValue()), 1.0f);
+                if (++i < 50) continue;
             }
         }
-        if (this.xpbottles.getValue()) {
+        if (this.xpbottles.getValue().booleanValue()) {
             int i = 0;
-            for (final Entity entity : ESP.mc.world.loadedEntityList) {
-                if (entity instanceof EntityExpBottle) {
-                    if (ESP.mc.player.getDistanceSq(entity) >= 2500.0) {
-                        continue;
-                    }
-                    final Vec3d interp = EntityUtil.getInterpolatedRenderPos(entity,  ESP.mc.getRenderPartialTicks());
-                    final AxisAlignedBB bb = new AxisAlignedBB(entity.getEntityBoundingBox().minX - 0.05 - entity.posX + interp.x,  entity.getEntityBoundingBox().minY - 0.0 - entity.posY + interp.y,  entity.getEntityBoundingBox().minZ - 0.05 - entity.posZ + interp.z,  entity.getEntityBoundingBox().maxX + 0.05 - entity.posX + interp.x,  entity.getEntityBoundingBox().maxY + 0.1 - entity.posY + interp.y,  entity.getEntityBoundingBox().maxZ + 0.05 - entity.posZ + interp.z);
-                    GlStateManager.pushMatrix();
-                    GlStateManager.enableBlend();
-                    GlStateManager.disableDepth();
-                    GlStateManager.tryBlendFuncSeparate(770,  771,  0,  1);
-                    GlStateManager.disableTexture2D();
-                    GlStateManager.depthMask(false);
-                    GL11.glEnable(2848);
-                    GL11.glHint(3154,  4354);
-                    GL11.glLineWidth(1.0f);
-                    RenderGlobal.renderFilledBox(bb,  ((boolean)this.colorSync.getValue()) ? (Colors.INSTANCE.getCurrentColor().getRed() / 255.0f) : (this.red.getValue() / 255.0f),  ((boolean)this.colorSync.getValue()) ? (Colors.INSTANCE.getCurrentColor().getGreen() / 255.0f) : (this.green.getValue() / 255.0f),  ((boolean)this.colorSync.getValue()) ? (Colors.INSTANCE.getCurrentColor().getBlue() / 255.0f) : (this.blue.getValue() / 255.0f),  ((boolean)this.colorSync.getValue()) ? (Colors.INSTANCE.getCurrentColor().getAlpha() / 255.0f) : (this.boxAlpha.getValue() / 255.0f));
-                    GL11.glDisable(2848);
-                    GlStateManager.depthMask(true);
-                    GlStateManager.enableDepth();
-                    GlStateManager.enableTexture2D();
-                    GlStateManager.disableBlend();
-                    GlStateManager.popMatrix();
-                    RenderUtil.drawBlockOutline(bb,  ((boolean)this.colorSync.getValue()) ? Colors.INSTANCE.getCurrentColor() : new Color(this.red.getValue(),  this.green.getValue(),  this.blue.getValue(),  this.alpha.getValue()),  1.0f);
-                    if (++i < 50) {
-                        continue;
-                    }
-                    break;
-                }
+            for (Entity entity : ESP.mc.field_71441_e.field_72996_f) {
+                if (!(entity instanceof EntityExpBottle) || !(ESP.mc.field_71439_g.func_70068_e(entity) < 2500.0)) continue;
+                interp = EntityUtil.getInterpolatedRenderPos(entity, mc.func_184121_ak());
+                bb = new AxisAlignedBB(entity.func_174813_aQ().field_72340_a - 0.05 - entity.field_70165_t + interp.field_72450_a, entity.func_174813_aQ().field_72338_b - 0.0 - entity.field_70163_u + interp.field_72448_b, entity.func_174813_aQ().field_72339_c - 0.05 - entity.field_70161_v + interp.field_72449_c, entity.func_174813_aQ().field_72336_d + 0.05 - entity.field_70165_t + interp.field_72450_a, entity.func_174813_aQ().field_72337_e + 0.1 - entity.field_70163_u + interp.field_72448_b, entity.func_174813_aQ().field_72334_f + 0.05 - entity.field_70161_v + interp.field_72449_c);
+                GlStateManager.func_179094_E();
+                GlStateManager.func_179147_l();
+                GlStateManager.func_179097_i();
+                GlStateManager.func_179120_a((int)770, (int)771, (int)0, (int)1);
+                GlStateManager.func_179090_x();
+                GlStateManager.func_179132_a((boolean)false);
+                GL11.glEnable((int)2848);
+                GL11.glHint((int)3154, (int)4354);
+                GL11.glLineWidth((float)1.0f);
+                RenderGlobal.func_189696_b((AxisAlignedBB)bb, (float)(this.colorSync.getValue() != false ? (float)Colors.INSTANCE.getCurrentColor().getRed() / 255.0f : (float)this.red.getValue().intValue() / 255.0f), (float)(this.colorSync.getValue() != false ? (float)Colors.INSTANCE.getCurrentColor().getGreen() / 255.0f : (float)this.green.getValue().intValue() / 255.0f), (float)(this.colorSync.getValue() != false ? (float)Colors.INSTANCE.getCurrentColor().getBlue() / 255.0f : (float)this.blue.getValue().intValue() / 255.0f), (float)(this.colorSync.getValue() != false ? (float)Colors.INSTANCE.getCurrentColor().getAlpha() / 255.0f : (float)this.boxAlpha.getValue().intValue() / 255.0f));
+                GL11.glDisable((int)2848);
+                GlStateManager.func_179132_a((boolean)true);
+                GlStateManager.func_179126_j();
+                GlStateManager.func_179098_w();
+                GlStateManager.func_179084_k();
+                GlStateManager.func_179121_F();
+                RenderUtil.drawBlockOutline(bb, this.colorSync.getValue() != false ? Colors.INSTANCE.getCurrentColor() : new Color(this.red.getValue(), this.green.getValue(), this.blue.getValue(), this.alpha.getValue()), 1.0f);
+                if (++i < 50) continue;
             }
         }
     }
-    
-    public void esp(final EntityPlayer entityPlayer,  final double d,  final double d2,  final double d3) {
-        GL11.glDisable(2896);
-        GL11.glDisable(3553);
-        GL11.glEnable(3042);
-        GL11.glBlendFunc(770,  771);
-        GL11.glDisable(2929);
-        GL11.glEnable(2848);
-        GL11.glDepthMask(true);
-        GL11.glLineWidth(1.0f);
-        GL11.glTranslated(d,  d2,  d3);
-        GL11.glRotatef(-entityPlayer.rotationYaw,  0.0f,  entityPlayer.height,  0.0f);
-        GL11.glTranslated(-d,  -d2,  -d3);
-        GL11.glTranslated(d,  d2 + entityPlayer.height / 2.0f - 0.22499999403953552,  d3);
-        GL11.glColor4f(1.38f,  0.55f,  2.38f,  1.0f);
-        GL11.glRotated((double)((entityPlayer.isSneaking() ? 35 : 0) + this.spin.getValue()),  (double)(1.0f + this.spin.getValue()),  0.0,  (double)this.cumSize.getValue());
-        GL11.glTranslated(0.0,  0.0,  0.07500000298023224);
-        final Cylinder cylinder = new Cylinder();
+
+    public void esp(EntityPlayer entityPlayer, double d, double d2, double d3) {
+        GL11.glDisable((int)2896);
+        GL11.glDisable((int)3553);
+        GL11.glEnable((int)3042);
+        GL11.glBlendFunc((int)770, (int)771);
+        GL11.glDisable((int)2929);
+        GL11.glEnable((int)2848);
+        GL11.glDepthMask((boolean)true);
+        GL11.glLineWidth((float)1.0f);
+        GL11.glTranslated((double)d, (double)d2, (double)d3);
+        GL11.glRotatef((float)(-entityPlayer.field_70177_z), (float)0.0f, (float)entityPlayer.field_70131_O, (float)0.0f);
+        GL11.glTranslated((double)(-d), (double)(-d2), (double)(-d3));
+        GL11.glTranslated((double)d, (double)(d2 + (double)(entityPlayer.field_70131_O / 2.0f) - (double)0.225f), (double)d3);
+        GL11.glColor4f((float)1.38f, (float)0.55f, (float)2.38f, (float)1.0f);
+        GL11.glRotated((double)((entityPlayer.func_70093_af() ? 35 : 0) + this.spin.getValue()), (double)(1.0f + (float)this.spin.getValue().intValue()), (double)0.0, (double)this.cumSize.getValue().intValue());
+        GL11.glTranslated((double)0.0, (double)0.0, (double)0.075f);
+        Cylinder cylinder = new Cylinder();
         cylinder.setDrawStyle(100013);
-        cylinder.draw(0.1f,  0.11f,  0.4f,  25,  20);
-        GL11.glColor4f(1.38f,  0.85f,  1.38f,  1.0f);
-        GL11.glTranslated(0.0,  0.0,  -0.12500000298023223);
-        GL11.glTranslated(-0.09000000074505805,  0.0,  0.0);
-        final Sphere sphere = new Sphere();
+        cylinder.draw(0.1f, 0.11f, 0.4f, 25, 20);
+        GL11.glColor4f((float)1.38f, (float)0.85f, (float)1.38f, (float)1.0f);
+        GL11.glTranslated((double)0.0, (double)0.0, (double)-0.12500000298023223);
+        GL11.glTranslated((double)-0.09000000074505805, (double)0.0, (double)0.0);
+        Sphere sphere = new Sphere();
         sphere.setDrawStyle(100013);
-        sphere.draw(0.14f,  10,  20);
-        GL11.glTranslated(0.16000000149011612,  0.0,  0.0);
-        final Sphere sphere2 = new Sphere();
+        sphere.draw(0.14f, 10, 20);
+        GL11.glTranslated((double)0.16000000149011612, (double)0.0, (double)0.0);
+        Sphere sphere2 = new Sphere();
         sphere2.setDrawStyle(100013);
-        sphere2.draw(0.14f,  10,  20);
-        GL11.glColor4f(1.35f,  0.0f,  0.0f,  1.0f);
-        GL11.glTranslated(-0.07000000074505806,  0.0,  0.589999952316284);
-        final Sphere sphere3 = new Sphere();
+        sphere2.draw(0.14f, 10, 20);
+        GL11.glColor4f((float)1.35f, (float)0.0f, (float)0.0f, (float)1.0f);
+        GL11.glTranslated((double)-0.07000000074505806, (double)0.0, (double)0.589999952316284);
+        Sphere sphere3 = new Sphere();
         sphere3.setDrawStyle(100013);
-        sphere3.draw(0.13f,  15,  20);
-        GL11.glDepthMask(true);
-        GL11.glDisable(2848);
-        GL11.glEnable(2929);
-        GL11.glDisable(3042);
-        GL11.glEnable(2896);
-        GL11.glEnable(3553);
+        sphere3.draw(0.13f, 15, 20);
+        GL11.glDepthMask((boolean)true);
+        GL11.glDisable((int)2848);
+        GL11.glEnable((int)2929);
+        GL11.glDisable((int)3042);
+        GL11.glEnable((int)2896);
+        GL11.glEnable((int)3553);
     }
-    
-    public void onRenderModel(final RenderEntityModelEvent event) {
-        if (event.getStage() != 0 || event.entity == null || (event.entity.isInvisible() && !this.invisibles.getValue()) || (!this.self.getValue() && event.entity.equals((Object)ESP.mc.player)) || (!this.players.getValue() && event.entity instanceof EntityPlayer) || (!this.animals.getValue() && EntityUtil.isPassive(event.entity)) || (!this.mobs.getValue() && !EntityUtil.isPassive(event.entity) && !(event.entity instanceof EntityPlayer))) {
+
+    public void onRenderModel(RenderEntityModelEvent event) {
+        if (event.getStage() != 0 || event.entity == null || event.entity.func_82150_aj() && this.invisibles.getValue() == false || this.self.getValue() == false && event.entity.equals((Object)ESP.mc.field_71439_g) || this.players.getValue() == false && event.entity instanceof EntityPlayer || this.animals.getValue() == false && EntityUtil.isPassive(event.entity) || !this.mobs.getValue().booleanValue() && !EntityUtil.isPassive(event.entity) && !(event.entity instanceof EntityPlayer)) {
             return;
         }
-        final Color color = this.colorSync.getValue() ? Colors.INSTANCE.getCurrentColor() : EntityUtil.getColor(event.entity,  this.red.getValue(),  this.green.getValue(),  this.blue.getValue(),  this.alpha.getValue(),  this.colorFriends.getValue());
-        final boolean fancyGraphics = ESP.mc.gameSettings.fancyGraphics;
-        ESP.mc.gameSettings.fancyGraphics = false;
-        final float gamma = ESP.mc.gameSettings.gammaSetting;
-        ESP.mc.gameSettings.gammaSetting = 10000.0f;
-        if (this.onTop.getValue() && (!Chams.getInstance().isEnabled() || !Chams.getInstance().colored.getValue())) {
-            event.modelBase.render(event.entity,  event.limbSwing,  event.limbSwingAmount,  event.age,  event.headYaw,  event.headPitch,  event.scale);
+        Color color = this.colorSync.getValue() != false ? Colors.INSTANCE.getCurrentColor() : EntityUtil.getColor(event.entity, this.red.getValue(), this.green.getValue(), this.blue.getValue(), this.alpha.getValue(), this.colorFriends.getValue());
+        boolean fancyGraphics = ESP.mc.field_71474_y.field_74347_j;
+        ESP.mc.field_71474_y.field_74347_j = false;
+        float gamma = ESP.mc.field_71474_y.field_74333_Y;
+        ESP.mc.field_71474_y.field_74333_Y = 10000.0f;
+        if (!(!this.onTop.getValue().booleanValue() || Chams.getInstance().isEnabled() && Chams.getInstance().colored.getValue().booleanValue())) {
+            event.modelBase.func_78088_a(event.entity, event.limbSwing, event.limbSwingAmount, event.age, event.headYaw, event.headPitch, event.scale);
         }
         if (this.mode.getValue() == Mode.OUTLINE) {
-            RenderUtil.renderOne(this.lineWidth.getValue());
-            event.modelBase.render(event.entity,  event.limbSwing,  event.limbSwingAmount,  event.age,  event.headYaw,  event.headPitch,  event.scale);
-            GlStateManager.glLineWidth((float)this.lineWidth.getValue());
+            RenderUtil.renderOne(this.lineWidth.getValue().floatValue());
+            event.modelBase.func_78088_a(event.entity, event.limbSwing, event.limbSwingAmount, event.age, event.headYaw, event.headPitch, event.scale);
+            GlStateManager.func_187441_d((float)this.lineWidth.getValue().floatValue());
             RenderUtil.renderTwo();
-            event.modelBase.render(event.entity,  event.limbSwing,  event.limbSwingAmount,  event.age,  event.headYaw,  event.headPitch,  event.scale);
-            GlStateManager.glLineWidth((float)this.lineWidth.getValue());
+            event.modelBase.func_78088_a(event.entity, event.limbSwing, event.limbSwingAmount, event.age, event.headYaw, event.headPitch, event.scale);
+            GlStateManager.func_187441_d((float)this.lineWidth.getValue().floatValue());
             RenderUtil.renderThree();
             RenderUtil.renderFour(color);
-            event.modelBase.render(event.entity,  event.limbSwing,  event.limbSwingAmount,  event.age,  event.headYaw,  event.headPitch,  event.scale);
-            GlStateManager.glLineWidth((float)this.lineWidth.getValue());
+            event.modelBase.func_78088_a(event.entity, event.limbSwing, event.limbSwingAmount, event.age, event.headYaw, event.headPitch, event.scale);
+            GlStateManager.func_187441_d((float)this.lineWidth.getValue().floatValue());
             RenderUtil.renderFive();
-        }
-        else {
+        } else {
             GL11.glPushMatrix();
-            GL11.glPushAttrib(1048575);
+            GL11.glPushAttrib((int)1048575);
             if (this.mode.getValue() == Mode.WIREFRAME) {
-                GL11.glPolygonMode(1032,  6913);
+                GL11.glPolygonMode((int)1032, (int)6913);
+            } else {
+                GL11.glPolygonMode((int)1028, (int)6913);
             }
-            else {
-                GL11.glPolygonMode(1028,  6913);
-            }
-            GL11.glDisable(3553);
-            GL11.glDisable(2896);
-            GL11.glDisable(2929);
-            GL11.glEnable(2848);
-            GL11.glEnable(3042);
-            GlStateManager.blendFunc(770,  771);
-            GlStateManager.color(color.getRed() / 255.0f,  color.getGreen() / 255.0f,  color.getBlue() / 255.0f,  color.getAlpha() / 255.0f);
-            GlStateManager.glLineWidth((float)this.lineWidth.getValue());
-            event.modelBase.render(event.entity,  event.limbSwing,  event.limbSwingAmount,  event.age,  event.headYaw,  event.headPitch,  event.scale);
+            GL11.glDisable((int)3553);
+            GL11.glDisable((int)2896);
+            GL11.glDisable((int)2929);
+            GL11.glEnable((int)2848);
+            GL11.glEnable((int)3042);
+            GlStateManager.func_179112_b((int)770, (int)771);
+            GlStateManager.func_179131_c((float)((float)color.getRed() / 255.0f), (float)((float)color.getGreen() / 255.0f), (float)((float)color.getBlue() / 255.0f), (float)((float)color.getAlpha() / 255.0f));
+            GlStateManager.func_187441_d((float)this.lineWidth.getValue().floatValue());
+            event.modelBase.func_78088_a(event.entity, event.limbSwing, event.limbSwingAmount, event.age, event.headYaw, event.headPitch, event.scale);
             GL11.glPopAttrib();
             GL11.glPopMatrix();
         }
-        if (!this.onTop.getValue() && (!Chams.getInstance().isEnabled() || !Chams.getInstance().colored.getValue())) {
-            event.modelBase.render(event.entity,  event.limbSwing,  event.limbSwingAmount,  event.age,  event.headYaw,  event.headPitch,  event.scale);
+        if (!(this.onTop.getValue().booleanValue() || Chams.getInstance().isEnabled() && Chams.getInstance().colored.getValue().booleanValue())) {
+            event.modelBase.func_78088_a(event.entity, event.limbSwing, event.limbSwingAmount, event.age, event.headYaw, event.headPitch, event.scale);
         }
         try {
-            ESP.mc.gameSettings.fancyGraphics = fancyGraphics;
-            ESP.mc.gameSettings.gammaSetting = gamma;
+            ESP.mc.field_71474_y.field_74347_j = fancyGraphics;
+            ESP.mc.field_71474_y.field_74333_Y = gamma;
         }
-        catch (Exception ex) {}
+        catch (Exception exception) {
+            // empty catch block
+        }
         event.setCanceled(true);
     }
-    
+
+    @Override
     public void onEnable() {
         this.burrowedPlayers.clear();
     }
-    
+
+    @Override
     public void onUpdate() {
-        if (fullNullCheck()) {
+        if (ESP.fullNullCheck()) {
             return;
         }
         this.burrowedPlayers.clear();
         this.getPlayers();
     }
-    
-    private void renderBurrowedBlock(final BlockPos blockPos) {
-        RenderUtil.drawBoxESP(blockPos,  new Color(this.boxRed.getValue(),  this.boxGreen.getValue(),  this.boxBlue.getValue(),  this.burrowAlpha.getValue()),  true,  new Color(this.outlineRed.getValue(),  this.outlineGreen.getValue(),  this.outlineBlue.getValue(),  this.outlineAlpha.getValue()),  this.outlineWidth.getValue(),  this.outline.getValue(),  this.box.getValue(),  this.burrowAlpha.getValue(),  true);
+
+    private void renderBurrowedBlock(BlockPos blockPos) {
+        RenderUtil.drawBoxESP(blockPos, new Color(this.boxRed.getValue(), this.boxGreen.getValue(), this.boxBlue.getValue(), this.burrowAlpha.getValue()), true, new Color(this.outlineRed.getValue(), this.outlineGreen.getValue(), this.outlineBlue.getValue(), this.outlineAlpha.getValue()), this.outlineWidth.getValue().floatValue(), this.outline.getValue(), this.box.getValue(), this.burrowAlpha.getValue(), true);
     }
-    
+
     private void getPlayers() {
-        for (final EntityPlayer entityPlayer : ESP.mc.world.playerEntities) {
-            if (entityPlayer != ESP.mc.player && !Phobos.friendManager.isFriend(entityPlayer.getName()) && EntityUtil.isLiving((Entity)entityPlayer)) {
-                if (!this.isBurrowed(entityPlayer)) {
-                    continue;
-                }
-                this.burrowedPlayers.put(entityPlayer,  new BlockPos(entityPlayer.posX,  entityPlayer.posY,  entityPlayer.posZ));
-            }
+        for (EntityPlayer entityPlayer : ESP.mc.field_71441_e.field_73010_i) {
+            if (entityPlayer == ESP.mc.field_71439_g || Phobos.friendManager.isFriend(entityPlayer.func_70005_c_()) || !EntityUtil.isLiving((Entity)entityPlayer) || !this.isBurrowed(entityPlayer)) continue;
+            this.burrowedPlayers.put(entityPlayer, new BlockPos(entityPlayer.field_70165_t, entityPlayer.field_70163_u, entityPlayer.field_70161_v));
         }
     }
-    
-    private boolean isBurrowed(final EntityPlayer entityPlayer) {
-        final BlockPos blockPos = new BlockPos(Math.floor(entityPlayer.posX),  Math.floor(entityPlayer.posY + 0.2),  Math.floor(entityPlayer.posZ));
-        return ESP.mc.world.getBlockState(blockPos).getBlock() == Blocks.ENDER_CHEST || ESP.mc.world.getBlockState(blockPos).getBlock() == Blocks.OBSIDIAN || ESP.mc.world.getBlockState(blockPos).getBlock() == Blocks.CHEST || ESP.mc.world.getBlockState(blockPos).getBlock() == Blocks.ANVIL || ESP.mc.world.getBlockState(blockPos).getBlock() == Blocks.END_ROD;
+
+    private boolean isBurrowed(EntityPlayer entityPlayer) {
+        BlockPos blockPos = new BlockPos(Math.floor(entityPlayer.field_70165_t), Math.floor(entityPlayer.field_70163_u + 0.2), Math.floor(entityPlayer.field_70161_v));
+        return ESP.mc.field_71441_e.func_180495_p(blockPos).func_177230_c() == Blocks.field_150477_bB || ESP.mc.field_71441_e.func_180495_p(blockPos).func_177230_c() == Blocks.field_150343_Z || ESP.mc.field_71441_e.func_180495_p(blockPos).func_177230_c() == Blocks.field_150486_ae || ESP.mc.field_71441_e.func_180495_p(blockPos).func_177230_c() == Blocks.field_150467_bQ || ESP.mc.field_71441_e.func_180495_p(blockPos).func_177230_c() == Blocks.field_185764_cQ;
     }
-    
-    static {
-        ESP.INSTANCE = new ESP();
-    }
-    
-    public enum Mode
-    {
-        WIREFRAME,  
+
+    public static enum Mode {
+        WIREFRAME,
         OUTLINE;
+
     }
 }
+

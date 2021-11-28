@@ -1,12 +1,11 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ */
 package me.earth.phobos.features.gui.chat.utils;
 
-public class AnimationTools
-{
-    public static float clamp(final float number,  final float min,  final float max) {
-        return (number < min) ? min : Math.min(number,  max);
+public class AnimationTools {
+    public static float clamp(float number, float min, float max) {
+        return number < min ? min : Math.min(number, max);
     }
 }
+

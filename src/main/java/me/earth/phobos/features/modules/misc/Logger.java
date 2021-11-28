@@ -1,76 +1,74 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.gui.GuiMultiplayer
+ *  net.minecraft.network.Packet
+ *  net.minecraft.util.StringUtils
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.misc;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import me.earth.phobos.event.events.*;
-import net.minecraft.client.gui.*;
-import me.earth.phobos.features.command.*;
-import net.minecraft.network.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import net.minecraft.util.*;
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import me.earth.phobos.event.events.PacketEvent;
+import me.earth.phobos.features.command.Command;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import net.minecraft.client.gui.GuiMultiplayer;
+import net.minecraft.network.Packet;
+import net.minecraft.util.StringUtils;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class Logger extends Module
-{
-    public Setting<Packets> packets;
-    public Setting<Boolean> chat;
-    public Setting<Boolean> fullInfo;
-    public Setting<Boolean> noPing;
-    
+public class Logger
+extends Module {
+    public Setting<Packets> packets = this.register(new Setting<Packets>("Packets", Packets.OUTGOING));
+    public Setting<Boolean> chat = this.register(new Setting<Boolean>("Chat", false));
+    public Setting<Boolean> fullInfo = this.register(new Setting<Boolean>("FullInfo", false));
+    public Setting<Boolean> noPing = this.register(new Setting<Boolean>("NoPing", false));
+
     public Logger() {
-        super("Logger",  "Logs packets.",  Category.MISC,  true,  false,  false);
-        this.packets = (Setting<Packets>)this.register(new Setting("Packets", Packets.OUTGOING));
-        this.chat = (Setting<Boolean>)this.register(new Setting("Chat", false));
-        this.fullInfo = (Setting<Boolean>)this.register(new Setting("FullInfo", false));
-        this.noPing = (Setting<Boolean>)this.register(new Setting("NoPing", false));
+        super("Logger", "Logs packets.", Module.Category.MISC, true, false, false);
     }
-    
-    @SubscribeEvent(receiveCanceled = true)
-    public void onPacketSend(final PacketEvent.Send event) {
-        if (this.noPing.getValue() && Logger.mc.currentScreen instanceof GuiMultiplayer) {
+
+    @SubscribeEvent(receiveCanceled=true)
+    public void onPacketSend(PacketEvent.Send event) {
+        if (this.noPing.getValue().booleanValue() && Logger.mc.field_71462_r instanceof GuiMultiplayer) {
             return;
         }
         if (this.packets.getValue() == Packets.OUTGOING || this.packets.getValue() == Packets.ALL) {
-            if (this.chat.getValue()) {
+            if (this.chat.getValue().booleanValue()) {
                 Command.sendMessage(event.getPacket().toString());
-            }
-            else {
-                this.writePacketOnConsole((Packet<?>)event.getPacket(),  false);
+            } else {
+                this.writePacketOnConsole((Packet<?>)event.getPacket(), false);
             }
         }
     }
-    
-    @SubscribeEvent(receiveCanceled = true)
-    public void onPacketReceive(final PacketEvent.Receive event) {
-        if (this.noPing.getValue() && Logger.mc.currentScreen instanceof GuiMultiplayer) {
+
+    @SubscribeEvent(receiveCanceled=true)
+    public void onPacketReceive(PacketEvent.Receive event) {
+        if (this.noPing.getValue().booleanValue() && Logger.mc.field_71462_r instanceof GuiMultiplayer) {
             return;
         }
         if (this.packets.getValue() == Packets.INCOMING || this.packets.getValue() == Packets.ALL) {
-            if (this.chat.getValue()) {
+            if (this.chat.getValue().booleanValue()) {
                 Command.sendMessage(event.getPacket().toString());
-            }
-            else {
-                this.writePacketOnConsole((Packet<?>)event.getPacket(),  true);
+            } else {
+                this.writePacketOnConsole((Packet<?>)event.getPacket(), true);
             }
         }
     }
-    
-    private void writePacketOnConsole(final Packet<?> packet,  final boolean in) {
-        if (this.fullInfo.getValue()) {
+
+    private void writePacketOnConsole(Packet<?> packet, boolean in) {
+        if (this.fullInfo.getValue().booleanValue()) {
             System.out.println((in ? "In: " : "Send: ") + packet.getClass().getSimpleName() + " {");
             try {
                 for (Class<?> clazz = packet.getClass(); clazz != Object.class; clazz = clazz.getSuperclass()) {
-                    for (final Field field : clazz.getDeclaredFields()) {
-                        if (field != null) {
-                            if (!field.isAccessible()) {
-                                field.setAccessible(true);
-                            }
-                            System.out.println(StringUtils.stripControlCodes("      " + field.getType().getSimpleName() + " " + field.getName() + " : " + field.get(packet)));
+                    for (Field field : clazz.getDeclaredFields()) {
+                        if (field == null) continue;
+                        if (!field.isAccessible()) {
+                            field.setAccessible(true);
                         }
+                        System.out.println(StringUtils.func_76338_a((String)("      " + field.getType().getSimpleName() + " " + field.getName() + " : " + field.get(packet))));
                     }
                 }
             }
@@ -78,17 +76,17 @@ public class Logger extends Module
                 e.printStackTrace();
             }
             System.out.println("}");
-        }
-        else {
+        } else {
             System.out.println(packet.toString());
         }
     }
-    
-    public enum Packets
-    {
-        NONE,  
-        INCOMING,  
-        OUTGOING,  
+
+    public static enum Packets {
+        NONE,
+        INCOMING,
+        OUTGOING,
         ALL;
+
     }
 }
+

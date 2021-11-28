@@ -1,33 +1,39 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.gui.Gui
+ *  net.minecraft.client.renderer.texture.DynamicTexture
+ *  net.minecraft.client.renderer.texture.TextureManager
+ *  net.minecraft.util.ResourceLocation
+ */
 package me.earth.phobos.features.gui.alts.ias.tools;
 
-import net.minecraft.client.renderer.texture.*;
-import net.minecraft.util.*;
-import javax.imageio.*;
-import java.io.*;
-import java.awt.image.*;
-import net.minecraft.client.gui.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.util.ResourceLocation;
 
-public class SkinRender
-{
+public class SkinRender {
     private final File file;
     private final TextureManager textureManager;
     private DynamicTexture previewTexture;
     private ResourceLocation resourceLocation;
-    
-    public SkinRender(final TextureManager textureManager,  final File file) {
+
+    public SkinRender(TextureManager textureManager, File file) {
         this.textureManager = textureManager;
         this.file = file;
     }
-    
+
     private boolean loadPreview() {
         try {
-            final BufferedImage image = ImageIO.read(this.file);
+            BufferedImage image = ImageIO.read(this.file);
             this.previewTexture = new DynamicTexture(image);
-            this.resourceLocation = this.textureManager.getDynamicTextureLocation("ias",  this.previewTexture);
+            this.resourceLocation = this.textureManager.func_110578_a("ias", this.previewTexture);
             return true;
         }
         catch (IOException e) {
@@ -35,17 +41,16 @@ public class SkinRender
             return false;
         }
     }
-    
-    public void drawImage(final int xPos,  final int yPos,  final int width,  final int height) {
-        if (this.previewTexture == null) {
-            final boolean successful = this.loadPreview();
-            if (!successful) {
-                System.out.println("Failure to load preview.");
-                return;
-            }
+
+    public void drawImage(int xPos, int yPos, int width, int height) {
+        boolean successful;
+        if (this.previewTexture == null && !(successful = this.loadPreview())) {
+            System.out.println("Failure to load preview.");
+            return;
         }
-        this.previewTexture.updateDynamicTexture();
-        this.textureManager.bindTexture(this.resourceLocation);
-        Gui.drawModalRectWithCustomSizedTexture(xPos,  yPos,  0.0f,  0.0f,  width,  height,  64.0f,  128.0f);
+        this.previewTexture.func_110564_a();
+        this.textureManager.func_110577_a(this.resourceLocation);
+        Gui.func_146110_a((int)xPos, (int)yPos, (float)0.0f, (float)0.0f, (int)width, (int)height, (float)64.0f, (float)128.0f);
     }
 }
+

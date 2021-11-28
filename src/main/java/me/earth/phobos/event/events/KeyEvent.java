@@ -1,19 +1,19 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ */
 package me.earth.phobos.event.events;
 
-import me.earth.phobos.event.*;
+import me.earth.phobos.event.EventStage;
 
-public class KeyEvent extends EventStage
-{
+public class KeyEvent
+extends EventStage {
     public boolean info;
     public boolean pressed;
-    
-    public KeyEvent(final int stage,  final boolean info,  final boolean pressed) {
+
+    public KeyEvent(int stage, boolean info, boolean pressed) {
         super(stage);
         this.info = info;
         this.pressed = pressed;
     }
 }
+

@@ -1,16 +1,18 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.entity.EntityLivingBase
+ */
 package me.earth.phobos.mixin.mixins.accessors;
 
-import org.spongepowered.asm.mixin.*;
-import net.minecraft.entity.*;
-import org.spongepowered.asm.mixin.gen.*;
+import net.minecraft.entity.EntityLivingBase;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin({ EntityLivingBase.class })
-public interface IEntityLivingBase
-{
-    @Invoker("getArmSwingAnimationEnd")
-    int getArmSwingAnimationEnd();
+@Mixin(value={EntityLivingBase.class})
+public interface IEntityLivingBase {
+    @Invoker(value="getArmSwingAnimationEnd")
+    public int getArmSwingAnimationEnd();
 }
+

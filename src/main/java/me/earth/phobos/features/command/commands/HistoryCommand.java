@@ -1,47 +1,48 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ */
 package me.earth.phobos.features.command.commands;
 
-import me.earth.phobos.features.command.*;
-import me.earth.phobos.util.*;
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
+import me.earth.phobos.features.command.Command;
+import me.earth.phobos.util.PlayerUtil;
 
-public class HistoryCommand extends Command
-{
+public class HistoryCommand
+extends Command {
     public HistoryCommand() {
-        super("history",  new String[] { "<player>" });
+        super("history", new String[]{"<player>"});
     }
-    
-    public void execute(final String[] commands) {
-        if (commands.length == 1 || commands.length == 0) {
-            sendMessage("§cPlease specify a player.");
-        }
+
+    @Override
+    public void execute(String[] commands) {
+        List<String> names;
         UUID uuid;
+        if (commands.length == 1 || commands.length == 0) {
+            HistoryCommand.sendMessage("\u00a7cPlease specify a player.");
+        }
         try {
             uuid = PlayerUtil.getUUIDFromName(commands[0]);
         }
         catch (Exception e) {
-            sendMessage("An error occured.");
+            HistoryCommand.sendMessage("An error occured.");
             return;
         }
-        List<String> names;
         try {
             names = PlayerUtil.getHistoryOfNames(uuid);
         }
         catch (Exception e) {
-            sendMessage("An error occured.");
+            HistoryCommand.sendMessage("An error occured.");
             return;
         }
         if (names != null) {
-            sendMessage(commands[0] + "´s name history:");
-            for (final String name : names) {
-                sendMessage(name);
+            HistoryCommand.sendMessage(commands[0] + "\u00b4s name history:");
+            for (String name : names) {
+                HistoryCommand.sendMessage(name);
             }
-        }
-        else {
-            sendMessage("No names found.");
+        } else {
+            HistoryCommand.sendMessage("No names found.");
         }
     }
 }
+

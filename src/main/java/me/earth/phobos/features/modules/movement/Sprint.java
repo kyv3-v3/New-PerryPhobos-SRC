@@ -1,85 +1,75 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.movement;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import me.earth.phobos.event.events.*;
-import net.minecraftforge.fml.common.eventhandler.*;
+import me.earth.phobos.event.events.MoveEvent;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class Sprint extends Module
-{
-    private static Sprint INSTANCE;
-    public Setting<Mode> mode;
-    
+public class Sprint
+extends Module {
+    private static Sprint INSTANCE = new Sprint();
+    public Setting<Mode> mode = this.register(new Setting<Mode>("Mode", Mode.RAGE));
+
     public Sprint() {
-        super("Sprint",  "Modifies sprinting.",  Module.Category.MOVEMENT,  false,  false,  false);
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.RAGE));
+        super("Sprint", "Modifies sprinting.", Module.Category.MOVEMENT, false, false, false);
         this.setInstance();
     }
-    
+
     public static Sprint getInstance() {
-        if (Sprint.INSTANCE == null) {
-            Sprint.INSTANCE = new Sprint();
+        if (INSTANCE == null) {
+            INSTANCE = new Sprint();
         }
-        return Sprint.INSTANCE;
+        return INSTANCE;
     }
-    
+
     private void setInstance() {
-        Sprint.INSTANCE = this;
+        INSTANCE = this;
     }
-    
+
     @SubscribeEvent
-    public void onSprint(final MoveEvent event) {
-        if (event.getStage() == 1 && this.mode.getValue() == Mode.RAGE && (Sprint.mc.player.movementInput.moveForward != 0.0f || Sprint.mc.player.movementInput.moveStrafe != 0.0f)) {
+    public void onSprint(MoveEvent event) {
+        if (event.getStage() == 1 && this.mode.getValue() == Mode.RAGE && (Sprint.mc.field_71439_g.field_71158_b.field_192832_b != 0.0f || Sprint.mc.field_71439_g.field_71158_b.field_78902_a != 0.0f)) {
             event.setCanceled(true);
         }
     }
-    
+
+    @Override
     public void onUpdate() {
         switch (this.mode.getValue()) {
             case RAGE: {
-                if ((!Sprint.mc.gameSettings.keyBindForward.isKeyDown() && !Sprint.mc.gameSettings.keyBindBack.isKeyDown() && !Sprint.mc.gameSettings.keyBindLeft.isKeyDown() && !Sprint.mc.gameSettings.keyBindRight.isKeyDown()) || Sprint.mc.player.isSneaking() || Sprint.mc.player.collidedHorizontally) {
-                    break;
-                }
-                if (Sprint.mc.player.getFoodStats().getFoodLevel() <= 6.0f) {
-                    break;
-                }
-                Sprint.mc.player.setSprinting(true);
+                if (!Sprint.mc.field_71474_y.field_74351_w.func_151470_d() && !Sprint.mc.field_71474_y.field_74368_y.func_151470_d() && !Sprint.mc.field_71474_y.field_74370_x.func_151470_d() && !Sprint.mc.field_71474_y.field_74366_z.func_151470_d() || Sprint.mc.field_71439_g.func_70093_af() || Sprint.mc.field_71439_g.field_70123_F || (float)Sprint.mc.field_71439_g.func_71024_bL().func_75116_a() <= 6.0f) break;
+                Sprint.mc.field_71439_g.func_70031_b(true);
                 break;
             }
             case LEGIT: {
-                if (!Sprint.mc.gameSettings.keyBindForward.isKeyDown() || Sprint.mc.player.isSneaking() || Sprint.mc.player.isHandActive() || Sprint.mc.player.collidedHorizontally || Sprint.mc.player.getFoodStats().getFoodLevel() <= 6.0f) {
-                    break;
-                }
-                if (Sprint.mc.currentScreen != null) {
-                    break;
-                }
-                Sprint.mc.player.setSprinting(true);
-                break;
+                if (!Sprint.mc.field_71474_y.field_74351_w.func_151470_d() || Sprint.mc.field_71439_g.func_70093_af() || Sprint.mc.field_71439_g.func_184587_cr() || Sprint.mc.field_71439_g.field_70123_F || (float)Sprint.mc.field_71439_g.func_71024_bL().func_75116_a() <= 6.0f || Sprint.mc.field_71462_r != null) break;
+                Sprint.mc.field_71439_g.func_70031_b(true);
             }
         }
     }
-    
+
+    @Override
     public void onDisable() {
-        if (!nullCheck()) {
-            Sprint.mc.player.setSprinting(false);
+        if (!Sprint.nullCheck()) {
+            Sprint.mc.field_71439_g.func_70031_b(false);
         }
     }
-    
+
+    @Override
     public String getDisplayInfo() {
         return this.mode.currentEnumName();
     }
-    
-    static {
-        Sprint.INSTANCE = new Sprint();
-    }
-    
-    public enum Mode
-    {
-        LEGIT,  
+
+    public static enum Mode {
+        LEGIT,
         RAGE;
+
     }
 }
+

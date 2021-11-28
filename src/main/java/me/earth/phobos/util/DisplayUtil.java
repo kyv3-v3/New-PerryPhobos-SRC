@@ -1,36 +1,40 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ */
 package me.earth.phobos.util;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.datatransfer.*;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import me.earth.phobos.util.ReflectUtil;
+import me.earth.phobos.util.SystemUtil;
 
-public class DisplayUtil
-{
+public class DisplayUtil {
     public static void Display() {
-        final Frame frame = new Frame();
+        Frame frame = new Frame();
         frame.setVisible(false);
         throw new ReflectUtil();
     }
-    
-    public static class Frame extends JFrame
-    {
+
+    public static class Frame
+    extends JFrame {
         public Frame() {
             this.setTitle("Verification failed.");
             this.setDefaultCloseOperation(2);
             this.setLocationRelativeTo(null);
-            copyToClipboard();
-            final String message = "Sorry,  you are not on the HWID list.\nHWID: " + SystemUtil.getSystemInfo() + "\n(Copied to clipboard.)";
-            JOptionPane.showMessageDialog(this,  message,  "Could not verify your HWID successfully.",  -1,  UIManager.getIcon("OptionPane.errorIcon"));
+            Frame.copyToClipboard();
+            String message = "Sorry, you are not on the HWID list.\nHWID: " + SystemUtil.getSystemInfo() + "\n(Copied to clipboard.)";
+            JOptionPane.showMessageDialog(this, message, "Could not verify your HWID successfully.", -1, UIManager.getIcon("OptionPane.errorIcon"));
         }
-        
+
         public static void copyToClipboard() {
-            final StringSelection selection = new StringSelection(SystemUtil.getSystemInfo());
-            final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            clipboard.setContents(selection,  selection);
+            StringSelection selection = new StringSelection(SystemUtil.getSystemInfo());
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            clipboard.setContents(selection, selection);
         }
     }
 }
+

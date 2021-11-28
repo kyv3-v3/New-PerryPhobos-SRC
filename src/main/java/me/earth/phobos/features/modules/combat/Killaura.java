@@ -1,191 +1,174 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.entity.EntityLivingBase
+ *  net.minecraft.entity.player.EntityPlayer
+ *  net.minecraft.init.Items
+ *  net.minecraft.inventory.ClickType
+ *  net.minecraft.item.ItemSword
+ *  net.minecraft.network.Packet
+ *  net.minecraft.network.play.client.CPacketEntityAction
+ *  net.minecraft.network.play.client.CPacketEntityAction$Action
+ *  net.minecraft.util.EnumHand
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.combat;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import me.earth.phobos.event.events.*;
-import me.earth.phobos.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import net.minecraft.entity.player.*;
-import net.minecraft.init.*;
-import net.minecraft.util.*;
-import net.minecraft.item.*;
-import me.earth.phobos.util.*;
-import net.minecraft.inventory.*;
-import net.minecraft.network.play.client.*;
-import net.minecraft.network.*;
-import java.util.*;
-import net.minecraft.entity.*;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.event.events.UpdateWalkingPlayerEvent;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.DamageUtil;
+import me.earth.phobos.util.EntityUtil;
+import me.earth.phobos.util.InventoryUtil;
+import me.earth.phobos.util.MathUtil;
+import me.earth.phobos.util.TimerUtil;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.inventory.ClickType;
+import net.minecraft.item.ItemSword;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.CPacketEntityAction;
+import net.minecraft.util.EnumHand;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class Killaura extends Module
-{
+public class Killaura
+extends Module {
     public static Entity target;
-    private final TimerUtil timer;
-    private final Setting<TargetMode> targetMode;
-    public Setting<Float> range;
-    public Setting<Boolean> autoSwitch;
-    public Setting<Boolean> delay;
-    public Setting<Boolean> rotate;
-    public Setting<Boolean> stay;
-    public Setting<Boolean> armorBreak;
-    public Setting<Boolean> eating;
-    public Setting<Boolean> onlySharp;
-    public Setting<Boolean> teleport;
-    public Setting<Float> raytrace;
-    public Setting<Float> teleportRange;
-    public Setting<Boolean> lagBack;
-    public Setting<Boolean> teekaydelay;
-    public Setting<Integer> time32k;
-    public Setting<Integer> multi;
-    public Setting<Boolean> multi32k;
-    public Setting<Boolean> players;
-    public Setting<Boolean> mobs;
-    public Setting<Boolean> animals;
-    public Setting<Boolean> vehicles;
-    public Setting<Boolean> projectiles;
-    public Setting<Boolean> tps;
-    public Setting<Boolean> packet;
-    public Setting<Boolean> swing;
-    public Setting<Boolean> sneak;
-    public Setting<Boolean> info;
-    public Setting<Float> health;
-    
+    private final TimerUtil timer = new TimerUtil();
+    private final Setting<TargetMode> targetMode = this.register(new Setting<TargetMode>("Target", TargetMode.CLOSEST));
+    public Setting<Float> range = this.register(new Setting<Float>("Range", Float.valueOf(6.0f), Float.valueOf(0.1f), Float.valueOf(7.0f)));
+    public Setting<Boolean> autoSwitch = this.register(new Setting<Boolean>("AutoSwitch", false));
+    public Setting<Boolean> delay = this.register(new Setting<Boolean>("Delay", true));
+    public Setting<Boolean> rotate = this.register(new Setting<Boolean>("Rotate", true));
+    public Setting<Boolean> stay = this.register(new Setting<Object>("Stay", Boolean.valueOf(true), v -> this.rotate.getValue()));
+    public Setting<Boolean> armorBreak = this.register(new Setting<Boolean>("ArmorBreak", false));
+    public Setting<Boolean> eating = this.register(new Setting<Boolean>("Eating", true));
+    public Setting<Boolean> onlySharp = this.register(new Setting<Boolean>("Axe/Sword", true));
+    public Setting<Boolean> teleport = this.register(new Setting<Boolean>("Teleport", false));
+    public Setting<Float> raytrace = this.register(new Setting<Object>("Raytrace", Float.valueOf(6.0f), Float.valueOf(0.1f), Float.valueOf(7.0f), v -> this.teleport.getValue() == false, "Wall Range."));
+    public Setting<Float> teleportRange = this.register(new Setting<Object>("TpRange", Float.valueOf(15.0f), Float.valueOf(0.1f), Float.valueOf(50.0f), v -> this.teleport.getValue(), "Teleport Range."));
+    public Setting<Boolean> lagBack = this.register(new Setting<Object>("LagBack", Boolean.valueOf(true), v -> this.teleport.getValue()));
+    public Setting<Boolean> teekaydelay = this.register(new Setting<Boolean>("32kDelay", false));
+    public Setting<Integer> time32k = this.register(new Setting<Integer>("32kTime", 5, 1, 50));
+    public Setting<Integer> multi = this.register(new Setting<Object>("32kPackets", Integer.valueOf(2), v -> this.teekaydelay.getValue() == false));
+    public Setting<Boolean> multi32k = this.register(new Setting<Boolean>("Multi32k", false));
+    public Setting<Boolean> players = this.register(new Setting<Boolean>("Players", true));
+    public Setting<Boolean> mobs = this.register(new Setting<Boolean>("Mobs", false));
+    public Setting<Boolean> animals = this.register(new Setting<Boolean>("Animals", false));
+    public Setting<Boolean> vehicles = this.register(new Setting<Boolean>("Entities", false));
+    public Setting<Boolean> projectiles = this.register(new Setting<Boolean>("Projectiles", false));
+    public Setting<Boolean> tps = this.register(new Setting<Boolean>("TpsSync", true));
+    public Setting<Boolean> packet = this.register(new Setting<Boolean>("Packet", false));
+    public Setting<Boolean> swing = this.register(new Setting<Boolean>("Swing", true));
+    public Setting<Boolean> sneak = this.register(new Setting<Boolean>("State", false));
+    public Setting<Boolean> info = this.register(new Setting<Boolean>("Info", true));
+    public Setting<Float> health = this.register(new Setting<Object>("Health", Float.valueOf(6.0f), Float.valueOf(0.1f), Float.valueOf(36.0f), v -> this.targetMode.getValue() == TargetMode.SMART));
+
     public Killaura() {
-        super("Killaura",  "Automatically attacks entities for u.",  Category.COMBAT,  true,  false,  false);
-        this.timer = new TimerUtil();
-        this.targetMode = (Setting<TargetMode>)this.register(new Setting("Target", TargetMode.CLOSEST));
-        this.range = (Setting<Float>)this.register(new Setting("Range", 6.0f, 0.1f, 7.0f));
-        this.autoSwitch = (Setting<Boolean>)this.register(new Setting("AutoSwitch", false));
-        this.delay = (Setting<Boolean>)this.register(new Setting("Delay", true));
-        this.rotate = (Setting<Boolean>)this.register(new Setting("Rotate", true));
-        this.stay = (Setting<Boolean>)this.register(new Setting("Stay", true,  v -> this.rotate.getValue()));
-        this.armorBreak = (Setting<Boolean>)this.register(new Setting("ArmorBreak", false));
-        this.eating = (Setting<Boolean>)this.register(new Setting("Eating", true));
-        this.onlySharp = (Setting<Boolean>)this.register(new Setting("Axe/Sword", true));
-        this.teleport = (Setting<Boolean>)this.register(new Setting("Teleport", false));
-        this.raytrace = (Setting<Float>)this.register(new Setting("Raytrace", 6.0f, 0.1f, 7.0f,  v -> !this.teleport.getValue(),  "Wall Range."));
-        this.teleportRange = (Setting<Float>)this.register(new Setting("TpRange", 15.0f, 0.1f, 50.0f,  v -> this.teleport.getValue(),  "Teleport Range."));
-        this.lagBack = (Setting<Boolean>)this.register(new Setting("LagBack", true,  v -> this.teleport.getValue()));
-        this.teekaydelay = (Setting<Boolean>)this.register(new Setting("32kDelay", false));
-        this.time32k = (Setting<Integer>)this.register(new Setting("32kTime", 5, 1, 50));
-        this.multi = (Setting<Integer>)this.register(new Setting("32kPackets", 2,  v -> !this.teekaydelay.getValue()));
-        this.multi32k = (Setting<Boolean>)this.register(new Setting("Multi32k", false));
-        this.players = (Setting<Boolean>)this.register(new Setting("Players", true));
-        this.mobs = (Setting<Boolean>)this.register(new Setting("Mobs", false));
-        this.animals = (Setting<Boolean>)this.register(new Setting("Animals", false));
-        this.vehicles = (Setting<Boolean>)this.register(new Setting("Entities", false));
-        this.projectiles = (Setting<Boolean>)this.register(new Setting("Projectiles", false));
-        this.tps = (Setting<Boolean>)this.register(new Setting("TpsSync", true));
-        this.packet = (Setting<Boolean>)this.register(new Setting("Packet", false));
-        this.swing = (Setting<Boolean>)this.register(new Setting("Swing", true));
-        this.sneak = (Setting<Boolean>)this.register(new Setting("State", false));
-        this.info = (Setting<Boolean>)this.register(new Setting("Info", true));
-        this.health = (Setting<Float>)this.register(new Setting("Health", 6.0f, 0.1f, 36.0f,  v -> this.targetMode.getValue() == TargetMode.SMART));
+        super("Killaura", "Automatically attacks entities for u.", Module.Category.COMBAT, true, false, false);
     }
-    
+
     @Override
     public void onTick() {
-        if (!this.rotate.getValue()) {
+        if (!this.rotate.getValue().booleanValue()) {
             this.doKillaura();
         }
     }
-    
+
     @SubscribeEvent
-    public void onUpdateWalkingPlayerEvent(final UpdateWalkingPlayerEvent event) {
-        if (event.getStage() == 0 && this.rotate.getValue()) {
-            if (this.stay.getValue() && Killaura.target != null) {
-                Phobos.rotationManager.lookAtEntity(Killaura.target);
+    public void onUpdateWalkingPlayerEvent(UpdateWalkingPlayerEvent event) {
+        if (event.getStage() == 0 && this.rotate.getValue().booleanValue()) {
+            if (this.stay.getValue().booleanValue() && target != null) {
+                Phobos.rotationManager.lookAtEntity(target);
             }
             this.doKillaura();
         }
     }
-    
+
     private void doKillaura() {
-        if (fullNullCheck()) {
+        int sword;
+        int wait;
+        if (Killaura.fullNullCheck()) {
             return;
         }
-        if (this.onlySharp.getValue() && !EntityUtil.holdingWeapon((EntityPlayer)Killaura.mc.player)) {
-            Killaura.target = null;
+        if (this.onlySharp.getValue().booleanValue() && !EntityUtil.holdingWeapon((EntityPlayer)Killaura.mc.field_71439_g)) {
+            target = null;
             return;
         }
-        final int wait = (!this.delay.getValue() || (EntityUtil.holding32k((EntityPlayer)Killaura.mc.player) && !this.teekaydelay.getValue())) ? 0 : ((int)(DamageUtil.getCooldownByWeapon((EntityPlayer)Killaura.mc.player) * (this.tps.getValue() ? Phobos.serverManager.getTpsFactor() : 1.0f)));
-        if (!this.timer.passedMs(wait) || (!this.eating.getValue() && Killaura.mc.player.isHandActive() && (!Killaura.mc.player.getHeldItemOffhand().getItem().equals(Items.SHIELD) || Killaura.mc.player.getActiveHand() != EnumHand.OFF_HAND))) {
+        int n = this.delay.getValue() == false || EntityUtil.holding32k((EntityPlayer)Killaura.mc.field_71439_g) && this.teekaydelay.getValue() == false ? 0 : (wait = (int)((float)DamageUtil.getCooldownByWeapon((EntityPlayer)Killaura.mc.field_71439_g) * (this.tps.getValue() != false ? Phobos.serverManager.getTpsFactor() : 1.0f)));
+        if (!this.timer.passedMs(wait) || !this.eating.getValue().booleanValue() && Killaura.mc.field_71439_g.func_184587_cr() && (!Killaura.mc.field_71439_g.func_184592_cb().func_77973_b().equals((Object)Items.field_185159_cQ) || Killaura.mc.field_71439_g.func_184600_cs() != EnumHand.OFF_HAND)) {
             return;
         }
-        if (this.targetMode.getValue() != TargetMode.FOCUS || Killaura.target == null || (Killaura.mc.player.getDistanceSq(Killaura.target) >= MathUtil.square(this.range.getValue()) && (!this.teleport.getValue() || Killaura.mc.player.getDistanceSq(Killaura.target) >= MathUtil.square(this.teleportRange.getValue()))) || (!Killaura.mc.player.canEntityBeSeen(Killaura.target) && !EntityUtil.canEntityFeetBeSeen(Killaura.target) && Killaura.mc.player.getDistanceSq(Killaura.target) >= MathUtil.square(this.raytrace.getValue()) && !this.teleport.getValue())) {
-            Killaura.target = this.getTarget();
+        if (!(this.targetMode.getValue() == TargetMode.FOCUS && target != null && (Killaura.mc.field_71439_g.func_70068_e(target) < MathUtil.square(this.range.getValue().floatValue()) || this.teleport.getValue().booleanValue() && Killaura.mc.field_71439_g.func_70068_e(target) < MathUtil.square(this.teleportRange.getValue().floatValue())) && (Killaura.mc.field_71439_g.func_70685_l(target) || EntityUtil.canEntityFeetBeSeen(target) || Killaura.mc.field_71439_g.func_70068_e(target) < MathUtil.square(this.raytrace.getValue().floatValue()) || this.teleport.getValue().booleanValue()))) {
+            target = this.getTarget();
         }
-        if (Killaura.target == null) {
+        if (target == null) {
             return;
         }
-        final int sword;
-        if (this.autoSwitch.getValue() && (sword = InventoryUtil.findHotbarBlock(ItemSword.class)) != -1) {
-            InventoryUtil.switchToHotbarSlot(sword,  false);
+        if (this.autoSwitch.getValue().booleanValue() && (sword = InventoryUtil.findHotbarBlock(ItemSword.class)) != -1) {
+            InventoryUtil.switchToHotbarSlot(sword, false);
         }
-        if (this.rotate.getValue()) {
-            Phobos.rotationManager.lookAtEntity(Killaura.target);
+        if (this.rotate.getValue().booleanValue()) {
+            Phobos.rotationManager.lookAtEntity(target);
         }
-        if (this.teleport.getValue()) {
-            Phobos.positionManager.setPositionPacket(Killaura.target.posX,  EntityUtil.canEntityFeetBeSeen(Killaura.target) ? Killaura.target.posY : (Killaura.target.posY + Killaura.target.getEyeHeight()),  Killaura.target.posZ,  true,  true,  !this.lagBack.getValue());
+        if (this.teleport.getValue().booleanValue()) {
+            Phobos.positionManager.setPositionPacket(Killaura.target.field_70165_t, EntityUtil.canEntityFeetBeSeen(target) ? Killaura.target.field_70163_u : Killaura.target.field_70163_u + (double)target.func_70047_e(), Killaura.target.field_70161_v, true, true, this.lagBack.getValue() == false);
         }
-        if (EntityUtil.holding32k((EntityPlayer)Killaura.mc.player) && !this.teekaydelay.getValue()) {
-            if (this.multi32k.getValue()) {
-                for (final EntityPlayer player : Killaura.mc.world.playerEntities) {
-                    if (!EntityUtil.isValid((Entity)player,  this.range.getValue())) {
-                        continue;
-                    }
+        if (EntityUtil.holding32k((EntityPlayer)Killaura.mc.field_71439_g) && !this.teekaydelay.getValue().booleanValue()) {
+            if (this.multi32k.getValue().booleanValue()) {
+                for (EntityPlayer player : Killaura.mc.field_71441_e.field_73010_i) {
+                    if (!EntityUtil.isValid((Entity)player, this.range.getValue().floatValue())) continue;
                     this.teekayAttack((Entity)player);
                 }
-            }
-            else {
-                this.teekayAttack(Killaura.target);
+            } else {
+                this.teekayAttack(target);
             }
             this.timer.reset();
             return;
         }
-        if (this.armorBreak.getValue()) {
-            Killaura.mc.playerController.windowClick(Killaura.mc.player.inventoryContainer.windowId,  9,  Killaura.mc.player.inventory.currentItem,  ClickType.SWAP,  (EntityPlayer)Killaura.mc.player);
-            EntityUtil.attackEntity(Killaura.target,  this.packet.getValue(),  this.swing.getValue());
-            Killaura.mc.playerController.windowClick(Killaura.mc.player.inventoryContainer.windowId,  9,  Killaura.mc.player.inventory.currentItem,  ClickType.SWAP,  (EntityPlayer)Killaura.mc.player);
-            EntityUtil.attackEntity(Killaura.target,  this.packet.getValue(),  this.swing.getValue());
-        }
-        else {
-            final boolean sneaking = Killaura.mc.player.isSneaking();
-            final boolean sprint = Killaura.mc.player.isSprinting();
-            if (this.sneak.getValue()) {
+        if (this.armorBreak.getValue().booleanValue()) {
+            Killaura.mc.field_71442_b.func_187098_a(Killaura.mc.field_71439_g.field_71069_bz.field_75152_c, 9, Killaura.mc.field_71439_g.field_71071_by.field_70461_c, ClickType.SWAP, (EntityPlayer)Killaura.mc.field_71439_g);
+            EntityUtil.attackEntity(target, this.packet.getValue(), this.swing.getValue());
+            Killaura.mc.field_71442_b.func_187098_a(Killaura.mc.field_71439_g.field_71069_bz.field_75152_c, 9, Killaura.mc.field_71439_g.field_71071_by.field_70461_c, ClickType.SWAP, (EntityPlayer)Killaura.mc.field_71439_g);
+            EntityUtil.attackEntity(target, this.packet.getValue(), this.swing.getValue());
+        } else {
+            boolean sneaking = Killaura.mc.field_71439_g.func_70093_af();
+            boolean sprint = Killaura.mc.field_71439_g.func_70051_ag();
+            if (this.sneak.getValue().booleanValue()) {
                 if (sneaking) {
-                    Killaura.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)Killaura.mc.player,  CPacketEntityAction.Action.STOP_SNEAKING));
+                    Killaura.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketEntityAction((Entity)Killaura.mc.field_71439_g, CPacketEntityAction.Action.STOP_SNEAKING));
                 }
                 if (sprint) {
-                    Killaura.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)Killaura.mc.player,  CPacketEntityAction.Action.STOP_SPRINTING));
+                    Killaura.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketEntityAction((Entity)Killaura.mc.field_71439_g, CPacketEntityAction.Action.STOP_SPRINTING));
                 }
             }
-            EntityUtil.attackEntity(Killaura.target,  this.packet.getValue(),  this.swing.getValue());
-            if (this.sneak.getValue()) {
+            EntityUtil.attackEntity(target, this.packet.getValue(), this.swing.getValue());
+            if (this.sneak.getValue().booleanValue()) {
                 if (sprint) {
-                    Killaura.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)Killaura.mc.player,  CPacketEntityAction.Action.START_SPRINTING));
+                    Killaura.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketEntityAction((Entity)Killaura.mc.field_71439_g, CPacketEntityAction.Action.START_SPRINTING));
                 }
                 if (sneaking) {
-                    Killaura.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)Killaura.mc.player,  CPacketEntityAction.Action.START_SNEAKING));
+                    Killaura.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketEntityAction((Entity)Killaura.mc.field_71439_g, CPacketEntityAction.Action.START_SNEAKING));
                 }
             }
         }
         this.timer.reset();
     }
-    
-    private void teekayAttack(final Entity entity) {
+
+    private void teekayAttack(Entity entity) {
         for (int i = 0; i < this.multi.getValue(); ++i) {
-            this.startEntityAttackThread(entity,  i * this.time32k.getValue());
+            this.startEntityAttackThread(entity, i * this.time32k.getValue());
         }
     }
-    
-    private void startEntityAttackThread(final Entity entity,  final int time) {
-        final TimerUtil timer;
+
+    private void startEntityAttackThread(Entity entity, int time) {
         new Thread(() -> {
-            timer = new TimerUtil();
+            TimerUtil timer = new TimerUtil();
             timer.reset();
             try {
                 Thread.sleep(time);
@@ -193,66 +176,57 @@ public class Killaura extends Module
             catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
-            EntityUtil.attackEntity(entity,  true,  this.swing.getValue());
+            EntityUtil.attackEntity(entity, true, this.swing.getValue());
         }).start();
     }
-    
+
     private Entity getTarget() {
         Entity target = null;
-        double distance = (double)(this.teleport.getValue() ? this.teleportRange.getValue() : ((double)(float)this.range.getValue()));
+        double distance = this.teleport.getValue() != false ? (double)this.teleportRange.getValue().floatValue() : (double)this.range.getValue().floatValue();
         double maxHealth = 36.0;
-        for (final Entity entity : Killaura.mc.world.loadedEntityList) {
-            if (((this.players.getValue() && entity instanceof EntityPlayer) || (this.animals.getValue() && EntityUtil.isPassive(entity)) || (this.mobs.getValue() && EntityUtil.isMobAggressive(entity)) || (this.vehicles.getValue() && EntityUtil.isVehicle(entity)) || (this.projectiles.getValue() && EntityUtil.isProjectile(entity))) && (!(entity instanceof EntityLivingBase) || !EntityUtil.isntValid(entity,  distance))) {
-                if (!this.teleport.getValue() && !Killaura.mc.player.canEntityBeSeen(entity) && !EntityUtil.canEntityFeetBeSeen(entity) && Killaura.mc.player.getDistanceSq(entity) > MathUtil.square(this.raytrace.getValue())) {
-                    continue;
-                }
-                if (target == null) {
-                    target = entity;
-                    distance = Killaura.mc.player.getDistanceSq(entity);
-                    maxHealth = EntityUtil.getHealth(entity);
-                }
-                else {
-                    if (entity instanceof EntityPlayer && DamageUtil.isArmorLow((EntityPlayer)entity,  18)) {
-                        target = entity;
-                        break;
-                    }
-                    if (this.targetMode.getValue() == TargetMode.SMART && EntityUtil.getHealth(entity) < this.health.getValue()) {
-                        target = entity;
-                        break;
-                    }
-                    if (this.targetMode.getValue() != TargetMode.HEALTH && Killaura.mc.player.getDistanceSq(entity) < distance) {
-                        target = entity;
-                        distance = Killaura.mc.player.getDistanceSq(entity);
-                        maxHealth = EntityUtil.getHealth(entity);
-                    }
-                    if (this.targetMode.getValue() != TargetMode.HEALTH) {
-                        continue;
-                    }
-                    if (EntityUtil.getHealth(entity) >= maxHealth) {
-                        continue;
-                    }
-                    target = entity;
-                    distance = Killaura.mc.player.getDistanceSq(entity);
-                    maxHealth = EntityUtil.getHealth(entity);
-                }
+        for (Entity entity : Killaura.mc.field_71441_e.field_72996_f) {
+            if (!(this.players.getValue() != false && entity instanceof EntityPlayer || this.animals.getValue() != false && EntityUtil.isPassive(entity) || this.mobs.getValue() != false && EntityUtil.isMobAggressive(entity) || this.vehicles.getValue() != false && EntityUtil.isVehicle(entity)) && (!this.projectiles.getValue().booleanValue() || !EntityUtil.isProjectile(entity)) || entity instanceof EntityLivingBase && EntityUtil.isntValid(entity, distance) || !this.teleport.getValue().booleanValue() && !Killaura.mc.field_71439_g.func_70685_l(entity) && !EntityUtil.canEntityFeetBeSeen(entity) && Killaura.mc.field_71439_g.func_70068_e(entity) > MathUtil.square(this.raytrace.getValue().floatValue())) continue;
+            if (target == null) {
+                target = entity;
+                distance = Killaura.mc.field_71439_g.func_70068_e(entity);
+                maxHealth = EntityUtil.getHealth(entity);
+                continue;
             }
+            if (entity instanceof EntityPlayer && DamageUtil.isArmorLow((EntityPlayer)entity, 18)) {
+                target = entity;
+                break;
+            }
+            if (this.targetMode.getValue() == TargetMode.SMART && EntityUtil.getHealth(entity) < this.health.getValue().floatValue()) {
+                target = entity;
+                break;
+            }
+            if (this.targetMode.getValue() != TargetMode.HEALTH && Killaura.mc.field_71439_g.func_70068_e(entity) < distance) {
+                target = entity;
+                distance = Killaura.mc.field_71439_g.func_70068_e(entity);
+                maxHealth = EntityUtil.getHealth(entity);
+            }
+            if (this.targetMode.getValue() != TargetMode.HEALTH || !((double)EntityUtil.getHealth(entity) < maxHealth)) continue;
+            target = entity;
+            distance = Killaura.mc.field_71439_g.func_70068_e(entity);
+            maxHealth = EntityUtil.getHealth(entity);
         }
         return target;
     }
-    
+
     @Override
     public String getDisplayInfo() {
-        if (this.info.getValue() && Killaura.target instanceof EntityPlayer) {
-            return Killaura.target.getName();
+        if (this.info.getValue().booleanValue() && target instanceof EntityPlayer) {
+            return target.func_70005_c_();
         }
         return null;
     }
-    
-    public enum TargetMode
-    {
-        FOCUS,  
-        CLOSEST,  
-        HEALTH,  
+
+    public static enum TargetMode {
+        FOCUS,
+        CLOSEST,
+        HEALTH,
         SMART;
+
     }
 }
+

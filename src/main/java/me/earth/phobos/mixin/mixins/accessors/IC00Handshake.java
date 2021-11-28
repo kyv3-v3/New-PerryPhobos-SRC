@@ -1,19 +1,21 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.network.handshake.client.C00Handshake
+ */
 package me.earth.phobos.mixin.mixins.accessors;
 
-import org.spongepowered.asm.mixin.*;
-import net.minecraft.network.handshake.client.*;
-import org.spongepowered.asm.mixin.gen.*;
+import net.minecraft.network.handshake.client.C00Handshake;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin({ C00Handshake.class })
-public interface IC00Handshake
-{
-    @Accessor("ip")
-    String getIp();
-    
-    @Accessor("ip")
-    void setIp(final String p0);
+@Mixin(value={C00Handshake.class})
+public interface IC00Handshake {
+    @Accessor(value="ip")
+    public String getIp();
+
+    @Accessor(value="ip")
+    public void setIp(String var1);
 }
+

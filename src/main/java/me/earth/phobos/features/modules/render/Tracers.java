@@ -1,116 +1,113 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.renderer.GlStateManager
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.entity.player.EntityPlayer
+ *  net.minecraft.util.math.Vec3d
+ *  org.lwjgl.opengl.GL11
+ */
 package me.earth.phobos.features.modules.render;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import me.earth.phobos.event.events.*;
-import net.minecraft.client.renderer.*;
-import java.util.function.*;
-import net.minecraft.entity.player.*;
-import me.earth.phobos.util.*;
-import net.minecraft.entity.*;
-import net.minecraft.util.math.*;
-import org.lwjgl.opengl.*;
-import me.earth.phobos.*;
-import me.earth.phobos.features.modules.combat.*;
-import java.awt.*;
+import java.awt.Color;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.event.events.Render3DEvent;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.modules.combat.AutoCrystal;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.EntityUtil;
+import me.earth.phobos.util.MathUtil;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.Vec3d;
+import org.lwjgl.opengl.GL11;
 
-public class Tracers extends Module
-{
-    public Setting<Boolean> players;
-    public Setting<Boolean> mobs;
-    public Setting<Boolean> animals;
-    public Setting<Boolean> invisibles;
-    public Setting<Boolean> drawFromSky;
-    public Setting<Float> width;
-    public Setting<Integer> distance;
-    public Setting<Boolean> crystalCheck;
-    
+public class Tracers
+extends Module {
+    public Setting<Boolean> players = this.register(new Setting<Boolean>("Players", true));
+    public Setting<Boolean> mobs = this.register(new Setting<Boolean>("Mobs", false));
+    public Setting<Boolean> animals = this.register(new Setting<Boolean>("Animals", false));
+    public Setting<Boolean> invisibles = this.register(new Setting<Boolean>("Invisibles", false));
+    public Setting<Boolean> drawFromSky = this.register(new Setting<Boolean>("DrawFromSky", false));
+    public Setting<Float> width = this.register(new Setting<Float>("Width", Float.valueOf(1.0f), Float.valueOf(0.1f), Float.valueOf(5.0f)));
+    public Setting<Integer> distance = this.register(new Setting<Integer>("Radius", 300, 0, 300));
+    public Setting<Boolean> crystalCheck = this.register(new Setting<Boolean>("CrystalCheck", false));
+
     public Tracers() {
-        super("Tracers",  "Draws lines to other players.",  Module.Category.RENDER,  false,  false,  false);
-        this.players = (Setting<Boolean>)this.register(new Setting("Players", true));
-        this.mobs = (Setting<Boolean>)this.register(new Setting("Mobs", false));
-        this.animals = (Setting<Boolean>)this.register(new Setting("Animals", false));
-        this.invisibles = (Setting<Boolean>)this.register(new Setting("Invisibles", false));
-        this.drawFromSky = (Setting<Boolean>)this.register(new Setting("DrawFromSky", false));
-        this.width = (Setting<Float>)this.register(new Setting("Width", 1.0f, 0.1f, 5.0f));
-        this.distance = (Setting<Integer>)this.register(new Setting("Radius", 300, 0, 300));
-        this.crystalCheck = (Setting<Boolean>)this.register(new Setting("CrystalCheck", false));
+        super("Tracers", "Draws lines to other players.", Module.Category.RENDER, false, false, false);
     }
-    
-    public void onRender3D(final Render3DEvent event) {
-        if (fullNullCheck()) {
+
+    @Override
+    public void onRender3D(Render3DEvent event) {
+        if (Tracers.fullNullCheck()) {
             return;
         }
-        GlStateManager.pushMatrix();
-        final float[] colour;
-        Tracers.mc.world.loadedEntityList.stream().filter(EntityUtil::isLiving).filter(entity -> (entity instanceof EntityPlayer) ? (this.players.getValue() && Tracers.mc.player != entity) : (EntityUtil.isPassive(entity) ? this.animals.getValue() : ((boolean)this.mobs.getValue()))).filter(entity -> Tracers.mc.player.getDistanceSq(entity) < MathUtil.square(this.distance.getValue())).filter(entity -> this.invisibles.getValue() || !entity.isInvisible()).forEach(entity -> {
-            colour = this.getColorByDistance(entity);
-            this.drawLineToEntity(entity,  colour[0],  colour[1],  colour[2],  colour[3]);
-            return;
+        GlStateManager.func_179094_E();
+        Tracers.mc.field_71441_e.field_72996_f.stream().filter(EntityUtil::isLiving).filter(entity -> entity instanceof EntityPlayer ? this.players.getValue().booleanValue() && Tracers.mc.field_71439_g != entity : (EntityUtil.isPassive(entity) ? this.animals.getValue().booleanValue() : this.mobs.getValue().booleanValue())).filter(entity -> Tracers.mc.field_71439_g.func_70068_e(entity) < MathUtil.square(this.distance.getValue().intValue())).filter(entity -> this.invisibles.getValue() != false || !entity.func_82150_aj()).forEach(entity -> {
+            float[] colour = this.getColorByDistance((Entity)entity);
+            this.drawLineToEntity((Entity)entity, colour[0], colour[1], colour[2], colour[3]);
         });
-        GlStateManager.popMatrix();
+        GlStateManager.func_179121_F();
     }
-    
-    public double interpolate(final double now,  final double then) {
-        return then + (now - then) * Tracers.mc.getRenderPartialTicks();
+
+    public double interpolate(double now, double then) {
+        return then + (now - then) * (double)mc.func_184121_ak();
     }
-    
-    public double[] interpolate(final Entity entity) {
-        final double posX = this.interpolate(entity.posX,  entity.lastTickPosX) - Tracers.mc.getRenderManager().renderPosX;
-        final double posY = this.interpolate(entity.posY,  entity.lastTickPosY) - Tracers.mc.getRenderManager().renderPosY;
-        final double posZ = this.interpolate(entity.posZ,  entity.lastTickPosZ) - Tracers.mc.getRenderManager().renderPosZ;
-        return new double[] { posX,  posY,  posZ };
+
+    public double[] interpolate(Entity entity) {
+        double posX = this.interpolate(entity.field_70165_t, entity.field_70142_S) - Tracers.mc.func_175598_ae().field_78725_b;
+        double posY = this.interpolate(entity.field_70163_u, entity.field_70137_T) - Tracers.mc.func_175598_ae().field_78726_c;
+        double posZ = this.interpolate(entity.field_70161_v, entity.field_70136_U) - Tracers.mc.func_175598_ae().field_78723_d;
+        return new double[]{posX, posY, posZ};
     }
-    
-    public void drawLineToEntity(final Entity e,  final float red,  final float green,  final float blue,  final float opacity) {
-        final double[] xyz = this.interpolate(e);
-        this.drawLine(xyz[0],  xyz[1],  xyz[2],  e.height,  red,  green,  blue,  opacity);
+
+    public void drawLineToEntity(Entity e, float red, float green, float blue, float opacity) {
+        double[] xyz = this.interpolate(e);
+        this.drawLine(xyz[0], xyz[1], xyz[2], e.field_70131_O, red, green, blue, opacity);
     }
-    
-    public void drawLine(final double posx,  final double posy,  final double posz,  final double up,  final float red,  final float green,  final float blue,  final float opacity) {
-        final Vec3d eyes = new Vec3d(0.0,  0.0,  1.0).rotatePitch(-(float)Math.toRadians(Tracers.mc.player.rotationPitch)).rotateYaw(-(float)Math.toRadians(Tracers.mc.player.rotationYaw));
-        if (!this.drawFromSky.getValue()) {
-            this.drawLineFromPosToPos(eyes.x,  eyes.y + Tracers.mc.player.getEyeHeight(),  eyes.z,  posx,  posy,  posz,  up,  red,  green,  blue,  opacity);
+
+    public void drawLine(double posx, double posy, double posz, double up, float red, float green, float blue, float opacity) {
+        Vec3d eyes = new Vec3d(0.0, 0.0, 1.0).func_178789_a(-((float)Math.toRadians(Tracers.mc.field_71439_g.field_70125_A))).func_178785_b(-((float)Math.toRadians(Tracers.mc.field_71439_g.field_70177_z)));
+        if (!this.drawFromSky.getValue().booleanValue()) {
+            this.drawLineFromPosToPos(eyes.field_72450_a, eyes.field_72448_b + (double)Tracers.mc.field_71439_g.func_70047_e(), eyes.field_72449_c, posx, posy, posz, up, red, green, blue, opacity);
+        } else {
+            this.drawLineFromPosToPos(posx, 256.0, posz, posx, posy, posz, up, red, green, blue, opacity);
         }
-        else {
-            this.drawLineFromPosToPos(posx,  256.0,  posz,  posx,  posy,  posz,  up,  red,  green,  blue,  opacity);
-        }
     }
-    
-    public void drawLineFromPosToPos(final double posx,  final double posy,  final double posz,  final double posx2,  final double posy2,  final double posz2,  final double up,  final float red,  final float green,  final float blue,  final float opacity) {
-        GL11.glBlendFunc(770,  771);
-        GL11.glEnable(3042);
-        GL11.glLineWidth((float)this.width.getValue());
-        GL11.glDisable(3553);
-        GL11.glDisable(2929);
-        GL11.glDepthMask(false);
-        GL11.glColor4f(red,  green,  blue,  opacity);
-        GlStateManager.disableLighting();
+
+    public void drawLineFromPosToPos(double posx, double posy, double posz, double posx2, double posy2, double posz2, double up, float red, float green, float blue, float opacity) {
+        GL11.glBlendFunc((int)770, (int)771);
+        GL11.glEnable((int)3042);
+        GL11.glLineWidth((float)this.width.getValue().floatValue());
+        GL11.glDisable((int)3553);
+        GL11.glDisable((int)2929);
+        GL11.glDepthMask((boolean)false);
+        GL11.glColor4f((float)red, (float)green, (float)blue, (float)opacity);
+        GlStateManager.func_179140_f();
         GL11.glLoadIdentity();
-        Tracers.mc.entityRenderer.orientCamera(Tracers.mc.getRenderPartialTicks());
-        GL11.glBegin(1);
-        GL11.glVertex3d(posx,  posy,  posz);
-        GL11.glVertex3d(posx2,  posy2,  posz2);
-        GL11.glVertex3d(posx2,  posy2,  posz2);
+        Tracers.mc.field_71460_t.func_78467_g(mc.func_184121_ak());
+        GL11.glBegin((int)1);
+        GL11.glVertex3d((double)posx, (double)posy, (double)posz);
+        GL11.glVertex3d((double)posx2, (double)posy2, (double)posz2);
+        GL11.glVertex3d((double)posx2, (double)posy2, (double)posz2);
         GL11.glEnd();
-        GL11.glEnable(3553);
-        GL11.glEnable(2929);
-        GL11.glDepthMask(true);
-        GL11.glDisable(3042);
-        GL11.glColor3d(1.0,  1.0,  1.0);
-        GlStateManager.enableLighting();
+        GL11.glEnable((int)3553);
+        GL11.glEnable((int)2929);
+        GL11.glDepthMask((boolean)true);
+        GL11.glDisable((int)3042);
+        GL11.glColor3d((double)1.0, (double)1.0, (double)1.0);
+        GlStateManager.func_179145_e();
     }
-    
-    public float[] getColorByDistance(final Entity entity) {
-        if (entity instanceof EntityPlayer && Phobos.friendManager.isFriend(entity.getName())) {
-            return new float[] { 0.0f,  0.5f,  1.0f,  1.0f };
+
+    public float[] getColorByDistance(Entity entity) {
+        if (entity instanceof EntityPlayer && Phobos.friendManager.isFriend(entity.func_70005_c_())) {
+            return new float[]{0.0f, 0.5f, 1.0f, 1.0f};
         }
-        final AutoCrystal autoCrystal = Phobos.moduleManager.getModuleByClass(AutoCrystal.class);
-        final Color col = new Color(Color.HSBtoRGB((float)(Math.max(0.0,  Math.min(Tracers.mc.player.getDistanceSq(entity),  ((boolean)this.crystalCheck.getValue()) ? ((double)(autoCrystal.placeRange.getValue() * autoCrystal.placeRange.getValue())) : 2500.0) / (this.crystalCheck.getValue() ? (autoCrystal.placeRange.getValue() * autoCrystal.placeRange.getValue()) : 2500.0f)) / 3.0),  1.0f,  0.8f) | 0xFF000000);
-        return new float[] { col.getRed() / 255.0f,  col.getGreen() / 255.0f,  col.getBlue() / 255.0f,  1.0f };
+        AutoCrystal autoCrystal = Phobos.moduleManager.getModuleByClass(AutoCrystal.class);
+        Color col = new Color(Color.HSBtoRGB((float)(Math.max(0.0, Math.min(Tracers.mc.field_71439_g.func_70068_e(entity), this.crystalCheck.getValue() != false ? (double)(autoCrystal.placeRange.getValue().floatValue() * autoCrystal.placeRange.getValue().floatValue()) : 2500.0) / (double)(this.crystalCheck.getValue() != false ? autoCrystal.placeRange.getValue().floatValue() * autoCrystal.placeRange.getValue().floatValue() : 2500.0f)) / 3.0), 1.0f, 0.8f) | 0xFF000000);
+        return new float[]{(float)col.getRed() / 255.0f, (float)col.getGreen() / 255.0f, (float)col.getBlue() / 255.0f, 1.0f};
     }
 }
+

@@ -1,40 +1,39 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ */
 package me.earth.phobos.features.modules.client;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.modules.client.PingBypass;
+import me.earth.phobos.features.setting.Setting;
 
-public class Media extends Module
-{
+public class Media
+extends Module {
     private static Media instance;
-    public final Setting<Boolean> changeOwn;
-    public final Setting<String> ownName;
-    
+    public final Setting<Boolean> changeOwn = this.register(new Setting<Boolean>("MyName", true));
+    public final Setting<String> ownName = this.register(new Setting<Object>("Name", "Name here...", v -> this.changeOwn.getValue()));
+
     public Media() {
-        super("Media",  "Helps with creating Media by hiding ur username.",  Category.CLIENT,  false,  false,  false);
-        this.changeOwn = (Setting<Boolean>)this.register(new Setting("MyName", true));
-        this.ownName = (Setting<String>)this.register(new Setting("Name", "Name here...",  v -> this.changeOwn.getValue()));
-        Media.instance = this;
+        super("Media", "Helps with creating Media by hiding ur username.", Module.Category.CLIENT, false, false, false);
+        instance = this;
     }
-    
+
     public static Media getInstance() {
-        if (Media.instance == null) {
-            Media.instance = new Media();
+        if (instance == null) {
+            instance = new Media();
         }
-        return Media.instance;
+        return instance;
     }
-    
+
     public static String getPlayerName() {
-        if (fullNullCheck() || !PingBypass.getInstance().isConnected()) {
-            return Media.mc.getSession().getUsername();
+        if (Media.fullNullCheck() || !PingBypass.getInstance().isConnected()) {
+            return mc.func_110432_I().func_111285_a();
         }
-        final String name = PingBypass.getInstance().getPlayerName();
+        String name = PingBypass.getInstance().getPlayerName();
         if (name == null || name.isEmpty()) {
-            return Media.mc.getSession().getUsername();
+            return mc.func_110432_I().func_111285_a();
         }
         return name;
     }
 }
+

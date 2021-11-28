@@ -1,89 +1,90 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.entity.item.EntityEnderCrystal
+ *  net.minecraft.entity.player.EntityPlayer
+ *  net.minecraft.util.math.BlockPos
+ */
 package me.earth.phobos.manager;
 
-import me.earth.phobos.features.*;
-import java.util.concurrent.atomic.*;
-import me.earth.phobos.features.modules.combat.*;
-import me.earth.phobos.features.modules.client.*;
-import net.minecraft.entity.*;
-import net.minecraft.entity.item.*;
-import me.earth.phobos.util.*;
-import net.minecraft.util.math.*;
-import net.minecraft.entity.player.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import me.earth.phobos.features.Feature;
+import me.earth.phobos.features.modules.client.Management;
+import me.earth.phobos.features.modules.combat.AutoCrystal;
+import me.earth.phobos.util.BlockUtil;
+import me.earth.phobos.util.DamageUtil;
+import me.earth.phobos.util.EntityUtil;
+import me.earth.phobos.util.TimerUtil;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityEnderCrystal;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
 
-public class SafetyManager extends Feature implements Runnable
-{
-    private final TimerUtil syncTimer;
-    private final AtomicBoolean SAFE;
+public class SafetyManager
+extends Feature
+implements Runnable {
+    private final TimerUtil syncTimer = new TimerUtil();
+    private final AtomicBoolean SAFE = new AtomicBoolean(false);
     private ScheduledExecutorService service;
-    
-    public SafetyManager() {
-        this.syncTimer = new TimerUtil();
-        this.SAFE = new AtomicBoolean(false);
-    }
-    
+
+    @Override
     public void run() {
         if (AutoCrystal.getInstance().isOff() || AutoCrystal.getInstance().threadMode.getValue() == AutoCrystal.ThreadMode.NONE) {
             this.doSafetyCheck();
         }
     }
-    
+
     public void doSafetyCheck() {
-        if (!fullNullCheck()) {
+        if (!SafetyManager.fullNullCheck()) {
+            EntityPlayer closest;
             boolean safe = true;
-            final EntityPlayer closest = Management.getInstance().safety.getValue() ? EntityUtil.getClosestEnemy(18.0) : null;
-            if ((boolean)Management.getInstance().safety.getValue() && closest == null) {
+            EntityPlayer entityPlayer = closest = Management.getInstance().safety.getValue() != false ? EntityUtil.getClosestEnemy(18.0) : null;
+            if (Management.getInstance().safety.getValue().booleanValue() && closest == null) {
                 this.SAFE.set(true);
                 return;
             }
-            final ArrayList<Entity> crystals = new ArrayList<Entity>(SafetyManager.mc.world.loadedEntityList);
-            for (final Entity crystal : crystals) {
-                if (crystal instanceof EntityEnderCrystal && DamageUtil.calculateDamage(crystal,  (Entity)SafetyManager.mc.player) > 4.0) {
-                    if (closest != null && closest.getDistanceSq(crystal) >= 40.0) {
-                        continue;
-                    }
-                    safe = false;
-                    break;
-                }
+            ArrayList crystals = new ArrayList(SafetyManager.mc.field_71441_e.field_72996_f);
+            for (Entity crystal : crystals) {
+                if (!(crystal instanceof EntityEnderCrystal) || !((double)DamageUtil.calculateDamage(crystal, (Entity)SafetyManager.mc.field_71439_g) > 4.0) || closest != null && !(closest.func_70068_e(crystal) < 40.0)) continue;
+                safe = false;
+                break;
             }
             if (safe) {
-                for (final BlockPos pos : BlockUtil.possiblePlacePositions(4.0f,  false,  (boolean)Management.getInstance().oneDot15.getValue(),  false)) {
-                    if (DamageUtil.calculateDamage(pos,  (Entity)SafetyManager.mc.player) > 4.0) {
-                        if (closest != null && closest.getDistanceSq(pos) >= 40.0) {
-                            continue;
-                        }
-                        safe = false;
-                        break;
-                    }
+                for (BlockPos pos : BlockUtil.possiblePlacePositions(4.0f, false, Management.getInstance().oneDot15.getValue(), false)) {
+                    if (!((double)DamageUtil.calculateDamage(pos, (Entity)SafetyManager.mc.field_71439_g) > 4.0) || closest != null && !(closest.func_174818_b(pos) < 40.0)) continue;
+                    safe = false;
+                    break;
                 }
             }
             this.SAFE.set(safe);
         }
     }
-    
+
     public void onUpdate() {
         this.run();
     }
-    
+
     public String getSafetyString() {
         if (this.SAFE.get()) {
-            return "§aSecure";
+            return "\u00a7aSecure";
         }
-        return "§cUnsafe";
+        return "\u00a7cUnsafe";
     }
-    
+
     public boolean isSafe() {
         return this.SAFE.get();
     }
-    
+
     public ScheduledExecutorService getService() {
-        final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(this,  0L,  (int)Management.getInstance().safetyCheck.getValue(),  TimeUnit.MILLISECONDS);
+        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+        service.scheduleAtFixedRate(this, 0L, Management.getInstance().safetyCheck.getValue().intValue(), TimeUnit.MILLISECONDS);
         return service;
     }
 }
+

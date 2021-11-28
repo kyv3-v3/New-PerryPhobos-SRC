@@ -1,22 +1,22 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ */
 package me.earth.phobos.features.modules.combat;
 
-import me.earth.phobos.features.modules.*;
-import net.minecraft.entity.player.*;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.modules.combat.AutoCrystal;
 
-public class SelfCrystal extends Module
-{
+public class SelfCrystal
+extends Module {
     public SelfCrystal() {
-        super("SelfCrystal",  "Makes CA target urself.",  Category.COMBAT,  true,  false,  false);
+        super("SelfCrystal", "Makes CA target urself.", Module.Category.COMBAT, true, false, false);
     }
-    
+
     @Override
     public void onTick() {
         if (AutoCrystal.getInstance().isEnabled()) {
-            AutoCrystal.target = (EntityPlayer)SelfCrystal.mc.player;
+            AutoCrystal.target = SelfCrystal.mc.field_71439_g;
         }
     }
 }
+

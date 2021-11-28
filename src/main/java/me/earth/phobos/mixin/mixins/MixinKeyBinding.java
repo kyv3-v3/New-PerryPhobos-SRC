@@ -1,27 +1,33 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.settings.KeyBinding
+ *  net.minecraftforge.common.MinecraftForge
+ *  net.minecraftforge.fml.common.eventhandler.Event
+ */
 package me.earth.phobos.mixin.mixins;
 
-import net.minecraft.client.settings.*;
-import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.injection.callback.*;
-import me.earth.phobos.event.events.*;
-import net.minecraftforge.common.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import org.spongepowered.asm.mixin.injection.*;
+import me.earth.phobos.event.events.KeyEvent;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.Event;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin({ KeyBinding.class })
-public class MixinKeyBinding
-{
+@Mixin(value={KeyBinding.class})
+public class MixinKeyBinding {
     @Shadow
-    public boolean pressed;
-    
-    @Inject(method = { "isKeyDown" },  at = { @At("RETURN") },  cancellable = true)
-    private void isKeyDown(final CallbackInfoReturnable<Boolean> info) {
-        final KeyEvent event = new KeyEvent(0,  (boolean)info.getReturnValue(),  this.pressed);
+    public boolean field_74513_e;
+
+    @Inject(method={"isKeyDown"}, at={@At(value="RETURN")}, cancellable=true)
+    private void isKeyDown(CallbackInfoReturnable<Boolean> info) {
+        KeyEvent event = new KeyEvent(0, info.getReturnValue(), this.field_74513_e);
         MinecraftForge.EVENT_BUS.post((Event)event);
-        info.setReturnValue((Object)event.info);
+        info.setReturnValue(event.info);
     }
 }
+

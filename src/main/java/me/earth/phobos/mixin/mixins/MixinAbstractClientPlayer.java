@@ -1,46 +1,53 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  javax.annotation.Nullable
+ *  net.minecraft.client.entity.AbstractClientPlayer
+ *  net.minecraft.client.network.NetworkPlayerInfo
+ *  net.minecraft.util.ResourceLocation
+ */
 package me.earth.phobos.mixin.mixins;
 
-import net.minecraft.client.entity.*;
-import net.minecraft.client.network.*;
-import org.spongepowered.asm.mixin.*;
-import javax.annotation.*;
-import org.spongepowered.asm.mixin.injection.callback.*;
-import net.minecraft.util.*;
-import me.earth.phobos.features.modules.render.*;
-import org.spongepowered.asm.mixin.injection.*;
-import me.earth.phobos.features.modules.client.*;
-import java.util.*;
+import java.util.UUID;
+import javax.annotation.Nullable;
+import me.earth.phobos.features.modules.client.Capes;
+import me.earth.phobos.features.modules.render.Chams;
+import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.network.NetworkPlayerInfo;
+import net.minecraft.util.ResourceLocation;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin({ AbstractClientPlayer.class })
-public abstract class MixinAbstractClientPlayer
-{
+@Mixin(value={AbstractClientPlayer.class})
+public abstract class MixinAbstractClientPlayer {
     @Shadow
     @Nullable
-    protected abstract NetworkPlayerInfo getPlayerInfo();
-    
-    @Inject(method = { "getLocationSkin()Lnet/minecraft/util/ResourceLocation;" },  at = { @At("HEAD") },  cancellable = true)
-    public void getLocationSkin(final CallbackInfoReturnable<ResourceLocation> callbackInfoReturnable) {
-        if ((boolean)Chams.getInstance().textured.getValue() && Chams.getInstance().isEnabled()) {
-            callbackInfoReturnable.setReturnValue((Object)new ResourceLocation("textures/shinechams3.png"));
+    protected abstract NetworkPlayerInfo func_175155_b();
+
+    @Inject(method={"getLocationSkin()Lnet/minecraft/util/ResourceLocation;"}, at={@At(value="HEAD")}, cancellable=true)
+    public void getLocationSkin(CallbackInfoReturnable<ResourceLocation> callbackInfoReturnable) {
+        if (Chams.getInstance().textured.getValue().booleanValue() && Chams.getInstance().isEnabled()) {
+            callbackInfoReturnable.setReturnValue(new ResourceLocation("textures/shinechams3.png"));
         }
     }
-    
-    @Inject(method = { "getLocationCape" },  at = { @At("HEAD") },  cancellable = true)
-    public void getLocationCape(final CallbackInfoReturnable<ResourceLocation> callbackInfoReturnable) {
+
+    @Inject(method={"getLocationCape"}, at={@At(value="HEAD")}, cancellable=true)
+    public void getLocationCape(CallbackInfoReturnable<ResourceLocation> callbackInfoReturnable) {
         if (Capes.getInstance().isEnabled()) {
-            final NetworkPlayerInfo info = this.getPlayerInfo();
+            NetworkPlayerInfo info = this.func_175155_b();
             UUID uuid = null;
             if (info != null) {
-                uuid = this.getPlayerInfo().getGameProfile().getId();
+                uuid = this.func_175155_b().func_178845_a().getId();
             }
-            final ResourceLocation cape = Capes.getCapeResource((AbstractClientPlayer)this);
+            ResourceLocation cape = Capes.getCapeResource((AbstractClientPlayer)this);
             if (uuid != null && Capes.hasCape(uuid)) {
-                callbackInfoReturnable.setReturnValue((Object)cape);
+                callbackInfoReturnable.setReturnValue(cape);
             }
         }
     }
 }
+

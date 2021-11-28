@@ -1,18 +1,20 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.gui.Gui
+ */
 package me.earth.phobos.features.gui.alts.tools;
 
-import net.minecraft.client.gui.*;
+import net.minecraft.client.gui.Gui;
 
-public class Tools
-{
-    public static void drawBorderedRect(final int x,  final int y,  final int x1,  final int y1,  final int size,  final int borderColor,  final int insideColor) {
-        Gui.drawRect(x + size,  y + size,  x1 - size,  y1 - size,  insideColor);
-        Gui.drawRect(x + size,  y + size,  x1,  y,  borderColor);
-        Gui.drawRect(x,  y,  x + size,  y1,  borderColor);
-        Gui.drawRect(x1,  y1,  x1 - size,  y + size,  borderColor);
-        Gui.drawRect(x,  y1 - size,  x1,  y1,  borderColor);
+public class Tools {
+    public static void drawBorderedRect(int x, int y, int x1, int y1, int size, int borderColor, int insideColor) {
+        Gui.func_73734_a((int)(x + size), (int)(y + size), (int)(x1 - size), (int)(y1 - size), (int)insideColor);
+        Gui.func_73734_a((int)(x + size), (int)(y + size), (int)x1, (int)y, (int)borderColor);
+        Gui.func_73734_a((int)x, (int)y, (int)(x + size), (int)y1, (int)borderColor);
+        Gui.func_73734_a((int)x1, (int)y1, (int)(x1 - size), (int)(y + size), (int)borderColor);
+        Gui.func_73734_a((int)x, (int)(y1 - size), (int)x1, (int)y1, (int)borderColor);
     }
 }
+

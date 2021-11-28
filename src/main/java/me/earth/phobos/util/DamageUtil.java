@@ -1,154 +1,193 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.enchantment.EnchantmentHelper
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.entity.EntityLivingBase
+ *  net.minecraft.entity.SharedMonsterAttributes
+ *  net.minecraft.entity.player.EntityPlayer
+ *  net.minecraft.init.Items
+ *  net.minecraft.init.MobEffects
+ *  net.minecraft.item.Item
+ *  net.minecraft.item.ItemArmor
+ *  net.minecraft.item.ItemAxe
+ *  net.minecraft.item.ItemPickaxe
+ *  net.minecraft.item.ItemShield
+ *  net.minecraft.item.ItemSpade
+ *  net.minecraft.item.ItemStack
+ *  net.minecraft.item.ItemSword
+ *  net.minecraft.item.ItemTool
+ *  net.minecraft.potion.PotionEffect
+ *  net.minecraft.util.CombatRules
+ *  net.minecraft.util.DamageSource
+ *  net.minecraft.util.math.BlockPos
+ *  net.minecraft.util.math.MathHelper
+ *  net.minecraft.util.math.Vec3d
+ *  net.minecraft.world.Explosion
+ *  net.minecraft.world.World
+ */
 package me.earth.phobos.util;
 
-import net.minecraft.entity.player.*;
-import java.util.*;
-import net.minecraft.item.*;
-import net.minecraft.potion.*;
-import net.minecraft.world.*;
-import net.minecraft.entity.*;
-import net.minecraft.util.*;
-import net.minecraft.enchantment.*;
-import net.minecraft.util.math.*;
-import net.minecraft.init.*;
+import me.earth.phobos.util.Util;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.init.MobEffects;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemAxe;
+import net.minecraft.item.ItemPickaxe;
+import net.minecraft.item.ItemShield;
+import net.minecraft.item.ItemSpade;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemSword;
+import net.minecraft.item.ItemTool;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.CombatRules;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Explosion;
+import net.minecraft.world.World;
 
-public class DamageUtil implements Util
-{
-    public static boolean isArmorLow(final EntityPlayer player,  final int durability) {
-        for (final ItemStack piece : player.inventory.armorInventory) {
+public class DamageUtil
+implements Util {
+    public static boolean isArmorLow(EntityPlayer player, int durability) {
+        for (ItemStack piece : player.field_71071_by.field_70460_b) {
             if (piece == null) {
                 return true;
             }
-            if (getItemDamage(piece) >= durability) {
-                continue;
-            }
+            if (DamageUtil.getItemDamage(piece) >= durability) continue;
             return true;
         }
         return false;
     }
-    
-    public static boolean isNaked(final EntityPlayer player) {
-        for (final ItemStack piece : player.inventory.armorInventory) {
-            if (piece != null) {
-                if (piece.isEmpty()) {
-                    continue;
-                }
-                return false;
-            }
+
+    public static boolean isNaked(EntityPlayer player) {
+        for (ItemStack piece : player.field_71071_by.field_70460_b) {
+            if (piece == null || piece.func_190926_b()) continue;
+            return false;
         }
         return true;
     }
-    
-    public static int getItemDamage(final ItemStack stack) {
-        return stack.getMaxDamage() - stack.getItemDamage();
+
+    public static int getItemDamage(ItemStack stack) {
+        return stack.func_77958_k() - stack.func_77952_i();
     }
-    
-    public static float getDamageInPercent(final ItemStack stack) {
-        return getItemDamage(stack) / (float)stack.getMaxDamage() * 100.0f;
+
+    public static float getDamageInPercent(ItemStack stack) {
+        return (float)DamageUtil.getItemDamage(stack) / (float)stack.func_77958_k() * 100.0f;
     }
-    
-    public static int getRoundedDamage(final ItemStack stack) {
-        return (int)getDamageInPercent(stack);
+
+    public static int getRoundedDamage(ItemStack stack) {
+        return (int)DamageUtil.getDamageInPercent(stack);
     }
-    
-    public static boolean hasDurability(final ItemStack stack) {
-        final Item item = stack.getItem();
+
+    public static boolean hasDurability(ItemStack stack) {
+        Item item = stack.func_77973_b();
         return item instanceof ItemArmor || item instanceof ItemSword || item instanceof ItemTool || item instanceof ItemShield;
     }
-    
-    public static boolean canBreakWeakness(final EntityPlayer player) {
+
+    public static boolean canBreakWeakness(EntityPlayer player) {
         int strengthAmp = 0;
-        final PotionEffect effect = DamageUtil.mc.player.getActivePotionEffect(MobEffects.STRENGTH);
+        PotionEffect effect = DamageUtil.mc.field_71439_g.func_70660_b(MobEffects.field_76420_g);
         if (effect != null) {
-            strengthAmp = effect.getAmplifier();
+            strengthAmp = effect.func_76458_c();
         }
-        return !DamageUtil.mc.player.isPotionActive(MobEffects.WEAKNESS) || strengthAmp >= 1 || DamageUtil.mc.player.getHeldItemMainhand().getItem() instanceof ItemSword || DamageUtil.mc.player.getHeldItemMainhand().getItem() instanceof ItemPickaxe || DamageUtil.mc.player.getHeldItemMainhand().getItem() instanceof ItemAxe || DamageUtil.mc.player.getHeldItemMainhand().getItem() instanceof ItemSpade;
+        return !DamageUtil.mc.field_71439_g.func_70644_a(MobEffects.field_76437_t) || strengthAmp >= 1 || DamageUtil.mc.field_71439_g.func_184614_ca().func_77973_b() instanceof ItemSword || DamageUtil.mc.field_71439_g.func_184614_ca().func_77973_b() instanceof ItemPickaxe || DamageUtil.mc.field_71439_g.func_184614_ca().func_77973_b() instanceof ItemAxe || DamageUtil.mc.field_71439_g.func_184614_ca().func_77973_b() instanceof ItemSpade;
     }
-    
-    public static float calculateDamage(final double posX,  final double posY,  final double posZ,  final Entity entity) {
-        final float doubleExplosionSize = 12.0f;
-        final double distancedsize = entity.getDistance(posX,  posY,  posZ) / doubleExplosionSize;
-        final Vec3d vec3d = new Vec3d(posX,  posY,  posZ);
+
+    public static float calculateDamage(double posX, double posY, double posZ, Entity entity) {
+        float doubleExplosionSize = 12.0f;
+        double distancedsize = entity.func_70011_f(posX, posY, posZ) / (double)doubleExplosionSize;
+        Vec3d vec3d = new Vec3d(posX, posY, posZ);
         double blockDensity = 0.0;
         try {
-            blockDensity = entity.world.getBlockDensity(vec3d,  entity.getEntityBoundingBox());
+            blockDensity = entity.field_70170_p.func_72842_a(vec3d, entity.func_174813_aQ());
         }
-        catch (Exception ex) {}
-        final double v = (1.0 - distancedsize) * blockDensity;
-        final float damage = (float)(int)((v * v + v) / 2.0 * 7.0 * doubleExplosionSize + 1.0);
+        catch (Exception exception) {
+            // empty catch block
+        }
+        double v = (1.0 - distancedsize) * blockDensity;
+        float damage = (int)((v * v + v) / 2.0 * 7.0 * (double)doubleExplosionSize + 1.0);
         double finald = 1.0;
         if (entity instanceof EntityLivingBase) {
-            finald = getBlastReduction((EntityLivingBase)entity,  getDamageMultiplied(damage),  new Explosion((World)DamageUtil.mc.world,  (Entity)null,  posX,  posY,  posZ,  6.0f,  false,  true));
+            finald = DamageUtil.getBlastReduction((EntityLivingBase)entity, DamageUtil.getDamageMultiplied(damage), new Explosion((World)DamageUtil.mc.field_71441_e, null, posX, posY, posZ, 6.0f, false, true));
         }
         return (float)finald;
     }
-    
-    public static float getBlastReduction(final EntityLivingBase entity,  final float damageI,  final Explosion explosion) {
+
+    public static float getBlastReduction(EntityLivingBase entity, float damageI, Explosion explosion) {
         float damage = damageI;
         if (entity instanceof EntityPlayer) {
-            final EntityPlayer ep = (EntityPlayer)entity;
-            final DamageSource ds = DamageSource.causeExplosionDamage(explosion);
-            damage = CombatRules.getDamageAfterAbsorb(damage,  (float)ep.getTotalArmorValue(),  (float)ep.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).getAttributeValue());
+            EntityPlayer ep = (EntityPlayer)entity;
+            DamageSource ds = DamageSource.func_94539_a((Explosion)explosion);
+            damage = CombatRules.func_189427_a((float)damage, (float)ep.func_70658_aO(), (float)((float)ep.func_110148_a(SharedMonsterAttributes.field_189429_h).func_111126_e()));
             int k = 0;
             try {
-                k = EnchantmentHelper.getEnchantmentModifierDamage(ep.getArmorInventoryList(),  ds);
+                k = EnchantmentHelper.func_77508_a((Iterable)ep.func_184193_aE(), (DamageSource)ds);
             }
-            catch (Exception ex) {}
-            final float f = MathHelper.clamp((float)k,  0.0f,  20.0f);
+            catch (Exception exception) {
+                // empty catch block
+            }
+            float f = MathHelper.func_76131_a((float)k, (float)0.0f, (float)20.0f);
             damage *= 1.0f - f / 25.0f;
-            if (entity.isPotionActive(MobEffects.RESISTANCE)) {
+            if (entity.func_70644_a(MobEffects.field_76429_m)) {
                 damage -= damage / 4.0f;
             }
-            damage = Math.max(damage,  0.0f);
+            damage = Math.max(damage, 0.0f);
             return damage;
         }
-        damage = CombatRules.getDamageAfterAbsorb(damage,  (float)entity.getTotalArmorValue(),  (float)entity.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).getAttributeValue());
+        damage = CombatRules.func_189427_a((float)damage, (float)entity.func_70658_aO(), (float)((float)entity.func_110148_a(SharedMonsterAttributes.field_189429_h).func_111126_e()));
         return damage;
     }
-    
-    public static float getDamageMultiplied(final float damage) {
-        final int diff = DamageUtil.mc.world.getDifficulty().getId();
-        return damage * ((diff == 0) ? 0.0f : ((diff == 2) ? 1.0f : ((diff == 1) ? 0.5f : 1.5f)));
+
+    public static float getDamageMultiplied(float damage) {
+        int diff = DamageUtil.mc.field_71441_e.func_175659_aa().func_151525_a();
+        return damage * (diff == 0 ? 0.0f : (diff == 2 ? 1.0f : (diff == 1 ? 0.5f : 1.5f)));
     }
-    
-    public static float calculateDamage(final Entity crystal,  final Entity entity) {
-        return calculateDamage(crystal.posX,  crystal.posY,  crystal.posZ,  entity);
+
+    public static float calculateDamage(Entity crystal, Entity entity) {
+        return DamageUtil.calculateDamage(crystal.field_70165_t, crystal.field_70163_u, crystal.field_70161_v, entity);
     }
-    
-    public static float calculateDamage(final BlockPos pos,  final Entity entity) {
-        return calculateDamage(pos.getX() + 0.5,  pos.getY() + 1,  pos.getZ() + 0.5,  entity);
+
+    public static float calculateDamage(BlockPos pos, Entity entity) {
+        return DamageUtil.calculateDamage((double)pos.func_177958_n() + 0.5, pos.func_177956_o() + 1, (double)pos.func_177952_p() + 0.5, entity);
     }
-    
-    public static boolean canTakeDamage(final boolean suicide) {
-        return !DamageUtil.mc.player.capabilities.isCreativeMode && !suicide;
+
+    public static boolean canTakeDamage(boolean suicide) {
+        return !DamageUtil.mc.field_71439_g.field_71075_bZ.field_75098_d && !suicide;
     }
-    
-    public static int getCooldownByWeapon(final EntityPlayer player) {
-        final Item item = player.getHeldItemMainhand().getItem();
+
+    public static int getCooldownByWeapon(EntityPlayer player) {
+        Item item = player.func_184614_ca().func_77973_b();
         if (item instanceof ItemSword) {
             return 600;
         }
         if (item instanceof ItemPickaxe) {
             return 850;
         }
-        if (item == Items.IRON_AXE) {
+        if (item == Items.field_151036_c) {
             return 1100;
         }
-        if (item == Items.STONE_HOE) {
+        if (item == Items.field_151018_J) {
             return 500;
         }
-        if (item == Items.IRON_HOE) {
+        if (item == Items.field_151019_K) {
             return 350;
         }
-        if (item == Items.WOODEN_AXE || item == Items.STONE_AXE) {
+        if (item == Items.field_151053_p || item == Items.field_151049_t) {
             return 1250;
         }
-        if (item instanceof ItemSpade || item == Items.GOLDEN_AXE || item == Items.DIAMOND_AXE || item == Items.WOODEN_HOE || item == Items.GOLDEN_HOE) {
+        if (item instanceof ItemSpade || item == Items.field_151006_E || item == Items.field_151056_x || item == Items.field_151017_I || item == Items.field_151013_M) {
             return 1000;
         }
         return 250;
     }
 }
+

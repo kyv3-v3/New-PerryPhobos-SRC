@@ -1,57 +1,79 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  javax.annotation.Nullable
+ *  net.minecraft.block.Block
+ *  net.minecraft.block.BlockLiquid
+ *  net.minecraft.block.state.IBlockState
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.entity.item.EntityBoat
+ *  net.minecraft.util.math.AxisAlignedBB
+ *  net.minecraft.util.math.BlockPos
+ *  net.minecraft.world.World
+ */
 package me.earth.phobos.mixin.mixins;
 
-import net.minecraft.block.state.*;
-import net.minecraft.world.*;
-import org.spongepowered.asm.mixin.*;
-import net.minecraft.util.math.*;
-import java.util.*;
-import net.minecraft.entity.*;
-import javax.annotation.*;
-import me.earth.phobos.features.modules.movement.*;
-import me.earth.phobos.features.modules.player.*;
-import net.minecraft.block.*;
-import net.minecraft.entity.item.*;
-import me.earth.phobos.util.*;
-import org.spongepowered.asm.mixin.injection.*;
-import org.spongepowered.asm.mixin.injection.callback.*;
-import me.earth.phobos.features.modules.render.*;
+import java.util.List;
+import javax.annotation.Nullable;
+import me.earth.phobos.features.modules.movement.Flight;
+import me.earth.phobos.features.modules.movement.Phase;
+import me.earth.phobos.features.modules.player.Freecam;
+import me.earth.phobos.features.modules.player.Jesus;
+import me.earth.phobos.features.modules.render.XRay;
+import me.earth.phobos.util.EntityUtil;
+import me.earth.phobos.util.Util;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityBoat;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin({ Block.class })
-public abstract class MixinBlock
-{
+@Mixin(value={Block.class})
+public abstract class MixinBlock {
     @Shadow
     @Deprecated
-    public abstract float getBlockHardness(final IBlockState p0,  final World p1,  final BlockPos p2);
-    
-    @Inject(method = { "addCollisionBoxToList(Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/AxisAlignedBB;Ljava/util/List;Lnet/minecraft/entity/Entity;Z)V" },  at = { @At("HEAD") },  cancellable = true)
-    public void addCollisionBoxToListHook(final IBlockState state,  final World worldIn,  final BlockPos pos,  final AxisAlignedBB entityBox,  final List<AxisAlignedBB> collidingBoxes,  @Nullable final Entity entityIn,  final boolean isActualState,  final CallbackInfo info) {
-        if (entityIn != null && Util.mc.player != null && (entityIn.equals((Object)Util.mc.player) || (Util.mc.player.getRidingEntity() != null && entityIn.equals((Object)Util.mc.player.getRidingEntity()))) && ((Flight.getInstance().isOn() && ((Flight.getInstance().mode.getValue() == Flight.Mode.PACKET && (boolean)Flight.getInstance().better.getValue() && (boolean)Flight.getInstance().phase.getValue()) || (Flight.getInstance().mode.getValue() == Flight.Mode.DAMAGE && (boolean)Flight.getInstance().noClip.getValue()))) || (Phase.getInstance().isOn() && Phase.getInstance().mode.getValue() == Phase.Mode.PACKETFLY && Phase.getInstance().type.getValue() == Phase.PacketFlyMode.SETBACK && (boolean)Phase.getInstance().boundingBox.getValue()))) {
+    public abstract float func_176195_g(IBlockState var1, World var2, BlockPos var3);
+
+    @Inject(method={"addCollisionBoxToList(Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/AxisAlignedBB;Ljava/util/List;Lnet/minecraft/entity/Entity;Z)V"}, at={@At(value="HEAD")}, cancellable=true)
+    public void addCollisionBoxToListHook(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState, CallbackInfo info) {
+        if (entityIn != null && Util.mc.field_71439_g != null && (entityIn.equals((Object)Util.mc.field_71439_g) || Util.mc.field_71439_g.func_184187_bx() != null && entityIn.equals((Object)Util.mc.field_71439_g.func_184187_bx())) && (Flight.getInstance().isOn() && (Flight.getInstance().mode.getValue() == Flight.Mode.PACKET && Flight.getInstance().better.getValue() != false && Flight.getInstance().phase.getValue() != false || Flight.getInstance().mode.getValue() == Flight.Mode.DAMAGE && Flight.getInstance().noClip.getValue() != false) || Phase.getInstance().isOn() && Phase.getInstance().mode.getValue() == Phase.Mode.PACKETFLY && Phase.getInstance().type.getValue() == Phase.PacketFlyMode.SETBACK && Phase.getInstance().boundingBox.getValue().booleanValue())) {
             info.cancel();
         }
         try {
-            if ((Freecam.getInstance().isOff() && Jesus.getInstance().isOn() && Jesus.getInstance().mode.getValue() == Jesus.Mode.TRAMPOLINE && Util.mc.player != null && state != null && state.getBlock() instanceof BlockLiquid && !(entityIn instanceof EntityBoat) && !Util.mc.player.isSneaking() && Util.mc.player.fallDistance < 3.0f && !EntityUtil.isAboveLiquid((Entity)Util.mc.player) && EntityUtil.checkForLiquid((Entity)Util.mc.player,  false)) || (EntityUtil.checkForLiquid((Entity)Util.mc.player,  false) && Util.mc.player.getRidingEntity() != null && Util.mc.player.getRidingEntity().fallDistance < 3.0f && EntityUtil.isAboveBlock((Entity)Util.mc.player,  pos))) {
-                final AxisAlignedBB offset = Jesus.offset.offset(pos);
-                if (entityBox.intersects(offset)) {
+            if (Freecam.getInstance().isOff() && Jesus.getInstance().isOn() && Jesus.getInstance().mode.getValue() == Jesus.Mode.TRAMPOLINE && Util.mc.field_71439_g != null && state != null && state.func_177230_c() instanceof BlockLiquid && !(entityIn instanceof EntityBoat) && !Util.mc.field_71439_g.func_70093_af() && Util.mc.field_71439_g.field_70143_R < 3.0f && !EntityUtil.isAboveLiquid((Entity)Util.mc.field_71439_g) && EntityUtil.checkForLiquid((Entity)Util.mc.field_71439_g, false) || EntityUtil.checkForLiquid((Entity)Util.mc.field_71439_g, false) && Util.mc.field_71439_g.func_184187_bx() != null && Util.mc.field_71439_g.func_184187_bx().field_70143_R < 3.0f && EntityUtil.isAboveBlock((Entity)Util.mc.field_71439_g, pos)) {
+                AxisAlignedBB offset = Jesus.offset.func_186670_a(pos);
+                if (entityBox.func_72326_a(offset)) {
                     collidingBoxes.add(offset);
                 }
                 info.cancel();
             }
         }
-        catch (Exception ex) {}
+        catch (Exception exception) {
+            // empty catch block
+        }
     }
-    
-    @Inject(method = { "isFullCube" },  at = { @At("HEAD") },  cancellable = true)
-    public void isFullCubeHook(final IBlockState blockState,  final CallbackInfoReturnable<Boolean> info) {
+
+    @Inject(method={"isFullCube"}, at={@At(value="HEAD")}, cancellable=true)
+    public void isFullCubeHook(IBlockState blockState, CallbackInfoReturnable<Boolean> info) {
         try {
             if (XRay.getInstance().isOn()) {
-                info.setReturnValue((Object)XRay.getInstance().shouldRender((Block)Block.class.cast(this)));
+                info.setReturnValue(XRay.getInstance().shouldRender((Block)Block.class.cast(this)));
                 info.cancel();
             }
         }
-        catch (Exception ex) {}
+        catch (Exception exception) {
+            // empty catch block
+        }
     }
 }
+

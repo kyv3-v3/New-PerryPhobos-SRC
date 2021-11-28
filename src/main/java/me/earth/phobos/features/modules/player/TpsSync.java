@@ -1,37 +1,31 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ */
 package me.earth.phobos.features.modules.player;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
 
-public class TpsSync extends Module
-{
-    private static TpsSync INSTANCE;
-    public Setting<Boolean> mining;
-    public Setting<Boolean> attack;
-    
+public class TpsSync
+extends Module {
+    private static TpsSync INSTANCE = new TpsSync();
+    public Setting<Boolean> mining = this.register(new Setting<Boolean>("Mining", true));
+    public Setting<Boolean> attack = this.register(new Setting<Boolean>("Attack", false));
+
     public TpsSync() {
-        super("TpsSync",  "Syncs your client with the TPS.",  Module.Category.PLAYER,  true,  false,  false);
-        this.mining = (Setting<Boolean>)this.register(new Setting("Mining", true));
-        this.attack = (Setting<Boolean>)this.register(new Setting("Attack", false));
+        super("TpsSync", "Syncs your client with the TPS.", Module.Category.PLAYER, true, false, false);
         this.setInstance();
     }
-    
+
     public static TpsSync getInstance() {
-        if (TpsSync.INSTANCE == null) {
-            TpsSync.INSTANCE = new TpsSync();
+        if (INSTANCE == null) {
+            INSTANCE = new TpsSync();
         }
-        return TpsSync.INSTANCE;
+        return INSTANCE;
     }
-    
+
     private void setInstance() {
-        TpsSync.INSTANCE = this;
-    }
-    
-    static {
-        TpsSync.INSTANCE = new TpsSync();
+        INSTANCE = this;
     }
 }
+

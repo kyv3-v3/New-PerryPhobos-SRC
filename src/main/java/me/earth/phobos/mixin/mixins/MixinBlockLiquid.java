@@ -1,41 +1,56 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.block.Block
+ *  net.minecraft.block.BlockLiquid
+ *  net.minecraft.block.material.Material
+ *  net.minecraft.block.properties.IProperty
+ *  net.minecraft.block.state.IBlockState
+ *  net.minecraft.util.math.AxisAlignedBB
+ *  net.minecraft.util.math.BlockPos
+ *  net.minecraft.world.IBlockAccess
+ *  net.minecraftforge.common.MinecraftForge
+ *  net.minecraftforge.fml.common.eventhandler.Event
+ */
 package me.earth.phobos.mixin.mixins;
 
-import org.spongepowered.asm.mixin.*;
-import net.minecraft.block.*;
-import net.minecraft.block.material.*;
-import net.minecraft.block.state.*;
-import net.minecraft.world.*;
-import org.spongepowered.asm.mixin.injection.callback.*;
-import net.minecraft.util.math.*;
-import me.earth.phobos.event.events.*;
-import net.minecraftforge.common.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import org.spongepowered.asm.mixin.injection.*;
-import net.minecraft.block.properties.*;
-import me.earth.phobos.features.modules.player.*;
+import me.earth.phobos.event.events.JesusEvent;
+import me.earth.phobos.features.modules.player.LiquidInteract;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.Event;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin({ BlockLiquid.class })
-public class MixinBlockLiquid extends Block
-{
-    protected MixinBlockLiquid(final Material materialIn) {
+@Mixin(value={BlockLiquid.class})
+public class MixinBlockLiquid
+extends Block {
+    protected MixinBlockLiquid(Material materialIn) {
         super(materialIn);
     }
-    
-    @Inject(method = { "getCollisionBoundingBox" },  at = { @At("HEAD") },  cancellable = true)
-    public void getCollisionBoundingBoxHook(final IBlockState blockState,  final IBlockAccess worldIn,  final BlockPos pos,  final CallbackInfoReturnable<AxisAlignedBB> info) {
-        final JesusEvent event = new JesusEvent(0,  pos);
+
+    @Inject(method={"getCollisionBoundingBox"}, at={@At(value="HEAD")}, cancellable=true)
+    public void getCollisionBoundingBoxHook(IBlockState blockState, IBlockAccess worldIn, BlockPos pos, CallbackInfoReturnable<AxisAlignedBB> info) {
+        JesusEvent event = new JesusEvent(0, pos);
         MinecraftForge.EVENT_BUS.post((Event)event);
         if (event.isCanceled()) {
-            info.setReturnValue((Object)event.getBoundingBox());
+            info.setReturnValue(event.getBoundingBox());
         }
     }
-    
-    @Inject(method = { "canCollideCheck" },  at = { @At("HEAD") },  cancellable = true)
-    public void canCollideCheckHook(final IBlockState blockState,  final boolean hitIfLiquid,  final CallbackInfoReturnable<Boolean> info) {
-        info.setReturnValue((Object)((hitIfLiquid && (int)blockState.getValue((IProperty)BlockLiquid.LEVEL) == 0) || LiquidInteract.getInstance().isOn()));
+
+    @Inject(method={"canCollideCheck"}, at={@At(value="HEAD")}, cancellable=true)
+    public void canCollideCheckHook(IBlockState blockState, boolean hitIfLiquid, CallbackInfoReturnable<Boolean> info) {
+        info.setReturnValue(hitIfLiquid && (Integer)blockState.func_177229_b((IProperty)BlockLiquid.field_176367_b) == 0 || LiquidInteract.getInstance().isOn());
     }
 }
+

@@ -1,50 +1,55 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.block.Block
+ *  net.minecraft.entity.player.EntityPlayer
+ *  net.minecraft.init.Blocks
+ *  net.minecraft.util.math.BlockPos
+ *  net.minecraft.util.math.Vec3i
+ */
 package me.earth.phobos.manager;
 
-import me.earth.phobos.features.*;
-import java.util.concurrent.atomic.*;
-import me.earth.phobos.features.modules.client.*;
-import me.earth.phobos.features.modules.render.*;
-import me.earth.phobos.features.modules.combat.*;
-import me.earth.phobos.features.modules.movement.*;
-import java.util.concurrent.*;
-import net.minecraft.entity.player.*;
-import me.earth.phobos.util.*;
-import net.minecraft.init.*;
-import net.minecraft.util.math.*;
-import java.util.*;
-import net.minecraft.block.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import me.earth.phobos.features.Feature;
+import me.earth.phobos.features.modules.client.Management;
+import me.earth.phobos.features.modules.combat.HoleFiller;
+import me.earth.phobos.features.modules.movement.HoleTP;
+import me.earth.phobos.features.modules.render.HoleESP;
+import me.earth.phobos.util.BlockUtil;
+import me.earth.phobos.util.EntityUtil;
+import me.earth.phobos.util.TimerUtil;
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 
-public class HoleManager extends Feature implements Runnable
-{
-    private static final BlockPos[] surroundOffset;
-    private final List<BlockPos> midSafety;
-    private final TimerUtil syncTimer;
-    private final AtomicBoolean shouldInterrupt;
-    private final TimerUtil holeTimer;
-    private List<BlockPos> holes;
+public class HoleManager
+extends Feature
+implements Runnable {
+    private static final BlockPos[] surroundOffset = BlockUtil.toBlockPos(EntityUtil.getOffsets(0, true, true));
+    private final List<BlockPos> midSafety = new ArrayList<BlockPos>();
+    private final TimerUtil syncTimer = new TimerUtil();
+    private final AtomicBoolean shouldInterrupt = new AtomicBoolean(false);
+    private final TimerUtil holeTimer = new TimerUtil();
+    private List<BlockPos> holes = new ArrayList<BlockPos>();
     private ScheduledExecutorService executorService;
     private int lastUpdates;
     private Thread thread;
-    
-    public HoleManager() {
-        this.midSafety = new ArrayList<BlockPos>();
-        this.syncTimer = new TimerUtil();
-        this.shouldInterrupt = new AtomicBoolean(false);
-        this.holeTimer = new TimerUtil();
-        this.holes = new ArrayList<BlockPos>();
-    }
-    
+
     public void update() {
         if (Management.getInstance().holeThread.getValue() == Management.ThreadMode.WHILE) {
-            if (this.thread == null || this.thread.isInterrupted() || !this.thread.isAlive() || this.syncTimer.passedMs((int)Management.getInstance().holeSync.getValue())) {
+            if (this.thread == null || this.thread.isInterrupted() || !this.thread.isAlive() || this.syncTimer.passedMs(Management.getInstance().holeSync.getValue().intValue())) {
                 if (this.thread == null) {
                     this.thread = new Thread(this);
-                }
-                else if (this.syncTimer.passedMs((int)Management.getInstance().holeSync.getValue()) && !this.shouldInterrupt.get()) {
+                } else if (this.syncTimer.passedMs(Management.getInstance().holeSync.getValue().intValue()) && !this.shouldInterrupt.get()) {
                     this.shouldInterrupt.set(true);
                     this.syncTimer.reset();
                     return;
@@ -62,22 +67,20 @@ public class HoleManager extends Feature implements Runnable
                     this.syncTimer.reset();
                 }
             }
-        }
-        else if (Management.getInstance().holeThread.getValue() == Management.ThreadMode.WHILE) {
-            if (this.executorService == null || this.executorService.isTerminated() || this.executorService.isShutdown() || this.syncTimer.passedMs(10000L) || this.lastUpdates != (int)Management.getInstance().holeUpdates.getValue()) {
-                this.lastUpdates = (int)Management.getInstance().holeUpdates.getValue();
+        } else if (Management.getInstance().holeThread.getValue() == Management.ThreadMode.WHILE) {
+            if (this.executorService == null || this.executorService.isTerminated() || this.executorService.isShutdown() || this.syncTimer.passedMs(10000L) || this.lastUpdates != Management.getInstance().holeUpdates.getValue()) {
+                this.lastUpdates = Management.getInstance().holeUpdates.getValue();
                 if (this.executorService != null) {
                     this.executorService.shutdown();
                 }
                 this.executorService = this.getExecutor();
             }
-        }
-        else if (this.holeTimer.passedMs((int)Management.getInstance().holeUpdates.getValue()) && !fullNullCheck() && (HoleESP.getInstance().isOn() || HoleFiller.getInstance().isOn() || HoleTP.getInstance().isOn())) {
+        } else if (this.holeTimer.passedMs(Management.getInstance().holeUpdates.getValue().intValue()) && !HoleManager.fullNullCheck() && (HoleESP.getInstance().isOn() || HoleFiller.getInstance().isOn() || HoleTP.getInstance().isOn())) {
             this.holes = this.calcHoles();
             this.holeTimer.reset();
         }
     }
-    
+
     public void settingChanged() {
         if (this.executorService != null) {
             this.executorService.shutdown();
@@ -86,104 +89,93 @@ public class HoleManager extends Feature implements Runnable
             this.shouldInterrupt.set(true);
         }
     }
-    
+
     private ScheduledExecutorService getExecutor() {
-        final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(this,  0L,  (int)Management.getInstance().holeUpdates.getValue(),  TimeUnit.MILLISECONDS);
+        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+        service.scheduleAtFixedRate(this, 0L, Management.getInstance().holeUpdates.getValue().intValue(), TimeUnit.MILLISECONDS);
         return service;
     }
-    
+
+    @Override
     public void run() {
         if (Management.getInstance().holeThread.getValue() == Management.ThreadMode.WHILE) {
-            while (!this.shouldInterrupt.get()) {
-                if (!fullNullCheck() && (HoleESP.getInstance().isOn() || HoleFiller.getInstance().isOn() || HoleTP.getInstance().isOn())) {
+            while (true) {
+                if (this.shouldInterrupt.get()) {
+                    this.shouldInterrupt.set(false);
+                    this.syncTimer.reset();
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+                if (!HoleManager.fullNullCheck() && (HoleESP.getInstance().isOn() || HoleFiller.getInstance().isOn() || HoleTP.getInstance().isOn())) {
                     this.holes = this.calcHoles();
                 }
                 try {
-                    Thread.sleep((int)Management.getInstance().holeUpdates.getValue());
+                    Thread.sleep(Management.getInstance().holeUpdates.getValue().intValue());
                 }
                 catch (InterruptedException e) {
                     this.thread.interrupt();
                     e.printStackTrace();
                 }
             }
-            this.shouldInterrupt.set(false);
-            this.syncTimer.reset();
-            Thread.currentThread().interrupt();
-            return;
         }
-        if (Management.getInstance().holeThread.getValue() == Management.ThreadMode.POOL && !fullNullCheck() && (HoleESP.getInstance().isOn() || HoleFiller.getInstance().isOn())) {
+        if (Management.getInstance().holeThread.getValue() == Management.ThreadMode.POOL && !HoleManager.fullNullCheck() && (HoleESP.getInstance().isOn() || HoleFiller.getInstance().isOn())) {
             this.holes = this.calcHoles();
         }
     }
-    
+
     public List<BlockPos> getHoles() {
         return this.holes;
     }
-    
+
     public List<BlockPos> getMidSafety() {
         return this.midSafety;
     }
-    
+
     public List<BlockPos> getSortedHoles() {
-        if (fullNullCheck()) {
+        if (HoleManager.fullNullCheck()) {
             return null;
         }
-        this.holes.sort(Comparator.comparingDouble(hole -> HoleManager.mc.player.getDistanceSq(hole)));
+        this.holes.sort(Comparator.comparingDouble(hole -> HoleManager.mc.field_71439_g.func_174818_b(hole)));
         return this.getHoles();
     }
-    
+
     public List<BlockPos> calcHoles() {
-        final ArrayList<BlockPos> safeSpots = new ArrayList<BlockPos>();
+        ArrayList<BlockPos> safeSpots = new ArrayList<BlockPos>();
         this.midSafety.clear();
-        final List<BlockPos> positions = BlockUtil.getSphere(EntityUtil.getPlayerPos((EntityPlayer)HoleManager.mc.player),  (float)Management.getInstance().holeRange.getValue(),  ((Float)Management.getInstance().holeRange.getValue()).intValue(),  false,  true,  0);
-        for (final BlockPos pos : positions) {
-            if (fullNullCheck()) {
+        List<BlockPos> positions = BlockUtil.getSphere(EntityUtil.getPlayerPos((EntityPlayer)HoleManager.mc.field_71439_g), Management.getInstance().holeRange.getValue().floatValue(), Management.getInstance().holeRange.getValue().intValue(), false, true, 0);
+        for (BlockPos pos : positions) {
+            if (HoleManager.fullNullCheck()) {
                 return null;
             }
-            if (!HoleManager.mc.world.getBlockState(pos).getBlock().equals(Blocks.AIR) || !HoleManager.mc.world.getBlockState(pos.add(0,  1,  0)).getBlock().equals(Blocks.AIR)) {
-                continue;
-            }
-            if (!HoleManager.mc.world.getBlockState(pos.add(0,  2,  0)).getBlock().equals(Blocks.AIR)) {
-                continue;
-            }
+            if (!HoleManager.mc.field_71441_e.func_180495_p(pos).func_177230_c().equals((Object)Blocks.field_150350_a) || !HoleManager.mc.field_71441_e.func_180495_p(pos.func_177982_a(0, 1, 0)).func_177230_c().equals((Object)Blocks.field_150350_a) || !HoleManager.mc.field_71441_e.func_180495_p(pos.func_177982_a(0, 2, 0)).func_177230_c().equals((Object)Blocks.field_150350_a)) continue;
             boolean isSafe = true;
             boolean midSafe = true;
-            for (final BlockPos offset : HoleManager.surroundOffset) {
-                final Block block = HoleManager.mc.world.getBlockState(pos.add((Vec3i)offset)).getBlock();
+            for (BlockPos offset : surroundOffset) {
+                Block block = HoleManager.mc.field_71441_e.func_180495_p(pos.func_177971_a((Vec3i)offset)).func_177230_c();
                 if (BlockUtil.isBlockUnSolid(block)) {
                     midSafe = false;
                 }
-                if (block != Blocks.BEDROCK && block != Blocks.OBSIDIAN && block != Blocks.ENDER_CHEST) {
-                    if (block != Blocks.ANVIL) {
-                        isSafe = false;
-                    }
-                }
+                if (block == Blocks.field_150357_h || block == Blocks.field_150343_Z || block == Blocks.field_150477_bB || block == Blocks.field_150467_bQ) continue;
+                isSafe = false;
             }
             if (isSafe) {
                 safeSpots.add(pos);
             }
-            if (!midSafe) {
-                continue;
-            }
+            if (!midSafe) continue;
             this.midSafety.add(pos);
         }
         return safeSpots;
     }
-    
-    public boolean isSafe(final BlockPos pos) {
+
+    public boolean isSafe(BlockPos pos) {
         boolean isSafe = true;
-        for (final BlockPos offset : HoleManager.surroundOffset) {
-            final Block block = HoleManager.mc.world.getBlockState(pos.add((Vec3i)offset)).getBlock();
-            if (block != Blocks.BEDROCK) {
-                isSafe = false;
-                break;
-            }
+        for (BlockPos offset : surroundOffset) {
+            Block block = HoleManager.mc.field_71441_e.func_180495_p(pos.func_177971_a((Vec3i)offset)).func_177230_c();
+            if (block == Blocks.field_150357_h) continue;
+            isSafe = false;
+            break;
         }
         return isSafe;
     }
-    
-    static {
-        surroundOffset = BlockUtil.toBlockPos(EntityUtil.getOffsets(0,  true,  true));
-    }
 }
+

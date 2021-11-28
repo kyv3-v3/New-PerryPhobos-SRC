@@ -1,60 +1,57 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.player;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import java.util.*;
-import java.util.concurrent.*;
-import me.earth.phobos.event.events.*;
-import me.earth.phobos.*;
-import me.earth.phobos.features.command.*;
-import net.minecraftforge.fml.common.eventhandler.*;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.event.events.ClientEvent;
+import me.earth.phobos.features.command.Command;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class AntiDDoS extends Module
-{
+public class AntiDDoS
+extends Module {
     private static AntiDDoS instance;
-    public final Setting<Boolean> full;
-    private final Map<String,  Setting> servers;
-    public Setting<String> newIP;
-    public Setting<Boolean> showServer;
-    
+    public final Setting<Boolean> full = this.register(new Setting<Boolean>("Full", false));
+    private final Map<String, Setting> servers = new ConcurrentHashMap<String, Setting>();
+    public Setting<String> newIP = this.register(new Setting<Object>("NewServer", "Add Server...", v -> this.full.getValue() == false));
+    public Setting<Boolean> showServer = this.register(new Setting<Object>("ShowServers", Boolean.valueOf(false), v -> this.full.getValue() == false));
+
     public AntiDDoS() {
-        super("AntiDDoS",  "Prevents DDoS attacks via multiplayer list.",  Module.Category.PLAYER,  false,  false,  true);
-        this.full = (Setting<Boolean>)this.register(new Setting("Full", false));
-        this.servers = new ConcurrentHashMap<String,  Setting>();
-        this.newIP = (Setting<String>)this.register(new Setting("NewServer", "Add Server...",  v -> !this.full.getValue()));
-        this.showServer = (Setting<Boolean>)this.register(new Setting("ShowServers", false,  v -> !this.full.getValue()));
-        AntiDDoS.instance = this;
+        super("AntiDDoS", "Prevents DDoS attacks via multiplayer list.", Module.Category.PLAYER, false, false, true);
+        instance = this;
     }
-    
+
     public static AntiDDoS getInstance() {
-        if (AntiDDoS.instance == null) {
-            AntiDDoS.instance = new AntiDDoS();
+        if (instance == null) {
+            instance = new AntiDDoS();
         }
-        return AntiDDoS.instance;
+        return instance;
     }
-    
+
     @SubscribeEvent
-    public void onSettingChange(final ClientEvent event) {
+    public void onSettingChange(ClientEvent event) {
         if (Phobos.configManager.loadingConfig || Phobos.configManager.savingConfig) {
             return;
         }
         if (event.getStage() == 2 && event.getSetting() != null && event.getSetting().getFeature() != null && event.getSetting().getFeature().equals(this)) {
             if (event.getSetting().equals(this.newIP) && !this.shouldntPing(this.newIP.getPlannedValue()) && !event.getSetting().getPlannedValue().equals(event.getSetting().getDefaultValue())) {
-                final Setting setting = this.register(new Setting(this.newIP.getPlannedValue(), true,  v -> this.showServer.getValue() && !this.full.getValue()));
+                Setting setting = this.register(new Setting<Boolean>(this.newIP.getPlannedValue(), Boolean.valueOf(true), v -> this.showServer.getValue() != false && this.full.getValue() == false));
                 this.registerServer(setting);
                 Command.sendMessage("<AntiDDoS> Added new Server: " + this.newIP.getPlannedValue());
                 event.setCanceled(true);
-            }
-            else {
-                final Setting setting = event.getSetting();
+            } else {
+                Setting setting = event.getSetting();
                 if (setting.equals(this.enabled) || setting.equals(this.drawn) || setting.equals(this.bind) || setting.equals(this.newIP) || setting.equals(this.showServer) || setting.equals(this.full)) {
                     return;
                 }
-                if (setting.getValue() instanceof Boolean && !setting.getPlannedValue()) {
+                if (setting.getValue() instanceof Boolean && !((Boolean)setting.getPlannedValue()).booleanValue()) {
                     this.servers.remove(setting.getName().toLowerCase());
                     this.unregister(setting);
                     event.setCanceled(true);
@@ -62,12 +59,13 @@ public class AntiDDoS extends Module
             }
         }
     }
-    
-    public void registerServer(final Setting setting) {
-        this.servers.put(setting.getName().toLowerCase(),  setting);
+
+    public void registerServer(Setting setting) {
+        this.servers.put(setting.getName().toLowerCase(), setting);
     }
-    
-    public boolean shouldntPing(final String ip) {
-        return !this.isOff() && (this.full.getValue() || this.servers.get(ip.toLowerCase()) != null);
+
+    public boolean shouldntPing(String ip) {
+        return !this.isOff() && (this.full.getValue() != false || this.servers.get(ip.toLowerCase()) != null);
     }
 }
+

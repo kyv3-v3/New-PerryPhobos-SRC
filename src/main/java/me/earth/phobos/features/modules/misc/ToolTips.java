@@ -1,255 +1,267 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.gui.inventory.GuiContainer
+ *  net.minecraft.client.renderer.BufferBuilder
+ *  net.minecraft.client.renderer.GlStateManager
+ *  net.minecraft.client.renderer.GlStateManager$DestFactor
+ *  net.minecraft.client.renderer.GlStateManager$SourceFactor
+ *  net.minecraft.client.renderer.RenderHelper
+ *  net.minecraft.client.renderer.Tessellator
+ *  net.minecraft.client.renderer.vertex.DefaultVertexFormats
+ *  net.minecraft.entity.player.EntityPlayer
+ *  net.minecraft.init.Items
+ *  net.minecraft.inventory.IInventory
+ *  net.minecraft.inventory.ItemStackHelper
+ *  net.minecraft.inventory.Slot
+ *  net.minecraft.item.Item
+ *  net.minecraft.item.ItemMap
+ *  net.minecraft.item.ItemShulkerBox
+ *  net.minecraft.item.ItemStack
+ *  net.minecraft.nbt.NBTTagCompound
+ *  net.minecraft.tileentity.TileEntityShulkerBox
+ *  net.minecraft.util.NonNullList
+ *  net.minecraft.util.ResourceLocation
+ *  net.minecraft.world.World
+ *  net.minecraft.world.storage.MapData
+ *  net.minecraftforge.client.event.RenderTooltipEvent$PostText
+ *  net.minecraftforge.event.entity.player.ItemTooltipEvent
+ *  net.minecraftforge.fml.common.eventhandler.EventPriority
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ *  org.lwjgl.input.Keyboard
+ */
 package me.earth.phobos.features.modules.misc;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import net.minecraft.entity.player.*;
-import java.util.concurrent.*;
-import net.minecraft.tileentity.*;
-import net.minecraft.world.*;
-import net.minecraft.nbt.*;
-import net.minecraft.client.gui.inventory.*;
-import org.lwjgl.input.*;
-import net.minecraft.inventory.*;
-import java.util.*;
-import me.earth.phobos.event.events.*;
-import net.minecraftforge.event.entity.player.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import net.minecraftforge.client.event.*;
-import net.minecraft.item.*;
-import net.minecraft.init.*;
-import net.minecraft.client.renderer.vertex.*;
-import net.minecraft.world.storage.*;
-import net.minecraft.client.renderer.*;
-import java.awt.*;
-import me.earth.phobos.util.*;
-import net.minecraft.util.*;
+import java.awt.Color;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import me.earth.phobos.event.events.Render2DEvent;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Bind;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.ColorUtil;
+import me.earth.phobos.util.EntityUtil;
+import me.earth.phobos.util.RenderUtil;
+import me.earth.phobos.util.TimerUtil;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemMap;
+import net.minecraft.item.ItemShulkerBox;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntityShulkerBox;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
+import net.minecraft.world.storage.MapData;
+import net.minecraftforge.client.event.RenderTooltipEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.lwjgl.input.Keyboard;
 
-public class ToolTips extends Module
-{
-    private static final ResourceLocation MAP;
-    private static final ResourceLocation SHULKER_GUI_TEXTURE;
-    private static ToolTips INSTANCE;
-    public Setting<Boolean> maps;
-    public Setting<Boolean> shulkers;
-    public Setting<Bind> peek;
-    public Setting<Boolean> shulkerSpy;
-    public Setting<Boolean> render;
-    public Setting<Boolean> own;
-    public Setting<Integer> cooldown;
-    public Setting<Boolean> textColor;
-    private final Setting<Integer> red;
-    private final Setting<Integer> green;
-    private final Setting<Integer> blue;
-    private final Setting<Integer> alpha;
-    public Setting<Boolean> offsets;
-    private final Setting<Integer> yPerPlayer;
-    private final Setting<Integer> xOffset;
-    private final Setting<Integer> yOffset;
-    private final Setting<Integer> trOffset;
-    public Setting<Integer> invH;
-    public Map<EntityPlayer,  ItemStack> spiedPlayers;
-    public Map<EntityPlayer,  TimerUtil> playerTimers;
+public class ToolTips
+extends Module {
+    private static final ResourceLocation MAP = new ResourceLocation("textures/map/map_background.png");
+    private static final ResourceLocation SHULKER_GUI_TEXTURE = new ResourceLocation("textures/gui/container/shulker_box.png");
+    private static ToolTips INSTANCE = new ToolTips();
+    public Setting<Boolean> maps = this.register(new Setting<Boolean>("Maps", true));
+    public Setting<Boolean> shulkers = this.register(new Setting<Boolean>("ShulkerViewer", true));
+    public Setting<Bind> peek = this.register(new Setting<Bind>("Peek", new Bind(-1)));
+    public Setting<Boolean> shulkerSpy = this.register(new Setting<Boolean>("ShulkerSpy", true));
+    public Setting<Boolean> render = this.register(new Setting<Object>("Render", Boolean.valueOf(true), v -> this.shulkerSpy.getValue()));
+    public Setting<Boolean> own = this.register(new Setting<Object>("OwnShulker", Boolean.valueOf(true), v -> this.shulkerSpy.getValue()));
+    public Setting<Integer> cooldown = this.register(new Setting<Object>("ShowForS", Integer.valueOf(2), Integer.valueOf(0), Integer.valueOf(5), v -> this.shulkerSpy.getValue()));
+    public Setting<Boolean> textColor = this.register(new Setting<Object>("TextColor", Boolean.valueOf(false), v -> this.shulkers.getValue()));
+    private final Setting<Integer> red = this.register(new Setting<Object>("Red", Integer.valueOf(255), Integer.valueOf(0), Integer.valueOf(255), v -> this.textColor.getValue()));
+    private final Setting<Integer> green = this.register(new Setting<Object>("Green", Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(255), v -> this.textColor.getValue()));
+    private final Setting<Integer> blue = this.register(new Setting<Object>("Blue", Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(255), v -> this.textColor.getValue()));
+    private final Setting<Integer> alpha = this.register(new Setting<Object>("Alpha", Integer.valueOf(255), Integer.valueOf(0), Integer.valueOf(255), v -> this.textColor.getValue()));
+    public Setting<Boolean> offsets = this.register(new Setting<Boolean>("Offsets", false));
+    private final Setting<Integer> yPerPlayer = this.register(new Setting<Object>("Y/Player", Integer.valueOf(18), v -> this.offsets.getValue()));
+    private final Setting<Integer> xOffset = this.register(new Setting<Object>("XOffset", Integer.valueOf(4), v -> this.offsets.getValue()));
+    private final Setting<Integer> yOffset = this.register(new Setting<Object>("YOffset", Integer.valueOf(2), v -> this.offsets.getValue()));
+    private final Setting<Integer> trOffset = this.register(new Setting<Object>("TROffset", Integer.valueOf(2), v -> this.offsets.getValue()));
+    public Setting<Integer> invH = this.register(new Setting<Object>("InvH", Integer.valueOf(3), v -> this.offsets.getValue()));
+    public Map<EntityPlayer, ItemStack> spiedPlayers = new ConcurrentHashMap<EntityPlayer, ItemStack>();
+    public Map<EntityPlayer, TimerUtil> playerTimers = new ConcurrentHashMap<EntityPlayer, TimerUtil>();
     private int textRadarY;
-    
+
     public ToolTips() {
-        super("ToolTips",  "Several tweaks for tooltips.",  Category.MISC,  true,  false,  false);
-        this.maps = (Setting<Boolean>)this.register(new Setting("Maps", true));
-        this.shulkers = (Setting<Boolean>)this.register(new Setting("ShulkerViewer", true));
-        this.peek = (Setting<Bind>)this.register(new Setting("Peek", new Bind(-1)));
-        this.shulkerSpy = (Setting<Boolean>)this.register(new Setting("ShulkerSpy", true));
-        this.render = (Setting<Boolean>)this.register(new Setting("Render", true,  v -> this.shulkerSpy.getValue()));
-        this.own = (Setting<Boolean>)this.register(new Setting("OwnShulker", true,  v -> this.shulkerSpy.getValue()));
-        this.cooldown = (Setting<Integer>)this.register(new Setting("ShowForS", 2, 0, 5,  v -> this.shulkerSpy.getValue()));
-        this.textColor = (Setting<Boolean>)this.register(new Setting("TextColor", false,  v -> this.shulkers.getValue()));
-        this.red = (Setting<Integer>)this.register(new Setting("Red", 255, 0, 255,  v -> this.textColor.getValue()));
-        this.green = (Setting<Integer>)this.register(new Setting("Green", 0, 0, 255,  v -> this.textColor.getValue()));
-        this.blue = (Setting<Integer>)this.register(new Setting("Blue", 0, 0, 255,  v -> this.textColor.getValue()));
-        this.alpha = (Setting<Integer>)this.register(new Setting("Alpha", 255, 0, 255,  v -> this.textColor.getValue()));
-        this.offsets = (Setting<Boolean>)this.register(new Setting("Offsets", false));
-        this.yPerPlayer = (Setting<Integer>)this.register(new Setting("Y/Player", 18,  v -> this.offsets.getValue()));
-        this.xOffset = (Setting<Integer>)this.register(new Setting("XOffset", 4,  v -> this.offsets.getValue()));
-        this.yOffset = (Setting<Integer>)this.register(new Setting("YOffset", 2,  v -> this.offsets.getValue()));
-        this.trOffset = (Setting<Integer>)this.register(new Setting("TROffset", 2,  v -> this.offsets.getValue()));
-        this.invH = (Setting<Integer>)this.register(new Setting("InvH", 3,  v -> this.offsets.getValue()));
-        this.spiedPlayers = new ConcurrentHashMap<EntityPlayer,  ItemStack>();
-        this.playerTimers = new ConcurrentHashMap<EntityPlayer,  TimerUtil>();
+        super("ToolTips", "Several tweaks for tooltips.", Module.Category.MISC, true, false, false);
         this.setInstance();
     }
-    
+
     public static ToolTips getInstance() {
-        if (ToolTips.INSTANCE == null) {
-            ToolTips.INSTANCE = new ToolTips();
+        if (INSTANCE == null) {
+            INSTANCE = new ToolTips();
         }
-        return ToolTips.INSTANCE;
+        return INSTANCE;
     }
-    
-    public static void displayInv(final ItemStack stack,  final String name) {
+
+    public static void displayInv(ItemStack stack, String name) {
         try {
-            final Item item = stack.getItem();
-            final TileEntityShulkerBox entityBox = new TileEntityShulkerBox();
-            final ItemShulkerBox shulker = (ItemShulkerBox)item;
-            entityBox.blockType = shulker.getBlock();
-            entityBox.setWorld((World)ToolTips.mc.world);
-            ItemStackHelper.loadAllItems(Objects.requireNonNull(stack.getTagCompound()).getCompoundTag("BlockEntityTag"),  entityBox.items);
-            entityBox.readFromNBT(stack.getTagCompound().getCompoundTag("BlockEntityTag"));
-            entityBox.setCustomName((name == null) ? stack.getDisplayName() : name);
-            final IInventory inventory;
+            Item item = stack.func_77973_b();
+            TileEntityShulkerBox entityBox = new TileEntityShulkerBox();
+            ItemShulkerBox shulker = (ItemShulkerBox)item;
+            entityBox.field_145854_h = shulker.func_179223_d();
+            entityBox.func_145834_a((World)ToolTips.mc.field_71441_e);
+            ItemStackHelper.func_191283_b((NBTTagCompound)Objects.requireNonNull(stack.func_77978_p()).func_74775_l("BlockEntityTag"), (NonNullList)entityBox.field_190596_f);
+            entityBox.func_145839_a(stack.func_77978_p().func_74775_l("BlockEntityTag"));
+            entityBox.func_190575_a(name == null ? stack.func_82833_r() : name);
             new Thread(() -> {
                 try {
                     Thread.sleep(200L);
                 }
-                catch (InterruptedException ex) {}
-                ToolTips.mc.player.displayGUIChest(inventory);
+                catch (InterruptedException interruptedException) {
+                    // empty catch block
+                }
+                ToolTips.mc.field_71439_g.func_71007_a((IInventory)entityBox);
             }).start();
         }
-        catch (Exception ex2) {}
+        catch (Exception exception) {
+            // empty catch block
+        }
     }
-    
+
     private void setInstance() {
-        ToolTips.INSTANCE = this;
+        INSTANCE = this;
     }
-    
+
     @Override
     public void onUpdate() {
-        if (fullNullCheck() || !this.shulkerSpy.getValue()) {
+        ItemStack stack;
+        Slot slot;
+        if (ToolTips.fullNullCheck() || !this.shulkerSpy.getValue().booleanValue()) {
             return;
         }
-        final Slot slot;
-        final ItemStack stack;
-        if (this.peek.getValue().getKey() != -1 && ToolTips.mc.currentScreen instanceof GuiContainer && Keyboard.isKeyDown(this.peek.getValue().getKey()) && (slot = ((GuiContainer)ToolTips.mc.currentScreen).getSlotUnderMouse()) != null && (stack = slot.getStack()) != null && stack.getItem() instanceof ItemShulkerBox) {
-            displayInv(stack,  null);
+        if (this.peek.getValue().getKey() != -1 && ToolTips.mc.field_71462_r instanceof GuiContainer && Keyboard.isKeyDown((int)this.peek.getValue().getKey()) && (slot = ((GuiContainer)ToolTips.mc.field_71462_r).getSlotUnderMouse()) != null && (stack = slot.func_75211_c()) != null && stack.func_77973_b() instanceof ItemShulkerBox) {
+            ToolTips.displayInv(stack, null);
         }
-        for (final EntityPlayer player : ToolTips.mc.world.playerEntities) {
-            if (player != null && player.getHeldItemMainhand().getItem() instanceof ItemShulkerBox && !EntityUtil.isFakePlayer(player)) {
-                if (!this.own.getValue() && ToolTips.mc.player.equals((Object)player)) {
-                    continue;
-                }
-                final ItemStack stack2 = player.getHeldItemMainhand();
-                this.spiedPlayers.put(player,  stack2);
-            }
+        for (EntityPlayer player : ToolTips.mc.field_71441_e.field_73010_i) {
+            if (player == null || !(player.func_184614_ca().func_77973_b() instanceof ItemShulkerBox) || EntityUtil.isFakePlayer(player) || !this.own.getValue().booleanValue() && ToolTips.mc.field_71439_g.equals((Object)player)) continue;
+            ItemStack stack2 = player.func_184614_ca();
+            this.spiedPlayers.put(player, stack2);
         }
     }
-    
+
     @Override
-    public void onRender2D(final Render2DEvent event) {
-        if (fullNullCheck() || !this.shulkerSpy.getValue() || !this.render.getValue()) {
+    public void onRender2D(Render2DEvent event) {
+        if (ToolTips.fullNullCheck() || !this.shulkerSpy.getValue().booleanValue() || !this.render.getValue().booleanValue()) {
             return;
         }
-        final int x = -4 + this.xOffset.getValue();
+        int x = -4 + this.xOffset.getValue();
         int y = 10 + this.yOffset.getValue();
         this.textRadarY = 0;
-        for (final EntityPlayer player : ToolTips.mc.world.playerEntities) {
-            if (this.spiedPlayers.get(player) == null) {
-                continue;
-            }
-            player.getHeldItemMainhand();
-            if (!(player.getHeldItemMainhand().getItem() instanceof ItemShulkerBox)) {
-                final TimerUtil playerTimer = this.playerTimers.get(player);
+        for (EntityPlayer player : ToolTips.mc.field_71441_e.field_73010_i) {
+            TimerUtil playerTimer;
+            if (this.spiedPlayers.get((Object)player) == null) continue;
+            player.func_184614_ca();
+            if (!(player.func_184614_ca().func_77973_b() instanceof ItemShulkerBox)) {
+                playerTimer = this.playerTimers.get((Object)player);
                 if (playerTimer == null) {
-                    final TimerUtil timer = new TimerUtil();
+                    TimerUtil timer = new TimerUtil();
                     timer.reset();
-                    this.playerTimers.put(player,  timer);
-                }
-                else if (playerTimer.passedS(this.cooldown.getValue())) {
+                    this.playerTimers.put(player, timer);
+                } else if (playerTimer.passedS(this.cooldown.getValue().intValue())) {
                     continue;
                 }
+            } else if (player.func_184614_ca().func_77973_b() instanceof ItemShulkerBox && (playerTimer = this.playerTimers.get((Object)player)) != null) {
+                playerTimer.reset();
+                this.playerTimers.put(player, playerTimer);
             }
-            else {
-                final TimerUtil playerTimer;
-                if (player.getHeldItemMainhand().getItem() instanceof ItemShulkerBox && (playerTimer = this.playerTimers.get(player)) != null) {
-                    playerTimer.reset();
-                    this.playerTimers.put(player,  playerTimer);
-                }
-            }
-            final ItemStack stack = this.spiedPlayers.get(player);
-            this.renderShulkerToolTip(stack,  x,  y,  player.getName());
+            ItemStack stack = this.spiedPlayers.get((Object)player);
+            this.renderShulkerToolTip(stack, x, y, player.func_70005_c_());
             this.textRadarY = (y += this.yPerPlayer.getValue() + 60) - 10 - this.yOffset.getValue() + this.trOffset.getValue();
         }
     }
-    
+
     public int getTextRadarY() {
         return this.textRadarY;
     }
-    
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void makeTooltip(final ItemTooltipEvent event) {
+
+    @SubscribeEvent(priority=EventPriority.HIGHEST)
+    public void makeTooltip(ItemTooltipEvent event) {
     }
-    
+
     @SubscribeEvent
-    public void renderTooltip(final RenderTooltipEvent.PostText event) {
-        final MapData mapData;
-        if (this.maps.getValue() && !event.getStack().isEmpty() && event.getStack().getItem() instanceof ItemMap && (mapData = Items.FILLED_MAP.getMapData(event.getStack(),  (World)ToolTips.mc.world)) != null) {
-            GlStateManager.pushMatrix();
-            GlStateManager.color(1.0f,  1.0f,  1.0f);
-            RenderHelper.disableStandardItemLighting();
-            ToolTips.mc.getTextureManager().bindTexture(ToolTips.MAP);
-            final Tessellator instance = Tessellator.getInstance();
-            final BufferBuilder buffer = instance.getBuffer();
-            final int n = 7;
-            final float n2 = 135.0f;
-            final float n3 = 0.5f;
-            GlStateManager.translate((float)event.getX(),  event.getY() - n2 * n3 - 5.0f,  0.0f);
-            GlStateManager.scale(n3,  n3,  n3);
-            buffer.begin(7,  DefaultVertexFormats.POSITION_TEX);
-            buffer.pos((double)(-n),  (double)n2,  0.0).tex(0.0,  1.0).endVertex();
-            buffer.pos((double)n2,  (double)n2,  0.0).tex(1.0,  1.0).endVertex();
-            buffer.pos((double)n2,  (double)(-n),  0.0).tex(1.0,  0.0).endVertex();
-            buffer.pos((double)(-n),  (double)(-n),  0.0).tex(0.0,  0.0).endVertex();
-            instance.draw();
-            ToolTips.mc.entityRenderer.getMapItemRenderer().renderMap(mapData,  false);
-            GlStateManager.enableLighting();
-            GlStateManager.popMatrix();
+    public void renderTooltip(RenderTooltipEvent.PostText event) {
+        MapData mapData;
+        if (this.maps.getValue().booleanValue() && !event.getStack().func_190926_b() && event.getStack().func_77973_b() instanceof ItemMap && (mapData = Items.field_151098_aY.func_77873_a(event.getStack(), (World)ToolTips.mc.field_71441_e)) != null) {
+            GlStateManager.func_179094_E();
+            GlStateManager.func_179124_c((float)1.0f, (float)1.0f, (float)1.0f);
+            RenderHelper.func_74518_a();
+            mc.func_110434_K().func_110577_a(MAP);
+            Tessellator instance = Tessellator.func_178181_a();
+            BufferBuilder buffer = instance.func_178180_c();
+            int n = 7;
+            float n2 = 135.0f;
+            float n3 = 0.5f;
+            GlStateManager.func_179109_b((float)event.getX(), (float)((float)event.getY() - n2 * n3 - 5.0f), (float)0.0f);
+            GlStateManager.func_179152_a((float)n3, (float)n3, (float)n3);
+            buffer.func_181668_a(7, DefaultVertexFormats.field_181707_g);
+            buffer.func_181662_b((double)(-n), (double)n2, 0.0).func_187315_a(0.0, 1.0).func_181675_d();
+            buffer.func_181662_b((double)n2, (double)n2, 0.0).func_187315_a(1.0, 1.0).func_181675_d();
+            buffer.func_181662_b((double)n2, (double)(-n), 0.0).func_187315_a(1.0, 0.0).func_181675_d();
+            buffer.func_181662_b((double)(-n), (double)(-n), 0.0).func_187315_a(0.0, 0.0).func_181675_d();
+            instance.func_78381_a();
+            ToolTips.mc.field_71460_t.func_147701_i().func_148250_a(mapData, false);
+            GlStateManager.func_179145_e();
+            GlStateManager.func_179121_F();
         }
     }
-    
-    public void renderShulkerToolTip(final ItemStack stack,  final int x,  final int y,  final String name) {
-        final NBTTagCompound tagCompound = stack.getTagCompound();
-        final NBTTagCompound blockEntityTag;
-        if (tagCompound != null && tagCompound.hasKey("BlockEntityTag",  10) && (blockEntityTag = tagCompound.getCompoundTag("BlockEntityTag")).hasKey("Items",  9)) {
-            GlStateManager.enableTexture2D();
-            GlStateManager.disableLighting();
-            GlStateManager.color(1.0f,  1.0f,  1.0f,  1.0f);
-            GlStateManager.enableBlend();
-            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,  GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,  GlStateManager.SourceFactor.ONE,  GlStateManager.DestFactor.ZERO);
-            ToolTips.mc.getTextureManager().bindTexture(ToolTips.SHULKER_GUI_TEXTURE);
-            RenderUtil.drawTexturedRect(x,  y,  0,  0,  176,  16,  500);
-            RenderUtil.drawTexturedRect(x,  y + 16,  0,  16,  176,  54 + this.invH.getValue(),  500);
-            RenderUtil.drawTexturedRect(x,  y + 16 + 54,  0,  160,  176,  8,  500);
-            GlStateManager.disableDepth();
-            Color color = new Color(0,  0,  0,  255);
-            if (this.textColor.getValue()) {
-                color = new Color(this.red.getValue(),  this.green.getValue(),  this.blue.getValue(),  this.alpha.getValue());
+
+    public void renderShulkerToolTip(ItemStack stack, int x, int y, String name) {
+        NBTTagCompound blockEntityTag;
+        NBTTagCompound tagCompound = stack.func_77978_p();
+        if (tagCompound != null && tagCompound.func_150297_b("BlockEntityTag", 10) && (blockEntityTag = tagCompound.func_74775_l("BlockEntityTag")).func_150297_b("Items", 9)) {
+            GlStateManager.func_179098_w();
+            GlStateManager.func_179140_f();
+            GlStateManager.func_179131_c((float)1.0f, (float)1.0f, (float)1.0f, (float)1.0f);
+            GlStateManager.func_179147_l();
+            GlStateManager.func_187428_a((GlStateManager.SourceFactor)GlStateManager.SourceFactor.SRC_ALPHA, (GlStateManager.DestFactor)GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, (GlStateManager.SourceFactor)GlStateManager.SourceFactor.ONE, (GlStateManager.DestFactor)GlStateManager.DestFactor.ZERO);
+            mc.func_110434_K().func_110577_a(SHULKER_GUI_TEXTURE);
+            RenderUtil.drawTexturedRect(x, y, 0, 0, 176, 16, 500);
+            RenderUtil.drawTexturedRect(x, y + 16, 0, 16, 176, 54 + this.invH.getValue(), 500);
+            RenderUtil.drawTexturedRect(x, y + 16 + 54, 0, 160, 176, 8, 500);
+            GlStateManager.func_179097_i();
+            Color color = new Color(0, 0, 0, 255);
+            if (this.textColor.getValue().booleanValue()) {
+                color = new Color(this.red.getValue(), this.green.getValue(), this.blue.getValue(), this.alpha.getValue());
             }
-            this.renderer.drawStringWithShadow((name == null) ? stack.getDisplayName() : name,  (float)(x + 8),  (float)(y + 6),  ColorUtil.toRGBA(color));
-            GlStateManager.enableDepth();
-            RenderHelper.enableGUIStandardItemLighting();
-            GlStateManager.enableRescaleNormal();
-            GlStateManager.enableColorMaterial();
-            GlStateManager.enableLighting();
-            final NonNullList nonnulllist = NonNullList.withSize(27,  (Object)ItemStack.EMPTY);
-            ItemStackHelper.loadAllItems(blockEntityTag,  nonnulllist);
+            this.renderer.drawStringWithShadow(name == null ? stack.func_82833_r() : name, x + 8, y + 6, ColorUtil.toRGBA(color));
+            GlStateManager.func_179126_j();
+            RenderHelper.func_74520_c();
+            GlStateManager.func_179091_B();
+            GlStateManager.func_179142_g();
+            GlStateManager.func_179145_e();
+            NonNullList nonnulllist = NonNullList.func_191197_a((int)27, (Object)ItemStack.field_190927_a);
+            ItemStackHelper.func_191283_b((NBTTagCompound)blockEntityTag, (NonNullList)nonnulllist);
             for (int i = 0; i < nonnulllist.size(); ++i) {
-                final int iX = x + i % 9 * 18 + 8;
-                final int iY = y + i / 9 * 18 + 18;
-                final ItemStack itemStack = (ItemStack)nonnulllist.get(i);
-                ToolTips.mc.getRenderItem().zLevel = 501.0f;
-                RenderUtil.itemRender.renderItemAndEffectIntoGUI(itemStack,  iX,  iY);
-                RenderUtil.itemRender.renderItemOverlayIntoGUI(ToolTips.mc.fontRenderer,  itemStack,  iX,  iY,  (String)null);
-                ToolTips.mc.getRenderItem().zLevel = 0.0f;
+                int iX = x + i % 9 * 18 + 8;
+                int iY = y + i / 9 * 18 + 18;
+                ItemStack itemStack = (ItemStack)nonnulllist.get(i);
+                ToolTips.mc.func_175599_af().field_77023_b = 501.0f;
+                RenderUtil.itemRender.func_180450_b(itemStack, iX, iY);
+                RenderUtil.itemRender.func_180453_a(ToolTips.mc.field_71466_p, itemStack, iX, iY, null);
+                ToolTips.mc.func_175599_af().field_77023_b = 0.0f;
             }
-            GlStateManager.disableLighting();
-            GlStateManager.disableBlend();
-            GlStateManager.color(1.0f,  1.0f,  1.0f,  1.0f);
+            GlStateManager.func_179140_f();
+            GlStateManager.func_179084_k();
+            GlStateManager.func_179131_c((float)1.0f, (float)1.0f, (float)1.0f, (float)1.0f);
         }
-    }
-    
-    static {
-        MAP = new ResourceLocation("textures/map/map_background.png");
-        SHULKER_GUI_TEXTURE = new ResourceLocation("textures/gui/container/shulker_box.png");
-        ToolTips.INSTANCE = new ToolTips();
     }
 }
+

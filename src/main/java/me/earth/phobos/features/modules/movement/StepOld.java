@@ -1,69 +1,69 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.block.Block
+ *  net.minecraft.block.BlockAir
+ *  net.minecraft.block.material.Material
+ *  net.minecraft.network.Packet
+ *  net.minecraft.network.play.client.CPacketPlayer$Position
+ *  net.minecraft.util.math.AxisAlignedBB
+ *  net.minecraft.util.math.BlockPos
+ *  net.minecraft.util.math.MathHelper
+ */
 package me.earth.phobos.features.modules.movement;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import net.minecraft.block.material.*;
-import net.minecraft.network.play.client.*;
-import net.minecraft.network.*;
-import net.minecraft.util.math.*;
-import net.minecraft.block.*;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockAir;
+import net.minecraft.block.material.Material;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 
-public class StepOld extends Module
-{
+public class StepOld
+extends Module {
     private static StepOld instance;
-    final double[] twoFiveOffset;
-    private final double[] oneblockPositions;
-    private final double[] twoblockPositions;
-    private final double[] futurePositions;
-    private final double[] fourBlockPositions;
-    public Setting<Boolean> vanilla;
-    public Setting<Float> stepHeightVanilla;
-    public Setting<Integer> stepHeight;
-    public Setting<Boolean> small;
-    public Setting<Boolean> spoof;
-    public Setting<Integer> ticks;
-    public Setting<Boolean> turnOff;
-    public Setting<Boolean> check;
-    private double[] selectedPositions;
+    final double[] twoFiveOffset = new double[]{0.425, 0.821, 0.699, 0.599, 1.022, 1.372, 1.652, 1.869, 2.019, 1.907};
+    private final double[] oneblockPositions = new double[]{0.42, 0.75};
+    private final double[] twoblockPositions = new double[]{0.4, 0.75, 0.5, 0.41, 0.83, 1.16, 1.41, 1.57, 1.58, 1.42};
+    private final double[] futurePositions = new double[]{0.42, 0.78, 0.63, 0.51, 0.9, 1.21, 1.45, 1.43};
+    private final double[] fourBlockPositions = new double[]{0.42, 0.78, 0.63, 0.51, 0.9, 1.21, 1.45, 1.43, 1.78, 1.63, 1.51, 1.9, 2.21, 2.45, 2.43, 2.78, 2.63, 2.51, 2.9, 3.21, 3.45, 3.43};
+    public Setting<Boolean> vanilla = this.register(new Setting<Boolean>("Vanilla", false));
+    public Setting<Float> stepHeightVanilla = this.register(new Setting<Object>("VHeight", Float.valueOf(2.0f), Float.valueOf(0.1f), Float.valueOf(5.0f), v -> this.vanilla.getValue()));
+    public Setting<Integer> stepHeight = this.register(new Setting<Object>("Height", Integer.valueOf(2), Integer.valueOf(1), Integer.valueOf(5), v -> this.vanilla.getValue() == false));
+    public Setting<Boolean> small = this.register(new Setting<Object>("Offset", Boolean.valueOf(false), v -> this.stepHeight.getValue() > 1 && this.vanilla.getValue() == false));
+    public Setting<Boolean> spoof = this.register(new Setting<Object>("Spoof", Boolean.valueOf(true), v -> this.vanilla.getValue() == false));
+    public Setting<Integer> ticks = this.register(new Setting<Object>("Delay", Integer.valueOf(3), Integer.valueOf(0), Integer.valueOf(25), v -> this.spoof.getValue() != false && this.vanilla.getValue() == false));
+    public Setting<Boolean> turnOff = this.register(new Setting<Object>("Disable", Boolean.valueOf(false), v -> this.vanilla.getValue() == false));
+    public Setting<Boolean> check = this.register(new Setting<Object>("Check", Boolean.valueOf(true), v -> this.vanilla.getValue() == false));
+    private double[] selectedPositions = new double[0];
     private int packets;
-    
+
     public StepOld() {
-        super("StepOld",  "Allows you to step up blocks.",  Module.Category.MOVEMENT,  true,  false,  false);
-        this.twoFiveOffset = new double[] { 0.425,  0.821,  0.699,  0.599,  1.022,  1.372,  1.652,  1.869,  2.019,  1.907 };
-        this.oneblockPositions = new double[] { 0.42,  0.75 };
-        this.twoblockPositions = new double[] { 0.4,  0.75,  0.5,  0.41,  0.83,  1.16,  1.41,  1.57,  1.58,  1.42 };
-        this.futurePositions = new double[] { 0.42,  0.78,  0.63,  0.51,  0.9,  1.21,  1.45,  1.43 };
-        this.fourBlockPositions = new double[] { 0.42,  0.78,  0.63,  0.51,  0.9,  1.21,  1.45,  1.43,  1.78,  1.63,  1.51,  1.9,  2.21,  2.45,  2.43,  2.78,  2.63,  2.51,  2.9,  3.21,  3.45,  3.43 };
-        this.vanilla = (Setting<Boolean>)this.register(new Setting("Vanilla", false));
-        this.stepHeightVanilla = (Setting<Float>)this.register(new Setting("VHeight", 2.0f, 0.1f, 5.0f,  v -> this.vanilla.getValue()));
-        this.stepHeight = (Setting<Integer>)this.register(new Setting("Height", 2, 1, 5,  v -> !this.vanilla.getValue()));
-        this.small = (Setting<Boolean>)this.register(new Setting("Offset", false,  v -> this.stepHeight.getValue() > 1 && !this.vanilla.getValue()));
-        this.spoof = (Setting<Boolean>)this.register(new Setting("Spoof", true,  v -> !this.vanilla.getValue()));
-        this.ticks = (Setting<Integer>)this.register(new Setting("Delay", 3, 0, 25,  v -> this.spoof.getValue() && !this.vanilla.getValue()));
-        this.turnOff = (Setting<Boolean>)this.register(new Setting("Disable", false,  v -> !this.vanilla.getValue()));
-        this.check = (Setting<Boolean>)this.register(new Setting("Check", true,  v -> !this.vanilla.getValue()));
-        this.selectedPositions = new double[0];
-        StepOld.instance = this;
+        super("StepOld", "Allows you to step up blocks.", Module.Category.MOVEMENT, true, false, false);
+        instance = this;
     }
-    
+
     public static StepOld getInstance() {
-        if (StepOld.instance == null) {
-            StepOld.instance = new StepOld();
+        if (instance == null) {
+            instance = new StepOld();
         }
-        return StepOld.instance;
+        return instance;
     }
-    
+
+    @Override
     public void onToggle() {
-        StepOld.mc.player.stepHeight = 0.6f;
+        StepOld.mc.field_71439_g.field_70138_W = 0.6f;
     }
-    
+
+    @Override
     public void onUpdate() {
-        if (this.vanilla.getValue()) {
-            StepOld.mc.player.stepHeight = this.stepHeightVanilla.getValue();
+        if (this.vanilla.getValue().booleanValue()) {
+            StepOld.mc.field_71439_g.field_70138_W = this.stepHeightVanilla.getValue().floatValue();
             return;
         }
         switch (this.stepHeight.getValue()) {
@@ -72,7 +72,7 @@ public class StepOld extends Module
                 break;
             }
             case 2: {
-                this.selectedPositions = (this.small.getValue() ? this.twoblockPositions : this.futurePositions);
+                this.selectedPositions = this.small.getValue() != false ? this.twoblockPositions : this.futurePositions;
                 break;
             }
             case 3: {
@@ -80,32 +80,31 @@ public class StepOld extends Module
             }
             case 4: {
                 this.selectedPositions = this.fourBlockPositions;
-                break;
             }
         }
-        if (StepOld.mc.player.collidedHorizontally && StepOld.mc.player.onGround) {
+        if (StepOld.mc.field_71439_g.field_70123_F && StepOld.mc.field_71439_g.field_70122_E) {
             ++this.packets;
         }
-        final AxisAlignedBB bb = StepOld.mc.player.getEntityBoundingBox();
-        if (this.check.getValue()) {
-            for (int x = MathHelper.floor(bb.minX); x < MathHelper.floor(bb.maxX + 1.0); ++x) {
-                for (int z = MathHelper.floor(bb.minZ); z < MathHelper.floor(bb.maxZ + 1.0); ++z) {
-                    final Block block = StepOld.mc.world.getBlockState(new BlockPos((double)x,  bb.maxY + 1.0,  (double)z)).getBlock();
-                    if (!(block instanceof BlockAir)) {
-                        return;
-                    }
+        AxisAlignedBB bb = StepOld.mc.field_71439_g.func_174813_aQ();
+        if (this.check.getValue().booleanValue()) {
+            for (int x = MathHelper.func_76128_c((double)bb.field_72340_a); x < MathHelper.func_76128_c((double)(bb.field_72336_d + 1.0)); ++x) {
+                for (int z = MathHelper.func_76128_c((double)bb.field_72339_c); z < MathHelper.func_76128_c((double)(bb.field_72334_f + 1.0)); ++z) {
+                    Block block = StepOld.mc.field_71441_e.func_180495_p(new BlockPos((double)x, bb.field_72337_e + 1.0, (double)z)).func_177230_c();
+                    if (block instanceof BlockAir) continue;
+                    return;
                 }
             }
         }
-        if (StepOld.mc.player.onGround && !StepOld.mc.player.isInsideOfMaterial(Material.WATER) && !StepOld.mc.player.isInsideOfMaterial(Material.LAVA) && StepOld.mc.player.collidedVertically && StepOld.mc.player.fallDistance == 0.0f && !StepOld.mc.gameSettings.keyBindJump.pressed && StepOld.mc.player.collidedHorizontally && !StepOld.mc.player.isOnLadder() && (this.packets > this.selectedPositions.length - 2 || (this.spoof.getValue() && this.packets > this.ticks.getValue()))) {
-            for (final double position : this.selectedPositions) {
-                StepOld.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(StepOld.mc.player.posX,  StepOld.mc.player.posY + position,  StepOld.mc.player.posZ,  true));
+        if (StepOld.mc.field_71439_g.field_70122_E && !StepOld.mc.field_71439_g.func_70055_a(Material.field_151586_h) && !StepOld.mc.field_71439_g.func_70055_a(Material.field_151587_i) && StepOld.mc.field_71439_g.field_70124_G && StepOld.mc.field_71439_g.field_70143_R == 0.0f && !StepOld.mc.field_71474_y.field_74314_A.field_74513_e && StepOld.mc.field_71439_g.field_70123_F && !StepOld.mc.field_71439_g.func_70617_f_() && (this.packets > this.selectedPositions.length - 2 || this.spoof.getValue().booleanValue() && this.packets > this.ticks.getValue())) {
+            for (double position : this.selectedPositions) {
+                StepOld.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(StepOld.mc.field_71439_g.field_70165_t, StepOld.mc.field_71439_g.field_70163_u + position, StepOld.mc.field_71439_g.field_70161_v, true));
             }
-            StepOld.mc.player.setPosition(StepOld.mc.player.posX,  StepOld.mc.player.posY + this.selectedPositions[this.selectedPositions.length - 1],  StepOld.mc.player.posZ);
+            StepOld.mc.field_71439_g.func_70107_b(StepOld.mc.field_71439_g.field_70165_t, StepOld.mc.field_71439_g.field_70163_u + this.selectedPositions[this.selectedPositions.length - 1], StepOld.mc.field_71439_g.field_70161_v);
             this.packets = 0;
-            if (this.turnOff.getValue()) {
+            if (this.turnOff.getValue().booleanValue()) {
                 this.disable();
             }
         }
     }
 }
+

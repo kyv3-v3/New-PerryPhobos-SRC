@@ -1,99 +1,102 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.init.Blocks
+ *  net.minecraft.inventory.ClickType
+ *  net.minecraft.item.ItemStack
+ *  net.minecraft.network.Packet
+ *  net.minecraft.network.play.client.CPacketClickWindow
+ *  net.minecraft.network.play.client.CPacketPlayerDigging
+ *  net.minecraft.network.play.client.CPacketPlayerDigging$Action
+ *  net.minecraft.network.play.client.CPacketTabComplete
+ *  net.minecraft.util.EnumFacing
+ *  net.minecraft.util.EnumHand
+ *  net.minecraft.util.math.BlockPos
+ */
 package me.earth.phobos.features.modules.misc;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import java.util.*;
-import net.minecraft.network.*;
-import net.minecraft.inventory.*;
-import net.minecraft.init.*;
-import net.minecraft.item.*;
-import net.minecraft.network.play.client.*;
-import net.minecraft.util.*;
-import net.minecraft.util.math.*;
+import java.util.Random;
+import java.util.UUID;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import net.minecraft.init.Blocks;
+import net.minecraft.inventory.ClickType;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.CPacketClickWindow;
+import net.minecraft.network.play.client.CPacketPlayerDigging;
+import net.minecraft.network.play.client.CPacketTabComplete;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 
-public class AntiAFK extends Module
-{
+public class AntiAFK
+extends Module {
     private final Random random;
-    private final Setting<Boolean> swing;
-    private final Setting<Boolean> turn;
-    private final Setting<Boolean> jump;
-    private final Setting<Boolean> sneak;
-    private final Setting<Boolean> interact;
-    private final Setting<Boolean> tabcomplete;
-    private final Setting<Boolean> msgs;
-    private final Setting<Boolean> stats;
-    private final Setting<Boolean> window;
-    private final Setting<Boolean> swap;
-    private final Setting<Boolean> dig;
-    private final Setting<Boolean> move;
-    
+    private final Setting<Boolean> swing = this.register(new Setting<Boolean>("Swing", true));
+    private final Setting<Boolean> turn = this.register(new Setting<Boolean>("Turn", true));
+    private final Setting<Boolean> jump = this.register(new Setting<Boolean>("Jump", true));
+    private final Setting<Boolean> sneak = this.register(new Setting<Boolean>("Sneak", true));
+    private final Setting<Boolean> interact = this.register(new Setting<Boolean>("InteractBlock", false));
+    private final Setting<Boolean> tabcomplete = this.register(new Setting<Boolean>("TabComplete", true));
+    private final Setting<Boolean> msgs = this.register(new Setting<Boolean>("ChatMsgs", true));
+    private final Setting<Boolean> stats = this.register(new Setting<Boolean>("Stats", true));
+    private final Setting<Boolean> window = this.register(new Setting<Boolean>("WindowClick", true));
+    private final Setting<Boolean> swap = this.register(new Setting<Boolean>("ItemSwap", true));
+    private final Setting<Boolean> dig = this.register(new Setting<Boolean>("HitBlock", true));
+    private final Setting<Boolean> move = this.register(new Setting<Boolean>("Move", true));
+
     public AntiAFK() {
-        super("AntiAFK",  "Attempts to stop the server from kicking u when ur afk.",  Category.MISC,  true,  false,  false);
-        this.swing = (Setting<Boolean>)this.register(new Setting("Swing", true));
-        this.turn = (Setting<Boolean>)this.register(new Setting("Turn", true));
-        this.jump = (Setting<Boolean>)this.register(new Setting("Jump", true));
-        this.sneak = (Setting<Boolean>)this.register(new Setting("Sneak", true));
-        this.interact = (Setting<Boolean>)this.register(new Setting("InteractBlock", false));
-        this.tabcomplete = (Setting<Boolean>)this.register(new Setting("TabComplete", true));
-        this.msgs = (Setting<Boolean>)this.register(new Setting("ChatMsgs", true));
-        this.stats = (Setting<Boolean>)this.register(new Setting("Stats", true));
-        this.window = (Setting<Boolean>)this.register(new Setting("WindowClick", true));
-        this.swap = (Setting<Boolean>)this.register(new Setting("ItemSwap", true));
-        this.dig = (Setting<Boolean>)this.register(new Setting("HitBlock", true));
-        this.move = (Setting<Boolean>)this.register(new Setting("Move", true));
+        super("AntiAFK", "Attempts to stop the server from kicking u when ur afk.", Module.Category.MISC, true, false, false);
         this.random = new Random();
     }
-    
+
     @Override
     public void onUpdate() {
-        if (AntiAFK.mc.player.ticksExisted % 45 == 0 && this.swing.getValue()) {
-            AntiAFK.mc.player.swingArm(EnumHand.MAIN_HAND);
+        BlockPos blockPos;
+        if (AntiAFK.mc.field_71439_g.field_70173_aa % 45 == 0 && this.swing.getValue().booleanValue()) {
+            AntiAFK.mc.field_71439_g.func_184609_a(EnumHand.MAIN_HAND);
         }
-        if (AntiAFK.mc.player.ticksExisted % 20 == 0 && this.turn.getValue()) {
-            AntiAFK.mc.player.rotationYaw = (float)(this.random.nextInt(360) - 180);
+        if (AntiAFK.mc.field_71439_g.field_70173_aa % 20 == 0 && this.turn.getValue().booleanValue()) {
+            AntiAFK.mc.field_71439_g.field_70177_z = this.random.nextInt(360) - 180;
         }
-        if (AntiAFK.mc.player.ticksExisted % 60 == 0 && this.jump.getValue() && AntiAFK.mc.player.onGround) {
-            AntiAFK.mc.player.jump();
+        if (AntiAFK.mc.field_71439_g.field_70173_aa % 60 == 0 && this.jump.getValue().booleanValue() && AntiAFK.mc.field_71439_g.field_70122_E) {
+            AntiAFK.mc.field_71439_g.func_70664_aZ();
         }
-        if (AntiAFK.mc.player.ticksExisted % 50 == 0 && this.sneak.getValue() && !AntiAFK.mc.player.isSneaking()) {
-            AntiAFK.mc.player.movementInput.sneak = true;
+        if (AntiAFK.mc.field_71439_g.field_70173_aa % 50 == 0 && this.sneak.getValue().booleanValue() && !AntiAFK.mc.field_71439_g.func_70093_af()) {
+            AntiAFK.mc.field_71439_g.field_71158_b.field_78899_d = true;
         }
-        if (AntiAFK.mc.player.ticksExisted % 52.5 == 0.0 && this.sneak.getValue() && AntiAFK.mc.player.isSneaking()) {
-            AntiAFK.mc.player.movementInput.sneak = false;
+        if ((double)AntiAFK.mc.field_71439_g.field_70173_aa % 52.5 == 0.0 && this.sneak.getValue().booleanValue() && AntiAFK.mc.field_71439_g.func_70093_af()) {
+            AntiAFK.mc.field_71439_g.field_71158_b.field_78899_d = false;
         }
-        if (AntiAFK.mc.player.ticksExisted % 30 == 0 && this.interact.getValue()) {
-            final BlockPos blockPos = AntiAFK.mc.objectMouseOver.getBlockPos();
-            if (!AntiAFK.mc.world.isAirBlock(blockPos)) {
-                AntiAFK.mc.playerController.clickBlock(blockPos,  AntiAFK.mc.objectMouseOver.sideHit);
-            }
+        if (AntiAFK.mc.field_71439_g.field_70173_aa % 30 == 0 && this.interact.getValue().booleanValue() && !AntiAFK.mc.field_71441_e.func_175623_d(blockPos = AntiAFK.mc.field_71476_x.func_178782_a())) {
+            AntiAFK.mc.field_71442_b.func_180511_b(blockPos, AntiAFK.mc.field_71476_x.field_178784_b);
         }
-        if (AntiAFK.mc.player.ticksExisted % 80 == 0 && this.tabcomplete.getValue() && !AntiAFK.mc.player.isDead) {
-            AntiAFK.mc.player.connection.sendPacket((Packet)new CPacketTabComplete("/" + UUID.randomUUID().toString().replace('-',  'v'),  AntiAFK.mc.player.getPosition(),  false));
+        if (AntiAFK.mc.field_71439_g.field_70173_aa % 80 == 0 && this.tabcomplete.getValue().booleanValue() && !AntiAFK.mc.field_71439_g.field_70128_L) {
+            AntiAFK.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketTabComplete("/" + UUID.randomUUID().toString().replace('-', 'v'), AntiAFK.mc.field_71439_g.func_180425_c(), false));
         }
-        if (AntiAFK.mc.player.ticksExisted % 200 == 0 && this.msgs.getValue() && !AntiAFK.mc.player.isDead) {
-            AntiAFK.mc.player.sendChatMessage("Perry Phobos AntiAFK " + this.random.nextInt());
+        if (AntiAFK.mc.field_71439_g.field_70173_aa % 200 == 0 && this.msgs.getValue().booleanValue() && !AntiAFK.mc.field_71439_g.field_70128_L) {
+            AntiAFK.mc.field_71439_g.func_71165_d("Perry Phobos AntiAFK " + this.random.nextInt());
         }
-        if (AntiAFK.mc.player.ticksExisted % 300 == 0 && this.stats.getValue() && !AntiAFK.mc.player.isDead) {
-            AntiAFK.mc.player.sendChatMessage("/stats");
+        if (AntiAFK.mc.field_71439_g.field_70173_aa % 300 == 0 && this.stats.getValue().booleanValue() && !AntiAFK.mc.field_71439_g.field_70128_L) {
+            AntiAFK.mc.field_71439_g.func_71165_d("/stats");
         }
-        if (AntiAFK.mc.player.ticksExisted % 125 == 0 && this.window.getValue() && !AntiAFK.mc.player.isDead) {
-            AntiAFK.mc.player.connection.sendPacket((Packet)new CPacketClickWindow(1,  1,  1,  ClickType.CLONE,  new ItemStack(Blocks.OBSIDIAN),  (short)1));
+        if (AntiAFK.mc.field_71439_g.field_70173_aa % 125 == 0 && this.window.getValue().booleanValue() && !AntiAFK.mc.field_71439_g.field_70128_L) {
+            AntiAFK.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketClickWindow(1, 1, 1, ClickType.CLONE, new ItemStack(Blocks.field_150343_Z), 1));
         }
-        if (AntiAFK.mc.player.ticksExisted % 70 == 0 && this.swap.getValue() && !AntiAFK.mc.player.isDead) {
-            AntiAFK.mc.player.connection.sendPacket((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.SWAP_HELD_ITEMS,  AntiAFK.mc.player.getPosition(),  EnumFacing.DOWN));
+        if (AntiAFK.mc.field_71439_g.field_70173_aa % 70 == 0 && this.swap.getValue().booleanValue() && !AntiAFK.mc.field_71439_g.field_70128_L) {
+            AntiAFK.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.SWAP_HELD_ITEMS, AntiAFK.mc.field_71439_g.func_180425_c(), EnumFacing.DOWN));
         }
-        if (AntiAFK.mc.player.ticksExisted % 50 == 0 && this.dig.getValue()) {
-            AntiAFK.mc.player.connection.sendPacket((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK,  AntiAFK.mc.player.getPosition(),  EnumFacing.DOWN));
+        if (AntiAFK.mc.field_71439_g.field_70173_aa % 50 == 0 && this.dig.getValue().booleanValue()) {
+            AntiAFK.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, AntiAFK.mc.field_71439_g.func_180425_c(), EnumFacing.DOWN));
         }
-        if (AntiAFK.mc.player.ticksExisted % 150 == 0 && this.move.getValue()) {
-            AntiAFK.mc.gameSettings.keyBindForward.pressed = true;
-            AntiAFK.mc.gameSettings.keyBindBack.pressed = true;
-            AntiAFK.mc.gameSettings.keyBindRight.pressed = true;
-            AntiAFK.mc.gameSettings.keyBindLeft.pressed = true;
+        if (AntiAFK.mc.field_71439_g.field_70173_aa % 150 == 0 && this.move.getValue().booleanValue()) {
+            AntiAFK.mc.field_71474_y.field_74351_w.field_74513_e = true;
+            AntiAFK.mc.field_71474_y.field_74368_y.field_74513_e = true;
+            AntiAFK.mc.field_71474_y.field_74366_z.field_74513_e = true;
+            AntiAFK.mc.field_71474_y.field_74370_x.field_74513_e = true;
         }
     }
 }
+

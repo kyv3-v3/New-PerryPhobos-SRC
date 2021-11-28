@@ -1,114 +1,111 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.entity.player.EntityPlayer
+ */
 package me.earth.phobos.manager;
 
-import me.earth.phobos.features.*;
-import net.minecraft.entity.player.*;
-import me.earth.phobos.features.modules.client.*;
-import java.util.concurrent.*;
-import me.earth.phobos.features.command.*;
-import java.util.*;
-import me.earth.phobos.*;
-import java.util.function.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.features.Feature;
+import me.earth.phobos.features.command.Command;
+import me.earth.phobos.features.modules.client.Notifications;
+import net.minecraft.entity.player.EntityPlayer;
 
-public class TotemPopManager extends Feature
-{
-    private final Set<EntityPlayer> toAnnounce;
+public class TotemPopManager
+extends Feature {
+    private final Set<EntityPlayer> toAnnounce = new HashSet<EntityPlayer>();
     private Notifications notifications;
-    private Map<EntityPlayer,  Integer> poplist;
-    
-    public TotemPopManager() {
-        this.toAnnounce = new HashSet<EntityPlayer>();
-        this.poplist = new ConcurrentHashMap<EntityPlayer,  Integer>();
-    }
-    
+    private Map<EntityPlayer, Integer> poplist = new ConcurrentHashMap<EntityPlayer, Integer>();
+
     public void onUpdate() {
-        if (this.notifications.totemAnnounce.passedMs((int)this.notifications.delay.getValue()) && this.notifications.isOn() && (boolean)this.notifications.totemPops.getValue()) {
-            for (final EntityPlayer player : this.toAnnounce) {
-                if (player == null) {
-                    continue;
-                }
+        if (this.notifications.totemAnnounce.passedMs(this.notifications.delay.getValue().intValue()) && this.notifications.isOn() && this.notifications.totemPops.getValue().booleanValue()) {
+            for (EntityPlayer player : this.toAnnounce) {
+                if (player == null) continue;
                 int playerNumber = 0;
-                for (final char character : player.getName().toCharArray()) {
+                for (char character : player.func_70005_c_().toCharArray()) {
                     playerNumber += character;
                     playerNumber *= 10;
                 }
-                Command.sendOverwriteMessage("§c" + player.getName() + " popped §a" + this.getTotemPops(player) + "§c Totem" + ((this.getTotemPops(player) == 1) ? "" : "s") + ".",  playerNumber,  (boolean)this.notifications.totemNoti.getValue());
-                this.toAnnounce.remove(player);
+                Command.sendOverwriteMessage("\u00a7c" + player.func_70005_c_() + " popped \u00a7a" + this.getTotemPops(player) + "\u00a7c Totem" + (this.getTotemPops(player) == 1 ? "" : "s") + ".", playerNumber, this.notifications.totemNoti.getValue());
+                this.toAnnounce.remove((Object)player);
                 this.notifications.totemAnnounce.reset();
                 break;
             }
         }
     }
-    
+
     public void onLogout() {
-        this.onOwnLogout((boolean)this.notifications.clearOnLogout.getValue());
+        this.onOwnLogout(this.notifications.clearOnLogout.getValue());
     }
-    
+
     public void init() {
-        this.notifications = (Notifications)Phobos.moduleManager.getModuleByClass((Class)Notifications.class);
+        this.notifications = Phobos.moduleManager.getModuleByClass(Notifications.class);
     }
-    
-    public void onTotemPop(final EntityPlayer player) {
+
+    public void onTotemPop(EntityPlayer player) {
         this.popTotem(player);
-        if (!player.equals((Object)TotemPopManager.mc.player)) {
+        if (!player.equals((Object)TotemPopManager.mc.field_71439_g)) {
             this.toAnnounce.add(player);
             this.notifications.totemAnnounce.reset();
         }
     }
-    
-    public void onDeath(final EntityPlayer player) {
-        if (this.getTotemPops(player) != 0 && !player.equals((Object)TotemPopManager.mc.player) && this.notifications.isOn() && (boolean)this.notifications.totemPops.getValue()) {
+
+    public void onDeath(EntityPlayer player) {
+        if (this.getTotemPops(player) != 0 && !player.equals((Object)TotemPopManager.mc.field_71439_g) && this.notifications.isOn() && this.notifications.totemPops.getValue().booleanValue()) {
             int playerNumber = 0;
-            for (final char character : player.getName().toCharArray()) {
+            for (char character : player.func_70005_c_().toCharArray()) {
                 playerNumber += character;
                 playerNumber *= 10;
             }
-            Command.sendOverwriteMessage("§c" + player.getName() + " died after popping §a" + this.getTotemPops(player) + "§c Totem" + ((this.getTotemPops(player) == 1) ? "" : "s") + ".",  playerNumber,  (boolean)this.notifications.totemNoti.getValue());
-            this.toAnnounce.remove(player);
+            Command.sendOverwriteMessage("\u00a7c" + player.func_70005_c_() + " died after popping \u00a7a" + this.getTotemPops(player) + "\u00a7c Totem" + (this.getTotemPops(player) == 1 ? "" : "s") + ".", playerNumber, this.notifications.totemNoti.getValue());
+            this.toAnnounce.remove((Object)player);
         }
         this.resetPops(player);
     }
-    
-    public void onLogout(final EntityPlayer player,  final boolean clearOnLogout) {
+
+    public void onLogout(EntityPlayer player, boolean clearOnLogout) {
         if (clearOnLogout) {
             this.resetPops(player);
         }
     }
-    
-    public void onOwnLogout(final boolean clearOnLogout) {
+
+    public void onOwnLogout(boolean clearOnLogout) {
         if (clearOnLogout) {
             this.clearList();
         }
     }
-    
+
     public void clearList() {
-        this.poplist = new ConcurrentHashMap<EntityPlayer,  Integer>();
+        this.poplist = new ConcurrentHashMap<EntityPlayer, Integer>();
     }
-    
-    public void resetPops(final EntityPlayer player) {
-        this.setTotemPops(player,  0);
+
+    public void resetPops(EntityPlayer player) {
+        this.setTotemPops(player, 0);
     }
-    
-    public void popTotem(final EntityPlayer player) {
-        this.poplist.merge(player,  1,  Integer::sum);
+
+    public void popTotem(EntityPlayer player) {
+        this.poplist.merge(player, 1, Integer::sum);
     }
-    
-    public void setTotemPops(final EntityPlayer player,  final int amount) {
-        this.poplist.put(player,  amount);
+
+    public void setTotemPops(EntityPlayer player, int amount) {
+        this.poplist.put(player, amount);
     }
-    
-    public int getTotemPops(final EntityPlayer player) {
-        final Integer pops = this.poplist.get(player);
+
+    public int getTotemPops(EntityPlayer player) {
+        Integer pops = this.poplist.get((Object)player);
         if (pops == null) {
             return 0;
         }
         return pops;
     }
-    
-    public String getTotemPopString(final EntityPlayer player) {
-        return "§f" + ((this.getTotemPops(player) <= 0) ? "" : ("-" + this.getTotemPops(player) + " "));
+
+    public String getTotemPopString(EntityPlayer player) {
+        return "\u00a7f" + (this.getTotemPops(player) <= 0 ? "" : "-" + this.getTotemPops(player) + " ");
     }
 }
+

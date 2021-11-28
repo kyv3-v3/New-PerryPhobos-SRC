@@ -1,3 +1,21 @@
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.gui.FontRenderer
+ *  net.minecraft.client.gui.GuiButton
+ *  net.minecraft.client.gui.GuiNewChat
+ *  net.minecraft.client.gui.GuiScreen
+ *  net.minecraft.client.gui.GuiUtilRenderComponents
+ *  net.minecraft.client.gui.ScaledResolution
+ *  net.minecraft.client.renderer.GlStateManager
+ *  net.minecraft.client.resources.I18n
+ *  net.minecraft.util.math.MathHelper
+ *  net.minecraft.util.text.ITextComponent
+ *  net.minecraft.util.text.TextComponentString
+ *  net.minecraft.util.text.TextFormatting
+ *  net.minecraftforge.fml.client.config.GuiSlider
+ */
 package me.earth.phobos.features.gui.chat.gui;
 
 import java.io.IOException;
@@ -7,6 +25,7 @@ import java.util.List;
 import me.earth.phobos.features.gui.chat.BetterChat;
 import me.earth.phobos.features.gui.chat.ChatSettings;
 import me.earth.phobos.features.gui.chat.handlers.InjectHandler;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.gui.GuiScreen;
@@ -20,10 +39,10 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.config.GuiSlider;
 
-public class GuiConfig extends GuiScreen
-{
+public class GuiConfig
+extends GuiScreen {
     private final ChatSettings settings;
-    private final List<ITextComponent> exampleChat;
+    private final List<ITextComponent> exampleChat = new ArrayList<ITextComponent>();
     private boolean dragging;
     private int chatLeft;
     private int chatRight;
@@ -35,135 +54,136 @@ public class GuiConfig extends GuiScreen
     private GuiButton smoothButton;
     private GuiSlider scaleSlider;
     private GuiSlider widthSlider;
-    
+
     public GuiConfig() {
-        this.exampleChat = new ArrayList<ITextComponent>();
         this.settings = BetterChat.getSettings();
-        this.exampleChat.add((ITextComponent)new TextComponentString(I18n.format("gui.betterchat.text.example3",  new Object[0])));
-        this.exampleChat.add((ITextComponent)new TextComponentString(I18n.format("gui.betterchat.text.example2",  new Object[0])));
-        this.exampleChat.add((ITextComponent)new TextComponentString(I18n.format("gui.betterchat.text.example1",  new Object[0])));
+        this.exampleChat.add((ITextComponent)new TextComponentString(I18n.func_135052_a((String)"gui.betterchat.text.example3", (Object[])new Object[0])));
+        this.exampleChat.add((ITextComponent)new TextComponentString(I18n.func_135052_a((String)"gui.betterchat.text.example2", (Object[])new Object[0])));
+        this.exampleChat.add((ITextComponent)new TextComponentString(I18n.func_135052_a((String)"gui.betterchat.text.example1", (Object[])new Object[0])));
     }
-    
-    public void initGui() {
+
+    public void func_73866_w_() {
         InjectHandler.chatGUI.configuring = true;
-        this.buttonList.add(this.clearButton = new GuiButton(0,  this.width / 2 - 120,  this.height / 2 - 50,  240,  20,  this.getPropName("clear") + " " + this.getColoredBool("clear",  this.settings.clear)));
-        this.buttonList.add(this.smoothButton = new GuiButton(1,  this.width / 2 - 120,  this.height / 2 - 25,  240,  20,  this.getPropName("smooth") + " " + this.getColoredBool("smooth",  this.settings.smooth)));
-        this.buttonList.add(this.scaleSlider = new GuiSlider(3,  this.width / 2 - 120,  this.height / 2,  240,  20,  this.getPropName("scale") + " ",  "%",  0.0,  100.0,  (double)(this.mc.gameSettings.chatScale * 100.0f),  false,  true));
-        this.buttonList.add(this.widthSlider = new GuiSlider(4,  this.width / 2 - 120,  this.height / 2 + 25,  240,  20,  this.getPropName("width") + " ",  "px",  40.0,  320.0,  (double)GuiNewChat.calculateChatboxWidth(this.mc.gameSettings.chatWidth),  false,  true));
-        this.buttonList.add(new GuiButton(2,  this.width / 2 - 120,  this.height / 2 + 50,  240,  20,  this.getPropName("reset")));
+        this.clearButton = new GuiButton(0, this.field_146294_l / 2 - 120, this.field_146295_m / 2 - 50, 240, 20, this.getPropName("clear") + " " + this.getColoredBool("clear", this.settings.clear));
+        this.field_146292_n.add(this.clearButton);
+        this.smoothButton = new GuiButton(1, this.field_146294_l / 2 - 120, this.field_146295_m / 2 - 25, 240, 20, this.getPropName("smooth") + " " + this.getColoredBool("smooth", this.settings.smooth));
+        this.field_146292_n.add(this.smoothButton);
+        this.scaleSlider = new GuiSlider(3, this.field_146294_l / 2 - 120, this.field_146295_m / 2, 240, 20, this.getPropName("scale") + " ", "%", 0.0, 100.0, (double)(this.field_146297_k.field_71474_y.field_96691_E * 100.0f), false, true);
+        this.field_146292_n.add(this.scaleSlider);
+        this.widthSlider = new GuiSlider(4, this.field_146294_l / 2 - 120, this.field_146295_m / 2 + 25, 240, 20, this.getPropName("width") + " ", "px", 40.0, 320.0, (double)GuiNewChat.func_146233_a((float)this.field_146297_k.field_71474_y.field_96692_F), false, true);
+        this.field_146292_n.add(this.widthSlider);
+        this.field_146292_n.add(new GuiButton(2, this.field_146294_l / 2 - 120, this.field_146295_m / 2 + 50, 240, 20, this.getPropName("reset")));
     }
-    
-    public void drawScreen(final int mouseX,  final int mouseY,  final float partialTicks) {
-        super.drawScreen(mouseX,  mouseY,  partialTicks);
-        this.drawCenteredString(this.mc.fontRenderer,  I18n.format("gui.betterchat.text.title",  new Object[] { TextFormatting.GREEN + TextFormatting.BOLD.toString() + "Better Chat" + TextFormatting.RESET,  TextFormatting.AQUA + TextFormatting.BOLD.toString() + "LlamaLad7" }),  this.width / 2,  this.height / 2 - 75,  16777215);
-        this.drawCenteredString(this.mc.fontRenderer,  I18n.format("gui.betterchat.text.drag",  new Object[0]),  this.width / 2,  this.height / 2 - 63,  16777215);
+
+    public void func_73863_a(int mouseX, int mouseY, float partialTicks) {
+        super.func_73863_a(mouseX, mouseY, partialTicks);
+        this.func_73732_a(this.field_146297_k.field_71466_p, I18n.func_135052_a((String)"gui.betterchat.text.title", (Object[])new Object[]{(Object)TextFormatting.GREEN + TextFormatting.BOLD.toString() + "Better Chat" + (Object)TextFormatting.RESET, (Object)TextFormatting.AQUA + TextFormatting.BOLD.toString() + "LlamaLad7"}), this.field_146294_l / 2, this.field_146295_m / 2 - 75, 0xFFFFFF);
+        this.func_73732_a(this.field_146297_k.field_71466_p, I18n.func_135052_a((String)"gui.betterchat.text.drag", (Object[])new Object[0]), this.field_146294_l / 2, this.field_146295_m / 2 - 63, 0xFFFFFF);
         if (this.dragging) {
-            final ChatSettings settings = this.settings;
-            settings.xOffset += mouseX - this.dragStartX;
-            final ChatSettings settings2 = this.settings;
-            settings2.yOffset += mouseY - this.dragStartY;
+            this.settings.xOffset += mouseX - this.dragStartX;
+            this.settings.yOffset += mouseY - this.dragStartY;
             this.dragStartX = mouseX;
             this.dragStartY = mouseY;
         }
-        this.mc.gameSettings.chatScale = this.scaleSlider.getValueInt() / 100.0f;
-        this.mc.gameSettings.chatWidth = (this.widthSlider.getValueInt() - 40.0f) / 280.0f;
+        this.field_146297_k.field_71474_y.field_96691_E = (float)this.scaleSlider.getValueInt() / 100.0f;
+        this.field_146297_k.field_71474_y.field_96692_F = ((float)this.widthSlider.getValueInt() - 40.0f) / 280.0f;
         this.drawExampleChat();
     }
-    
+
     public void drawExampleChat() {
-        final List<ITextComponent> lines = new ArrayList<ITextComponent>();
-        final int i = MathHelper.floor(InjectHandler.chatGUI.getChatWidth() / InjectHandler.chatGUI.getChatScale());
-        for (final ITextComponent line : this.exampleChat) {
-            lines.addAll(GuiUtilRenderComponents.splitText(line,  i,  this.mc.fontRenderer,  false,  false));
+        ArrayList lines = new ArrayList();
+        int i = MathHelper.func_76141_d((float)((float)InjectHandler.chatGUI.func_146228_f() / InjectHandler.chatGUI.func_146244_h()));
+        for (ITextComponent line : this.exampleChat) {
+            lines.addAll(GuiUtilRenderComponents.func_178908_a((ITextComponent)line, (int)i, (FontRenderer)this.field_146297_k.field_71466_p, (boolean)false, (boolean)false));
         }
         Collections.reverse(lines);
-        GlStateManager.pushMatrix();
-        final ScaledResolution scaledresolution = new ScaledResolution(this.mc);
-        GlStateManager.translate(2.0f + this.settings.xOffset,  8.0f + this.settings.yOffset + scaledresolution.getScaledHeight() - 48.0f,  0.0f);
-        final float f = this.mc.gameSettings.chatOpacity * 0.9f + 0.1f;
-        final float f2 = this.mc.gameSettings.chatScale;
-        final int k = MathHelper.ceil(InjectHandler.chatGUI.getChatWidth() / f2);
-        GlStateManager.scale(f2,  f2,  1.0f);
-        int i2 = 0;
-        final double d0 = 1.0;
+        GlStateManager.func_179094_E();
+        ScaledResolution scaledresolution = new ScaledResolution(this.field_146297_k);
+        GlStateManager.func_179109_b((float)(2.0f + (float)this.settings.xOffset), (float)(8.0f + (float)this.settings.yOffset + (float)scaledresolution.func_78328_b() - 48.0f), (float)0.0f);
+        float f = this.field_146297_k.field_71474_y.field_74357_r * 0.9f + 0.1f;
+        float f1 = this.field_146297_k.field_71474_y.field_96691_E;
+        int k = MathHelper.func_76123_f((float)((float)InjectHandler.chatGUI.func_146228_f() / f1));
+        GlStateManager.func_179152_a((float)f1, (float)f1, (float)1.0f);
+        int i1 = 0;
+        double d0 = 1.0;
         int l1 = (int)(255.0 * d0);
-        l1 *= (int)f;
-        GlStateManager.enableAlpha();
-        GlStateManager.enableBlend();
+        l1 = (int)((float)l1 * f);
+        GlStateManager.func_179141_d();
+        GlStateManager.func_179147_l();
         this.chatLeft = this.settings.xOffset;
-        this.chatRight = (int)(this.settings.xOffset + (k + 4) * f2);
-        this.chatBottom = 8 + this.settings.yOffset + scaledresolution.getScaledHeight() - 48;
-        for (final ITextComponent message : lines) {
-            final int j2 = -i2 * 9;
+        this.chatRight = (int)((float)this.settings.xOffset + (float)(k + 4) * f1);
+        this.chatBottom = 8 + this.settings.yOffset + scaledresolution.func_78328_b() - 48;
+        for (ITextComponent message : lines) {
+            int j2 = -i1 * 9;
             if (!this.settings.clear) {
-                drawRect(-2,  j2 - 9,  k + 4,  j2,  l1 / 2 << 24);
+                GuiConfig.func_73734_a((int)-2, (int)(j2 - 9), (int)(k + 4), (int)j2, (int)(l1 / 2 << 24));
             }
-            this.mc.fontRenderer.drawStringWithShadow(message.getFormattedText(),  0.0f,  (float)(j2 - 8),  16777215 + (l1 << 24));
-            ++i2;
+            this.field_146297_k.field_71466_p.func_175063_a(message.func_150254_d(), 0.0f, (float)(j2 - 8), 0xFFFFFF + (l1 << 24));
+            ++i1;
         }
-        this.chatTop = (int)(8 + this.settings.yOffset + scaledresolution.getScaledHeight() - 48 + -i2 * 9 * f2);
-        GlStateManager.disableAlpha();
-        GlStateManager.disableBlend();
-        GlStateManager.popMatrix();
+        this.chatTop = (int)((float)(8 + this.settings.yOffset + scaledresolution.func_78328_b() - 48) + (float)(-i1 * 9) * f1);
+        GlStateManager.func_179118_c();
+        GlStateManager.func_179084_k();
+        GlStateManager.func_179121_F();
     }
-    
-    public void mouseClicked(final int mouseX,  final int mouseY,  final int mouseButton) throws IOException {
-        super.mouseClicked(mouseX,  mouseY,  mouseButton);
+
+    public void func_73864_a(int mouseX, int mouseY, int mouseButton) throws IOException {
+        super.func_73864_a(mouseX, mouseY, mouseButton);
         if (mouseButton == 0 && mouseX >= this.chatLeft && mouseX <= this.chatRight && mouseY >= this.chatTop && mouseY <= this.chatBottom) {
             this.dragging = true;
             this.dragStartX = mouseX;
             this.dragStartY = mouseY;
         }
     }
-    
-    public void mouseReleased(final int mouseX,  final int mouseY,  final int mouseButton) {
-        super.mouseReleased(mouseX,  mouseY,  mouseButton);
+
+    public void func_146286_b(int mouseX, int mouseY, int mouseButton) {
+        super.func_146286_b(mouseX, mouseY, mouseButton);
         this.dragging = false;
     }
-    
-    public void onGuiClosed() {
+
+    public void func_146281_b() {
         this.settings.saveConfig();
         InjectHandler.chatGUI.configuring = false;
-        this.mc.gameSettings.saveOptions();
+        this.field_146297_k.field_71474_y.func_74303_b();
     }
-    
-    protected void actionPerformed(final GuiButton button) {
-        switch (button.id) {
+
+    protected void func_146284_a(GuiButton button) {
+        switch (button.field_146127_k) {
             case 0: {
                 this.settings.clear = !this.settings.clear;
-                button.displayString = this.getPropName("clear") + " " + this.getColoredBool("clear",  this.settings.clear);
+                button.field_146126_j = this.getPropName("clear") + " " + this.getColoredBool("clear", this.settings.clear);
                 break;
             }
             case 1: {
                 this.settings.smooth = !this.settings.smooth;
-                button.displayString = this.getPropName("smooth") + " " + this.getColoredBool("smooth",  this.settings.smooth);
+                button.field_146126_j = this.getPropName("smooth") + " " + this.getColoredBool("smooth", this.settings.smooth);
                 break;
             }
             case 2: {
                 this.settings.resetConfig();
-                this.clearButton.displayString = this.getPropName("clear") + " " + this.getColoredBool("clear",  this.settings.clear);
-                this.smoothButton.displayString = this.getPropName("smooth") + " " + this.getColoredBool("smooth",  this.settings.smooth);
-                this.scaleSlider.setValue((double)(this.mc.gameSettings.chatScale * 100.0f));
+                this.clearButton.field_146126_j = this.getPropName("clear") + " " + this.getColoredBool("clear", this.settings.clear);
+                this.smoothButton.field_146126_j = this.getPropName("smooth") + " " + this.getColoredBool("smooth", this.settings.smooth);
+                this.scaleSlider.setValue((double)(this.field_146297_k.field_71474_y.field_96691_E * 100.0f));
                 this.scaleSlider.updateSlider();
-                this.widthSlider.setValue((double)GuiNewChat.calculateChatboxWidth(this.mc.gameSettings.chatWidth));
+                this.widthSlider.setValue((double)GuiNewChat.func_146233_a((float)this.field_146297_k.field_71474_y.field_96692_F));
                 this.widthSlider.updateSlider();
-                break;
             }
         }
     }
-    
-    public boolean doesGuiPauseGame() {
+
+    public boolean func_73868_f() {
         return false;
     }
-    
-    private String getColoredBool(final String prop,  final boolean bool) {
+
+    private String getColoredBool(String prop, boolean bool) {
         if (bool) {
-            return TextFormatting.GREEN + I18n.format("gui.betterchat.text." + prop + ".enabled",  new Object[0]);
+            return (Object)TextFormatting.GREEN + I18n.func_135052_a((String)("gui.betterchat.text." + prop + ".enabled"), (Object[])new Object[0]);
         }
-        return TextFormatting.RED + I18n.format("gui.betterchat.text." + prop + ".disabled",  new Object[0]);
+        return (Object)TextFormatting.RED + I18n.func_135052_a((String)("gui.betterchat.text." + prop + ".disabled"), (Object[])new Object[0]);
     }
-    
-    private String getPropName(final String prop) {
-        return I18n.format("gui.betterchat.text." + prop + ".name",  new Object[0]);
+
+    private String getPropName(String prop) {
+        return I18n.func_135052_a((String)("gui.betterchat.text." + prop + ".name"), (Object[])new Object[0]);
     }
 }
+

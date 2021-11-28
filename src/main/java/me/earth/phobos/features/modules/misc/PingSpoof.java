@@ -1,84 +1,85 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.network.Packet
+ *  net.minecraft.network.play.client.CPacketKeepAlive
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.misc;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import java.util.*;
-import net.minecraft.network.*;
-import java.util.concurrent.*;
-import me.earth.phobos.event.events.*;
-import net.minecraft.network.play.client.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import me.earth.phobos.util.*;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import me.earth.phobos.event.events.PacketEvent;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.MathUtil;
+import me.earth.phobos.util.TimerUtil;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.CPacketKeepAlive;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class PingSpoof extends Module
-{
-    private final Setting<Boolean> seconds;
-    private final Setting<Integer> delay;
-    private final Setting<Integer> secondDelay;
-    private final Setting<Boolean> offOnLogout;
-    private final Queue<Packet<?>> packets;
-    private final TimerUtil timer;
-    private boolean receive;
-    
+public class PingSpoof
+extends Module {
+    private final Setting<Boolean> seconds = this.register(new Setting<Boolean>("Seconds", false));
+    private final Setting<Integer> delay = this.register(new Setting<Object>("DelayMS", Integer.valueOf(20), Integer.valueOf(0), Integer.valueOf(1000), v -> this.seconds.getValue() == false));
+    private final Setting<Integer> secondDelay = this.register(new Setting<Object>("DelayS", Integer.valueOf(5), Integer.valueOf(0), Integer.valueOf(30), v -> this.seconds.getValue()));
+    private final Setting<Boolean> offOnLogout = this.register(new Setting<Boolean>("Logout", false));
+    private final Queue<Packet<?>> packets = new ConcurrentLinkedQueue();
+    private final TimerUtil timer = new TimerUtil();
+    private boolean receive = true;
+
     public PingSpoof() {
-        super("PingSpoof",  "Spoofs your ping!",  Category.MISC,  true,  false,  false);
-        this.seconds = (Setting<Boolean>)this.register(new Setting("Seconds", false));
-        this.delay = (Setting<Integer>)this.register(new Setting("DelayMS", 20, 0, 1000,  v -> !this.seconds.getValue()));
-        this.secondDelay = (Setting<Integer>)this.register(new Setting("DelayS", 5, 0, 30,  v -> this.seconds.getValue()));
-        this.offOnLogout = (Setting<Boolean>)this.register(new Setting("Logout", false));
-        this.packets = new ConcurrentLinkedQueue<Packet<?>>();
-        this.timer = new TimerUtil();
-        this.receive = true;
+        super("PingSpoof", "Spoofs your ping!", Module.Category.MISC, true, false, false);
     }
-    
+
     @Override
     public void onLoad() {
-        if (this.offOnLogout.getValue()) {
+        if (this.offOnLogout.getValue().booleanValue()) {
             this.disable();
         }
     }
-    
+
     @Override
     public void onLogout() {
-        if (this.offOnLogout.getValue()) {
+        if (this.offOnLogout.getValue().booleanValue()) {
             this.disable();
         }
     }
-    
+
     @Override
     public void onUpdate() {
         this.clearQueue();
     }
-    
+
     @Override
     public void onDisable() {
         this.clearQueue();
     }
-    
+
     @SubscribeEvent
-    public void onPacketSend(final PacketEvent.Send event) {
-        if (this.receive && PingSpoof.mc.player != null && !PingSpoof.mc.isSingleplayer() && PingSpoof.mc.player.isEntityAlive() && event.getStage() == 0 && event.getPacket() instanceof CPacketKeepAlive) {
+    public void onPacketSend(PacketEvent.Send event) {
+        if (this.receive && PingSpoof.mc.field_71439_g != null && !mc.func_71356_B() && PingSpoof.mc.field_71439_g.func_70089_S() && event.getStage() == 0 && event.getPacket() instanceof CPacketKeepAlive) {
             this.packets.add((Packet<?>)event.getPacket());
             event.setCanceled(true);
         }
     }
-    
+
     public void clearQueue() {
-        if (PingSpoof.mc.player != null && !PingSpoof.mc.isSingleplayer() && PingSpoof.mc.player.isEntityAlive() && ((!this.seconds.getValue() && this.timer.passedMs(this.delay.getValue())) || (this.seconds.getValue() && this.timer.passedS(this.secondDelay.getValue())))) {
-            final double limit = MathUtil.getIncremental(Math.random() * 10.0,  1.0);
+        if (PingSpoof.mc.field_71439_g != null && !mc.func_71356_B() && PingSpoof.mc.field_71439_g.func_70089_S() && (!this.seconds.getValue().booleanValue() && this.timer.passedMs(this.delay.getValue().intValue()) || this.seconds.getValue().booleanValue() && this.timer.passedS(this.secondDelay.getValue().intValue()))) {
+            double limit = MathUtil.getIncremental(Math.random() * 10.0, 1.0);
             this.receive = false;
-            for (int i = 0; i < limit; ++i) {
-                final Packet<?> packet = this.packets.poll();
+            int i = 0;
+            while ((double)i < limit) {
+                Packet<?> packet = this.packets.poll();
                 if (packet != null) {
-                    PingSpoof.mc.player.connection.sendPacket((Packet)packet);
+                    PingSpoof.mc.field_71439_g.field_71174_a.func_147297_a(packet);
                 }
+                ++i;
             }
             this.timer.reset();
             this.receive = true;
         }
     }
 }
+

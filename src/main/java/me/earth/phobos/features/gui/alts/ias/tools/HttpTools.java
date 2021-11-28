@@ -1,17 +1,16 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ */
 package me.earth.phobos.features.gui.alts.ias.tools;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
 
-public class HttpTools
-{
-    public static boolean ping(final String url) {
+public class HttpTools {
+    public static boolean ping(String url) {
         try {
-            final URLConnection con = new URL(url).openConnection();
+            URLConnection con = new URL(url).openConnection();
             con.connect();
             return true;
         }
@@ -20,3 +19,4 @@ public class HttpTools
         }
     }
 }
+

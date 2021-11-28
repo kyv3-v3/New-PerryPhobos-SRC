@@ -1,3 +1,20 @@
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.block.BlockAir
+ *  net.minecraft.block.BlockEndPortalFrame
+ *  net.minecraft.block.BlockEnderChest
+ *  net.minecraft.block.BlockObsidian
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.init.Blocks
+ *  net.minecraft.network.Packet
+ *  net.minecraft.network.play.client.CPacketChatMessage
+ *  net.minecraft.util.EnumHand
+ *  net.minecraft.util.math.BlockPos
+ *  net.minecraft.util.math.Vec3d
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.combat;
 
 import java.awt.Color;
@@ -30,57 +47,59 @@ import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockEndPortalFrame;
 import net.minecraft.block.BlockEnderChest;
 import net.minecraft.block.BlockObsidian;
+import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
+import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class Surround extends Module
-{
+public class Surround
+extends Module {
     public static boolean isPlacing;
-    private final Setting<Boolean> server;
-    private final Setting<Integer> delay;
-    private final Setting<Integer> blocksPerTick;
-    private final Setting<Boolean> rotate;
-    private final Setting<Boolean> raytrace;
-    private final Setting<InventoryUtil.Switch> switchMode;
-    private final Setting<Boolean> center;
-    private final Setting<Boolean> helpingBlocks;
-    private final Setting<Boolean> intelligent;
-    private final Setting<Boolean> antiPedo;
-    private final Setting<Integer> extender;
-    private final Setting<Boolean> extendMove;
-    private final Setting<MovementMode> movementMode;
-    private final Setting<Double> speed;
-    private final Setting<Integer> eventMode;
-    private final Setting<Boolean> floor;
-    private final Setting<Boolean> echests;
-    private final Setting<Boolean> blockface;
-    private final Setting<Boolean> noGhost;
-    private final Setting<Boolean> info;
-    private final Setting<Integer> retryer;
-    private final Setting<Boolean> endPortals;
-    private final Setting<Boolean> render;
-    public final Setting<Boolean> colorSync;
-    public final Setting<Boolean> box;
-    private final Setting<Integer> boxAlpha;
-    public final Setting<Boolean> outline;
-    public final Setting<Boolean> customOutline;
-    private final Setting<Integer> cRed;
-    private final Setting<Integer> cGreen;
-    private final Setting<Integer> cBlue;
-    private final Setting<Integer> cAlpha;
-    private final Setting<Float> lineWidth;
-    private final Setting<Integer> red;
-    private final Setting<Integer> green;
-    private final Setting<Integer> blue;
-    private final Setting<Integer> alpha;
-    private final TimerUtil timer;
-    private final TimerUtil retryTimer;
-    private final Set<Vec3d> extendingBlocks;
-    private final Map<BlockPos,  Integer> retries;
+    private final Setting<Boolean> server = this.register(new Setting<Boolean>("Server", false));
+    private final Setting<Integer> delay = this.register(new Setting<Integer>("Delay/Place", 50, 0, 250));
+    private final Setting<Integer> blocksPerTick = this.register(new Setting<Integer>("Block/Place", 8, 1, 20));
+    private final Setting<Boolean> rotate = this.register(new Setting<Boolean>("Rotate", true));
+    private final Setting<Boolean> raytrace = this.register(new Setting<Boolean>("Raytrace", false));
+    private final Setting<InventoryUtil.Switch> switchMode = this.register(new Setting<InventoryUtil.Switch>("Switch", InventoryUtil.Switch.NORMAL));
+    private final Setting<Boolean> center = this.register(new Setting<Boolean>("Center", false));
+    private final Setting<Boolean> helpingBlocks = this.register(new Setting<Boolean>("HelpingBlocks", true));
+    private final Setting<Boolean> intelligent = this.register(new Setting<Object>("Intelligent", Boolean.valueOf(false), v -> this.helpingBlocks.getValue()));
+    private final Setting<Boolean> antiPedo = this.register(new Setting<Boolean>("NoPedo", false));
+    private final Setting<Integer> extender = this.register(new Setting<Integer>("Extend", 1, 1, 4));
+    private final Setting<Boolean> extendMove = this.register(new Setting<Object>("MoveExtend", Boolean.valueOf(false), v -> this.extender.getValue() > 1));
+    private final Setting<MovementMode> movementMode = this.register(new Setting<MovementMode>("Movement", MovementMode.STATIC));
+    private final Setting<Double> speed = this.register(new Setting<Object>("Speed", 10.0, 0.0, 30.0, v -> this.movementMode.getValue() == MovementMode.LIMIT || this.movementMode.getValue() == MovementMode.OFF, "Maximum Movement Speed"));
+    private final Setting<Integer> eventMode = this.register(new Setting<Integer>("Updates", 3, 1, 3));
+    private final Setting<Boolean> floor = this.register(new Setting<Boolean>("Floor", false));
+    private final Setting<Boolean> echests = this.register(new Setting<Boolean>("Echests", false));
+    private final Setting<Boolean> blockface = this.register(new Setting<Boolean>("Block Face", false));
+    private final Setting<Boolean> noGhost = this.register(new Setting<Boolean>("Packet", false));
+    private final Setting<Boolean> info = this.register(new Setting<Boolean>("Info", false));
+    private final Setting<Integer> retryer = this.register(new Setting<Integer>("Retries", 4, 1, 15));
+    private final Setting<Boolean> endPortals = this.register(new Setting<Boolean>("EndPortals", false));
+    private final Setting<Boolean> render = this.register(new Setting<Boolean>("Render", true));
+    public final Setting<Boolean> colorSync = this.register(new Setting<Object>("Sync", Boolean.valueOf(false), v -> this.render.getValue()));
+    public final Setting<Boolean> box = this.register(new Setting<Object>("Box", Boolean.valueOf(false), v -> this.render.getValue()));
+    private final Setting<Integer> boxAlpha = this.register(new Setting<Object>("BoxAlpha", Integer.valueOf(125), Integer.valueOf(0), Integer.valueOf(255), v -> this.box.getValue() != false && this.render.getValue() != false));
+    public final Setting<Boolean> outline = this.register(new Setting<Object>("Outline", Boolean.valueOf(true), v -> this.render.getValue()));
+    public final Setting<Boolean> customOutline = this.register(new Setting<Object>("CustomLine", Boolean.valueOf(false), v -> this.outline.getValue() != false && this.render.getValue() != false));
+    private final Setting<Integer> cRed = this.register(new Setting<Object>("OL-Red", Integer.valueOf(255), Integer.valueOf(0), Integer.valueOf(255), v -> this.customOutline.getValue() != false && this.outline.getValue() != false && this.render.getValue() != false));
+    private final Setting<Integer> cGreen = this.register(new Setting<Object>("OL-Green", Integer.valueOf(255), Integer.valueOf(0), Integer.valueOf(255), v -> this.customOutline.getValue() != false && this.outline.getValue() != false && this.render.getValue() != false));
+    private final Setting<Integer> cBlue = this.register(new Setting<Object>("OL-Blue", Integer.valueOf(255), Integer.valueOf(0), Integer.valueOf(255), v -> this.customOutline.getValue() != false && this.outline.getValue() != false && this.render.getValue() != false));
+    private final Setting<Integer> cAlpha = this.register(new Setting<Object>("OL-Alpha", Integer.valueOf(255), Integer.valueOf(0), Integer.valueOf(255), v -> this.customOutline.getValue() != false && this.outline.getValue() != false && this.render.getValue() != false));
+    private final Setting<Float> lineWidth = this.register(new Setting<Object>("LineWidth", Float.valueOf(1.0f), Float.valueOf(0.1f), Float.valueOf(5.0f), v -> this.outline.getValue() != false && this.render.getValue() != false));
+    private final Setting<Integer> red = this.register(new Setting<Object>("Red", Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(255), v -> this.render.getValue()));
+    private final Setting<Integer> green = this.register(new Setting<Object>("Green", Integer.valueOf(255), Integer.valueOf(0), Integer.valueOf(255), v -> this.render.getValue()));
+    private final Setting<Integer> blue = this.register(new Setting<Object>("Blue", Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(255), v -> this.render.getValue()));
+    private final Setting<Integer> alpha = this.register(new Setting<Object>("Alpha", Integer.valueOf(255), Integer.valueOf(0), Integer.valueOf(255), v -> this.render.getValue()));
+    private final TimerUtil timer = new TimerUtil();
+    private final TimerUtil retryTimer = new TimerUtil();
+    private final Set<Vec3d> extendingBlocks = new HashSet<Vec3d>();
+    private final Map<BlockPos, Integer> retries = new HashMap<BlockPos, Integer>();
     private int isSafe;
     private BlockPos startPos;
     private boolean didPlace;
@@ -88,97 +107,52 @@ public class Surround extends Module
     private int lastHotbarSlot;
     private boolean isSneaking;
     private int placements;
-    private int extenders;
-    private int obbySlot;
+    private int extenders = 1;
+    private int obbySlot = -1;
     private boolean offHand;
-    private List<BlockPos> placeVectors;
-    
+    private List<BlockPos> placeVectors = new ArrayList<BlockPos>();
+
     public Surround() {
-        super("Surround",  "Surrounds you with Obsidian.",  Category.COMBAT,  true,  false,  false);
-        this.server = (Setting<Boolean>)this.register(new Setting("Server", false));
-        this.delay = (Setting<Integer>)this.register(new Setting("Delay/Place", 50, 0, 250));
-        this.blocksPerTick = (Setting<Integer>)this.register(new Setting("Block/Place", 8, 1, 20));
-        this.rotate = (Setting<Boolean>)this.register(new Setting("Rotate", true));
-        this.raytrace = (Setting<Boolean>)this.register(new Setting("Raytrace", false));
-        this.switchMode = (Setting<InventoryUtil.Switch>)this.register(new Setting("Switch", InventoryUtil.Switch.NORMAL));
-        this.center = (Setting<Boolean>)this.register(new Setting("Center", false));
-        this.helpingBlocks = (Setting<Boolean>)this.register(new Setting("HelpingBlocks", true));
-        this.intelligent = (Setting<Boolean>)this.register(new Setting("Intelligent", false,  v -> this.helpingBlocks.getValue()));
-        this.antiPedo = (Setting<Boolean>)this.register(new Setting("NoPedo", false));
-        this.extender = (Setting<Integer>)this.register(new Setting("Extend", 1, 1, 4));
-        this.extendMove = (Setting<Boolean>)this.register(new Setting("MoveExtend", false,  v -> this.extender.getValue() > 1));
-        this.movementMode = (Setting<MovementMode>)this.register(new Setting("Movement", MovementMode.STATIC));
-        this.speed = (Setting<Double>)this.register(new Setting("Speed", 10.0, 0.0, 30.0,  v -> this.movementMode.getValue() == MovementMode.LIMIT || this.movementMode.getValue() == MovementMode.OFF,  "Maximum Movement Speed"));
-        this.eventMode = (Setting<Integer>)this.register(new Setting("Updates", 3, 1, 3));
-        this.floor = (Setting<Boolean>)this.register(new Setting("Floor", false));
-        this.echests = (Setting<Boolean>)this.register(new Setting("Echests", false));
-        this.blockface = (Setting<Boolean>)this.register(new Setting("Block Face", false));
-        this.noGhost = (Setting<Boolean>)this.register(new Setting("Packet", false));
-        this.info = (Setting<Boolean>)this.register(new Setting("Info", false));
-        this.retryer = (Setting<Integer>)this.register(new Setting("Retries", 4, 1, 15));
-        this.endPortals = (Setting<Boolean>)this.register(new Setting("EndPortals", false));
-        this.render = (Setting<Boolean>)this.register(new Setting("Render", true));
-        this.colorSync = (Setting<Boolean>)this.register(new Setting("Sync", false,  v -> this.render.getValue()));
-        this.box = (Setting<Boolean>)this.register(new Setting("Box", false,  v -> this.render.getValue()));
-        this.boxAlpha = (Setting<Integer>)this.register(new Setting("BoxAlpha", 125, 0, 255,  v -> this.box.getValue() && this.render.getValue()));
-        this.outline = (Setting<Boolean>)this.register(new Setting("Outline", true,  v -> this.render.getValue()));
-        this.customOutline = (Setting<Boolean>)this.register(new Setting("CustomLine", false,  v -> this.outline.getValue() && this.render.getValue()));
-        this.cRed = (Setting<Integer>)this.register(new Setting("OL-Red", 255, 0, 255,  v -> this.customOutline.getValue() && this.outline.getValue() && this.render.getValue()));
-        this.cGreen = (Setting<Integer>)this.register(new Setting("OL-Green", 255, 0, 255,  v -> this.customOutline.getValue() && this.outline.getValue() && this.render.getValue()));
-        this.cBlue = (Setting<Integer>)this.register(new Setting("OL-Blue", 255, 0, 255,  v -> this.customOutline.getValue() && this.outline.getValue() && this.render.getValue()));
-        this.cAlpha = (Setting<Integer>)this.register(new Setting("OL-Alpha", 255, 0, 255,  v -> this.customOutline.getValue() && this.outline.getValue() && this.render.getValue()));
-        this.lineWidth = (Setting<Float>)this.register(new Setting("LineWidth", 1.0f, 0.1f, 5.0f,  v -> this.outline.getValue() && this.render.getValue()));
-        this.red = (Setting<Integer>)this.register(new Setting("Red", 0, 0, 255,  v -> this.render.getValue()));
-        this.green = (Setting<Integer>)this.register(new Setting("Green", 255, 0, 255,  v -> this.render.getValue()));
-        this.blue = (Setting<Integer>)this.register(new Setting("Blue", 0, 0, 255,  v -> this.render.getValue()));
-        this.alpha = (Setting<Integer>)this.register(new Setting("Alpha", 255, 0, 255,  v -> this.render.getValue()));
-        this.timer = new TimerUtil();
-        this.retryTimer = new TimerUtil();
-        this.extendingBlocks = new HashSet<Vec3d>();
-        this.retries = new HashMap<BlockPos,  Integer>();
-        this.extenders = 1;
-        this.obbySlot = -1;
-        this.placeVectors = new ArrayList<BlockPos>();
+        super("Surround", "Surrounds you with Obsidian.", Module.Category.COMBAT, true, false, false);
     }
-    
+
     @Override
     public void onEnable() {
-        if (fullNullCheck()) {
+        if (Surround.fullNullCheck()) {
             this.disable();
         }
-        this.lastHotbarSlot = Surround.mc.player.inventory.currentItem;
-        this.startPos = new BlockPos(MathUtil.round(Surround.mc.player.posX,  0),  Math.ceil(Surround.mc.player.posY),  MathUtil.round(Surround.mc.player.posZ,  0));
-        if (this.center.getValue() && !Phobos.moduleManager.isModuleEnabled("Freecam")) {
-            if (Surround.mc.world.getBlockState(new BlockPos(Surround.mc.player.getPositionVector())).getBlock() == Blocks.WEB) {
-                Phobos.positionManager.setPositionPacket(Surround.mc.player.posX,  this.startPos.getY(),  Surround.mc.player.posZ,  true,  true,  true);
-            }
-            else {
-                Phobos.positionManager.setPositionPacket(this.startPos.getX() + 0.5,  this.startPos.getY(),  this.startPos.getZ() + 0.5,  true,  true,  true);
+        this.lastHotbarSlot = Surround.mc.field_71439_g.field_71071_by.field_70461_c;
+        this.startPos = new BlockPos(MathUtil.round(Surround.mc.field_71439_g.field_70165_t, 0), Math.ceil(Surround.mc.field_71439_g.field_70163_u), MathUtil.round(Surround.mc.field_71439_g.field_70161_v, 0));
+        if (this.center.getValue().booleanValue() && !Phobos.moduleManager.isModuleEnabled("Freecam")) {
+            if (Surround.mc.field_71441_e.func_180495_p(new BlockPos(Surround.mc.field_71439_g.func_174791_d())).func_177230_c() == Blocks.field_150321_G) {
+                Phobos.positionManager.setPositionPacket(Surround.mc.field_71439_g.field_70165_t, this.startPos.func_177956_o(), Surround.mc.field_71439_g.field_70161_v, true, true, true);
+            } else {
+                Phobos.positionManager.setPositionPacket((double)this.startPos.func_177958_n() + 0.5, this.startPos.func_177956_o(), (double)this.startPos.func_177952_p() + 0.5, true, true, true);
             }
         }
         if (this.shouldServer()) {
-            Surround.mc.player.connection.sendPacket((Packet)new CPacketChatMessage("@Serverprefix" + ClickGui.getInstance().prefix.getValue()));
-            Surround.mc.player.connection.sendPacket((Packet)new CPacketChatMessage("@Server" + ClickGui.getInstance().prefix.getValue() + "module Surround set Enabled true"));
+            Surround.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketChatMessage("@Serverprefix" + ClickGui.getInstance().prefix.getValue()));
+            Surround.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketChatMessage("@Server" + ClickGui.getInstance().prefix.getValue() + "module Surround set Enabled true"));
             return;
         }
         this.retries.clear();
         this.retryTimer.reset();
     }
-    
+
     @Override
     public void onTick() {
         if (this.eventMode.getValue() == 3) {
             this.doFeetPlace();
         }
     }
-    
+
     @SubscribeEvent
-    public void onUpdateWalkingPlayer(final UpdateWalkingPlayerEvent event) {
+    public void onUpdateWalkingPlayer(UpdateWalkingPlayerEvent event) {
         if (event.getStage() == 0 && this.eventMode.getValue() == 2) {
             this.doFeetPlace();
         }
     }
-    
+
     @Override
     public void onUpdate() {
         if (this.eventMode.getValue() == 1) {
@@ -188,76 +162,70 @@ public class Surround extends Module
             this.placeVectors = new ArrayList<BlockPos>();
         }
     }
-    
+
     @Override
     public void onDisable() {
-        if (nullCheck()) {
+        if (Surround.nullCheck()) {
             return;
         }
         if (this.shouldServer()) {
-            Surround.mc.player.connection.sendPacket((Packet)new CPacketChatMessage("@Serverprefix" + ClickGui.getInstance().prefix.getValue()));
-            Surround.mc.player.connection.sendPacket((Packet)new CPacketChatMessage("@Server" + ClickGui.getInstance().prefix.getValue() + "module Surround set Enabled false"));
+            Surround.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketChatMessage("@Serverprefix" + ClickGui.getInstance().prefix.getValue()));
+            Surround.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketChatMessage("@Server" + ClickGui.getInstance().prefix.getValue() + "module Surround set Enabled false"));
             return;
         }
-        Surround.isPlacing = false;
+        isPlacing = false;
         this.isSneaking = EntityUtil.stopSneaking(this.isSneaking);
         this.switchItem(true);
     }
-    
+
     @Override
-    public void onRender3D(final Render3DEvent event) {
-        if (this.render.getValue() && (this.isSafe == 0 || this.isSafe == 1)) {
+    public void onRender3D(Render3DEvent event) {
+        if (this.render.getValue().booleanValue() && (this.isSafe == 0 || this.isSafe == 1)) {
             this.placeVectors = this.fuckYou3arthqu4keYourCodeIsGarbage();
-            for (final BlockPos pos : this.placeVectors) {
-                if (!(Surround.mc.world.getBlockState(pos).getBlock() instanceof BlockAir)) {
-                    continue;
-                }
-                RenderUtil.drawBoxESP(pos,  ((boolean)this.colorSync.getValue()) ? Colors.INSTANCE.getCurrentColor() : new Color(this.red.getValue(),  this.green.getValue(),  this.blue.getValue(),  this.alpha.getValue()),  this.customOutline.getValue(),  new Color(this.cRed.getValue(),  this.cGreen.getValue(),  this.cBlue.getValue(),  this.cAlpha.getValue()),  this.lineWidth.getValue(),  this.outline.getValue(),  this.box.getValue(),  this.boxAlpha.getValue(),  false);
+            for (BlockPos pos : this.placeVectors) {
+                if (!(Surround.mc.field_71441_e.func_180495_p(pos).func_177230_c() instanceof BlockAir)) continue;
+                RenderUtil.drawBoxESP(pos, this.colorSync.getValue() != false ? Colors.INSTANCE.getCurrentColor() : new Color(this.red.getValue(), this.green.getValue(), this.blue.getValue(), this.alpha.getValue()), this.customOutline.getValue(), new Color(this.cRed.getValue(), this.cGreen.getValue(), this.cBlue.getValue(), this.cAlpha.getValue()), this.lineWidth.getValue().floatValue(), this.outline.getValue(), this.box.getValue(), this.boxAlpha.getValue(), false);
             }
         }
     }
-    
+
     @Override
     public String getDisplayInfo() {
-        if (!this.info.getValue()) {
+        if (!this.info.getValue().booleanValue()) {
             return null;
         }
         switch (this.isSafe) {
             case 0: {
-                return "§cUnsafe";
+                return "\u00a7cUnsafe";
             }
             case 1: {
-                return "§eSecure";
-            }
-            default: {
-                return "§aSecure";
+                return "\u00a7eSecure";
             }
         }
+        return "\u00a7aSecure";
     }
-    
+
     private boolean shouldServer() {
-        return PingBypass.getInstance().isConnected() && this.server.getValue();
+        return PingBypass.getInstance().isConnected() && this.server.getValue() != false;
     }
-    
+
     private void doFeetPlace() {
         if (this.check()) {
             return;
         }
-        if (this.blockface.getValue()) {
+        if (this.blockface.getValue().booleanValue()) {
             this.isSafe = 0;
-            this.placeBlocks(Surround.mc.player.getPositionVector().add(0.0,  0.125,  0.0),  EntityUtil.getUnsafeBlockArray((Entity)Surround.mc.player,  1,  this.floor.getValue(),  true),  this.helpingBlocks.getValue(),  false,  false);
+            this.placeBlocks(Surround.mc.field_71439_g.func_174791_d().func_72441_c(0.0, 0.125, 0.0), EntityUtil.getUnsafeBlockArray((Entity)Surround.mc.field_71439_g, 1, this.floor.getValue(), true), this.helpingBlocks.getValue(), false, false);
         }
-        if (!EntityUtil.isSafe((Entity)Surround.mc.player,  0,  this.floor.getValue(),  true)) {
+        if (!EntityUtil.isSafe((Entity)Surround.mc.field_71439_g, 0, this.floor.getValue(), true)) {
             this.isSafe = 0;
-            this.placeBlocks(Surround.mc.player.getPositionVector().add(0.0,  0.125,  0.0),  EntityUtil.getUnsafeBlockArray((Entity)Surround.mc.player,  0,  this.floor.getValue(),  true),  this.helpingBlocks.getValue(),  false,  false);
-        }
-        else if (!EntityUtil.isSafe((Entity)Surround.mc.player,  -1,  false,  true)) {
+            this.placeBlocks(Surround.mc.field_71439_g.func_174791_d().func_72441_c(0.0, 0.125, 0.0), EntityUtil.getUnsafeBlockArray((Entity)Surround.mc.field_71439_g, 0, this.floor.getValue(), true), this.helpingBlocks.getValue(), false, false);
+        } else if (!EntityUtil.isSafe((Entity)Surround.mc.field_71439_g, -1, false, true)) {
             this.isSafe = 1;
-            if (this.antiPedo.getValue()) {
-                this.placeBlocks(Surround.mc.player.getPositionVector().add(0.0,  0.125,  0.0),  EntityUtil.getUnsafeBlockArray((Entity)Surround.mc.player,  -1,  false,  true),  false,  false,  true);
+            if (this.antiPedo.getValue().booleanValue()) {
+                this.placeBlocks(Surround.mc.field_71439_g.func_174791_d().func_72441_c(0.0, 0.125, 0.0), EntityUtil.getUnsafeBlockArray((Entity)Surround.mc.field_71439_g, -1, false, true), false, false, true);
             }
-        }
-        else {
+        } else {
             this.isSafe = 2;
         }
         this.processExtendingBlocks();
@@ -265,116 +233,109 @@ public class Surround extends Module
             this.timer.reset();
         }
     }
-    
+
     private void processExtendingBlocks() {
         if (this.extendingBlocks.size() == 2 && this.extenders < this.extender.getValue()) {
-            final Vec3d[] array = new Vec3d[2];
+            Vec3d[] array = new Vec3d[2];
             int i = 0;
-            for (final Vec3d extendingBlock : this.extendingBlocks) {
-                array[i] = extendingBlock;
+            Iterator<Vec3d> iterator = this.extendingBlocks.iterator();
+            while (iterator.hasNext()) {
+                Vec3d extendingBlock;
+                array[i] = extendingBlock = iterator.next();
                 ++i;
             }
-            final int placementsBefore = this.placements;
+            int placementsBefore = this.placements;
             if (this.areClose(array) != null) {
-                this.placeBlocks(this.areClose(array),  EntityUtil.getUnsafeBlockArrayFromVec3d(Objects.requireNonNull(this.areClose(array)),  0,  this.floor.getValue(),  true),  this.helpingBlocks.getValue(),  false,  true);
+                this.placeBlocks(this.areClose(array), EntityUtil.getUnsafeBlockArrayFromVec3d(Objects.requireNonNull(this.areClose(array)), 0, this.floor.getValue(), true), this.helpingBlocks.getValue(), false, true);
             }
             if (placementsBefore < this.placements) {
                 this.extendingBlocks.clear();
             }
-        }
-        else if (this.extendingBlocks.size() > 2 || this.extenders >= this.extender.getValue()) {
+        } else if (this.extendingBlocks.size() > 2 || this.extenders >= this.extender.getValue()) {
             this.extendingBlocks.clear();
         }
     }
-    
-    private Vec3d areClose(final Vec3d[] vec3ds) {
+
+    private Vec3d areClose(Vec3d[] vec3ds) {
         int matches = 0;
-        for (final Vec3d vec3d : vec3ds) {
-            for (final Vec3d pos : EntityUtil.getUnsafeBlockArray((Entity)Surround.mc.player,  0,  this.floor.getValue(),  true)) {
-                if (vec3d.equals((Object)pos)) {
-                    ++matches;
-                }
+        for (Vec3d vec3d : vec3ds) {
+            for (Vec3d pos : EntityUtil.getUnsafeBlockArray((Entity)Surround.mc.field_71439_g, 0, this.floor.getValue(), true)) {
+                if (!vec3d.equals((Object)pos)) continue;
+                ++matches;
             }
         }
         if (matches == 2) {
-            return Surround.mc.player.getPositionVector().add(vec3ds[0].add(vec3ds[1])).add(0.0,  0.13,  0.0);
+            return Surround.mc.field_71439_g.func_174791_d().func_178787_e(vec3ds[0].func_178787_e(vec3ds[1])).func_72441_c(0.0, 0.13, 0.0);
         }
         return null;
     }
-    
-    private boolean placeBlocks(final Vec3d pos,  final Vec3d[] vec3ds,  final boolean hasHelpingBlocks,  final boolean isHelping,  final boolean isExtending) {
+
+    private boolean placeBlocks(Vec3d pos, Vec3d[] vec3ds, boolean hasHelpingBlocks, boolean isHelping, boolean isExtending) {
         int helpings = 0;
-        for (final Vec3d vec3d : vec3ds) {
+        block6: for (Vec3d vec3d : vec3ds) {
             boolean gotHelp = true;
-            if (isHelping && !this.intelligent.getValue() && ++helpings > 1) {
+            if (isHelping && !this.intelligent.getValue().booleanValue() && ++helpings > 1) {
                 return false;
             }
-            final BlockPos position = new BlockPos(pos).add(vec3d.x,  vec3d.y,  vec3d.z);
-            switch (BlockUtil.isPositionPlaceable(position,  this.raytrace.getValue())) {
+            BlockPos position = new BlockPos(pos).func_177963_a(vec3d.field_72450_a, vec3d.field_72448_b, vec3d.field_72449_c);
+            switch (BlockUtil.isPositionPlaceable(position, this.raytrace.getValue())) {
+                case -1: {
+                    continue block6;
+                }
                 case 1: {
-                    if ((this.switchMode.getValue() == InventoryUtil.Switch.SILENT || (BlockTweaks.getINSTANCE().isOn() && BlockTweaks.getINSTANCE().noBlock.getValue())) && (this.retries.get(position) == null || this.retries.get(position) < this.retryer.getValue())) {
+                    if ((this.switchMode.getValue() == InventoryUtil.Switch.SILENT || BlockTweaks.getINSTANCE().isOn() && BlockTweaks.getINSTANCE().noBlock.getValue().booleanValue()) && (this.retries.get((Object)position) == null || this.retries.get((Object)position) < this.retryer.getValue())) {
                         this.placeBlock(position);
-                        this.retries.put(position,  (this.retries.get(position) == null) ? 1 : (this.retries.get(position) + 1));
+                        this.retries.put(position, this.retries.get((Object)position) == null ? 1 : this.retries.get((Object)position) + 1);
                         this.retryTimer.reset();
-                        break;
+                        continue block6;
                     }
-                    if ((!this.extendMove.getValue() && Phobos.speedManager.getSpeedKpH() != 0.0) || isExtending) {
-                        break;
-                    }
-                    if (this.extenders >= this.extender.getValue()) {
-                        break;
-                    }
-                    this.placeBlocks(Surround.mc.player.getPositionVector().add(0.0,  0.125,  0.0).add(vec3d),  EntityUtil.getUnsafeBlockArrayFromVec3d(Surround.mc.player.getPositionVector().add(0.0,  0.125,  0.0).add(vec3d),  0,  this.floor.getValue(),  true),  hasHelpingBlocks,  false,  true);
+                    if (!this.extendMove.getValue().booleanValue() && Phobos.speedManager.getSpeedKpH() != 0.0 || isExtending || this.extenders >= this.extender.getValue()) continue block6;
+                    this.placeBlocks(Surround.mc.field_71439_g.func_174791_d().func_72441_c(0.0, 0.125, 0.0).func_178787_e(vec3d), EntityUtil.getUnsafeBlockArrayFromVec3d(Surround.mc.field_71439_g.func_174791_d().func_72441_c(0.0, 0.125, 0.0).func_178787_e(vec3d), 0, this.floor.getValue(), true), hasHelpingBlocks, false, true);
                     this.extendingBlocks.add(vec3d);
                     ++this.extenders;
-                    break;
+                    continue block6;
                 }
                 case 2: {
-                    if (!hasHelpingBlocks) {
-                        break;
-                    }
-                    gotHelp = this.placeBlocks(pos,  BlockUtil.getHelpingBlocks(vec3d),  false,  true,  true);
+                    if (!hasHelpingBlocks) continue block6;
+                    gotHelp = this.placeBlocks(pos, BlockUtil.getHelpingBlocks(vec3d), false, true, true);
                 }
                 case 3: {
                     if (gotHelp) {
                         this.placeBlock(position);
                     }
-                    if (!isHelping) {
-                        break;
-                    }
+                    if (!isHelping) continue block6;
                     return true;
                 }
             }
         }
         return false;
     }
-    
+
     private boolean check() {
-        if (fullNullCheck() || this.shouldServer()) {
+        if (Surround.fullNullCheck() || this.shouldServer()) {
             return true;
         }
-        if (this.endPortals.getValue()) {
-            if (!(this.offHand = InventoryUtil.isBlock(Surround.mc.player.getHeldItemOffhand().getItem(),  BlockEndPortalFrame.class))) {
-                this.offHand = InventoryUtil.isBlock(Surround.mc.player.getHeldItemOffhand().getItem(),  BlockObsidian.class);
+        if (this.endPortals.getValue().booleanValue()) {
+            this.offHand = InventoryUtil.isBlock(Surround.mc.field_71439_g.func_184592_cb().func_77973_b(), BlockEndPortalFrame.class);
+            if (!this.offHand) {
+                this.offHand = InventoryUtil.isBlock(Surround.mc.field_71439_g.func_184592_cb().func_77973_b(), BlockObsidian.class);
             }
+        } else {
+            this.offHand = InventoryUtil.isBlock(Surround.mc.field_71439_g.func_184592_cb().func_77973_b(), BlockObsidian.class);
         }
-        else {
-            this.offHand = InventoryUtil.isBlock(Surround.mc.player.getHeldItemOffhand().getItem(),  BlockObsidian.class);
-        }
-        Surround.isPlacing = false;
+        isPlacing = false;
         this.didPlace = false;
         this.extenders = 1;
         this.placements = 0;
-        if (this.endPortals.getValue()) {
+        if (this.endPortals.getValue().booleanValue()) {
             this.obbySlot = InventoryUtil.findHotbarBlock(BlockEndPortalFrame.class);
             if (this.obbySlot == -1) {
                 this.obbySlot = InventoryUtil.findHotbarBlock(BlockObsidian.class);
             }
-        }
-        else {
+        } else {
             this.obbySlot = InventoryUtil.findHotbarBlock(BlockObsidian.class);
         }
-        final int echestSlot = InventoryUtil.findHotbarBlock(BlockEnderChest.class);
+        int echestSlot = InventoryUtil.findHotbarBlock(BlockEnderChest.class);
         if (this.isOff()) {
             return true;
         }
@@ -383,72 +344,72 @@ public class Surround extends Module
             this.retryTimer.reset();
         }
         this.switchItem(true);
-        if (this.obbySlot == -1 && !this.offHand && (!this.echests.getValue() || echestSlot == -1)) {
-            if (this.info.getValue()) {
-                Command.sendMessage("<" + this.getDisplayName() + "> §cYou are out of Obsidian.");
+        if (!(this.obbySlot != -1 || this.offHand || this.echests.getValue().booleanValue() && echestSlot != -1)) {
+            if (this.info.getValue().booleanValue()) {
+                Command.sendMessage("<" + this.getDisplayName() + "> \u00a7cYou are out of Obsidian.");
             }
             this.disable();
             return true;
         }
         this.isSneaking = EntityUtil.stopSneaking(this.isSneaking);
-        if (Surround.mc.player.inventory.currentItem != this.lastHotbarSlot && Surround.mc.player.inventory.currentItem != this.obbySlot && Surround.mc.player.inventory.currentItem != echestSlot) {
-            this.lastHotbarSlot = Surround.mc.player.inventory.currentItem;
+        if (Surround.mc.field_71439_g.field_71071_by.field_70461_c != this.lastHotbarSlot && Surround.mc.field_71439_g.field_71071_by.field_70461_c != this.obbySlot && Surround.mc.field_71439_g.field_71071_by.field_70461_c != echestSlot) {
+            this.lastHotbarSlot = Surround.mc.field_71439_g.field_71071_by.field_70461_c;
         }
         switch (this.movementMode.getValue()) {
+            case NONE: {
+                break;
+            }
             case STATIC: {
-                final BlockPos pos = new BlockPos(MathUtil.round(Surround.mc.player.posX,  0),  Math.ceil(Surround.mc.player.posY),  MathUtil.round(Surround.mc.player.posZ,  0));
+                BlockPos pos = new BlockPos(MathUtil.round(Surround.mc.field_71439_g.field_70165_t, 0), Math.ceil(Surround.mc.field_71439_g.field_70163_u), MathUtil.round(Surround.mc.field_71439_g.field_70161_v, 0));
                 if (!this.startPos.equals((Object)pos)) {
                     this.disable();
                     return true;
                 }
             }
             case LIMIT: {
-                if (Phobos.speedManager.getSpeedKpH() <= this.speed.getValue()) {
-                    break;
-                }
+                if (!(Phobos.speedManager.getSpeedKpH() > this.speed.getValue())) break;
                 return true;
             }
             case OFF: {
-                if (Phobos.speedManager.getSpeedKpH() <= this.speed.getValue()) {
-                    break;
-                }
+                if (!(Phobos.speedManager.getSpeedKpH() > this.speed.getValue())) break;
                 this.disable();
                 return true;
             }
         }
-        return Phobos.moduleManager.isModuleEnabled("Freecam") || !this.timer.passedMs(this.delay.getValue()) || (this.switchMode.getValue() == InventoryUtil.Switch.NONE && Surround.mc.player.inventory.currentItem != InventoryUtil.findHotbarBlock(BlockObsidian.class));
+        return Phobos.moduleManager.isModuleEnabled("Freecam") || !this.timer.passedMs(this.delay.getValue().intValue()) || this.switchMode.getValue() == InventoryUtil.Switch.NONE && Surround.mc.field_71439_g.field_71071_by.field_70461_c != InventoryUtil.findHotbarBlock(BlockObsidian.class);
     }
-    
-    private void placeBlock(final BlockPos pos) {
+
+    private void placeBlock(BlockPos pos) {
         if (this.placements < this.blocksPerTick.getValue() && this.switchItem(false)) {
-            Surround.isPlacing = true;
-            this.isSneaking = BlockUtil.placeBlock(pos,  this.offHand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND,  this.rotate.getValue(),  this.noGhost.getValue(),  this.isSneaking);
+            isPlacing = true;
+            this.isSneaking = BlockUtil.placeBlock(pos, this.offHand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, this.rotate.getValue(), this.noGhost.getValue(), this.isSneaking);
             this.didPlace = true;
             ++this.placements;
         }
     }
-    
-    private boolean switchItem(final boolean back) {
+
+    private boolean switchItem(boolean back) {
         if (this.offHand) {
             return true;
         }
-        final boolean[] value = InventoryUtil.switchItem(back,  this.lastHotbarSlot,  this.switchedItem,  this.switchMode.getValue(),  (Class)((this.obbySlot == -1) ? BlockEnderChest.class : ((this.endPortals.getValue() && InventoryUtil.findHotbarBlock(BlockEndPortalFrame.class) != -1) ? BlockEndPortalFrame.class : BlockObsidian.class)));
+        boolean[] value = InventoryUtil.switchItem(back, this.lastHotbarSlot, this.switchedItem, this.switchMode.getValue(), this.obbySlot == -1 ? BlockEnderChest.class : (this.endPortals.getValue() != false && InventoryUtil.findHotbarBlock(BlockEndPortalFrame.class) != -1 ? BlockEndPortalFrame.class : BlockObsidian.class));
         this.switchedItem = value[0];
         return value[1];
     }
-    
+
     private List<BlockPos> fuckYou3arthqu4keYourCodeIsGarbage() {
-        if (this.floor.getValue()) {
-            return Arrays.asList(new BlockPos(Surround.mc.player.getPositionVector()).add(0.0,  -0.875,  0.0),  new BlockPos(Surround.mc.player.getPositionVector()).add(1.0,  0.125,  0.0),  new BlockPos(Surround.mc.player.getPositionVector()).add(-1.0,  0.125,  0.0),  new BlockPos(Surround.mc.player.getPositionVector()).add(0.0,  0.125,  -1.0),  new BlockPos(Surround.mc.player.getPositionVector()).add(0.0,  0.125,  1.0));
+        if (this.floor.getValue().booleanValue()) {
+            return Arrays.asList(new BlockPos[]{new BlockPos(Surround.mc.field_71439_g.func_174791_d()).func_177963_a(0.0, -0.875, 0.0), new BlockPos(Surround.mc.field_71439_g.func_174791_d()).func_177963_a(1.0, 0.125, 0.0), new BlockPos(Surround.mc.field_71439_g.func_174791_d()).func_177963_a(-1.0, 0.125, 0.0), new BlockPos(Surround.mc.field_71439_g.func_174791_d()).func_177963_a(0.0, 0.125, -1.0), new BlockPos(Surround.mc.field_71439_g.func_174791_d()).func_177963_a(0.0, 0.125, 1.0)});
         }
-        return Arrays.asList(new BlockPos(Surround.mc.player.getPositionVector()).add(1.0,  0.125,  0.0),  new BlockPos(Surround.mc.player.getPositionVector()).add(-1.0,  0.125,  0.0),  new BlockPos(Surround.mc.player.getPositionVector()).add(0.0,  0.125,  -1.0),  new BlockPos(Surround.mc.player.getPositionVector()).add(0.0,  0.125,  1.0));
+        return Arrays.asList(new BlockPos[]{new BlockPos(Surround.mc.field_71439_g.func_174791_d()).func_177963_a(1.0, 0.125, 0.0), new BlockPos(Surround.mc.field_71439_g.func_174791_d()).func_177963_a(-1.0, 0.125, 0.0), new BlockPos(Surround.mc.field_71439_g.func_174791_d()).func_177963_a(0.0, 0.125, -1.0), new BlockPos(Surround.mc.field_71439_g.func_174791_d()).func_177963_a(0.0, 0.125, 1.0)});
     }
-    
-    public enum MovementMode
-    {
-        NONE,  
-        STATIC,  
-        LIMIT,  
+
+    public static enum MovementMode {
+        NONE,
+        STATIC,
+        LIMIT,
         OFF;
+
     }
 }
+

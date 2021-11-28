@@ -1,60 +1,69 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.network.play.server.SPacketPlayerListItem
+ *  net.minecraft.network.play.server.SPacketPlayerListItem$Action
+ *  net.minecraft.network.play.server.SPacketPlayerListItem$AddPlayerData
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.misc;
 
-import me.earth.phobos.features.modules.*;
-import java.util.concurrent.*;
-import me.earth.phobos.event.events.*;
-import net.minecraft.network.play.server.*;
-import net.minecraft.client.network.*;
-import java.util.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import me.earth.phobos.util.*;
-import me.earth.phobos.features.command.*;
+import java.util.Objects;
+import java.util.Queue;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import me.earth.phobos.event.events.PacketEvent;
+import me.earth.phobos.features.command.Command;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.util.PlayerUtil;
+import net.minecraft.network.play.server.SPacketPlayerListItem;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class AntiVanish extends Module
-{
-    private final Queue<UUID> toLookUp;
-    
+public class AntiVanish
+extends Module {
+    private final Queue<UUID> toLookUp = new ConcurrentLinkedQueue<UUID>();
+
     public AntiVanish() {
-        super("AntiVanish",  "Notifies you when players vanish.",  Category.MISC,  true,  false,  false);
-        this.toLookUp = new ConcurrentLinkedQueue<UUID>();
+        super("AntiVanish", "Notifies you when players vanish.", Module.Category.MISC, true, false, false);
     }
-    
+
     @SubscribeEvent
-    public void onPacketReceive(final PacketEvent.Receive event) {
-        final SPacketPlayerListItem sPacketPlayerListItem;
-        if (event.getPacket() instanceof SPacketPlayerListItem && (sPacketPlayerListItem = (SPacketPlayerListItem)event.getPacket()).getAction() == SPacketPlayerListItem.Action.UPDATE_LATENCY) {
-            for (final SPacketPlayerListItem.AddPlayerData addPlayerData : sPacketPlayerListItem.getEntries()) {
+    public void onPacketReceive(PacketEvent.Receive event) {
+        SPacketPlayerListItem sPacketPlayerListItem;
+        if (event.getPacket() instanceof SPacketPlayerListItem && (sPacketPlayerListItem = (SPacketPlayerListItem)event.getPacket()).func_179768_b() == SPacketPlayerListItem.Action.UPDATE_LATENCY) {
+            for (SPacketPlayerListItem.AddPlayerData addPlayerData : sPacketPlayerListItem.func_179767_a()) {
                 try {
-                    Objects.requireNonNull(AntiVanish.mc.getConnection()).getPlayerInfo(addPlayerData.getProfile().getId());
+                    Objects.requireNonNull(mc.func_147114_u()).func_175102_a(addPlayerData.func_179962_a().getId());
                 }
                 catch (Exception e) {
                     e.printStackTrace();
+                    return;
                 }
             }
         }
     }
-    
+
     @Override
     public void onUpdate() {
-        final UUID lookUp;
+        UUID lookUp;
         if (PlayerUtil.timer.passedS(5.0) && (lookUp = this.toLookUp.poll()) != null) {
             try {
-                final String name = PlayerUtil.getNameFromUUID(lookUp);
+                String name = PlayerUtil.getNameFromUUID(lookUp);
                 if (name != null) {
-                    Command.sendMessage("§c" + name + " has gone into vanish.");
+                    Command.sendMessage("\u00a7c" + name + " has gone into vanish.");
                 }
             }
-            catch (Exception ex) {}
+            catch (Exception exception) {
+                // empty catch block
+            }
             PlayerUtil.timer.reset();
         }
     }
-    
+
     @Override
     public void onLogout() {
         this.toLookUp.clear();
     }
 }
+

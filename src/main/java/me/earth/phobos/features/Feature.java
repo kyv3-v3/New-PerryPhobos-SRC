@@ -1,104 +1,100 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ */
 package me.earth.phobos.features;
 
-import me.earth.phobos.util.*;
-import me.earth.phobos.features.setting.*;
-import me.earth.phobos.manager.*;
-import me.earth.phobos.*;
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.gui.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.features.gui.PhobosGui;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.manager.TextManager;
+import me.earth.phobos.util.Util;
 
-public class Feature implements Util
-{
-    public List<Setting> settings;
-    public TextManager renderer;
+public class Feature
+implements Util {
+    public List<Setting> settings = new ArrayList<Setting>();
+    public TextManager renderer = Phobos.textManager;
     private String name;
-    
+
     public Feature() {
-        this.settings = new ArrayList<Setting>();
-        this.renderer = Phobos.textManager;
     }
-    
-    public Feature(final String name) {
-        this.settings = new ArrayList<Setting>();
-        this.renderer = Phobos.textManager;
+
+    public Feature(String name) {
         this.name = name;
     }
-    
+
     public static boolean nullCheck() {
-        return Feature.mc.player == null;
+        return Feature.mc.field_71439_g == null;
     }
-    
+
     public static boolean fullNullCheck() {
-        return Feature.mc.player == null || Feature.mc.world == null;
+        return Feature.mc.field_71439_g == null || Feature.mc.field_71441_e == null;
     }
-    
+
     public String getName() {
         return this.name;
     }
-    
+
     public List<Setting> getSettings() {
         return this.settings;
     }
-    
+
     public boolean hasSettings() {
         return !this.settings.isEmpty();
     }
-    
+
     public boolean isEnabled() {
-        return this instanceof Module && ((Module)this).isOn();
+        if (this instanceof Module) {
+            return ((Module)this).isOn();
+        }
+        return false;
     }
-    
+
     public boolean isDisabled() {
         return !this.isEnabled();
     }
-    
-    public Setting register(final Setting setting) {
+
+    public Setting register(Setting setting) {
         setting.setFeature(this);
         this.settings.add(setting);
-        if (this instanceof Module && Feature.mc.currentScreen instanceof PhobosGui) {
+        if (this instanceof Module && Feature.mc.field_71462_r instanceof PhobosGui) {
             PhobosGui.getInstance().updateModule((Module)this);
         }
         return setting;
     }
-    
-    public void unregister(final Setting settingIn) {
-        final ArrayList<Setting> removeList = new ArrayList<Setting>();
-        for (final Setting setting : this.settings) {
-            if (!setting.equals(settingIn)) {
-                continue;
-            }
+
+    public void unregister(Setting settingIn) {
+        ArrayList<Setting> removeList = new ArrayList<Setting>();
+        for (Setting setting : this.settings) {
+            if (!setting.equals(settingIn)) continue;
             removeList.add(setting);
         }
         if (!removeList.isEmpty()) {
             this.settings.removeAll(removeList);
         }
-        if (this instanceof Module && Feature.mc.currentScreen instanceof PhobosGui) {
+        if (this instanceof Module && Feature.mc.field_71462_r instanceof PhobosGui) {
             PhobosGui.getInstance().updateModule((Module)this);
         }
     }
-    
-    public Setting getSettingByName(final String name) {
-        for (final Setting setting : this.settings) {
-            if (!setting.getName().equalsIgnoreCase(name)) {
-                continue;
-            }
+
+    public Setting getSettingByName(String name) {
+        for (Setting setting : this.settings) {
+            if (!setting.getName().equalsIgnoreCase(name)) continue;
             return setting;
         }
         return null;
     }
-    
+
     public void reset() {
-        for (final Setting setting : this.settings) {
+        for (Setting setting : this.settings) {
             setting.setValue(setting.getDefaultValue());
         }
     }
-    
+
     public void clearSettings() {
         this.settings = new ArrayList<Setting>();
     }
 }
+

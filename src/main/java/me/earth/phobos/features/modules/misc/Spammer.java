@@ -1,111 +1,102 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.network.NetworkPlayerInfo
+ *  net.minecraft.network.Packet
+ *  net.minecraft.network.play.client.CPacketChatMessage
+ *  net.minecraft.util.StringUtils
+ */
 package me.earth.phobos.features.modules.misc;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import net.minecraft.client.network.*;
-import net.minecraft.util.*;
-import net.minecraft.network.play.client.*;
-import net.minecraft.network.*;
-import java.util.*;
-import me.earth.phobos.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.FileUtil;
+import me.earth.phobos.util.TimerUtil;
+import net.minecraft.client.network.NetworkPlayerInfo;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.CPacketChatMessage;
+import net.minecraft.util.StringUtils;
 
-public class Spammer extends Module
-{
+public class Spammer
+extends Module {
     private static final String fileName = "phobos/util/Spammer.txt";
     private static final String defaultMessage = "gg";
-    private static final List<String> spamMessages;
-    private static final Random rnd;
-    private final TimerUtil timer;
-    private final List<String> sendPlayers;
-    public Setting<Mode> mode;
-    public Setting<PwordMode> type;
-    public Setting<String> msgTarget;
-    public Setting<DelayType> delayType;
-    public Setting<Integer> delay;
-    public Setting<Integer> delayDS;
-    public Setting<Integer> delayMS;
-    public Setting<Boolean> greentext;
-    public Setting<Boolean> random;
-    public Setting<Boolean> loadFile;
-    
+    private static final List<String> spamMessages = new ArrayList<String>();
+    private static final Random rnd = new Random();
+    private final TimerUtil timer = new TimerUtil();
+    private final List<String> sendPlayers = new ArrayList<String>();
+    public Setting<Mode> mode = this.register(new Setting<Mode>("Mode", Mode.PWORD));
+    public Setting<PwordMode> type = this.register(new Setting<Object>("Pword", (Object)PwordMode.CHAT, v -> this.mode.getValue() == Mode.PWORD));
+    public Setting<String> msgTarget = this.register(new Setting<Object>("MsgTarget", "Target...", v -> this.mode.getValue() == Mode.PWORD && this.type.getValue() == PwordMode.MSG));
+    public Setting<DelayType> delayType = this.register(new Setting<DelayType>("DelayType", DelayType.S));
+    public Setting<Integer> delay = this.register(new Setting<Object>("DelayS", Integer.valueOf(10), Integer.valueOf(1), Integer.valueOf(1000), v -> this.delayType.getValue() == DelayType.S));
+    public Setting<Integer> delayDS = this.register(new Setting<Object>("DelayDS", Integer.valueOf(10), Integer.valueOf(1), Integer.valueOf(500), v -> this.delayType.getValue() == DelayType.DS));
+    public Setting<Integer> delayMS = this.register(new Setting<Object>("DelayDS", Integer.valueOf(10), Integer.valueOf(1), Integer.valueOf(1000), v -> this.delayType.getValue() == DelayType.MS));
+    public Setting<Boolean> greentext = this.register(new Setting<Object>("Greentext", Boolean.valueOf(false), v -> this.mode.getValue() == Mode.FILE));
+    public Setting<Boolean> random = this.register(new Setting<Object>("Random", Boolean.valueOf(false), v -> this.mode.getValue() == Mode.FILE));
+    public Setting<Boolean> loadFile = this.register(new Setting<Object>("LoadFile", Boolean.valueOf(false), v -> this.mode.getValue() == Mode.FILE));
+
     public Spammer() {
-        super("Spammer",  "Spams stuff.",  Category.MISC,  true,  false,  false);
-        this.timer = new TimerUtil();
-        this.sendPlayers = new ArrayList<String>();
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.PWORD));
-        this.type = (Setting<PwordMode>)this.register(new Setting("Pword", PwordMode.CHAT,  v -> this.mode.getValue() == Mode.PWORD));
-        this.msgTarget = (Setting<String>)this.register(new Setting("MsgTarget", "Target...",  v -> this.mode.getValue() == Mode.PWORD && this.type.getValue() == PwordMode.MSG));
-        this.delayType = (Setting<DelayType>)this.register(new Setting("DelayType", DelayType.S));
-        this.delay = (Setting<Integer>)this.register(new Setting("DelayS", 10, 1, 1000,  v -> this.delayType.getValue() == DelayType.S));
-        this.delayDS = (Setting<Integer>)this.register(new Setting("DelayDS", 10, 1, 500,  v -> this.delayType.getValue() == DelayType.DS));
-        this.delayMS = (Setting<Integer>)this.register(new Setting("DelayDS", 10, 1, 1000,  v -> this.delayType.getValue() == DelayType.MS));
-        this.greentext = (Setting<Boolean>)this.register(new Setting("Greentext", false,  v -> this.mode.getValue() == Mode.FILE));
-        this.random = (Setting<Boolean>)this.register(new Setting("Random", false,  v -> this.mode.getValue() == Mode.FILE));
-        this.loadFile = (Setting<Boolean>)this.register(new Setting("LoadFile", false,  v -> this.mode.getValue() == Mode.FILE));
+        super("Spammer", "Spams stuff.", Module.Category.MISC, true, false, false);
     }
-    
+
     @Override
     public void onLoad() {
         this.readSpamFile();
         this.disable();
     }
-    
+
     @Override
     public void onEnable() {
-        if (fullNullCheck()) {
+        if (Spammer.fullNullCheck()) {
             this.disable();
             return;
         }
         this.readSpamFile();
     }
-    
+
     @Override
     public void onLogin() {
         this.disable();
     }
-    
+
     @Override
     public void onLogout() {
         this.disable();
     }
-    
+
     @Override
     public void onDisable() {
-        Spammer.spamMessages.clear();
+        spamMessages.clear();
         this.timer.reset();
     }
-    
+
     @Override
     public void onUpdate() {
-        if (fullNullCheck()) {
+        if (Spammer.fullNullCheck()) {
             this.disable();
             return;
         }
-        if (this.loadFile.getValue()) {
+        if (this.loadFile.getValue().booleanValue()) {
             this.readSpamFile();
             this.loadFile.setValue(false);
         }
         switch (this.delayType.getValue()) {
             case MS: {
-                if (this.timer.passedMs(this.delayMS.getValue())) {
-                    break;
-                }
+                if (this.timer.passedMs(this.delayMS.getValue().intValue())) break;
                 return;
             }
             case S: {
-                if (this.timer.passedS(this.delay.getValue())) {
-                    break;
-                }
+                if (this.timer.passedS(this.delay.getValue().intValue())) break;
                 return;
             }
             case DS: {
-                if (this.timer.passedDs(this.delayDS.getValue())) {
-                    break;
-                }
+                if (this.timer.passedDs(this.delayDS.getValue().intValue())) break;
                 return;
             }
         }
@@ -118,98 +109,83 @@ public class Spammer extends Module
                 }
                 case EVERYONE: {
                     String target = null;
-                    if (Spammer.mc.getConnection() == null) {
-                        return;
-                    }
-                    Spammer.mc.getConnection().getPlayerInfoMap();
-                    for (final NetworkPlayerInfo info : Spammer.mc.getConnection().getPlayerInfoMap()) {
-                        if (info != null) {
-                            if (info.getDisplayName() == null) {
-                                continue;
-                            }
+                    if (mc.func_147114_u() != null) {
+                        mc.func_147114_u().func_175106_d();
+                        for (NetworkPlayerInfo info : mc.func_147114_u().func_175106_d()) {
+                            if (info == null || info.func_178854_k() == null) continue;
                             try {
-                                final String str = info.getDisplayName().getFormattedText();
-                                final String name = StringUtils.stripControlCodes(str);
-                                if (name.equals(Spammer.mc.player.getName()) || this.sendPlayers.contains(name)) {
-                                    continue;
-                                }
+                                String str = info.func_178854_k().func_150254_d();
+                                String name = StringUtils.func_76338_a((String)str);
+                                if (name.equals(Spammer.mc.field_71439_g.func_70005_c_()) || this.sendPlayers.contains(name)) continue;
                                 target = name;
                                 this.sendPlayers.add(name);
+                                break;
                             }
-                            catch (Exception ex) {
-                                continue;
+                            catch (Exception exception) {
                             }
-                            break;
                         }
+                        if (target == null) {
+                            this.sendPlayers.clear();
+                            return;
+                        }
+                        msg = "/msg " + target + msg;
+                        break;
                     }
-                    if (target == null) {
-                        this.sendPlayers.clear();
-                        return;
-                    }
-                    msg = "/msg " + target + msg;
-                    break;
+                    return;
                 }
             }
-            Spammer.mc.player.sendChatMessage(msg);
-        }
-        else if (Spammer.spamMessages.size() > 0) {
+            Spammer.mc.field_71439_g.func_71165_d(msg);
+        } else if (spamMessages.size() > 0) {
             String messageOut;
-            if (this.random.getValue()) {
-                final int index = Spammer.rnd.nextInt(Spammer.spamMessages.size());
-                messageOut = Spammer.spamMessages.get(index);
-                Spammer.spamMessages.remove(index);
+            if (this.random.getValue().booleanValue()) {
+                int index = rnd.nextInt(spamMessages.size());
+                messageOut = spamMessages.get(index);
+                spamMessages.remove(index);
+            } else {
+                messageOut = spamMessages.get(0);
+                spamMessages.remove(0);
             }
-            else {
-                messageOut = Spammer.spamMessages.get(0);
-                Spammer.spamMessages.remove(0);
-            }
-            Spammer.spamMessages.add(messageOut);
-            if (this.greentext.getValue()) {
+            spamMessages.add(messageOut);
+            if (this.greentext.getValue().booleanValue()) {
                 messageOut = "> " + messageOut;
             }
-            Spammer.mc.player.connection.sendPacket((Packet)new CPacketChatMessage(messageOut.replaceAll("§",  "")));
+            Spammer.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketChatMessage(messageOut.replaceAll("\u00a7", "")));
         }
         this.timer.reset();
     }
-    
+
     private void readSpamFile() {
-        final List<String> fileInput = FileUtil.readTextFileAllLines("phobos/util/Spammer.txt");
-        final Iterator<String> i = fileInput.iterator();
-        Spammer.spamMessages.clear();
+        List<String> fileInput = FileUtil.readTextFileAllLines(fileName);
+        Iterator<String> i = fileInput.iterator();
+        spamMessages.clear();
         while (i.hasNext()) {
-            final String s = i.next();
-            if (s.replaceAll("\\s",  "").isEmpty()) {
-                continue;
-            }
-            Spammer.spamMessages.add(s);
+            String s = i.next();
+            if (s.replaceAll("\\s", "").isEmpty()) continue;
+            spamMessages.add(s);
         }
-        if (Spammer.spamMessages.size() == 0) {
-            Spammer.spamMessages.add("gg");
+        if (spamMessages.size() == 0) {
+            spamMessages.add(defaultMessage);
         }
     }
-    
-    static {
-        spamMessages = new ArrayList<String>();
-        rnd = new Random();
-    }
-    
-    public enum DelayType
-    {
-        MS,  
-        DS,  
-        S;
-    }
-    
-    public enum PwordMode
-    {
-        MSG,  
-        EVERYONE,  
-        CHAT;
-    }
-    
-    public enum Mode
-    {
-        FILE,  
+
+    public static enum Mode {
+        FILE,
         PWORD;
+
+    }
+
+    public static enum PwordMode {
+        MSG,
+        EVERYONE,
+        CHAT;
+
+    }
+
+    public static enum DelayType {
+        MS,
+        DS,
+        S;
+
     }
 }
+

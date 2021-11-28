@@ -1,43 +1,43 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ */
 package me.earth.phobos.features.gui.alts.tools.alt;
 
-import java.io.*;
-import java.util.*;
-import me.earth.phobos.features.gui.alts.tools.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import me.earth.phobos.features.gui.alts.tools.Config;
+import me.earth.phobos.features.gui.alts.tools.alt.AccountData;
 
-public class AltDatabase implements Serializable
-{
+public class AltDatabase
+implements Serializable {
     public static final long serialVersionUID = -1585600597L;
     private static AltDatabase instance;
-    private final ArrayList<AccountData> altList;
-    
+    private final ArrayList<AccountData> altList = new ArrayList();
+
     private AltDatabase() {
-        this.altList = new ArrayList<AccountData>();
     }
-    
+
     private static void loadFromConfig() {
-        if (AltDatabase.instance == null) {
-            AltDatabase.instance = (AltDatabase)Config.getInstance().getKey("altaccounts");
+        if (instance == null) {
+            instance = (AltDatabase)Config.getInstance().getKey("altaccounts");
         }
     }
-    
+
     private static void saveToConfig() {
-        Config.getInstance().setKey("altaccounts",  AltDatabase.instance);
+        Config.getInstance().setKey("altaccounts", instance);
     }
-    
+
     public static AltDatabase getInstance() {
-        loadFromConfig();
-        if (AltDatabase.instance == null) {
-            AltDatabase.instance = new AltDatabase();
-            saveToConfig();
+        AltDatabase.loadFromConfig();
+        if (instance == null) {
+            instance = new AltDatabase();
+            AltDatabase.saveToConfig();
         }
-        return AltDatabase.instance;
+        return instance;
     }
-    
+
     public ArrayList<AccountData> getAlts() {
         return this.altList;
     }
 }
+

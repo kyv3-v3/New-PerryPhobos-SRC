@@ -1,42 +1,50 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.network.Packet
+ *  net.minecraft.network.PacketBuffer
+ *  net.minecraft.network.play.INetHandlerPlayServer
+ *  net.minecraftforge.common.MinecraftForge
+ *  net.minecraftforge.fml.common.eventhandler.Event
+ */
 package me.earth.phobos.util;
 
-import net.minecraft.network.play.*;
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import java.io.*;
-import me.earth.phobos.*;
-import net.minecraftforge.common.*;
-import me.earth.phobos.event.events.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import net.minecraft.network.*;
+import java.io.IOException;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.event.events.ValueChangeEvent;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import net.minecraft.network.Packet;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.play.INetHandlerPlayServer;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.Event;
 
-public class CPacketChangeSetting implements Packet<INetHandlerPlayServer>
-{
+public class CPacketChangeSetting
+implements Packet<INetHandlerPlayServer> {
     public String setting;
-    
-    public CPacketChangeSetting(final String module,  final String setting,  final String value) {
+
+    public CPacketChangeSetting(String module, String setting, String value) {
         this.setting = setting + "-" + module + "-" + value;
     }
-    
-    public CPacketChangeSetting(final Module module,  final Setting setting,  final String value) {
+
+    public CPacketChangeSetting(Module module, Setting setting, String value) {
         this.setting = setting.getName() + "-" + module.getName() + "-" + value;
     }
-    
-    public void readPacketData(final PacketBuffer buf) throws IOException {
-        this.setting = buf.readString(256);
+
+    public void func_148837_a(PacketBuffer buf) throws IOException {
+        this.setting = buf.func_150789_c(256);
     }
-    
-    public void writePacketData(final PacketBuffer buf) throws IOException {
-        buf.writeString(this.setting);
+
+    public void func_148840_b(PacketBuffer buf) throws IOException {
+        buf.func_180714_a(this.setting);
     }
-    
-    public void processPacket(final INetHandlerPlayServer handler) {
-        final Module module = Phobos.moduleManager.getModuleByName(this.setting.split("-")[1]);
-        final Setting setting1 = module.getSettingByName(this.setting.split("-")[0]);
-        MinecraftForge.EVENT_BUS.post((Event)new ValueChangeEvent(setting1,  (Object)this.setting.split("-")[2]));
+
+    public void processPacket(INetHandlerPlayServer handler) {
+        Module module = Phobos.moduleManager.getModuleByName(this.setting.split("-")[1]);
+        Setting setting1 = module.getSettingByName(this.setting.split("-")[0]);
+        MinecraftForge.EVENT_BUS.post((Event)new ValueChangeEvent(setting1, this.setting.split("-")[2]));
     }
 }
+

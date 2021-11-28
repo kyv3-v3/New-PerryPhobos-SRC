@@ -1,215 +1,238 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.block.Block
+ *  net.minecraft.block.BlockEndRod
+ *  net.minecraft.block.BlockEnderChest
+ *  net.minecraft.block.BlockFalling
+ *  net.minecraft.block.BlockObsidian
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.entity.item.EntityExpBottle
+ *  net.minecraft.entity.item.EntityItem
+ *  net.minecraft.entity.item.EntityXPOrb
+ *  net.minecraft.entity.player.EntityPlayer
+ *  net.minecraft.entity.projectile.EntityArrow
+ *  net.minecraft.item.Item
+ *  net.minecraft.item.ItemBlock
+ *  net.minecraft.item.ItemStack
+ *  net.minecraft.network.Packet
+ *  net.minecraft.network.play.client.CPacketEntityAction
+ *  net.minecraft.network.play.client.CPacketEntityAction$Action
+ *  net.minecraft.network.play.client.CPacketPlayer$Position
+ *  net.minecraft.util.EnumFacing
+ *  net.minecraft.util.EnumHand
+ *  net.minecraft.util.math.AxisAlignedBB
+ *  net.minecraft.util.math.BlockPos
+ *  net.minecraft.util.math.Vec3d
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.movement;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import net.minecraft.network.*;
-import me.earth.phobos.event.events.*;
-import net.minecraft.network.play.client.*;
-import net.minecraft.entity.*;
-import me.earth.phobos.*;
-import me.earth.phobos.util.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import me.earth.phobos.features.command.*;
-import net.minecraft.item.*;
-import java.util.*;
-import net.minecraft.util.*;
-import net.minecraft.util.math.*;
-import net.minecraft.entity.projectile.*;
-import net.minecraft.entity.player.*;
-import net.minecraft.entity.item.*;
-import net.minecraft.block.*;
+import java.util.ArrayList;
+import java.util.List;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.event.events.UpdateWalkingPlayerEvent;
+import me.earth.phobos.features.command.Command;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.BlockUtil;
+import me.earth.phobos.util.InventoryUtil;
+import me.earth.phobos.util.MathUtil;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockEndRod;
+import net.minecraft.block.BlockEnderChest;
+import net.minecraft.block.BlockFalling;
+import net.minecraft.block.BlockObsidian;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityExpBottle;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityXPOrb;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.CPacketEntityAction;
+import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class BlockLag extends Module
-{
+public class BlockLag
+extends Module {
     private static BlockLag INSTANCE;
-    private final Setting<Mode> mode;
-    private final Setting<Boolean> smartTp;
-    private final Setting<Integer> tpMin;
-    private final Setting<Integer> tpMax;
-    private final Setting<Boolean> noVoid;
-    private final Setting<Integer> tpHeight;
-    private final Setting<Boolean> keepInside;
-    private final Setting<Boolean> rotate;
-    private final Setting<Boolean> sneaking;
-    private final Setting<Boolean> offground;
-    private final Setting<Boolean> chat;
-    private final Setting<Boolean> tpdebug;
+    private final Setting<Mode> mode = this.register(new Setting<Mode>("Mode", Mode.OBSIDIAN));
+    private final Setting<Boolean> smartTp = this.register(new Setting<Boolean>("SmartTP", true));
+    private final Setting<Integer> tpMin = this.register(new Setting<Integer>("TPMin", Integer.valueOf(2), Integer.valueOf(2), Integer.valueOf(10), v -> this.smartTp.getValue()));
+    private final Setting<Integer> tpMax = this.register(new Setting<Integer>("TPMax", Integer.valueOf(3), Integer.valueOf(3), Integer.valueOf(40), v -> this.smartTp.getValue()));
+    private final Setting<Boolean> noVoid = this.register(new Setting<Boolean>("NoVoid", Boolean.valueOf(false), v -> this.smartTp.getValue()));
+    private final Setting<Integer> tpHeight = this.register(new Setting<Integer>("TPHeight", Integer.valueOf(2), Integer.valueOf(-100), Integer.valueOf(100), v -> this.smartTp.getValue() == false));
+    private final Setting<Boolean> keepInside = this.register(new Setting<Boolean>("Center", true));
+    private final Setting<Boolean> rotate = this.register(new Setting<Boolean>("Rotate", false));
+    private final Setting<Boolean> sneaking = this.register(new Setting<Boolean>("Sneak", false));
+    private final Setting<Boolean> offground = this.register(new Setting<Boolean>("Offground", false));
+    private final Setting<Boolean> chat = this.register(new Setting<Boolean>("Chat Msgs", true));
+    private final Setting<Boolean> tpdebug = this.register(new Setting<Boolean>("Debug", Boolean.valueOf(false), v -> this.chat.getValue() != false && this.smartTp.getValue() != false));
     private BlockPos burrowPos;
     private int lastBlock;
     private int blockSlot;
-    
+
     public BlockLag() {
-        super("BlockLag",  "Places a block where ur standing.",  Module.Category.MOVEMENT,  true,  false,  false);
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.OBSIDIAN));
-        this.smartTp = (Setting<Boolean>)this.register(new Setting("SmartTP", true));
-        this.tpMin = (Setting<Integer>)this.register(new Setting("TPMin", 2, 2, 10,  v -> this.smartTp.getValue()));
-        this.tpMax = (Setting<Integer>)this.register(new Setting("TPMax", 3, 3, 40,  v -> this.smartTp.getValue()));
-        this.noVoid = (Setting<Boolean>)this.register(new Setting("NoVoid", false,  v -> this.smartTp.getValue()));
-        this.tpHeight = (Setting<Integer>)this.register(new Setting("TPHeight", 2, (-100), 100,  v -> !this.smartTp.getValue()));
-        this.keepInside = (Setting<Boolean>)this.register(new Setting("Center", true));
-        this.rotate = (Setting<Boolean>)this.register(new Setting("Rotate", false));
-        this.sneaking = (Setting<Boolean>)this.register(new Setting("Sneak", false));
-        this.offground = (Setting<Boolean>)this.register(new Setting("Offground", false));
-        this.chat = (Setting<Boolean>)this.register(new Setting("Chat Msgs", true));
-        this.tpdebug = (Setting<Boolean>)this.register(new Setting("Debug", false,  v -> this.chat.getValue() && this.smartTp.getValue()));
-        BlockLag.INSTANCE = this;
+        super("BlockLag", "Places a block where ur standing.", Module.Category.MOVEMENT, true, false, false);
+        INSTANCE = this;
     }
-    
+
     public static BlockLag getInstance() {
-        if (BlockLag.INSTANCE == null) {
-            BlockLag.INSTANCE = new BlockLag();
+        if (INSTANCE == null) {
+            INSTANCE = new BlockLag();
         }
-        return BlockLag.INSTANCE;
+        return INSTANCE;
     }
-    
+
+    @Override
     public void onEnable() {
-        this.burrowPos = new BlockPos(BlockLag.mc.player.posX,  Math.ceil(BlockLag.mc.player.posY),  BlockLag.mc.player.posZ);
+        this.burrowPos = new BlockPos(BlockLag.mc.field_71439_g.field_70165_t, Math.ceil(BlockLag.mc.field_71439_g.field_70163_u), BlockLag.mc.field_71439_g.field_70161_v);
         this.blockSlot = this.findBlockSlot();
-        this.lastBlock = BlockLag.mc.player.inventory.currentItem;
+        this.lastBlock = BlockLag.mc.field_71439_g.field_71071_by.field_70461_c;
         if (!this.doChecks() || this.blockSlot == -1) {
             this.disable();
             return;
         }
-        if (this.keepInside.getValue()) {
-            double x = BlockLag.mc.player.posX - Math.floor(BlockLag.mc.player.posX);
-            double z = BlockLag.mc.player.posZ - Math.floor(BlockLag.mc.player.posZ);
+        if (this.keepInside.getValue().booleanValue()) {
+            double x = BlockLag.mc.field_71439_g.field_70165_t - Math.floor(BlockLag.mc.field_71439_g.field_70165_t);
+            double z = BlockLag.mc.field_71439_g.field_70161_v - Math.floor(BlockLag.mc.field_71439_g.field_70161_v);
             if (x <= 0.3 || x >= 0.7) {
-                x = ((x > 0.5) ? 0.69 : 0.31);
+                double d = x = x > 0.5 ? 0.69 : 0.31;
             }
             if (z < 0.3 || z > 0.7) {
-                z = ((z > 0.5) ? 0.69 : 0.31);
+                z = z > 0.5 ? 0.69 : 0.31;
             }
-            BlockLag.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Math.floor(BlockLag.mc.player.posX) + x,  BlockLag.mc.player.posY,  Math.floor(BlockLag.mc.player.posZ) + z,  BlockLag.mc.player.onGround));
-            BlockLag.mc.player.setPosition(Math.floor(BlockLag.mc.player.posX) + x,  BlockLag.mc.player.posY,  Math.floor(BlockLag.mc.player.posZ) + z);
+            BlockLag.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Math.floor(BlockLag.mc.field_71439_g.field_70165_t) + x, BlockLag.mc.field_71439_g.field_70163_u, Math.floor(BlockLag.mc.field_71439_g.field_70161_v) + z, BlockLag.mc.field_71439_g.field_70122_E));
+            BlockLag.mc.field_71439_g.func_70107_b(Math.floor(BlockLag.mc.field_71439_g.field_70165_t) + x, BlockLag.mc.field_71439_g.field_70163_u, Math.floor(BlockLag.mc.field_71439_g.field_70161_v) + z);
         }
-        BlockLag.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(BlockLag.mc.player.posX,  BlockLag.mc.player.posY + 0.41999998688698,  BlockLag.mc.player.posZ,  !this.offground.getValue()));
-        BlockLag.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(BlockLag.mc.player.posX,  BlockLag.mc.player.posY + 0.7531999805211997,  BlockLag.mc.player.posZ,  !this.offground.getValue()));
-        BlockLag.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(BlockLag.mc.player.posX,  BlockLag.mc.player.posY + 1.00133597911214,  BlockLag.mc.player.posZ,  !this.offground.getValue()));
-        BlockLag.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(BlockLag.mc.player.posX,  BlockLag.mc.player.posY + 1.16610926093821,  BlockLag.mc.player.posZ,  !this.offground.getValue()));
+        BlockLag.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(BlockLag.mc.field_71439_g.field_70165_t, BlockLag.mc.field_71439_g.field_70163_u + 0.41999998688698, BlockLag.mc.field_71439_g.field_70161_v, this.offground.getValue() == false));
+        BlockLag.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(BlockLag.mc.field_71439_g.field_70165_t, BlockLag.mc.field_71439_g.field_70163_u + 0.7531999805211997, BlockLag.mc.field_71439_g.field_70161_v, this.offground.getValue() == false));
+        BlockLag.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(BlockLag.mc.field_71439_g.field_70165_t, BlockLag.mc.field_71439_g.field_70163_u + 1.00133597911214, BlockLag.mc.field_71439_g.field_70161_v, this.offground.getValue() == false));
+        BlockLag.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(BlockLag.mc.field_71439_g.field_70165_t, BlockLag.mc.field_71439_g.field_70163_u + 1.16610926093821, BlockLag.mc.field_71439_g.field_70161_v, this.offground.getValue() == false));
     }
-    
+
     @SubscribeEvent
-    public void onUpdateWalkingPlayer(final UpdateWalkingPlayerEvent event) {
+    public void onUpdateWalkingPlayer(UpdateWalkingPlayerEvent event) {
         if (event.getStage() != 0) {
             return;
         }
-        if (this.sneaking.getValue() && !BlockLag.mc.player.isSneaking()) {
-            BlockLag.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)BlockLag.mc.player,  CPacketEntityAction.Action.START_SNEAKING));
+        if (this.sneaking.getValue().booleanValue() && !BlockLag.mc.field_71439_g.func_70093_af()) {
+            BlockLag.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketEntityAction((Entity)BlockLag.mc.field_71439_g, CPacketEntityAction.Action.START_SNEAKING));
         }
-        if (this.rotate.getValue()) {
-            final float[] angle = MathUtil.calcAngle(BlockLag.mc.player.getPositionEyes(BlockLag.mc.getRenderPartialTicks()),  new Vec3d((double)(this.burrowPos.getX() + 0.5f),  (double)(this.burrowPos.getY() + 0.5f),  (double)(this.burrowPos.getZ() + 0.5f)));
-            Phobos.rotationManager.setPlayerRotations(angle[0],  angle[1]);
+        if (this.rotate.getValue().booleanValue()) {
+            float[] angle = MathUtil.calcAngle(BlockLag.mc.field_71439_g.func_174824_e(mc.func_184121_ak()), new Vec3d((double)((float)this.burrowPos.func_177958_n() + 0.5f), (double)((float)this.burrowPos.func_177956_o() + 0.5f), (double)((float)this.burrowPos.func_177952_p() + 0.5f)));
+            Phobos.rotationManager.setPlayerRotations(angle[0], angle[1]);
         }
-        InventoryUtil.switchToHotbarSlot(this.blockSlot,  false);
-        BlockUtil.placeBlock(this.burrowPos,  (this.blockSlot == -2) ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND,  false,  true,  this.sneaking.getValue());
-        InventoryUtil.switchToHotbarSlot(this.lastBlock,  false);
-        BlockLag.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(BlockLag.mc.player.posX,  ((boolean)this.smartTp.getValue()) ? ((double)this.adaptiveTpHeight(false)) : (this.tpHeight.getValue() + BlockLag.mc.player.posY),  BlockLag.mc.player.posZ,  !this.offground.getValue()));
-        BlockLag.mc.player.connection.sendPacket((Packet)new CPacketEntityAction((Entity)BlockLag.mc.player,  CPacketEntityAction.Action.STOP_SNEAKING));
+        InventoryUtil.switchToHotbarSlot(this.blockSlot, false);
+        BlockUtil.placeBlock(this.burrowPos, this.blockSlot == -2 ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, false, true, this.sneaking.getValue());
+        InventoryUtil.switchToHotbarSlot(this.lastBlock, false);
+        BlockLag.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(BlockLag.mc.field_71439_g.field_70165_t, this.smartTp.getValue() != false ? (double)this.adaptiveTpHeight(false) : (double)this.tpHeight.getValue().intValue() + BlockLag.mc.field_71439_g.field_70163_u, BlockLag.mc.field_71439_g.field_70161_v, this.offground.getValue() == false));
+        BlockLag.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketEntityAction((Entity)BlockLag.mc.field_71439_g, CPacketEntityAction.Action.STOP_SNEAKING));
         this.disable();
     }
-    
+
     private int findBlockSlot() {
-        for (final Class block : this.blockList()) {
+        for (Class block : this.blockList()) {
             if (block == BlockFalling.class) {
                 for (int i = 0; i < 9; ++i) {
-                    final ItemStack item = BlockLag.mc.player.inventory.getStackInSlot(i);
-                    if (item.getItem() instanceof ItemBlock) {
-                        final Block blockFalling = Block.getBlockFromItem(BlockLag.mc.player.inventory.getStackInSlot(i).getItem());
-                        if (blockFalling instanceof BlockFalling) {
-                            return i;
-                        }
-                    }
-                }
-            }
-            else {
-                final int slot = InventoryUtil.findHotbarBlock(block);
-                if (slot != -1) {
-                    return slot;
-                }
-                if (InventoryUtil.isBlock(BlockLag.mc.player.getHeldItemOffhand().getItem(),  block)) {
-                    return -2;
+                    Block blockFalling;
+                    ItemStack item = BlockLag.mc.field_71439_g.field_71071_by.func_70301_a(i);
+                    if (!(item.func_77973_b() instanceof ItemBlock) || !((blockFalling = Block.func_149634_a((Item)BlockLag.mc.field_71439_g.field_71071_by.func_70301_a(i).func_77973_b())) instanceof BlockFalling)) continue;
+                    return i;
                 }
                 continue;
             }
+            int slot = InventoryUtil.findHotbarBlock(block);
+            if (slot != -1) {
+                return slot;
+            }
+            if (!InventoryUtil.isBlock(BlockLag.mc.field_71439_g.func_184592_cb().func_77973_b(), block)) continue;
+            return -2;
         }
-        if (this.chat.getValue()) {
-            Command.sendMessage("<" + this.getDisplayName() + "> §cNo blocks to use.");
+        if (this.chat.getValue().booleanValue()) {
+            Command.sendMessage("<" + this.getDisplayName() + "> \u00a7cNo blocks to use.");
         }
         return -1;
     }
-    
+
     private List<Class> blockList() {
-        final List<Class> blocks = new ArrayList<Class>();
+        ArrayList<Class> blocks = new ArrayList<Class>();
         blocks.add(this.mode.getValue().getPriorityBlock());
-        for (final Mode block : Mode.values()) {
-            if (this.mode.getValue() != block) {
-                blocks.add(block.getPriorityBlock());
-            }
+        for (Mode block : Mode.values()) {
+            if (this.mode.getValue() == block) continue;
+            blocks.add(block.getPriorityBlock());
         }
         return blocks;
     }
-    
-    private int adaptiveTpHeight(final boolean first) {
-        for (int max = (BlockLag.mc.player.dimension == -1 && this.noVoid.getValue() && this.tpMax.getValue() + this.burrowPos.getY() > 127) ? Math.abs(this.burrowPos.getY() - 127) : this.tpMax.getValue(),  airblock = (this.noVoid.getValue() && this.tpMax.getValue() * -1 + this.burrowPos.getY() < 0) ? (this.burrowPos.getY() * -1) : (this.tpMax.getValue() * -1); airblock < max; ++airblock) {
-            if (Math.abs(airblock) >= this.tpMin.getValue() && BlockLag.mc.world.isAirBlock(this.burrowPos.offset(EnumFacing.UP,  airblock)) && BlockLag.mc.world.isAirBlock(this.burrowPos.offset(EnumFacing.UP,  airblock + 1))) {
-                if (this.tpdebug.getValue() && this.chat.getValue() && !first) {
-                    Command.sendMessage(Integer.toString(airblock));
-                }
-                return this.burrowPos.getY() + airblock;
+
+    private int adaptiveTpHeight(boolean first) {
+        int airblock;
+        int max = BlockLag.mc.field_71439_g.field_71093_bK == -1 && this.noVoid.getValue() != false && this.tpMax.getValue() + this.burrowPos.func_177956_o() > 127 ? Math.abs(this.burrowPos.func_177956_o() - 127) : this.tpMax.getValue();
+        int n = airblock = this.noVoid.getValue() != false && this.tpMax.getValue() * -1 + this.burrowPos.func_177956_o() < 0 ? this.burrowPos.func_177956_o() * -1 : this.tpMax.getValue() * -1;
+        while (airblock < max) {
+            if (Math.abs(airblock) < this.tpMin.getValue() || !BlockLag.mc.field_71441_e.func_175623_d(this.burrowPos.func_177967_a(EnumFacing.UP, airblock)) || !BlockLag.mc.field_71441_e.func_175623_d(this.burrowPos.func_177967_a(EnumFacing.UP, airblock + 1))) {
+                ++airblock;
+                continue;
             }
+            if (this.tpdebug.getValue().booleanValue() && this.chat.getValue().booleanValue() && !first) {
+                Command.sendMessage(Integer.toString(airblock));
+            }
+            return this.burrowPos.func_177956_o() + airblock;
         }
         return 69420;
     }
-    
+
     private boolean doChecks() {
-        if (fullNullCheck()) {
+        if (BlockLag.fullNullCheck()) {
             return false;
         }
-        if (BlockUtil.isPositionPlaceable(this.burrowPos,  false,  false) < 1) {
+        if (BlockUtil.isPositionPlaceable(this.burrowPos, false, false) < 1) {
             return false;
         }
-        if (this.smartTp.getValue() && this.adaptiveTpHeight(true) == 69420) {
-            if (this.chat.getValue()) {
-                Command.sendMessage("<" + this.getDisplayName() + "> §cNot enough room to rubberband.");
+        if (this.smartTp.getValue().booleanValue() && this.adaptiveTpHeight(true) == 69420) {
+            if (this.chat.getValue().booleanValue()) {
+                Command.sendMessage("<" + this.getDisplayName() + "> \u00a7cNot enough room to rubberband.");
             }
             return false;
         }
-        if (!BlockLag.mc.world.isAirBlock(this.burrowPos.offset(EnumFacing.UP,  2))) {
-            if (this.chat.getValue()) {
-                Command.sendMessage("<" + this.getDisplayName() + "> §cNot enough room to jump.");
+        if (!BlockLag.mc.field_71441_e.func_175623_d(this.burrowPos.func_177967_a(EnumFacing.UP, 2))) {
+            if (this.chat.getValue().booleanValue()) {
+                Command.sendMessage("<" + this.getDisplayName() + "> \u00a7cNot enough room to jump.");
             }
             return false;
         }
-        for (final Entity entity : BlockUtil.mc.world.getEntitiesWithinAABB((Class)Entity.class,  new AxisAlignedBB(this.burrowPos))) {
-            if (!(entity instanceof EntityItem) && !(entity instanceof EntityXPOrb) && !(entity instanceof EntityArrow) && !(entity instanceof EntityPlayer)) {
-                if (entity instanceof EntityExpBottle) {
-                    continue;
-                }
-                return false;
-            }
+        for (Entity entity : BlockUtil.mc.field_71441_e.func_72872_a(Entity.class, new AxisAlignedBB(this.burrowPos))) {
+            if (entity instanceof EntityItem || entity instanceof EntityXPOrb || entity instanceof EntityArrow || entity instanceof EntityPlayer || entity instanceof EntityExpBottle) continue;
+            return false;
         }
         return true;
     }
-    
-    private enum Mode
-    {
-        OBSIDIAN((Class)BlockObsidian.class),  
-        ECHEST((Class)BlockEnderChest.class),  
-        FALLING((Class)BlockFalling.class),  
-        ENDROD((Class)BlockEndRod.class);
-        
+
+    private static enum Mode {
+        OBSIDIAN(BlockObsidian.class),
+        ECHEST(BlockEnderChest.class),
+        FALLING(BlockFalling.class),
+        ENDROD(BlockEndRod.class);
+
         private final Class priorityBlock;
-        
-        private Mode(final Class block) {
+
+        private Mode(Class block) {
             this.priorityBlock = block;
         }
-        
+
         private Class getPriorityBlock() {
             return this.priorityBlock;
         }
     }
 }
+

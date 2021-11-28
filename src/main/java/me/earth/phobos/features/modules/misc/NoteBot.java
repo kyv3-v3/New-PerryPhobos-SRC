@@ -1,135 +1,157 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.block.Block
+ *  net.minecraft.block.material.Material
+ *  net.minecraft.block.state.IBlockState
+ *  net.minecraft.init.Blocks
+ *  net.minecraft.network.Packet
+ *  net.minecraft.network.play.client.CPacketPlayer$Rotation
+ *  net.minecraft.network.play.client.CPacketPlayerDigging
+ *  net.minecraft.network.play.client.CPacketPlayerDigging$Action
+ *  net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
+ *  net.minecraft.network.play.server.SPacketBlockAction
+ *  net.minecraft.util.EnumFacing
+ *  net.minecraft.util.EnumHand
+ *  net.minecraft.util.math.BlockPos
+ *  net.minecraft.util.math.Vec3d
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.misc;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import java.util.concurrent.atomic.*;
-import me.earth.phobos.*;
-import net.minecraft.init.*;
-import net.minecraft.block.*;
-import java.io.*;
-import java.util.zip.*;
-import net.minecraft.block.state.*;
-import net.minecraft.block.material.*;
-import me.earth.phobos.features.command.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import net.minecraft.network.play.server.*;
-import me.earth.phobos.event.events.*;
-import net.minecraft.network.*;
-import net.minecraft.util.*;
-import java.util.*;
-import net.minecraft.util.math.*;
-import me.earth.phobos.util.*;
-import net.minecraft.network.play.client.*;
-import java.net.*;
-import java.nio.channels.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.event.events.ClientEvent;
+import me.earth.phobos.event.events.PacketEvent;
+import me.earth.phobos.event.events.UpdateWalkingPlayerEvent;
+import me.earth.phobos.features.command.Command;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.BlockUtil;
+import me.earth.phobos.util.MathUtil;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.network.play.client.CPacketPlayerDigging;
+import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
+import net.minecraft.network.play.server.SPacketBlockAction;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class NoteBot extends Module
-{
-    private final Setting<Boolean> tune;
-    private final Setting<Boolean> active;
-    private final Setting<Boolean> downloadSongs;
-    private final Setting<String> loadFileSet;
-    private final Map<Sound,  Byte> soundBytes;
-    private final List<SoundEntry> soundEntries;
-    private final List<BlockPos> posList;
-    private final File file;
+public class NoteBot
+extends Module {
+    private final Setting<Boolean> tune = this.register(new Setting<Boolean>("Tune", false));
+    private final Setting<Boolean> active = this.register(new Setting<Boolean>("Active", false));
+    private final Setting<Boolean> downloadSongs = this.register(new Setting<Boolean>("DownloadSongs", false));
+    private final Setting<String> loadFileSet = this.register(new Setting<String>("Load", "Load File..."));
+    private final Map<Sound, Byte> soundBytes = new HashMap<Sound, Byte>();
+    private final List<SoundEntry> soundEntries = new ArrayList<SoundEntry>();
+    private final List<BlockPos> posList = new ArrayList<BlockPos>();
+    private final File file = new File(Phobos.fileManager.getNotebot().toString());
     private IRegister[] registers;
     private int soundIndex;
     private int index;
-    private Map<BlockPos,  AtomicInteger> posPitch;
-    private Map<Sound,  BlockPos[]> soundPositions;
+    private Map<BlockPos, AtomicInteger> posPitch;
+    private Map<Sound, BlockPos[]> soundPositions;
     private BlockPos currentPos;
     private BlockPos nextPos;
     private BlockPos endPos;
     private int tuneStage;
     private int tuneIndex;
     private boolean tuned;
-    
+
     public NoteBot() {
-        super("NoteBot",  "Plays songs.",  Category.MISC,  true,  false,  false);
-        this.tune = (Setting<Boolean>)this.register(new Setting("Tune", false));
-        this.active = (Setting<Boolean>)this.register(new Setting("Active", false));
-        this.downloadSongs = (Setting<Boolean>)this.register(new Setting("DownloadSongs", false));
-        this.loadFileSet = (Setting<String>)this.register(new Setting("Load", "Load File..."));
-        this.soundBytes = new HashMap<Sound,  Byte>();
-        this.soundEntries = new ArrayList<SoundEntry>();
-        this.posList = new ArrayList<BlockPos>();
-        this.file = new File(Phobos.fileManager.getNotebot().toString());
+        super("NoteBot", "Plays songs.", Module.Category.MISC, true, false, false);
     }
-    
-    public static Map<Sound,  BlockPos[]> setUpSoundMap() {
-        NoteBot.mc.player.getPosition();
-        final LinkedHashMap<Sound,  BlockPos[]> result = new LinkedHashMap<Sound,  BlockPos[]>();
-        final HashMap<Sound,  AtomicInteger> atomicSounds = new HashMap<Sound,  AtomicInteger>();
-        final BlockPos[] var10002;
-        final HashMap<Sound,  BlockPos[]> hashMap;
-        final HashMap<Sound,  AtomicInteger> hashMap2;
+
+    public static Map<Sound, BlockPos[]> setUpSoundMap() {
+        NoteBot.mc.field_71439_g.func_180425_c();
+        LinkedHashMap<Sound, BlockPos[]> result = new LinkedHashMap<Sound, BlockPos[]>();
+        HashMap atomicSounds = new HashMap();
         Arrays.asList(Sound.values()).forEach(sound -> {
-            var10002 = new BlockPos[25];
-            hashMap.put(sound,  var10002);
-            hashMap2.put(sound,  new AtomicInteger());
-            return;
+            BlockPos[] var10002 = new BlockPos[25];
+            result.put((Sound)((Object)sound), var10002);
+            atomicSounds.put(sound, new AtomicInteger());
         });
         for (int x = -6; x < 6; ++x) {
             for (int y = -1; y < 5; ++y) {
                 for (int z = -6; z < 6; ++z) {
-                    final BlockPos pos = NoteBot.mc.player.getPosition().add(x,  y,  z);
-                    final Block block = NoteBot.mc.world.getBlockState(pos).getBlock();
-                    if (distanceSqToCenter(pos) < 27.040000000000003 && block == Blocks.NOTEBLOCK) {
-                        final Sound sound2;
-                        final int soundByte;
-                        if ((soundByte = atomicSounds.get(sound2 = getSoundFromBlockState(NoteBot.mc.world.getBlockState(pos.down()))).getAndIncrement()) < 25) {
-                            result.get(sound2)[soundByte] = pos;
-                        }
-                    }
+                    Sound sound2;
+                    int soundByte;
+                    BlockPos pos = NoteBot.mc.field_71439_g.func_180425_c().func_177982_a(x, y, z);
+                    Block block = NoteBot.mc.field_71441_e.func_180495_p(pos).func_177230_c();
+                    if (!(NoteBot.distanceSqToCenter(pos) < 27.040000000000003) || block != Blocks.field_150323_B || (soundByte = ((AtomicInteger)atomicSounds.get((Object)(sound2 = NoteBot.getSoundFromBlockState(NoteBot.mc.field_71441_e.func_180495_p(pos.func_177977_b()))))).getAndIncrement()) >= 25) continue;
+                    result.get((Object)sound2)[soundByte] = pos;
                 }
             }
         }
         return result;
     }
-    
-    private static double distanceSqToCenter(final BlockPos pos) {
-        final double var1 = Math.abs(NoteBot.mc.player.posX - pos.getX() - 0.5);
-        final double var2 = Math.abs(NoteBot.mc.player.posY + NoteBot.mc.player.getEyeHeight() - pos.getY() - 0.5);
-        final double var3 = Math.abs(NoteBot.mc.player.posZ - pos.getZ() - 0.5);
-        return var1 * var1 + var2 * var2 + var3 * var3;
+
+    private static double distanceSqToCenter(BlockPos pos) {
+        double var1 = Math.abs(NoteBot.mc.field_71439_g.field_70165_t - (double)pos.func_177958_n() - 0.5);
+        double var3 = Math.abs(NoteBot.mc.field_71439_g.field_70163_u + (double)NoteBot.mc.field_71439_g.func_70047_e() - (double)pos.func_177956_o() - 0.5);
+        double var5 = Math.abs(NoteBot.mc.field_71439_g.field_70161_v - (double)pos.func_177952_p() - 0.5);
+        return var1 * var1 + var3 * var3 + var5 * var5;
     }
-    
-    private static IRegister[] createRegister(final File file) throws IOException {
-        final FileInputStream fileInputStream = new FileInputStream(file);
-        final byte[] arrby = new byte[fileInputStream.available()];
+
+    private static IRegister[] createRegister(File file) throws IOException {
+        int n2;
+        FileInputStream fileInputStream = new FileInputStream(file);
+        byte[] arrby = new byte[fileInputStream.available()];
         fileInputStream.read(arrby);
-        final ArrayList<IRegister> arrayList = new ArrayList<IRegister>();
+        ArrayList<IRegister> arrayList = new ArrayList<IRegister>();
         boolean bl = true;
-        for (final int n2 : arrby) {
-            final byte b = (byte)n2;
-            if (n2 == 64) {
-                bl = false;
-                break;
-            }
+        for (int n : arrby) {
+            n2 = n;
+            if (n2 != 64) continue;
+            bl = false;
+            break;
         }
-        for (int n3 = 0,  n4 = 0; n4 < arrby.length; n4 = ++n3) {
-            final int n5 = arrby[n3];
-            if (n5 == (bl ? 5 : 64)) {
-                final byte[] arrby2 = { arrby[++n3],  arrby[++n3] };
-                final int n2 = (arrby2[0] & 0xFF) | (arrby2[1] & 0xFF) << 8;
+        int n = 0;
+        int n6 = 0;
+        while (n6 < arrby.length) {
+            byte n4 = arrby[n];
+            if (n4 == (bl ? (byte)5 : 64)) {
+                byte[] arrby3 = new byte[]{arrby[++n], arrby[++n]};
+                n2 = arrby3[0] & 0xFF | (arrby3[1] & 0xFF) << 8;
                 arrayList.add(new SimpleRegister(n2));
+            } else {
+                arrayList.add(new SoundRegister(Sound.values()[n4], arrby[++n]));
             }
-            else {
-                arrayList.add(new SoundRegister(Sound.values()[n5],  arrby[++n3]));
-            }
+            n6 = ++n;
         }
         return arrayList.toArray(new IRegister[0]);
     }
-    
-    public static void unzip(final File file1,  final File fileIn) {
-        final byte[] var2 = new byte[1024];
-        ZipInputStream zipInputStream;
+
+    public static void unzip(File file1, File fileIn) {
         ZipEntry zipEntry;
+        ZipInputStream zipInputStream;
+        byte[] var2 = new byte[1024];
         try {
             if (!fileIn.exists()) {
                 fileIn.mkdir();
@@ -144,28 +166,26 @@ public class NoteBot extends Module
         while (true) {
             FileOutputStream outputStream;
             try {
-                if (zipEntry == null) {
-                    break;
-                }
-                final String fileName = zipEntry.getName();
-                final File newFile = new File(fileIn,  fileName);
+                int index;
+                if (zipEntry == null) break;
+                String fileName = zipEntry.getName();
+                File newFile = new File(fileIn, fileName);
                 new File(newFile.getParent()).mkdirs();
                 outputStream = new FileOutputStream(newFile);
-                int index;
                 while ((index = zipInputStream.read(var2)) > 0) {
-                    outputStream.write(var2,  0,  index);
+                    outputStream.write(var2, 0, index);
                 }
             }
-            catch (IOException ioe2) {
-                ioe2.printStackTrace();
+            catch (IOException ioe) {
+                ioe.printStackTrace();
                 return;
             }
             try {
                 outputStream.close();
                 zipEntry = zipInputStream.getNextEntry();
             }
-            catch (IOException ioe2) {
-                ioe2.printStackTrace();
+            catch (IOException ioe) {
+                ioe.printStackTrace();
                 return;
             }
         }
@@ -177,45 +197,45 @@ public class NoteBot extends Module
             ioe.printStackTrace();
         }
     }
-    
-    public static Sound getSoundFromBlockState(final IBlockState state) {
-        if (state.getBlock() == Blocks.CLAY) {
+
+    public static Sound getSoundFromBlockState(IBlockState state) {
+        if (state.func_177230_c() == Blocks.field_150435_aG) {
             return Sound.CLAY;
         }
-        if (state.getBlock() == Blocks.GOLD_BLOCK) {
+        if (state.func_177230_c() == Blocks.field_150340_R) {
             return Sound.GOLD;
         }
-        if (state.getBlock() == Blocks.WOOL) {
+        if (state.func_177230_c() == Blocks.field_150325_L) {
             return Sound.WOOL;
         }
-        if (state.getBlock() == Blocks.PACKED_ICE) {
+        if (state.func_177230_c() == Blocks.field_150403_cj) {
             return Sound.ICE;
         }
-        if (state.getBlock() == Blocks.BONE_BLOCK) {
+        if (state.func_177230_c() == Blocks.field_189880_di) {
             return Sound.BONE;
         }
-        if (state.getMaterial() == Material.ROCK) {
+        if (state.func_185904_a() == Material.field_151576_e) {
             return Sound.ROCK;
         }
-        if (state.getMaterial() == Material.SAND) {
+        if (state.func_185904_a() == Material.field_151595_p) {
             return Sound.SAND;
         }
-        if (state.getMaterial() == Material.GLASS) {
+        if (state.func_185904_a() == Material.field_151592_s) {
             return Sound.GLASS;
         }
-        return (state.getMaterial() == Material.WOOD) ? Sound.WOOD : Sound.NONE;
+        return state.func_185904_a() == Material.field_151575_d ? Sound.WOOD : Sound.NONE;
     }
-    
+
     @Override
     public void onLoad() {
-        if (fullNullCheck()) {
+        if (NoteBot.fullNullCheck()) {
             this.disable();
         }
     }
-    
+
     @Override
     public void onEnable() {
-        if (nullCheck()) {
+        if (NoteBot.nullCheck()) {
             this.disable();
             return;
         }
@@ -225,14 +245,14 @@ public class NoteBot extends Module
         this.index = 0;
         this.resetTuning();
     }
-    
+
     @SubscribeEvent
-    public void onSettingChange(final ClientEvent event) {
+    public void onSettingChange(ClientEvent event) {
         if (event.getStage() == 2 && event.getSetting() != null && this.equals(event.getSetting().getFeature())) {
             if (event.getSetting().equals(this.loadFileSet)) {
-                final String file = this.loadFileSet.getPlannedValue();
+                String file = this.loadFileSet.getPlannedValue();
                 try {
-                    this.registers = createRegister(new File("phobos/notebot/" + file));
+                    this.registers = NoteBot.createRegister(new File("phobos/notebot/" + file));
                     Command.sendMessage("Loaded: " + file);
                 }
                 catch (Exception e) {
@@ -240,93 +260,75 @@ public class NoteBot extends Module
                     e.printStackTrace();
                 }
                 event.setCanceled(true);
-            }
-            else if (event.getSetting().equals(this.tune) && this.tune.getPlannedValue()) {
+            } else if (event.getSetting().equals(this.tune) && this.tune.getPlannedValue().booleanValue()) {
                 this.resetTuning();
             }
         }
     }
-    
+
     @SubscribeEvent
-    public void onPacketReceive(final PacketEvent.Receive event) {
-        if (this.tune.getValue() && event.getPacket() instanceof SPacketBlockAction && this.tuneStage == 0 && this.soundPositions != null) {
-            final SPacketBlockAction packet = (SPacketBlockAction)event.getPacket();
-            final Sound sound = Sound.values()[packet.getData1()];
-            final int pitch = packet.getData2();
-            final BlockPos[] positions = this.soundPositions.get(sound);
-            int i = 0;
-            while (i < 25) {
-                final BlockPos position = positions[i];
-                if (!packet.getBlockPosition().equals((Object)position)) {
-                    ++i;
+    public void onPacketReceive(PacketEvent.Receive event) {
+        if (this.tune.getValue().booleanValue() && event.getPacket() instanceof SPacketBlockAction && this.tuneStage == 0 && this.soundPositions != null) {
+            SPacketBlockAction packet = (SPacketBlockAction)event.getPacket();
+            Sound sound = Sound.values()[packet.func_148869_g()];
+            int pitch = packet.func_148864_h();
+            BlockPos[] positions = this.soundPositions.get((Object)sound);
+            for (int i = 0; i < 25; ++i) {
+                BlockPos position = positions[i];
+                if (!packet.func_179825_a().equals((Object)position)) continue;
+                if (this.posPitch.get((Object)position).intValue() != -1) break;
+                int pitchDif = i - pitch;
+                if (pitchDif < 0) {
+                    pitchDif += 25;
                 }
-                else {
-                    if (this.posPitch.get(position).intValue() != -1) {
-                        break;
-                    }
-                    int pitchDif = i - pitch;
-                    if (pitchDif < 0) {
-                        pitchDif += 25;
-                    }
-                    this.posPitch.get(position).set(pitchDif);
-                    if (pitchDif == 0) {
-                        break;
-                    }
-                    this.tuned = false;
-                    break;
-                }
+                this.posPitch.get((Object)position).set(pitchDif);
+                if (pitchDif == 0) break;
+                this.tuned = false;
+                break;
             }
-            if (this.endPos.equals((Object)packet.getBlockPosition()) && this.tuneIndex >= this.posPitch.values().size()) {
+            if (this.endPos.equals((Object)packet.func_179825_a()) && this.tuneIndex >= this.posPitch.values().size()) {
                 this.tuneStage = 1;
             }
         }
     }
-    
+
     @SubscribeEvent
-    public void onUpdateWalkingPlayerEvent(final UpdateWalkingPlayerEvent event) {
-        if (this.downloadSongs.getValue()) {
+    public void onUpdateWalkingPlayerEvent(UpdateWalkingPlayerEvent event) {
+        if (this.downloadSongs.getValue().booleanValue()) {
             this.downloadSongs();
             Command.sendMessage("Songs downloaded");
             this.downloadSongs.setValue(false);
         }
         if (event.getStage() == 0) {
-            if (this.tune.getValue()) {
+            if (this.tune.getValue().booleanValue()) {
                 this.tunePre();
-            }
-            else if (this.active.getValue()) {
+            } else if (this.active.getValue().booleanValue()) {
                 this.noteBotPre();
             }
-        }
-        else if (this.tune.getValue()) {
+        } else if (this.tune.getValue().booleanValue()) {
             this.tunePost();
-        }
-        else if (this.active.getValue()) {
+        } else if (this.active.getValue().booleanValue()) {
             this.noteBotPost();
         }
     }
-    
+
     private void tunePre() {
         this.currentPos = null;
         if (this.tuneStage == 1 && this.getAtomicBlockPos(null) == null) {
             if (this.tuned) {
                 Command.sendMessage("Done tuning.");
                 this.tune.setValue(false);
-            }
-            else {
+            } else {
                 this.tuned = true;
                 this.tuneStage = 0;
                 this.tuneIndex = 0;
             }
-        }
-        else {
+        } else {
             if (this.tuneStage != 0) {
-                final BlockPos atomicBlockPos = this.getAtomicBlockPos(this.nextPos);
-                this.currentPos = atomicBlockPos;
-                this.nextPos = atomicBlockPos;
-            }
-            else {
+                this.nextPos = this.currentPos = this.getAtomicBlockPos(this.nextPos);
+            } else {
                 while (this.tuneIndex < 250 && this.currentPos == null) {
-                    this.currentPos = this.soundPositions.get(Sound.values()[(int)Math.floor(this.tuneIndex / 25)])[this.tuneIndex % 25];
+                    this.currentPos = this.soundPositions.get((Object)Sound.values()[(int)Math.floor(this.tuneIndex / 25)])[this.tuneIndex % 25];
                     ++this.tuneIndex;
                 }
             }
@@ -335,72 +337,73 @@ public class NoteBot extends Module
             }
         }
     }
-    
+
     private void tunePost() {
         if (this.tuneStage == 0 && this.currentPos != null) {
-            final EnumFacing facing = BlockUtil.getFacing(this.currentPos);
-            NoteBot.mc.player.connection.sendPacket((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK,  this.currentPos,  facing));
-            NoteBot.mc.player.connection.sendPacket((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK,  this.currentPos,  facing));
-        }
-        else if (this.currentPos != null) {
-            this.posPitch.get(this.currentPos).decrementAndGet();
-            NoteBot.mc.player.connection.sendPacket((Packet)new CPacketPlayerTryUseItemOnBlock(this.currentPos,  BlockUtil.getFacing(this.currentPos),  EnumHand.MAIN_HAND,  0.0f,  0.0f,  0.0f));
+            EnumFacing facing = BlockUtil.getFacing(this.currentPos);
+            NoteBot.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, this.currentPos, facing));
+            NoteBot.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, this.currentPos, facing));
+        } else if (this.currentPos != null) {
+            this.posPitch.get((Object)this.currentPos).decrementAndGet();
+            NoteBot.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayerTryUseItemOnBlock(this.currentPos, BlockUtil.getFacing(this.currentPos), EnumHand.MAIN_HAND, 0.0f, 0.0f, 0.0f));
         }
     }
-    
+
     private void resetTuning() {
-        if (NoteBot.mc.world == null || NoteBot.mc.player == null) {
+        if (NoteBot.mc.field_71441_e == null || NoteBot.mc.field_71439_g == null) {
             this.disable();
             return;
         }
         this.tuned = true;
-        this.soundPositions = setUpSoundMap();
-        this.posPitch = new LinkedHashMap<BlockPos,  AtomicInteger>();
+        this.soundPositions = NoteBot.setUpSoundMap();
+        this.posPitch = new LinkedHashMap<BlockPos, AtomicInteger>();
         this.soundPositions.values().forEach(array -> Arrays.asList(array).forEach(pos -> {
             if (pos != null) {
                 this.endPos = pos;
-                this.posPitch.put(pos,  new AtomicInteger(-1));
+                this.posPitch.put((BlockPos)pos, new AtomicInteger(-1));
             }
         }));
         this.tuneStage = 0;
         this.tuneIndex = 0;
     }
-    
-    private BlockPos getAtomicBlockPos(final BlockPos blockPos) {
-        for (final Map.Entry<BlockPos,  AtomicInteger> entry : this.posPitch.entrySet()) {
-            final BlockPos blockPos2 = entry.getKey();
-            final AtomicInteger atomicInteger = entry.getValue();
-            if (blockPos2 != null && !blockPos2.equals((Object)blockPos) && atomicInteger.intValue() > 0) {
-                return blockPos2;
+
+    private BlockPos getAtomicBlockPos(BlockPos blockPos) {
+        AtomicInteger atomicInteger;
+        BlockPos blockPos2;
+        Iterator<Map.Entry<BlockPos, AtomicInteger>> iterator = this.posPitch.entrySet().iterator();
+        do {
+            if (!iterator.hasNext()) {
+                return null;
             }
-        }
-        return null;
+            Map.Entry<BlockPos, AtomicInteger> entry = iterator.next();
+            blockPos2 = entry.getKey();
+            atomicInteger = entry.getValue();
+        } while (blockPos2 == null || blockPos2.equals((Object)blockPos) || atomicInteger.intValue() <= 0);
+        return blockPos2;
     }
-    
+
     private void noteBotPre() {
         this.posList.clear();
         if (this.registers == null) {
             return;
         }
         while (this.index < this.registers.length) {
-            final IRegister register = this.registers[this.index];
+            IRegister register = this.registers[this.index];
             if (register instanceof SimpleRegister) {
-                final SimpleRegister simpleRegister = (SimpleRegister)register;
+                SimpleRegister simpleRegister = (SimpleRegister)register;
                 if (++this.soundIndex >= simpleRegister.getSound()) {
                     ++this.index;
                     this.soundIndex = 0;
                 }
                 if (this.posList.size() > 0) {
-                    final BlockPos blockPos = this.posList.get(0);
+                    BlockPos blockPos = this.posList.get(0);
                     Phobos.rotationManager.lookAtPos(blockPos);
                 }
                 return;
             }
-            if (!(register instanceof SoundRegister)) {
-                continue;
-            }
-            final SoundRegister soundRegister = (SoundRegister)register;
-            final BlockPos pos = this.getRegisterPos(soundRegister);
+            if (!(register instanceof SoundRegister)) continue;
+            SoundRegister soundRegister = (SoundRegister)register;
+            BlockPos pos = this.getRegisterPos(soundRegister);
             if (pos != null) {
                 this.posList.add(pos);
             }
@@ -408,72 +411,65 @@ public class NoteBot extends Module
         }
         this.index = 0;
     }
-    
+
     private void noteBotPost() {
         for (int i = 0; i < this.posList.size(); ++i) {
-            final BlockPos pos = this.posList.get(i);
-            if (pos != null) {
-                if (i != 0) {
-                    final float[] rotations = MathUtil.calcAngle(NoteBot.mc.player.getPositionEyes(NoteBot.mc.getRenderPartialTicks()),  new Vec3d((double)(pos.getX() + 0.5f),  (double)(pos.getY() + 0.5f),  (double)(pos.getZ() + 0.5f)));
-                    NoteBot.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Rotation(rotations[0],  rotations[1],  NoteBot.mc.player.onGround));
-                }
-                this.clickNoteBlock(pos);
+            BlockPos pos = this.posList.get(i);
+            if (pos == null) continue;
+            if (i != 0) {
+                float[] rotations = MathUtil.calcAngle(NoteBot.mc.field_71439_g.func_174824_e(mc.func_184121_ak()), new Vec3d((double)((float)pos.func_177958_n() + 0.5f), (double)((float)pos.func_177956_o() + 0.5f), (double)((float)pos.func_177952_p() + 0.5f)));
+                NoteBot.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Rotation(rotations[0], rotations[1], NoteBot.mc.field_71439_g.field_70122_E));
             }
+            this.clickNoteBlock(pos);
         }
     }
-    
+
     private void getNoteBlocks() {
         this.fillSoundBytes();
         for (int x = -6; x < 6; ++x) {
             for (int y = -1; y < 5; ++y) {
                 for (int z = -6; z < 6; ++z) {
-                    final BlockPos pos = NoteBot.mc.player.getPosition().add(x,  y,  z);
-                    final Block block = NoteBot.mc.world.getBlockState(pos).getBlock();
-                    if (pos.distanceSqToCenter(NoteBot.mc.player.posX,  NoteBot.mc.player.posY + NoteBot.mc.player.getEyeHeight(),  NoteBot.mc.player.posZ) < 27.0 && block == Blocks.NOTEBLOCK) {
-                        final Sound sound;
-                        final byte soundByte;
-                        if ((soundByte = this.soundBytes.get(sound = getSoundFromBlockState(NoteBot.mc.world.getBlockState(pos.down())))) <= 25) {
-                            this.soundEntries.add(new SoundEntry(pos,  new SoundRegister(sound,  soundByte)));
-                            this.soundBytes.replace(sound,  (byte)(soundByte + 1));
-                        }
-                    }
+                    Sound sound;
+                    byte soundByte;
+                    BlockPos pos = NoteBot.mc.field_71439_g.func_180425_c().func_177982_a(x, y, z);
+                    Block block = NoteBot.mc.field_71441_e.func_180495_p(pos).func_177230_c();
+                    if (!(pos.func_177957_d(NoteBot.mc.field_71439_g.field_70165_t, NoteBot.mc.field_71439_g.field_70163_u + (double)NoteBot.mc.field_71439_g.func_70047_e(), NoteBot.mc.field_71439_g.field_70161_v) < 27.0) || block != Blocks.field_150323_B || (soundByte = this.soundBytes.get((Object)(sound = NoteBot.getSoundFromBlockState(NoteBot.mc.field_71441_e.func_180495_p(pos.func_177977_b())))).byteValue()) > 25) continue;
+                    this.soundEntries.add(new SoundEntry(pos, new SoundRegister(sound, soundByte)));
+                    this.soundBytes.replace(sound, (byte)(soundByte + 1));
                 }
             }
         }
     }
-    
+
     private void fillSoundBytes() {
         this.soundBytes.clear();
-        for (final Sound sound : Sound.values()) {
-            this.soundBytes.put(sound,  (Byte)0);
+        for (Sound sound : Sound.values()) {
+            this.soundBytes.put(sound, (byte)0);
         }
     }
-    
-    private void clickNoteBlock(final BlockPos pos) {
-        final EnumFacing facing = BlockUtil.getFacing(pos);
-        NoteBot.mc.player.connection.sendPacket((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK,  pos,  facing));
-        NoteBot.mc.player.connection.sendPacket((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK,  pos,  facing));
+
+    private void clickNoteBlock(BlockPos pos) {
+        EnumFacing facing = BlockUtil.getFacing(pos);
+        NoteBot.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, pos, facing));
+        NoteBot.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, pos, facing));
     }
-    
-    private BlockPos getRegisterPos(final SoundRegister register) {
-        final SoundEntry soundEntry = this.soundEntries.stream().filter(entry -> entry.getRegister().equals(register)).findFirst().orElse(null);
+
+    private BlockPos getRegisterPos(SoundRegister register) {
+        SoundEntry soundEntry = this.soundEntries.stream().filter(entry -> entry.getRegister().equals(register)).findFirst().orElse(null);
         if (soundEntry == null) {
             return null;
         }
         return soundEntry.getPos();
     }
-    
+
     private void downloadSongs() {
-        File songFile;
-        FileChannel fileChannel;
-        ReadableByteChannel readableByteChannel;
         new Thread(() -> {
             try {
-                songFile = new File(this.file,  "songs.zip");
-                fileChannel = new FileOutputStream(songFile).getChannel();
-                readableByteChannel = Channels.newChannel(new URL("https://www.futureclient.net/future/songs.zip").openStream());
-                fileChannel.transferFrom(readableByteChannel,  0L,  Long.MAX_VALUE);
-                unzip(songFile,  this.file);
+                File songFile = new File(this.file, "songs.zip");
+                FileChannel fileChannel = new FileOutputStream(songFile).getChannel();
+                ReadableByteChannel readableByteChannel = Channels.newChannel(new URL("https://www.futureclient.net/future/songs.zip").openStream());
+                fileChannel.transferFrom(readableByteChannel, 0L, Long.MAX_VALUE);
+                NoteBot.unzip(songFile, this.file);
                 songFile.deleteOnExit();
             }
             catch (IOException ioe) {
@@ -481,86 +477,84 @@ public class NoteBot extends Module
             }
         }).start();
     }
-    
-    public enum Sound
-    {
-        NONE,  
-        GOLD,  
-        GLASS,  
-        BONE,  
-        WOOD,  
-        CLAY,  
-        ICE,  
-        SAND,  
-        ROCK,  
-        WOOL;
+
+    public static class SoundEntry {
+        private final BlockPos pos;
+        private final SoundRegister register;
+
+        public SoundEntry(BlockPos posIn, SoundRegister soundRegisterIn) {
+            this.pos = posIn;
+            this.register = soundRegisterIn;
+        }
+
+        public BlockPos getPos() {
+            return this.pos;
+        }
+
+        public SoundRegister getRegister() {
+            return this.register;
+        }
     }
-    
-    public static class SoundRegister implements IRegister
-    {
+
+    public static class SimpleRegister
+    implements IRegister {
+        private int sound;
+
+        public SimpleRegister(int soundIn) {
+            this.sound = soundIn;
+        }
+
+        public int getSound() {
+            return this.sound;
+        }
+
+        public void setSound(int sound) {
+            this.sound = sound;
+        }
+    }
+
+    public static class SoundRegister
+    implements IRegister {
         private final Sound sound;
         private final byte soundByte;
-        
-        public SoundRegister(final Sound soundIn,  final byte soundByteIn) {
+
+        public SoundRegister(Sound soundIn, byte soundByteIn) {
             this.sound = soundIn;
             this.soundByte = soundByteIn;
         }
-        
+
         public Sound getSound() {
             return this.sound;
         }
-        
+
         public byte getSoundByte() {
             return this.soundByte;
         }
-        
-        @Override
-        public boolean equals(final Object other) {
+
+        public boolean equals(Object other) {
             if (other instanceof SoundRegister) {
-                final SoundRegister soundRegister = (SoundRegister)other;
+                SoundRegister soundRegister = (SoundRegister)other;
                 return soundRegister.getSound() == this.getSound() && soundRegister.getSoundByte() == this.getSoundByte();
             }
             return false;
         }
     }
-    
-    public static class SimpleRegister implements IRegister
-    {
-        private int sound;
-        
-        public SimpleRegister(final int soundIn) {
-            this.sound = soundIn;
-        }
-        
-        public int getSound() {
-            return this.sound;
-        }
-        
-        public void setSound(final int sound) {
-            this.sound = sound;
-        }
+
+    public static interface IRegister {
     }
-    
-    public static class SoundEntry
-    {
-        private final BlockPos pos;
-        private final SoundRegister register;
-        
-        public SoundEntry(final BlockPos posIn,  final SoundRegister soundRegisterIn) {
-            this.pos = posIn;
-            this.register = soundRegisterIn;
-        }
-        
-        public BlockPos getPos() {
-            return this.pos;
-        }
-        
-        public SoundRegister getRegister() {
-            return this.register;
-        }
-    }
-    
-    public interface IRegister
-    {
+
+    public static enum Sound {
+        NONE,
+        GOLD,
+        GLASS,
+        BONE,
+        WOOD,
+        CLAY,
+        ICE,
+        SAND,
+        ROCK,
+        WOOL;
+
     }
 }
+

@@ -1,62 +1,63 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.network.play.server.SPacketPlayerPosLook
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.misc;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import me.earth.phobos.util.*;
-import me.earth.phobos.features.command.*;
-import me.earth.phobos.event.events.*;
-import net.minecraft.network.play.server.*;
-import net.minecraftforge.fml.common.eventhandler.*;
+import me.earth.phobos.event.events.PacketEvent;
+import me.earth.phobos.features.command.Command;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.TimerUtil;
+import net.minecraft.network.play.server.SPacketPlayerPosLook;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class NoRotate extends Module
-{
-    private final Setting<Integer> waitDelay;
-    private final TimerUtil timer;
-    private boolean cancelPackets;
+public class NoRotate
+extends Module {
+    private final Setting<Integer> waitDelay = this.register(new Setting<Integer>("Delay", 2500, 0, 10000));
+    private final TimerUtil timer = new TimerUtil();
+    private boolean cancelPackets = true;
     private boolean timerReset;
-    
+
     public NoRotate() {
-        super("NoRotate",  "Dangerous to use might desync you.",  Category.MISC,  true,  false,  false);
-        this.waitDelay = (Setting<Integer>)this.register(new Setting("Delay", 2500, 0, 10000));
-        this.timer = new TimerUtil();
-        this.cancelPackets = true;
+        super("NoRotate", "Dangerous to use might desync you.", Module.Category.MISC, true, false, false);
     }
-    
+
     @Override
     public void onLogout() {
         this.cancelPackets = false;
     }
-    
+
     @Override
     public void onLogin() {
         this.timer.reset();
         this.timerReset = true;
     }
-    
+
     @Override
     public void onUpdate() {
-        if (this.timerReset && !this.cancelPackets && this.timer.passedMs(this.waitDelay.getValue())) {
-            Command.sendMessage("<NoRotate> §cThis module might desync you!");
+        if (this.timerReset && !this.cancelPackets && this.timer.passedMs(this.waitDelay.getValue().intValue())) {
+            Command.sendMessage("<NoRotate> \u00a7cThis module might desync you!");
             this.cancelPackets = true;
             this.timerReset = false;
         }
     }
-    
+
     @Override
     public void onEnable() {
-        Command.sendMessage("<NoRotate> §cThis module might desync you!");
+        Command.sendMessage("<NoRotate> \u00a7cThis module might desync you!");
     }
-    
+
     @SubscribeEvent
-    public void onPacketReceive(final PacketEvent.Receive event) {
+    public void onPacketReceive(PacketEvent.Receive event) {
         if (event.getStage() == 0 && this.cancelPackets && event.getPacket() instanceof SPacketPlayerPosLook) {
-            final SPacketPlayerPosLook packet = (SPacketPlayerPosLook)event.getPacket();
-            packet.yaw = NoRotate.mc.player.rotationYaw;
-            packet.pitch = NoRotate.mc.player.rotationPitch;
+            SPacketPlayerPosLook packet = (SPacketPlayerPosLook)event.getPacket();
+            packet.field_148936_d = NoRotate.mc.field_71439_g.field_70177_z;
+            packet.field_148937_e = NoRotate.mc.field_71439_g.field_70125_A;
         }
     }
 }
+

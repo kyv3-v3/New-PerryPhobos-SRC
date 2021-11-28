@@ -1,44 +1,44 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.init.Blocks
+ */
 package me.earth.phobos.features.modules.movement;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import net.minecraft.init.*;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import net.minecraft.init.Blocks;
 
-public class IceSpeed extends Module
-{
-    private static IceSpeed INSTANCE;
-    private final Setting<Float> speed;
-    
+public class IceSpeed
+extends Module {
+    private static IceSpeed INSTANCE = new IceSpeed();
+    private final Setting<Float> speed = this.register(new Setting<Float>("Speed", Float.valueOf(0.4f), Float.valueOf(0.1f), Float.valueOf(1.5f)));
+
     public IceSpeed() {
-        super("IceSpeed",  "Speeds you up on ice.",  Module.Category.MOVEMENT,  false,  false,  false);
-        this.speed = (Setting<Float>)this.register(new Setting("Speed", 0.4f, 0.1f, 1.5f));
-        IceSpeed.INSTANCE = this;
+        super("IceSpeed", "Speeds you up on ice.", Module.Category.MOVEMENT, false, false, false);
+        INSTANCE = this;
     }
-    
+
     public static IceSpeed getINSTANCE() {
-        if (IceSpeed.INSTANCE == null) {
-            IceSpeed.INSTANCE = new IceSpeed();
+        if (INSTANCE == null) {
+            INSTANCE = new IceSpeed();
         }
-        return IceSpeed.INSTANCE;
+        return INSTANCE;
     }
-    
+
+    @Override
     public void onUpdate() {
-        Blocks.ICE.slipperiness = this.speed.getValue();
-        Blocks.PACKED_ICE.slipperiness = this.speed.getValue();
-        Blocks.FROSTED_ICE.slipperiness = this.speed.getValue();
+        Blocks.field_150432_aD.field_149765_K = this.speed.getValue().floatValue();
+        Blocks.field_150403_cj.field_149765_K = this.speed.getValue().floatValue();
+        Blocks.field_185778_de.field_149765_K = this.speed.getValue().floatValue();
     }
-    
+
+    @Override
     public void onDisable() {
-        Blocks.ICE.slipperiness = 0.98f;
-        Blocks.PACKED_ICE.slipperiness = 0.98f;
-        Blocks.FROSTED_ICE.slipperiness = 0.98f;
-    }
-    
-    static {
-        IceSpeed.INSTANCE = new IceSpeed();
+        Blocks.field_150432_aD.field_149765_K = 0.98f;
+        Blocks.field_150403_cj.field_149765_K = 0.98f;
+        Blocks.field_185778_de.field_149765_K = 0.98f;
     }
 }
+

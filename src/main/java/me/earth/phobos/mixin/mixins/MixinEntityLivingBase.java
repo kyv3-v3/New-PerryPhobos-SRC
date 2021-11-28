@@ -1,28 +1,35 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.entity.EntityLivingBase
+ *  net.minecraft.world.World
+ */
 package me.earth.phobos.mixin.mixins;
 
-import org.spongepowered.asm.mixin.*;
-import net.minecraft.entity.*;
-import net.minecraft.world.*;
-import org.spongepowered.asm.mixin.injection.callback.*;
-import me.earth.phobos.util.*;
-import me.earth.phobos.features.modules.movement.*;
-import org.spongepowered.asm.mixin.injection.*;
+import me.earth.phobos.features.modules.movement.ElytraFlight;
+import me.earth.phobos.util.Util;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin({ EntityLivingBase.class })
-public abstract class MixinEntityLivingBase extends Entity
-{
-    public MixinEntityLivingBase(final World worldIn) {
+@Mixin(value={EntityLivingBase.class})
+public abstract class MixinEntityLivingBase
+extends Entity {
+    public MixinEntityLivingBase(World worldIn) {
         super(worldIn);
     }
-    
-    @Inject(method = { "isElytraFlying" },  at = { @At("HEAD") },  cancellable = true)
-    private void isElytraFlyingHook(final CallbackInfoReturnable<Boolean> info) {
-        if (Util.mc.player != null && Util.mc.player.equals((Object)this) && ElytraFlight.getInstance().isOn() && ElytraFlight.getInstance().mode.getValue() == ElytraFlight.Mode.BETTER) {
-            info.setReturnValue((Object)false);
+
+    @Inject(method={"isElytraFlying"}, at={@At(value="HEAD")}, cancellable=true)
+    private void isElytraFlyingHook(CallbackInfoReturnable<Boolean> info) {
+        if (Util.mc.field_71439_g != null && Util.mc.field_71439_g.equals((Object)this) && ElytraFlight.getInstance().isOn() && ElytraFlight.getInstance().mode.getValue() == ElytraFlight.Mode.BETTER) {
+            info.setReturnValue(false);
         }
     }
 }
+

@@ -1,61 +1,56 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.network.play.client.CPacketConfirmTeleport
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.misc;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import me.earth.phobos.event.events.*;
-import net.minecraft.network.play.client.*;
-import net.minecraftforge.fml.common.eventhandler.*;
+import me.earth.phobos.event.events.PacketEvent;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import net.minecraft.network.play.client.CPacketConfirmTeleport;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class BetterPortals extends Module
-{
-    private static BetterPortals INSTANCE;
-    public Setting<Boolean> portalChat;
-    public Setting<Boolean> godmode;
-    public Setting<Boolean> fastPortal;
-    public Setting<Integer> cooldown;
-    public Setting<Integer> time;
-    
+public class BetterPortals
+extends Module {
+    private static BetterPortals INSTANCE = new BetterPortals();
+    public Setting<Boolean> portalChat = this.register(new Setting<Boolean>("Chat", Boolean.valueOf(true), "Allows you to chat in portals."));
+    public Setting<Boolean> godmode = this.register(new Setting<Boolean>("Godmode", Boolean.valueOf(false), "Portal Godmode."));
+    public Setting<Boolean> fastPortal = this.register(new Setting<Boolean>("FastPortal", false));
+    public Setting<Integer> cooldown = this.register(new Setting<Object>("Cooldown", 5, 1, 10, v -> this.fastPortal.getValue(), "Portal cooldown."));
+    public Setting<Integer> time = this.register(new Setting<Object>("Time", 5, 0, 80, v -> this.fastPortal.getValue(), "Time in Portal"));
+
     public BetterPortals() {
-        super("BetterPortals",  "Tweaks for Portals.",  Category.MISC,  true,  false,  false);
-        this.portalChat = (Setting<Boolean>)this.register(new Setting("Chat", true,  "Allows you to chat in portals."));
-        this.godmode = (Setting<Boolean>)this.register(new Setting("Godmode", false,  "Portal Godmode."));
-        this.fastPortal = (Setting<Boolean>)this.register(new Setting("FastPortal", false));
-        this.cooldown = (Setting<Integer>)this.register(new Setting("Cooldown", 5, 1, 10,  v -> this.fastPortal.getValue(),  "Portal cooldown."));
-        this.time = (Setting<Integer>)this.register(new Setting("Time", 5, 0, 80,  v -> this.fastPortal.getValue(),  "Time in Portal"));
+        super("BetterPortals", "Tweaks for Portals.", Module.Category.MISC, true, false, false);
         this.setInstance();
     }
-    
+
     public static BetterPortals getInstance() {
-        if (BetterPortals.INSTANCE == null) {
-            BetterPortals.INSTANCE = new BetterPortals();
+        if (INSTANCE == null) {
+            INSTANCE = new BetterPortals();
         }
-        return BetterPortals.INSTANCE;
+        return INSTANCE;
     }
-    
+
     private void setInstance() {
-        BetterPortals.INSTANCE = this;
+        INSTANCE = this;
     }
-    
+
     @Override
     public String getDisplayInfo() {
-        if (this.godmode.getValue()) {
+        if (this.godmode.getValue().booleanValue()) {
             return "Godmode";
         }
         return null;
     }
-    
+
     @SubscribeEvent
-    public void onPacketSend(final PacketEvent.Send event) {
-        if (event.getStage() == 0 && this.godmode.getValue() && event.getPacket() instanceof CPacketConfirmTeleport) {
+    public void onPacketSend(PacketEvent.Send event) {
+        if (event.getStage() == 0 && this.godmode.getValue().booleanValue() && event.getPacket() instanceof CPacketConfirmTeleport) {
             event.setCanceled(true);
         }
     }
-    
-    static {
-        BetterPortals.INSTANCE = new BetterPortals();
-    }
 }
+

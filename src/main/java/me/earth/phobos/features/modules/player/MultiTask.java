@@ -1,32 +1,28 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ */
 package me.earth.phobos.features.modules.player;
 
-import me.earth.phobos.features.modules.*;
+import me.earth.phobos.features.modules.Module;
 
-public class MultiTask extends Module
-{
-    private static MultiTask INSTANCE;
-    
+public class MultiTask
+extends Module {
+    private static MultiTask INSTANCE = new MultiTask();
+
     public MultiTask() {
-        super("MultiTask",  "Allows you to eat while mining.",  Module.Category.PLAYER,  false,  false,  false);
+        super("MultiTask", "Allows you to eat while mining.", Module.Category.PLAYER, false, false, false);
         this.setInstance();
     }
-    
+
     public static MultiTask getInstance() {
-        if (MultiTask.INSTANCE == null) {
-            MultiTask.INSTANCE = new MultiTask();
+        if (INSTANCE == null) {
+            INSTANCE = new MultiTask();
         }
-        return MultiTask.INSTANCE;
+        return INSTANCE;
     }
-    
+
     private void setInstance() {
-        MultiTask.INSTANCE = this;
-    }
-    
-    static {
-        MultiTask.INSTANCE = new MultiTask();
+        INSTANCE = this;
     }
 }
+

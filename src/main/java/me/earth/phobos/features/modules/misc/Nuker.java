@@ -1,231 +1,225 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.block.Block
+ *  net.minecraft.block.BlockLiquid
+ *  net.minecraft.block.state.IBlockState
+ *  net.minecraft.init.Blocks
+ *  net.minecraft.item.ItemPickaxe
+ *  net.minecraft.item.ItemStack
+ *  net.minecraft.util.EnumHand
+ *  net.minecraft.util.math.BlockPos
+ *  net.minecraft.util.math.Vec3d
+ *  net.minecraft.world.World
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.misc;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import me.earth.phobos.event.events.*;
-import me.earth.phobos.*;
-import net.minecraft.util.*;
-import me.earth.phobos.util.*;
-import net.minecraft.init.*;
-import java.util.*;
-import net.minecraft.util.math.*;
-import net.minecraft.item.*;
-import net.minecraft.world.*;
-import net.minecraft.block.state.*;
-import net.minecraft.block.*;
+import java.util.ArrayList;
+import java.util.List;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.event.events.BlockEvent;
+import me.earth.phobos.event.events.UpdateWalkingPlayerEvent;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.BlockUtil;
+import me.earth.phobos.util.MathUtil;
+import me.earth.phobos.util.TimerUtil;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemPickaxe;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class Nuker extends Module
-{
-    private final TimerUtil timer;
-    private final Setting<Boolean> autoSwitch;
-    public Setting<Boolean> rotate;
-    public Setting<Float> distance;
-    public Setting<Integer> blockPerTick;
-    public Setting<Integer> delay;
-    public Setting<Boolean> nuke;
-    public Setting<Mode> mode;
-    public Setting<Boolean> antiRegear;
-    public Setting<Boolean> hopperNuker;
-    private int oldSlot;
+public class Nuker
+extends Module {
+    private final TimerUtil timer = new TimerUtil();
+    private final Setting<Boolean> autoSwitch = this.register(new Setting<Boolean>("AutoSwitch", false));
+    public Setting<Boolean> rotate = this.register(new Setting<Boolean>("Rotate", false));
+    public Setting<Float> distance = this.register(new Setting<Float>("Range", Float.valueOf(6.0f), Float.valueOf(0.1f), Float.valueOf(10.0f)));
+    public Setting<Integer> blockPerTick = this.register(new Setting<Integer>("Blocks/Attack", 50, 1, 100));
+    public Setting<Integer> delay = this.register(new Setting<Integer>("Delay/Attack", 50, 1, 1000));
+    public Setting<Boolean> nuke = this.register(new Setting<Boolean>("Nuke", false));
+    public Setting<Mode> mode = this.register(new Setting<Object>("Mode", (Object)Mode.NUKE, v -> this.nuke.getValue()));
+    public Setting<Boolean> antiRegear = this.register(new Setting<Boolean>("AntiRegear", false));
+    public Setting<Boolean> hopperNuker = this.register(new Setting<Boolean>("HopperAura", false));
+    private int oldSlot = -1;
     private boolean isMining;
     private Block selected;
-    
+
     public Nuker() {
-        super("Nuker",  "Mines many blocks.",  Category.MISC,  true,  false,  false);
-        this.timer = new TimerUtil();
-        this.autoSwitch = (Setting<Boolean>)this.register(new Setting("AutoSwitch", false));
-        this.rotate = (Setting<Boolean>)this.register(new Setting("Rotate", false));
-        this.distance = (Setting<Float>)this.register(new Setting("Range", 6.0f, 0.1f, 10.0f));
-        this.blockPerTick = (Setting<Integer>)this.register(new Setting("Blocks/Attack", 50, 1, 100));
-        this.delay = (Setting<Integer>)this.register(new Setting("Delay/Attack", 50, 1, 1000));
-        this.nuke = (Setting<Boolean>)this.register(new Setting("Nuke", false));
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.NUKE,  v -> this.nuke.getValue()));
-        this.antiRegear = (Setting<Boolean>)this.register(new Setting("AntiRegear", false));
-        this.hopperNuker = (Setting<Boolean>)this.register(new Setting("HopperAura", false));
-        this.oldSlot = -1;
+        super("Nuker", "Mines many blocks.", Module.Category.MISC, true, false, false);
     }
-    
+
     @Override
     public void onToggle() {
         this.selected = null;
     }
-    
+
     @SubscribeEvent
-    public void onClickBlock(final BlockEvent event) {
-        final Block block;
-        if (event.getStage() == 3 && (this.mode.getValue() == Mode.SELECTION || this.mode.getValue() == Mode.NUKE) && (block = Nuker.mc.world.getBlockState(event.pos).getBlock()) != null && block != this.selected) {
+    public void onClickBlock(BlockEvent event) {
+        Block block;
+        if (event.getStage() == 3 && (this.mode.getValue() == Mode.SELECTION || this.mode.getValue() == Mode.NUKE) && (block = Nuker.mc.field_71441_e.func_180495_p(event.pos).func_177230_c()) != null && block != this.selected) {
             this.selected = block;
             event.setCanceled(true);
         }
     }
-    
+
     @SubscribeEvent
-    public void onUpdateWalkingPlayerPre(final UpdateWalkingPlayerEvent event) {
+    public void onUpdateWalkingPlayerPre(UpdateWalkingPlayerEvent event) {
         if (event.getStage() == 0) {
-            if (this.nuke.getValue()) {
+            if (this.nuke.getValue().booleanValue()) {
                 BlockPos pos = null;
                 switch (this.mode.getValue()) {
-                    case SELECTION:
+                    case SELECTION: 
                     case NUKE: {
                         pos = this.getClosestBlockSelection();
                         break;
                     }
                     case ALL: {
                         pos = this.getClosestBlockAll();
-                        break;
                     }
                 }
                 if (pos != null) {
                     if (this.mode.getValue() == Mode.SELECTION || this.mode.getValue() == Mode.ALL) {
-                        if (this.rotate.getValue()) {
-                            final float[] angle = MathUtil.calcAngle(Nuker.mc.player.getPositionEyes(Nuker.mc.getRenderPartialTicks()),  new Vec3d((double)(pos.getX() + 0.5f),  (double)(pos.getY() + 0.5f),  (double)(pos.getZ() + 0.5f)));
-                            Phobos.rotationManager.setPlayerRotations(angle[0],  angle[1]);
+                        if (this.rotate.getValue().booleanValue()) {
+                            float[] angle = MathUtil.calcAngle(Nuker.mc.field_71439_g.func_174824_e(mc.func_184121_ak()), new Vec3d((double)((float)pos.func_177958_n() + 0.5f), (double)((float)pos.func_177956_o() + 0.5f), (double)((float)pos.func_177952_p() + 0.5f)));
+                            Phobos.rotationManager.setPlayerRotations(angle[0], angle[1]);
                         }
                         if (this.canBreak(pos)) {
-                            Nuker.mc.playerController.onPlayerDamageBlock(pos,  Nuker.mc.player.getHorizontalFacing());
-                            Nuker.mc.player.swingArm(EnumHand.MAIN_HAND);
+                            Nuker.mc.field_71442_b.func_180512_c(pos, Nuker.mc.field_71439_g.func_174811_aO());
+                            Nuker.mc.field_71439_g.func_184609_a(EnumHand.MAIN_HAND);
                         }
-                    }
-                    else {
+                    } else {
                         for (int i = 0; i < this.blockPerTick.getValue(); ++i) {
                             pos = this.getClosestBlockSelection();
-                            if (pos != null) {
-                                if (this.rotate.getValue()) {
-                                    final float[] angle2 = MathUtil.calcAngle(Nuker.mc.player.getPositionEyes(Nuker.mc.getRenderPartialTicks()),  new Vec3d((double)(pos.getX() + 0.5f),  (double)(pos.getY() + 0.5f),  (double)(pos.getZ() + 0.5f)));
-                                    Phobos.rotationManager.setPlayerRotations(angle2[0],  angle2[1]);
-                                }
-                                if (this.timer.passedMs(this.delay.getValue())) {
-                                    Nuker.mc.playerController.onPlayerDamageBlock(pos,  Nuker.mc.player.getHorizontalFacing());
-                                    Nuker.mc.player.swingArm(EnumHand.MAIN_HAND);
-                                    this.timer.reset();
-                                }
+                            if (pos == null) continue;
+                            if (this.rotate.getValue().booleanValue()) {
+                                float[] angle = MathUtil.calcAngle(Nuker.mc.field_71439_g.func_174824_e(mc.func_184121_ak()), new Vec3d((double)((float)pos.func_177958_n() + 0.5f), (double)((float)pos.func_177956_o() + 0.5f), (double)((float)pos.func_177952_p() + 0.5f)));
+                                Phobos.rotationManager.setPlayerRotations(angle[0], angle[1]);
                             }
+                            if (!this.timer.passedMs(this.delay.getValue().intValue())) continue;
+                            Nuker.mc.field_71442_b.func_180512_c(pos, Nuker.mc.field_71439_g.func_174811_aO());
+                            Nuker.mc.field_71439_g.func_184609_a(EnumHand.MAIN_HAND);
+                            this.timer.reset();
                         }
                     }
                 }
             }
-            if (this.antiRegear.getValue()) {
+            if (this.antiRegear.getValue().booleanValue()) {
                 this.breakBlocks(BlockUtil.shulkerList);
             }
-            if (this.hopperNuker.getValue()) {
-                final ArrayList<Block> blocklist = new ArrayList<Block>();
-                blocklist.add((Block)Blocks.HOPPER);
+            if (this.hopperNuker.getValue().booleanValue()) {
+                ArrayList<Block> blocklist = new ArrayList<Block>();
+                blocklist.add((Block)Blocks.field_150438_bZ);
                 this.breakBlocks(blocklist);
             }
         }
     }
-    
-    public void breakBlocks(final List<Block> blocks) {
-        final BlockPos pos = this.getNearestBlock(blocks);
+
+    public void breakBlocks(List<Block> blocks) {
+        BlockPos pos = this.getNearestBlock(blocks);
         if (pos != null) {
             if (!this.isMining) {
-                this.oldSlot = Nuker.mc.player.inventory.currentItem;
+                this.oldSlot = Nuker.mc.field_71439_g.field_71071_by.field_70461_c;
                 this.isMining = true;
             }
-            if (this.rotate.getValue()) {
-                final float[] angle = MathUtil.calcAngle(Nuker.mc.player.getPositionEyes(Nuker.mc.getRenderPartialTicks()),  new Vec3d((double)(pos.getX() + 0.5f),  (double)(pos.getY() + 0.5f),  (double)(pos.getZ() + 0.5f)));
-                Phobos.rotationManager.setPlayerRotations(angle[0],  angle[1]);
+            if (this.rotate.getValue().booleanValue()) {
+                float[] angle = MathUtil.calcAngle(Nuker.mc.field_71439_g.func_174824_e(mc.func_184121_ak()), new Vec3d((double)((float)pos.func_177958_n() + 0.5f), (double)((float)pos.func_177956_o() + 0.5f), (double)((float)pos.func_177952_p() + 0.5f)));
+                Phobos.rotationManager.setPlayerRotations(angle[0], angle[1]);
             }
             if (this.canBreak(pos)) {
-                if (this.autoSwitch.getValue()) {
+                if (this.autoSwitch.getValue().booleanValue()) {
                     int newSlot = -1;
                     for (int i = 0; i < 9; ++i) {
-                        final ItemStack stack = Nuker.mc.player.inventory.getStackInSlot(i);
-                        if (stack != ItemStack.EMPTY && stack.getItem() instanceof ItemPickaxe) {
-                            newSlot = i;
-                            break;
-                        }
+                        ItemStack stack = Nuker.mc.field_71439_g.field_71071_by.func_70301_a(i);
+                        if (stack == ItemStack.field_190927_a || !(stack.func_77973_b() instanceof ItemPickaxe)) continue;
+                        newSlot = i;
+                        break;
                     }
                     if (newSlot != -1) {
-                        Nuker.mc.player.inventory.currentItem = newSlot;
+                        Nuker.mc.field_71439_g.field_71071_by.field_70461_c = newSlot;
                     }
                 }
-                Nuker.mc.playerController.onPlayerDamageBlock(pos,  Nuker.mc.player.getHorizontalFacing());
-                Nuker.mc.player.swingArm(EnumHand.MAIN_HAND);
+                Nuker.mc.field_71442_b.func_180512_c(pos, Nuker.mc.field_71439_g.func_174811_aO());
+                Nuker.mc.field_71439_g.func_184609_a(EnumHand.MAIN_HAND);
             }
-        }
-        else if (this.autoSwitch.getValue() && this.oldSlot != -1) {
-            Nuker.mc.player.inventory.currentItem = this.oldSlot;
+        } else if (this.autoSwitch.getValue().booleanValue() && this.oldSlot != -1) {
+            Nuker.mc.field_71439_g.field_71071_by.field_70461_c = this.oldSlot;
             this.oldSlot = -1;
             this.isMining = false;
         }
     }
-    
-    private boolean canBreak(final BlockPos pos) {
-        final IBlockState blockState = Nuker.mc.world.getBlockState(pos);
-        final Block block = blockState.getBlock();
-        return block.getBlockHardness(blockState,  (World)Nuker.mc.world,  pos) != -1.0f;
+
+    private boolean canBreak(BlockPos pos) {
+        IBlockState blockState = Nuker.mc.field_71441_e.func_180495_p(pos);
+        Block block = blockState.func_177230_c();
+        return block.func_176195_g(blockState, (World)Nuker.mc.field_71441_e, pos) != -1.0f;
     }
-    
-    private BlockPos getNearestBlock(final List<Block> blocks) {
-        double maxDist = MathUtil.square(this.distance.getValue());
+
+    private BlockPos getNearestBlock(List<Block> blocks) {
+        double maxDist = MathUtil.square(this.distance.getValue().floatValue());
         BlockPos ret = null;
-        for (double x = maxDist; x >= -maxDist; --x) {
-            for (double y = maxDist; y >= -maxDist; --y) {
-                for (double z = maxDist; z >= -maxDist; --z) {
-                    final BlockPos pos = new BlockPos(Nuker.mc.player.posX + x,  Nuker.mc.player.posY + y,  Nuker.mc.player.posZ + z);
-                    final double dist = Nuker.mc.player.getDistanceSq((double)pos.getX(),  (double)pos.getY(),  (double)pos.getZ());
-                    if (dist <= maxDist && blocks.contains(Nuker.mc.world.getBlockState(pos).getBlock())) {
-                        if (this.canBreak(pos)) {
-                            maxDist = dist;
-                            ret = pos;
-                        }
-                    }
+        for (double x = maxDist; x >= -maxDist; x -= 1.0) {
+            for (double y = maxDist; y >= -maxDist; y -= 1.0) {
+                for (double z = maxDist; z >= -maxDist; z -= 1.0) {
+                    BlockPos pos = new BlockPos(Nuker.mc.field_71439_g.field_70165_t + x, Nuker.mc.field_71439_g.field_70163_u + y, Nuker.mc.field_71439_g.field_70161_v + z);
+                    double dist = Nuker.mc.field_71439_g.func_70092_e((double)pos.func_177958_n(), (double)pos.func_177956_o(), (double)pos.func_177952_p());
+                    if (!(dist <= maxDist) || !blocks.contains((Object)Nuker.mc.field_71441_e.func_180495_p(pos).func_177230_c()) || !this.canBreak(pos)) continue;
+                    maxDist = dist;
+                    ret = pos;
                 }
             }
         }
         return ret;
     }
-    
+
     private BlockPos getClosestBlockAll() {
-        float maxDist = this.distance.getValue();
+        float maxDist = this.distance.getValue().floatValue();
         BlockPos ret = null;
-        for (float x = maxDist; x >= -maxDist; --x) {
-            for (float y = maxDist; y >= -maxDist; --y) {
-                for (float z = maxDist; z >= -maxDist; --z) {
-                    final BlockPos pos = new BlockPos(Nuker.mc.player.posX + x,  Nuker.mc.player.posY + y,  Nuker.mc.player.posZ + z);
-                    final double dist = Nuker.mc.player.getDistance((double)pos.getX(),  (double)pos.getY(),  (double)pos.getZ());
-                    if (dist <= maxDist && Nuker.mc.world.getBlockState(pos).getBlock() != Blocks.AIR && !(Nuker.mc.world.getBlockState(pos).getBlock() instanceof BlockLiquid) && this.canBreak(pos)) {
-                        if (pos.getY() >= Nuker.mc.player.posY) {
-                            maxDist = (float)dist;
-                            ret = pos;
-                        }
-                    }
+        for (float x = maxDist; x >= -maxDist; x -= 1.0f) {
+            for (float y = maxDist; y >= -maxDist; y -= 1.0f) {
+                for (float z = maxDist; z >= -maxDist; z -= 1.0f) {
+                    BlockPos pos = new BlockPos(Nuker.mc.field_71439_g.field_70165_t + (double)x, Nuker.mc.field_71439_g.field_70163_u + (double)y, Nuker.mc.field_71439_g.field_70161_v + (double)z);
+                    double dist = Nuker.mc.field_71439_g.func_70011_f((double)pos.func_177958_n(), (double)pos.func_177956_o(), (double)pos.func_177952_p());
+                    if (!(dist <= (double)maxDist) || Nuker.mc.field_71441_e.func_180495_p(pos).func_177230_c() == Blocks.field_150350_a || Nuker.mc.field_71441_e.func_180495_p(pos).func_177230_c() instanceof BlockLiquid || !this.canBreak(pos) || !((double)pos.func_177956_o() >= Nuker.mc.field_71439_g.field_70163_u)) continue;
+                    maxDist = (float)dist;
+                    ret = pos;
                 }
             }
         }
         return ret;
     }
-    
+
     private BlockPos getClosestBlockSelection() {
-        float maxDist = this.distance.getValue();
+        float maxDist = this.distance.getValue().floatValue();
         BlockPos ret = null;
-        for (float x = maxDist; x >= -maxDist; --x) {
-            for (float y = maxDist; y >= -maxDist; --y) {
-                for (float z = maxDist; z >= -maxDist; --z) {
-                    final BlockPos pos = new BlockPos(Nuker.mc.player.posX + x,  Nuker.mc.player.posY + y,  Nuker.mc.player.posZ + z);
-                    final double dist = Nuker.mc.player.getDistance((double)pos.getX(),  (double)pos.getY(),  (double)pos.getZ());
-                    if (dist <= maxDist && Nuker.mc.world.getBlockState(pos).getBlock() != Blocks.AIR && !(Nuker.mc.world.getBlockState(pos).getBlock() instanceof BlockLiquid) && Nuker.mc.world.getBlockState(pos).getBlock() == this.selected && this.canBreak(pos)) {
-                        if (pos.getY() >= Nuker.mc.player.posY) {
-                            maxDist = (float)dist;
-                            ret = pos;
-                        }
-                    }
+        for (float x = maxDist; x >= -maxDist; x -= 1.0f) {
+            for (float y = maxDist; y >= -maxDist; y -= 1.0f) {
+                for (float z = maxDist; z >= -maxDist; z -= 1.0f) {
+                    BlockPos pos = new BlockPos(Nuker.mc.field_71439_g.field_70165_t + (double)x, Nuker.mc.field_71439_g.field_70163_u + (double)y, Nuker.mc.field_71439_g.field_70161_v + (double)z);
+                    double dist = Nuker.mc.field_71439_g.func_70011_f((double)pos.func_177958_n(), (double)pos.func_177956_o(), (double)pos.func_177952_p());
+                    if (!(dist <= (double)maxDist) || Nuker.mc.field_71441_e.func_180495_p(pos).func_177230_c() == Blocks.field_150350_a || Nuker.mc.field_71441_e.func_180495_p(pos).func_177230_c() instanceof BlockLiquid || Nuker.mc.field_71441_e.func_180495_p(pos).func_177230_c() != this.selected || !this.canBreak(pos) || !((double)pos.func_177956_o() >= Nuker.mc.field_71439_g.field_70163_u)) continue;
+                    maxDist = (float)dist;
+                    ret = pos;
                 }
             }
         }
         return ret;
     }
-    
-    public enum Mode
-    {
-        SELECTION,  
-        ALL,  
+
+    public static enum Mode {
+        SELECTION,
+        ALL,
         NUKE;
+
     }
 }
+

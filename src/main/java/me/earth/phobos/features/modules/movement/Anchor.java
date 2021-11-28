@@ -1,110 +1,135 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  com.google.common.eventbus.Subscribe
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.init.Blocks
+ *  net.minecraft.util.math.BlockPos
+ *  net.minecraft.util.math.Vec3d
+ */
 package me.earth.phobos.features.modules.movement;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import net.minecraft.init.*;
-import net.minecraft.util.math.*;
-import me.earth.phobos.util.*;
-import net.minecraft.entity.*;
-import com.google.common.eventbus.*;
+import com.google.common.eventbus.Subscribe;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.EntityUtil;
+import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
-public class Anchor extends Module
-{
+public class Anchor
+extends Module {
     public static boolean Anchoring;
-    private final Setting<Integer> pitch;
-    private final Setting<Boolean> disable;
-    private final Setting<Boolean> pull;
+    private final Setting<Integer> pitch = this.register(new Setting<Integer>("Pitch", 60, 0, 90));
+    private final Setting<Boolean> disable = this.register(new Setting<Boolean>("AutoDisable", true));
+    private final Setting<Boolean> pull = this.register(new Setting<Boolean>("Pull", true));
     int holeblocks;
-    
+
     public Anchor() {
-        super("Anchor",  "Automatically makes u go into holes.",  Module.Category.MOVEMENT,  false,  false,  false);
-        this.pitch = (Setting<Integer>)this.register(new Setting("Pitch", 60, 0, 90));
-        this.disable = (Setting<Boolean>)this.register(new Setting("AutoDisable", true));
-        this.pull = (Setting<Boolean>)this.register(new Setting("Pull", true));
+        super("Anchor", "Automatically makes u go into holes.", Module.Category.MOVEMENT, false, false, false);
     }
-    
-    public boolean isBlockHole(final BlockPos blockPos) {
-        this.holeblocks = 0;
-        if (Anchor.mc.world.getBlockState(blockPos.add(0,  3,  0)).getBlock() == Blocks.AIR) {
-            ++this.holeblocks;
-        }
-        if (Anchor.mc.world.getBlockState(blockPos.add(0,  2,  0)).getBlock() == Blocks.AIR) {
-            ++this.holeblocks;
-        }
-        if (Anchor.mc.world.getBlockState(blockPos.add(0,  1,  0)).getBlock() == Blocks.AIR) {
-            ++this.holeblocks;
-        }
-        if (Anchor.mc.world.getBlockState(blockPos.add(0,  0,  0)).getBlock() == Blocks.AIR) {
-            ++this.holeblocks;
-        }
-        if (Anchor.mc.world.getBlockState(blockPos.add(0,  -1,  0)).getBlock() == Blocks.OBSIDIAN || Anchor.mc.world.getBlockState(blockPos.add(0,  -1,  0)).getBlock() == Blocks.BEDROCK) {
-            ++this.holeblocks;
-        }
-        if (Anchor.mc.world.getBlockState(blockPos.add(1,  0,  0)).getBlock() == Blocks.OBSIDIAN || Anchor.mc.world.getBlockState(blockPos.add(1,  0,  0)).getBlock() == Blocks.BEDROCK) {
-            ++this.holeblocks;
-        }
-        if (Anchor.mc.world.getBlockState(blockPos.add(-1,  0,  0)).getBlock() == Blocks.OBSIDIAN || Anchor.mc.world.getBlockState(blockPos.add(-1,  0,  0)).getBlock() == Blocks.BEDROCK) {
-            ++this.holeblocks;
-        }
-        if (Anchor.mc.world.getBlockState(blockPos.add(0,  0,  1)).getBlock() == Blocks.OBSIDIAN || Anchor.mc.world.getBlockState(blockPos.add(0,  0,  1)).getBlock() == Blocks.BEDROCK) {
-            ++this.holeblocks;
-        }
-        if (Anchor.mc.world.getBlockState(blockPos.add(0,  0,  -1)).getBlock() == Blocks.OBSIDIAN || Anchor.mc.world.getBlockState(blockPos.add(0,  0,  -1)).getBlock() == Blocks.BEDROCK) {
+
+    public boolean isBlockHole(BlockPos blockPos) {
+        block28: {
+            block27: {
+                block26: {
+                    block25: {
+                        block24: {
+                            block23: {
+                                block22: {
+                                    block21: {
+                                        block20: {
+                                            block19: {
+                                                this.holeblocks = 0;
+                                                if (Anchor.mc.field_71441_e.func_180495_p(blockPos.func_177982_a(0, 3, 0)).func_177230_c() == Blocks.field_150350_a) {
+                                                    ++this.holeblocks;
+                                                }
+                                                if (Anchor.mc.field_71441_e.func_180495_p(blockPos.func_177982_a(0, 2, 0)).func_177230_c() == Blocks.field_150350_a) {
+                                                    ++this.holeblocks;
+                                                }
+                                                if (Anchor.mc.field_71441_e.func_180495_p(blockPos.func_177982_a(0, 1, 0)).func_177230_c() == Blocks.field_150350_a) {
+                                                    ++this.holeblocks;
+                                                }
+                                                if (Anchor.mc.field_71441_e.func_180495_p(blockPos.func_177982_a(0, 0, 0)).func_177230_c() == Blocks.field_150350_a) {
+                                                    ++this.holeblocks;
+                                                }
+                                                if (Anchor.mc.field_71441_e.func_180495_p(blockPos.func_177982_a(0, -1, 0)).func_177230_c() == Blocks.field_150343_Z) break block19;
+                                                if (Anchor.mc.field_71441_e.func_180495_p(blockPos.func_177982_a(0, -1, 0)).func_177230_c() != Blocks.field_150357_h) break block20;
+                                            }
+                                            ++this.holeblocks;
+                                        }
+                                        if (Anchor.mc.field_71441_e.func_180495_p(blockPos.func_177982_a(1, 0, 0)).func_177230_c() == Blocks.field_150343_Z) break block21;
+                                        if (Anchor.mc.field_71441_e.func_180495_p(blockPos.func_177982_a(1, 0, 0)).func_177230_c() != Blocks.field_150357_h) break block22;
+                                    }
+                                    ++this.holeblocks;
+                                }
+                                if (Anchor.mc.field_71441_e.func_180495_p(blockPos.func_177982_a(-1, 0, 0)).func_177230_c() == Blocks.field_150343_Z) break block23;
+                                if (Anchor.mc.field_71441_e.func_180495_p(blockPos.func_177982_a(-1, 0, 0)).func_177230_c() != Blocks.field_150357_h) break block24;
+                            }
+                            ++this.holeblocks;
+                        }
+                        if (Anchor.mc.field_71441_e.func_180495_p(blockPos.func_177982_a(0, 0, 1)).func_177230_c() == Blocks.field_150343_Z) break block25;
+                        if (Anchor.mc.field_71441_e.func_180495_p(blockPos.func_177982_a(0, 0, 1)).func_177230_c() != Blocks.field_150357_h) break block26;
+                    }
+                    ++this.holeblocks;
+                }
+                if (Anchor.mc.field_71441_e.func_180495_p(blockPos.func_177982_a(0, 0, -1)).func_177230_c() == Blocks.field_150343_Z) break block27;
+                if (Anchor.mc.field_71441_e.func_180495_p(blockPos.func_177982_a(0, 0, -1)).func_177230_c() != Blocks.field_150357_h) break block28;
+            }
             ++this.holeblocks;
         }
         return this.holeblocks >= 9;
     }
-    
-    public Vec3d GetCenter(final double d,  final double d2,  final double d3) {
-        final double d4 = Math.floor(d) + 0.5;
-        final double d5 = Math.floor(d2);
-        final double d6 = Math.floor(d3) + 0.5;
-        return new Vec3d(d4,  d5,  d6);
+
+    public Vec3d GetCenter(double d, double d2, double d3) {
+        double d4 = Math.floor(d) + 0.5;
+        double d5 = Math.floor(d2);
+        double d6 = Math.floor(d3) + 0.5;
+        return new Vec3d(d4, d5, d6);
     }
-    
+
+    @Override
     @Subscribe
     public void onUpdate() {
-        if (Anchor.mc.world == null) {
+        if (Anchor.mc.field_71441_e == null) {
             return;
         }
-        if (Anchor.mc.player.rotationPitch >= this.pitch.getValue()) {
-            if (this.isBlockHole(this.getPlayerPos().down(1)) || this.isBlockHole(this.getPlayerPos().down(2)) || this.isBlockHole(this.getPlayerPos().down(3)) || this.isBlockHole(this.getPlayerPos().down(4))) {
-                Anchor.Anchoring = true;
-                if (!this.pull.getValue()) {
-                    Anchor.mc.player.motionX = 0.0;
-                    Anchor.mc.player.motionZ = 0.0;
-                }
-                else {
-                    final Vec3d center = this.GetCenter(Anchor.mc.player.posX,  Anchor.mc.player.posY,  Anchor.mc.player.posZ);
-                    final double d = Math.abs(center.x - Anchor.mc.player.posX);
-                    final double d2 = Math.abs(center.z - Anchor.mc.player.posZ);
-                    if (d > 0.1 || d2 > 0.1) {
-                        final double d3 = center.x - Anchor.mc.player.posX;
-                        final double d4 = center.z - Anchor.mc.player.posZ;
-                        Anchor.mc.player.motionX = d3 / 2.0;
-                        Anchor.mc.player.motionZ = d4 / 2.0;
+        if (Anchor.mc.field_71439_g.field_70125_A >= (float)this.pitch.getValue().intValue()) {
+            if (this.isBlockHole(this.getPlayerPos().func_177979_c(1)) || this.isBlockHole(this.getPlayerPos().func_177979_c(2)) || this.isBlockHole(this.getPlayerPos().func_177979_c(3)) || this.isBlockHole(this.getPlayerPos().func_177979_c(4))) {
+                Anchoring = true;
+                if (!this.pull.getValue().booleanValue()) {
+                    Anchor.mc.field_71439_g.field_70159_w = 0.0;
+                    Anchor.mc.field_71439_g.field_70179_y = 0.0;
+                } else {
+                    Vec3d center = this.GetCenter(Anchor.mc.field_71439_g.field_70165_t, Anchor.mc.field_71439_g.field_70163_u, Anchor.mc.field_71439_g.field_70161_v);
+                    double d = Math.abs(center.field_72450_a - Anchor.mc.field_71439_g.field_70165_t);
+                    double d2 = Math.abs(center.field_72449_c - Anchor.mc.field_71439_g.field_70161_v);
+                    if (!(d <= 0.1) || !(d2 <= 0.1)) {
+                        double d3 = center.field_72450_a - Anchor.mc.field_71439_g.field_70165_t;
+                        double d4 = center.field_72449_c - Anchor.mc.field_71439_g.field_70161_v;
+                        Anchor.mc.field_71439_g.field_70159_w = d3 / 2.0;
+                        Anchor.mc.field_71439_g.field_70179_y = d4 / 2.0;
                     }
                 }
-            }
-            else {
-                Anchor.Anchoring = false;
+            } else {
+                Anchoring = false;
             }
         }
-        if (this.disable.getValue() && EntityUtil.isSafe((Entity)Anchor.mc.player)) {
+        if (this.disable.getValue().booleanValue() && EntityUtil.isSafe((Entity)Anchor.mc.field_71439_g)) {
             this.disable();
         }
     }
-    
+
+    @Override
     public void onDisable() {
-        Anchor.Anchoring = false;
+        Anchoring = false;
         this.holeblocks = 0;
     }
-    
+
     public BlockPos getPlayerPos() {
-        return new BlockPos(Math.floor(Anchor.mc.player.posX),  Math.floor(Anchor.mc.player.posY),  Math.floor(Anchor.mc.player.posZ));
+        return new BlockPos(Math.floor(Anchor.mc.field_71439_g.field_70165_t), Math.floor(Anchor.mc.field_71439_g.field_70163_u), Math.floor(Anchor.mc.field_71439_g.field_70161_v));
     }
 }
+

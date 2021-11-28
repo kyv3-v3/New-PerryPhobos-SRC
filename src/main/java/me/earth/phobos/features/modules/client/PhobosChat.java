@@ -1,3 +1,19 @@
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.renderer.GlStateManager
+ *  net.minecraft.client.renderer.GlStateManager$DestFactor
+ *  net.minecraft.client.renderer.GlStateManager$SourceFactor
+ *  net.minecraft.client.renderer.RenderHelper
+ *  net.minecraft.init.SoundEvents
+ *  net.minecraft.item.ItemStack
+ *  net.minecraft.util.ResourceLocation
+ *  net.minecraft.util.SoundCategory
+ *  net.minecraft.util.math.BlockPos
+ *  net.minecraft.util.math.RayTraceResult
+ *  org.lwjgl.input.Keyboard
+ */
 package me.earth.phobos.features.modules.client;
 
 import java.awt.Color;
@@ -35,131 +51,113 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import org.lwjgl.input.Keyboard;
 
-public class PhobosChat extends Module
-{
-    private static final ResourceLocation SHULKER_GUI_TEXTURE;
+public class PhobosChat
+extends Module {
+    private static final ResourceLocation SHULKER_GUI_TEXTURE = null;
     public static PhobosChat INSTANCE;
     public static IRCHandler handler;
     public static List<String> phobosUsers;
-    public Setting<String> ip;
-    public Setting<Boolean> waypoints;
-    public Setting<Boolean> ding;
-    public Setting<Integer> red;
-    public Setting<Integer> green;
-    public Setting<Integer> blue;
-    public Setting<Integer> alpha;
-    public Setting<Boolean> inventories;
-    public Setting<Boolean> render;
-    public Setting<Integer> cooldown;
-    public Setting<Boolean> offsets;
-    private final Setting<Integer> yPerPlayer;
-    private final Setting<Integer> xOffset;
-    private final Setting<Integer> yOffset;
-    public Setting<Integer> invH;
-    public Setting<Bind> pingBind;
+    public Setting<String> ip = this.register(new Setting<String>("IP", "127.0.0.1"));
+    public Setting<Boolean> waypoints = this.register(new Setting<Boolean>("Waypoints", false));
+    public Setting<Boolean> ding = this.register(new Setting<Boolean>("Ding", Boolean.valueOf(false), v -> this.waypoints.getValue()));
+    public Setting<Integer> red = this.register(new Setting<Object>("Red", Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(255), v -> this.waypoints.getValue()));
+    public Setting<Integer> green = this.register(new Setting<Object>("Green", Integer.valueOf(255), Integer.valueOf(0), Integer.valueOf(255), v -> this.waypoints.getValue()));
+    public Setting<Integer> blue = this.register(new Setting<Object>("Blue", Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(255), v -> this.waypoints.getValue()));
+    public Setting<Integer> alpha = this.register(new Setting<Object>("Alpha", Integer.valueOf(255), Integer.valueOf(0), Integer.valueOf(255), v -> this.waypoints.getValue()));
+    public Setting<Boolean> inventories = this.register(new Setting<Boolean>("Inventories", false));
+    public Setting<Boolean> render = this.register(new Setting<Object>("Render", Boolean.valueOf(true), v -> this.inventories.getValue()));
+    public Setting<Integer> cooldown = this.register(new Setting<Object>("ShowForS", Integer.valueOf(2), Integer.valueOf(0), Integer.valueOf(5), v -> this.inventories.getValue()));
+    public Setting<Boolean> offsets = this.register(new Setting<Boolean>("Offsets", false));
+    private final Setting<Integer> yPerPlayer = this.register(new Setting<Object>("Y/Player", Integer.valueOf(18), v -> this.offsets.getValue()));
+    private final Setting<Integer> xOffset = this.register(new Setting<Object>("XOffset", Integer.valueOf(4), v -> this.offsets.getValue()));
+    private final Setting<Integer> yOffset = this.register(new Setting<Object>("YOffset", Integer.valueOf(2), v -> this.offsets.getValue()));
+    public Setting<Integer> invH = this.register(new Setting<Object>("InvH", Integer.valueOf(3), v -> this.inventories.getValue()));
+    public Setting<Bind> pingBind = this.register(new Setting<Bind>("Ping", new Bind(-1)));
     public boolean status;
-    public TimerUtil updateTimer;
-    public TimerUtil downTimer;
+    public TimerUtil updateTimer = new TimerUtil();
+    public TimerUtil downTimer = new TimerUtil();
     public BlockPos waypointTarget;
     private boolean down;
     private boolean pressed;
-    
+
     public PhobosChat() {
-        super("PhobosChat",  "Phobos chat server.",  Category.CLIENT,  true,  false,  true);
-        this.ip = (Setting<String>)this.register(new Setting("IP", "127.0.0.1"));
-        this.waypoints = (Setting<Boolean>)this.register(new Setting("Waypoints", false));
-        this.ding = (Setting<Boolean>)this.register(new Setting("Ding", false,  v -> this.waypoints.getValue()));
-        this.red = (Setting<Integer>)this.register(new Setting("Red", 0, 0, 255,  v -> this.waypoints.getValue()));
-        this.green = (Setting<Integer>)this.register(new Setting("Green", 255, 0, 255,  v -> this.waypoints.getValue()));
-        this.blue = (Setting<Integer>)this.register(new Setting("Blue", 0, 0, 255,  v -> this.waypoints.getValue()));
-        this.alpha = (Setting<Integer>)this.register(new Setting("Alpha", 255, 0, 255,  v -> this.waypoints.getValue()));
-        this.inventories = (Setting<Boolean>)this.register(new Setting("Inventories", false));
-        this.render = (Setting<Boolean>)this.register(new Setting("Render", true,  v -> this.inventories.getValue()));
-        this.cooldown = (Setting<Integer>)this.register(new Setting("ShowForS", 2, 0, 5,  v -> this.inventories.getValue()));
-        this.offsets = (Setting<Boolean>)this.register(new Setting("Offsets", false));
-        this.yPerPlayer = (Setting<Integer>)this.register(new Setting("Y/Player", 18,  v -> this.offsets.getValue()));
-        this.xOffset = (Setting<Integer>)this.register(new Setting("XOffset", 4,  v -> this.offsets.getValue()));
-        this.yOffset = (Setting<Integer>)this.register(new Setting("YOffset", 2,  v -> this.offsets.getValue()));
-        this.invH = (Setting<Integer>)this.register(new Setting("InvH", 3,  v -> this.inventories.getValue()));
-        this.pingBind = (Setting<Bind>)this.register(new Setting("Ping", new Bind(-1)));
-        this.updateTimer = new TimerUtil();
-        this.downTimer = new TimerUtil();
-        PhobosChat.INSTANCE = this;
+        super("PhobosChat", "Phobos chat server.", Module.Category.CLIENT, true, false, true);
+        INSTANCE = this;
     }
-    
+
     public static void updateInventory() throws IOException {
         PhobosChat.handler.outputStream.writeUTF("updateinventory");
-        PhobosChat.handler.outputStream.writeUTF(PhobosChat.mc.player.getName());
-        writeByteArray(serializeInventory(),  PhobosChat.handler.outputStream);
+        PhobosChat.handler.outputStream.writeUTF(PhobosChat.mc.field_71439_g.func_70005_c_());
+        PhobosChat.writeByteArray(PhobosChat.serializeInventory(), PhobosChat.handler.outputStream);
     }
-    
-    public static void updateWaypoint(final BlockPos pos,  final String server,  final String dimension,  final Color color) throws IOException {
-        send("waypoint",  server + ":" + dimension + ":" + pos.getX() + ":" + pos.getY() + ":" + pos.getZ(),  color.getRed() + ":" + color.getGreen() + ":" + color.getBlue() + ":" + color.getAlpha());
+
+    public static void updateWaypoint(BlockPos pos, String server, String dimension, Color color) throws IOException {
+        PhobosChat.send("waypoint", server + ":" + dimension + ":" + pos.func_177958_n() + ":" + pos.func_177956_o() + ":" + pos.func_177952_p(), color.getRed() + ":" + color.getGreen() + ":" + color.getBlue() + ":" + color.getAlpha());
     }
-    
+
     public static void removeWaypoint() throws IOException {
         PhobosChat.handler.outputStream.writeUTF("removewaypoint");
-        PhobosChat.handler.outputStream.writeUTF(PhobosChat.mc.player.getName());
+        PhobosChat.handler.outputStream.writeUTF(PhobosChat.mc.field_71439_g.func_70005_c_());
         PhobosChat.handler.outputStream.flush();
     }
-    
-    public static void send(final String command,  final String data,  final String data1) throws IOException {
+
+    public static void send(String command, String data, String data1) throws IOException {
         PhobosChat.handler.outputStream.writeUTF(command);
-        PhobosChat.handler.outputStream.writeUTF(PhobosChat.mc.player.getName());
+        PhobosChat.handler.outputStream.writeUTF(PhobosChat.mc.field_71439_g.func_70005_c_());
         PhobosChat.handler.outputStream.writeUTF(data);
         PhobosChat.handler.outputStream.writeUTF(data1);
         PhobosChat.handler.outputStream.flush();
     }
-    
-    public static void send(final String command,  final String data) throws IOException {
+
+    public static void send(String command, String data) throws IOException {
         PhobosChat.handler.outputStream.writeUTF(command);
-        PhobosChat.handler.outputStream.writeUTF(PhobosChat.mc.player.getName());
+        PhobosChat.handler.outputStream.writeUTF(PhobosChat.mc.field_71439_g.func_70005_c_());
         PhobosChat.handler.outputStream.writeUTF(data);
         PhobosChat.handler.outputStream.flush();
     }
-    
-    private static byte[] readByteArrayLWithLength(final DataInputStream reader) throws IOException {
-        final int length = reader.readInt();
+
+    private static byte[] readByteArrayLWithLength(DataInputStream reader) throws IOException {
+        int length = reader.readInt();
         if (length > 0) {
-            final byte[] cifrato = new byte[length];
-            reader.readFully(cifrato,  0,  cifrato.length);
+            byte[] cifrato = new byte[length];
+            reader.readFully(cifrato, 0, cifrato.length);
             return cifrato;
         }
         return null;
     }
-    
-    public static void writeByteArray(final byte[] data,  final DataOutputStream writer) throws IOException {
+
+    public static void writeByteArray(byte[] data, DataOutputStream writer) throws IOException {
         writer.writeInt(data.length);
         writer.write(data);
         writer.flush();
     }
-    
-    public static List<ItemStack> deserializeInventory(final byte[] inventory) throws IOException,  ClassNotFoundException {
-        final ObjectInputStream stream = new ObjectInputStream(new ByteArrayInputStream(inventory));
-        return (List<ItemStack>)stream.readObject();
+
+    public static List<ItemStack> deserializeInventory(byte[] inventory) throws IOException, ClassNotFoundException {
+        ObjectInputStream stream = new ObjectInputStream(new ByteArrayInputStream(inventory));
+        return (ArrayList)stream.readObject();
     }
-    
+
     public static byte[] serializeInventory() throws IOException {
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        final ObjectOutputStream oos = new ObjectOutputStream(bos);
-        oos.writeObject(new ArrayList((Collection<?>)PhobosChat.mc.player.inventory.mainInventory));
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+        oos.writeObject(new ArrayList(PhobosChat.mc.field_71439_g.field_71071_by.field_70462_a));
         return bos.toByteArray();
     }
-    
-    public static void say(final String message) throws IOException {
+
+    public static void say(String message) throws IOException {
         PhobosChat.handler.outputStream.writeUTF("message");
-        PhobosChat.handler.outputStream.writeUTF(PhobosChat.mc.player.getName());
+        PhobosChat.handler.outputStream.writeUTF(PhobosChat.mc.field_71439_g.func_70005_c_());
         PhobosChat.handler.outputStream.writeUTF(message);
         PhobosChat.handler.outputStream.flush();
     }
-    
-    public static void cockt(final int id) throws IOException {
+
+    public static void cockt(int id) throws IOException {
         PhobosChat.handler.outputStream.writeUTF("cockt");
         PhobosChat.handler.outputStream.writeInt(id);
         PhobosChat.handler.outputStream.flush();
     }
-    
-    public static String getDimension(final int dim) {
+
+    public static String getDimension(int dim) {
         switch (dim) {
             case 0: {
                 return "Overworld";
@@ -170,24 +168,17 @@ public class PhobosChat extends Module
             case 1: {
                 return "End";
             }
-            default: {
-                return "";
-            }
         }
+        return "";
     }
-    
+
     @Override
     public void onUpdate() {
-        if (PhobosChat.handler != null && PhobosChat.handler.isAlive() && !PhobosChat.handler.isInterrupted()) {
-            this.status = !PhobosChat.handler.socket.isClosed();
-        }
-        else {
-            this.status = false;
-        }
-        if (this.updateTimer.passedMs(5000L) && PhobosChat.handler != null && PhobosChat.handler.isAlive() && !PhobosChat.handler.socket.isClosed()) {
+        this.status = handler != null && handler.isAlive() && !handler.isInterrupted() ? !PhobosChat.handler.socket.isClosed() : false;
+        if (this.updateTimer.passedMs(5000L) && handler != null && handler.isAlive() && !PhobosChat.handler.socket.isClosed()) {
             try {
                 PhobosChat.handler.outputStream.writeUTF("update");
-                PhobosChat.handler.outputStream.writeUTF(PhobosChat.mc.player.getName());
+                PhobosChat.handler.outputStream.writeUTF(PhobosChat.mc.field_71439_g.func_70005_c_());
                 PhobosChat.handler.outputStream.flush();
             }
             catch (Exception e) {
@@ -195,11 +186,11 @@ public class PhobosChat extends Module
             }
             this.updateTimer.reset();
         }
-        if (!PhobosChat.mc.isSingleplayer() && !(PhobosChat.mc.currentScreen instanceof PhobosGui) && PhobosChat.handler != null && !PhobosChat.handler.socket.isClosed() && this.status) {
+        if (!mc.func_71356_B() && !(PhobosChat.mc.field_71462_r instanceof PhobosGui) && handler != null && !PhobosChat.handler.socket.isClosed() && this.status) {
             if (this.down) {
                 if (this.downTimer.passedMs(2000L)) {
                     try {
-                        removeWaypoint();
+                        PhobosChat.removeWaypoint();
                     }
                     catch (IOException e2) {
                         e2.printStackTrace();
@@ -207,159 +198,146 @@ public class PhobosChat extends Module
                     this.down = false;
                     this.downTimer.reset();
                 }
-                if (!Keyboard.isKeyDown(this.pingBind.getValue().getKey())) {
+                if (!Keyboard.isKeyDown((int)this.pingBind.getValue().getKey())) {
                     try {
-                        updateWaypoint(this.waypointTarget,  PhobosChat.mc.currentServerData.serverIP,  String.valueOf(PhobosChat.mc.player.dimension),  new Color(this.red.getValue(),  this.green.getValue(),  this.blue.getValue(),  this.alpha.getValue()));
+                        PhobosChat.updateWaypoint(this.waypointTarget, PhobosChat.mc.field_71422_O.field_78845_b, String.valueOf(PhobosChat.mc.field_71439_g.field_71093_bK), new Color(this.red.getValue(), this.green.getValue(), this.blue.getValue(), this.alpha.getValue()));
                     }
                     catch (IOException e2) {
                         e2.printStackTrace();
                     }
                 }
             }
-            if (Keyboard.isKeyDown(this.pingBind.getValue().getKey())) {
+            if (Keyboard.isKeyDown((int)this.pingBind.getValue().getKey())) {
                 if (!this.pressed) {
                     this.down = true;
                     this.pressed = true;
                 }
-            }
-            else {
+            } else {
                 this.down = false;
                 this.pressed = false;
                 this.downTimer.reset();
             }
         }
     }
-    
+
     @Override
-    public void onRender3D(final Render3DEvent event) {
-        if (Feature.fullNullCheck() || PhobosChat.mc.isSingleplayer()) {
+    public void onRender3D(Render3DEvent event) {
+        if (Feature.fullNullCheck() || mc.func_71356_B()) {
             return;
         }
-        final RayTraceResult result = PhobosChat.mc.player.rayTrace(2000.0,  event.getPartialTicks());
+        RayTraceResult result = PhobosChat.mc.field_71439_g.func_174822_a(2000.0, event.getPartialTicks());
         if (result != null) {
-            this.waypointTarget = new BlockPos(result.hitVec);
+            this.waypointTarget = new BlockPos(result.field_72307_f);
         }
-        if (this.waypoints.getValue()) {
-            for (final WaypointManager.Waypoint waypoint : Phobos.waypointManager.waypoints.values()) {
-                if (PhobosChat.mc.player.dimension == waypoint.dimension) {
-                    if (!PhobosChat.mc.currentServerData.serverIP.equals(waypoint.server)) {
-                        continue;
-                    }
-                    waypoint.renderBox();
-                    waypoint.render();
-                    GlStateManager.enableDepth();
-                    GlStateManager.depthMask(true);
-                    GlStateManager.enableLighting();
-                    GlStateManager.disableBlend();
-                    GlStateManager.color(1.0f,  1.0f,  1.0f,  1.0f);
-                    RenderHelper.disableStandardItemLighting();
-                }
+        if (this.waypoints.getValue().booleanValue()) {
+            for (WaypointManager.Waypoint waypoint : Phobos.waypointManager.waypoints.values()) {
+                if (PhobosChat.mc.field_71439_g.field_71093_bK != waypoint.dimension || !PhobosChat.mc.field_71422_O.field_78845_b.equals(waypoint.server)) continue;
+                waypoint.renderBox();
+                waypoint.render();
+                GlStateManager.func_179126_j();
+                GlStateManager.func_179132_a((boolean)true);
+                GlStateManager.func_179145_e();
+                GlStateManager.func_179084_k();
+                GlStateManager.func_179131_c((float)1.0f, (float)1.0f, (float)1.0f, (float)1.0f);
+                RenderHelper.func_74518_a();
             }
         }
     }
-    
+
     @Override
-    public void onRender2D(final Render2DEvent event) {
-        if (fullNullCheck()) {
+    public void onRender2D(Render2DEvent event) {
+        if (PhobosChat.fullNullCheck()) {
             return;
         }
-        if (this.inventories.getValue()) {
-            final int x = -4 + this.xOffset.getValue();
+        if (this.inventories.getValue().booleanValue()) {
+            int x = -4 + this.xOffset.getValue();
             int y = 10 + this.yOffset.getValue();
-            for (final String player : PhobosChat.phobosUsers) {
-                if (Phobos.inventoryManager.inventories.get(player) != null) {
-                    continue;
-                }
-                final List<ItemStack> stacks = Phobos.inventoryManager.inventories.get(player);
-                this.renderShulkerToolTip(stacks,  x,  y,  player);
+            for (String player : phobosUsers) {
+                if (Phobos.inventoryManager.inventories.get(player) != null) continue;
+                List<ItemStack> stacks = Phobos.inventoryManager.inventories.get(player);
+                this.renderShulkerToolTip(stacks, x, y, player);
                 y += this.yPerPlayer.getValue() + 60;
             }
         }
     }
-    
+
     public void connect() throws IOException {
         if (!PhobosChat.INSTANCE.status) {
-            final Socket socket = new Socket(this.ip.getValue(),  1488);
-            (PhobosChat.handler = new IRCHandler(socket)).start();
+            Socket socket = new Socket(this.ip.getValue(), 1488);
+            handler = new IRCHandler(socket);
+            handler.start();
             PhobosChat.handler.outputStream.writeUTF("update");
-            PhobosChat.handler.outputStream.writeUTF(PhobosChat.mc.player.getName());
+            PhobosChat.handler.outputStream.writeUTF(PhobosChat.mc.field_71439_g.func_70005_c_());
             PhobosChat.handler.outputStream.flush();
             PhobosChat.INSTANCE.status = true;
-            Command.sendMessage("§aIRC connected successfully!");
-        }
-        else {
-            Command.sendMessage("§cIRC is already connected!");
+            Command.sendMessage("\u00a7aIRC connected successfully!");
+        } else {
+            Command.sendMessage("\u00a7cIRC is already connected!");
         }
     }
-    
+
     public void disconnect() throws IOException {
         if (PhobosChat.INSTANCE.status) {
             PhobosChat.handler.socket.close();
-            if (!PhobosChat.handler.isInterrupted()) {
-                PhobosChat.handler.interrupt();
+            if (!handler.isInterrupted()) {
+                handler.interrupt();
             }
-        }
-        else {
-            Command.sendMessage("§cIRC is not connected!");
+        } else {
+            Command.sendMessage("\u00a7cIRC is not connected!");
         }
     }
-    
+
     public void friendAll() throws IOException {
         PhobosChat.handler.outputStream.writeUTF("friendall");
         PhobosChat.handler.outputStream.flush();
     }
-    
+
     public void list() throws IOException {
         PhobosChat.handler.outputStream.writeUTF("list");
         PhobosChat.handler.outputStream.flush();
     }
-    
-    public void renderShulkerToolTip(final List<ItemStack> stacks,  final int x,  final int y,  final String name) {
-        GlStateManager.enableTexture2D();
-        GlStateManager.disableLighting();
-        GlStateManager.color(1.0f,  1.0f,  1.0f,  1.0f);
-        GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,  GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,  GlStateManager.SourceFactor.ONE,  GlStateManager.DestFactor.ZERO);
-        assert false;
-        PhobosChat.mc.getTextureManager().bindTexture(PhobosChat.SHULKER_GUI_TEXTURE);
-        RenderUtil.drawTexturedRect(x,  y,  0,  0,  176,  16,  500);
-        RenderUtil.drawTexturedRect(x,  y + 16,  0,  16,  176,  54 + this.invH.getValue(),  500);
-        RenderUtil.drawTexturedRect(x,  y + 16 + 54,  0,  160,  176,  8,  500);
-        GlStateManager.disableDepth();
-        final Color color = new Color(0,  0,  0,  255);
-        this.renderer.drawStringWithShadow(name,  (float)(x + 8),  (float)(y + 6),  ColorUtil.toRGBA(color));
-        GlStateManager.enableDepth();
-        RenderHelper.enableGUIStandardItemLighting();
-        GlStateManager.enableRescaleNormal();
-        GlStateManager.enableColorMaterial();
-        GlStateManager.enableLighting();
+
+    public void renderShulkerToolTip(List<ItemStack> stacks, int x, int y, String name) {
+        GlStateManager.func_179098_w();
+        GlStateManager.func_179140_f();
+        GlStateManager.func_179131_c((float)1.0f, (float)1.0f, (float)1.0f, (float)1.0f);
+        GlStateManager.func_179147_l();
+        GlStateManager.func_187428_a((GlStateManager.SourceFactor)GlStateManager.SourceFactor.SRC_ALPHA, (GlStateManager.DestFactor)GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, (GlStateManager.SourceFactor)GlStateManager.SourceFactor.ONE, (GlStateManager.DestFactor)GlStateManager.DestFactor.ZERO);
+        assert (false);
+        mc.func_110434_K().func_110577_a(SHULKER_GUI_TEXTURE);
+        RenderUtil.drawTexturedRect(x, y, 0, 0, 176, 16, 500);
+        RenderUtil.drawTexturedRect(x, y + 16, 0, 16, 176, 54 + this.invH.getValue(), 500);
+        RenderUtil.drawTexturedRect(x, y + 16 + 54, 0, 160, 176, 8, 500);
+        GlStateManager.func_179097_i();
+        Color color = new Color(0, 0, 0, 255);
+        this.renderer.drawStringWithShadow(name, x + 8, y + 6, ColorUtil.toRGBA(color));
+        GlStateManager.func_179126_j();
+        RenderHelper.func_74520_c();
+        GlStateManager.func_179091_B();
+        GlStateManager.func_179142_g();
+        GlStateManager.func_179145_e();
         for (int i = 0; i < stacks.size(); ++i) {
-            final int iX = x + i % 9 * 18 + 8;
-            final int iY = y + i / 9 * 18 + 18;
-            final ItemStack itemStack = stacks.get(i);
-            PhobosChat.mc.getRenderItem().zLevel = 501.0f;
-            RenderUtil.itemRender.renderItemAndEffectIntoGUI(itemStack,  iX,  iY);
-            RenderUtil.itemRender.renderItemOverlayIntoGUI(PhobosChat.mc.fontRenderer,  itemStack,  iX,  iY,  (String)null);
-            PhobosChat.mc.getRenderItem().zLevel = 0.0f;
+            int iX = x + i % 9 * 18 + 8;
+            int iY = y + i / 9 * 18 + 18;
+            ItemStack itemStack = stacks.get(i);
+            PhobosChat.mc.func_175599_af().field_77023_b = 501.0f;
+            RenderUtil.itemRender.func_180450_b(itemStack, iX, iY);
+            RenderUtil.itemRender.func_180453_a(PhobosChat.mc.field_71466_p, itemStack, iX, iY, null);
+            PhobosChat.mc.func_175599_af().field_77023_b = 0.0f;
         }
-        GlStateManager.disableLighting();
-        GlStateManager.disableBlend();
-        GlStateManager.color(1.0f,  1.0f,  1.0f,  1.0f);
+        GlStateManager.func_179140_f();
+        GlStateManager.func_179084_k();
+        GlStateManager.func_179131_c((float)1.0f, (float)1.0f, (float)1.0f, (float)1.0f);
     }
-    
-    static {
-        SHULKER_GUI_TEXTURE = null;
-    }
-    
-    private static class IRCHandler extends Thread
-    {
+
+    private static class IRCHandler
+    extends Thread {
         public Socket socket;
         public DataInputStream inputStream;
         public DataOutputStream outputStream;
-        static final /* synthetic */ boolean $assertionsDisabled;
-        
-        public IRCHandler(final Socket socket) {
-            super(Util.mc.player.getName());
+
+        public IRCHandler(Socket socket) {
+            super(Util.mc.field_71439_g.func_70005_c_());
             this.socket = socket;
             try {
                 this.inputStream = new DataInputStream(socket.getInputStream());
@@ -369,98 +347,83 @@ public class PhobosChat extends Module
                 e.printStackTrace();
             }
         }
-        
+
         @Override
         public void run() {
-            Command.sendMessage("§aSocket thread starting!");
-        Label_0005_Outer:
+            Command.sendMessage("\u00a7aSocket thread starting!");
             while (true) {
-                while (true) {
-                    try {
-                        while (true) {
-                            final String input = this.inputStream.readUTF();
-                            if (input.equalsIgnoreCase("message")) {
-                                final String name = this.inputStream.readUTF();
-                                final String message = this.inputStream.readUTF();
-                                Command.sendMessage("§c[PhobosChat] §r<" + name + ">: " + message);
-                            }
-                            if (input.equalsIgnoreCase("list")) {
-                                final String f = this.inputStream.readUTF();
-                                final String[] split3;
-                                final String[] split = split3 = f.split("%%%");
-                                for (final String friend : split3) {
-                                    Command.sendMessage("§b" + friend.replace("_&_",  " ID: "));
-                                }
-                            }
-                            else if (input.equalsIgnoreCase("friendall")) {
-                                final String f = this.inputStream.readUTF();
-                                final String[] split4;
-                                final String[] split2 = split4 = f.split("%%%");
-                                for (final String friend : split4) {
-                                    if (!friend.equals(Util.mc.player.getName())) {
-                                        Phobos.friendManager.addFriend(friend);
-                                        Command.sendMessage("§b" + friend + " has been friended");
-                                    }
-                                }
-                            }
-                            else if (input.equalsIgnoreCase("waypoint")) {
-                                final String name = this.inputStream.readUTF();
-                                final String[] inputs = this.inputStream.readUTF().split(":");
-                                final String[] colors = this.inputStream.readUTF().split(":");
-                                final String server = inputs[0];
-                                final String dimension = inputs[1];
-                                final Color color = new Color(Integer.parseInt(colors[0]),  Integer.parseInt(colors[1]),  Integer.parseInt(colors[2]),  Integer.parseInt(colors[3]));
-                                Phobos.waypointManager.waypoints.put(name,  new WaypointManager.Waypoint(name,  server,  Integer.parseInt(dimension),  Integer.parseInt(inputs[2]),  Integer.parseInt(inputs[3]),  Integer.parseInt(inputs[4]),  color));
-                                Command.sendMessage("§c[PhobosChat] §r" + name + " has set a waypoint at §c(" + Integer.parseInt(inputs[2]) + ", " + Integer.parseInt(inputs[3]) + ", " + Integer.parseInt(inputs[4]) + ")§r on the server §c" + server + "§r in the dimension §c" + PhobosChat.getDimension(Integer.parseInt(dimension)));
-                                if (PhobosChat.INSTANCE.ding.getValue()) {
-                                    Util.mc.world.playSound(Util.mc.player.posX,  Util.mc.player.posY,  Util.mc.player.posZ,  SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP,  SoundCategory.PLAYERS,  1.0f,  0.7f,  false);
-                                }
-                            }
-                            else if (input.equalsIgnoreCase("removewaypoint")) {
-                                final String name = this.inputStream.readUTF();
-                                Phobos.waypointManager.waypoints.remove(name);
-                                Command.sendMessage("§c[PhobosChat] §r" + name + " has removed their waypoint");
-                                if (PhobosChat.INSTANCE.ding.getValue()) {
-                                    Util.mc.world.playSound(Util.mc.player.posX,  Util.mc.player.posY,  Util.mc.player.posZ,  SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP,  SoundCategory.PLAYERS,  1.0f,  -0.7f,  false);
-                                }
-                            }
-                            else if (input.equalsIgnoreCase("inventory")) {
-                                final String name = this.inputStream.readUTF();
-                                final byte[] inventory = readByteArrayLWithLength(this.inputStream);
-                                for (final String player : PhobosChat.phobosUsers) {
-                                    if (player.equalsIgnoreCase(name)) {
-                                        Phobos.inventoryManager.inventories.put(player,  PhobosChat.deserializeInventory(inventory));
-                                    }
-                                }
-                            }
-                            else if (input.equalsIgnoreCase("users")) {
-                                final byte[] inputBytes = readByteArrayLWithLength(this.inputStream);
-                                if (!IRCHandler.$assertionsDisabled && inputBytes == null) {
-                                    break;
-                                }
-                                final ObjectInputStream stream = new ObjectInputStream(new ByteArrayInputStream(inputBytes));
-                                final List<String> players = (List<String>)stream.readObject();
-                                Command.sendMessage("§c[PhobosChat]§r Active Users:");
-                                for (final String name2 : players) {
-                                    Command.sendMessage(name2);
-                                    if (!PhobosChat.phobosUsers.contains(name2)) {
-                                        PhobosChat.phobosUsers.add(name2);
-                                    }
-                                }
-                            }
-                            PhobosChat.INSTANCE.status = !this.socket.isClosed();
+                try {
+                    while (true) {
+                        String f;
+                        String name;
+                        String input;
+                        if ((input = this.inputStream.readUTF()).equalsIgnoreCase("message")) {
+                            name = this.inputStream.readUTF();
+                            String message = this.inputStream.readUTF();
+                            Command.sendMessage("\u00a7c[PhobosChat] \u00a7r<" + name + ">: " + message);
                         }
-                        throw new AssertionError();
+                        if (input.equalsIgnoreCase("list")) {
+                            String[] split;
+                            f = this.inputStream.readUTF();
+                            for (String friend : split = f.split("%%%")) {
+                                Command.sendMessage("\u00a7b" + friend.replace("_&_", " ID: "));
+                            }
+                        } else if (input.equalsIgnoreCase("friendall")) {
+                            String[] split2;
+                            f = this.inputStream.readUTF();
+                            for (String friend : split2 = f.split("%%%")) {
+                                if (friend.equals(Util.mc.field_71439_g.func_70005_c_())) continue;
+                                Phobos.friendManager.addFriend(friend);
+                                Command.sendMessage("\u00a7b" + friend + " has been friended");
+                            }
+                        } else if (input.equalsIgnoreCase("waypoint")) {
+                            name = this.inputStream.readUTF();
+                            String[] inputs = this.inputStream.readUTF().split(":");
+                            String[] colors = this.inputStream.readUTF().split(":");
+                            String server = inputs[0];
+                            String dimension = inputs[1];
+                            Color color = new Color(Integer.parseInt((String)colors[0]), Integer.parseInt((String)colors[1]), Integer.parseInt((String)colors[2]), Integer.parseInt((String)colors[3]));
+                            Phobos.waypointManager.waypoints.put(name, new WaypointManager.Waypoint(name, server, Integer.parseInt(dimension), Integer.parseInt(inputs[2]), Integer.parseInt(inputs[3]), Integer.parseInt(inputs[4]), color));
+                            Command.sendMessage("\u00a7c[PhobosChat] \u00a7r" + name + " has set a waypoint at \u00a7c(" + Integer.parseInt(inputs[2]) + "," + Integer.parseInt(inputs[3]) + "," + Integer.parseInt(inputs[4]) + ")\u00a7r on the server \u00a7c" + server + "\u00a7r in the dimension \u00a7c" + PhobosChat.getDimension(Integer.parseInt(dimension)));
+                            if (PhobosChat.INSTANCE.ding.getValue().booleanValue()) {
+                                Util.mc.field_71441_e.func_184134_a(Util.mc.field_71439_g.field_70165_t, Util.mc.field_71439_g.field_70163_u, Util.mc.field_71439_g.field_70161_v, SoundEvents.field_187604_bf, SoundCategory.PLAYERS, 1.0f, 0.7f, false);
+                            }
+                        } else if (input.equalsIgnoreCase("removewaypoint")) {
+                            name = this.inputStream.readUTF();
+                            Phobos.waypointManager.waypoints.remove(name);
+                            Command.sendMessage("\u00a7c[PhobosChat] \u00a7r" + name + " has removed their waypoint");
+                            if (PhobosChat.INSTANCE.ding.getValue().booleanValue()) {
+                                Util.mc.field_71441_e.func_184134_a(Util.mc.field_71439_g.field_70165_t, Util.mc.field_71439_g.field_70163_u, Util.mc.field_71439_g.field_70161_v, SoundEvents.field_187604_bf, SoundCategory.PLAYERS, 1.0f, -0.7f, false);
+                            }
+                        } else if (input.equalsIgnoreCase("inventory")) {
+                            name = this.inputStream.readUTF();
+                            byte[] inventory = PhobosChat.readByteArrayLWithLength(this.inputStream);
+                            for (String player : phobosUsers) {
+                                if (!player.equalsIgnoreCase(name)) continue;
+                                Phobos.inventoryManager.inventories.put(player, PhobosChat.deserializeInventory(inventory));
+                            }
+                        } else if (input.equalsIgnoreCase("users")) {
+                            byte[] inputBytes = PhobosChat.readByteArrayLWithLength(this.inputStream);
+                            assert (inputBytes != null);
+                            ObjectInputStream stream = new ObjectInputStream(new ByteArrayInputStream(inputBytes));
+                            List players = (List)stream.readObject();
+                            Command.sendMessage("\u00a7c[PhobosChat]\u00a7r Active Users:");
+                            for (String name2 : players) {
+                                Command.sendMessage(name2);
+                                if (phobosUsers.contains(name2)) continue;
+                                phobosUsers.add(name2);
+                            }
+                        }
+                        PhobosChat.INSTANCE.status = !this.socket.isClosed();
                     }
-                    catch (IOException | ClassNotFoundException ex2) {
-                        final Exception ex;
-                        final Exception e = ex;
-                        e.printStackTrace();
-                        continue Label_0005_Outer;
-                    }
+                }
+                catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
                     continue;
                 }
+                break;
             }
         }
     }
 }
+

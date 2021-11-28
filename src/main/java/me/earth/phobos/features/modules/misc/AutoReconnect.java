@@ -1,87 +1,100 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.gui.GuiDisconnected
+ *  net.minecraft.client.gui.GuiScreen
+ *  net.minecraft.client.multiplayer.GuiConnecting
+ *  net.minecraft.client.multiplayer.ServerData
+ *  net.minecraftforge.client.event.GuiOpenEvent
+ *  net.minecraftforge.event.world.WorldEvent$Unload
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.misc;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import net.minecraftforge.client.event.*;
-import net.minecraft.client.gui.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import net.minecraftforge.event.world.*;
-import net.minecraft.client.multiplayer.*;
-import me.earth.phobos.util.*;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.modules.misc.AutoLog;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.MathUtil;
+import me.earth.phobos.util.TimerUtil;
+import net.minecraft.client.gui.GuiDisconnected;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.multiplayer.GuiConnecting;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class AutoReconnect extends Module
-{
+public class AutoReconnect
+extends Module {
     private static ServerData serverData;
     private static AutoReconnect INSTANCE;
-    private final Setting<Integer> delay;
-    
+    private final Setting<Integer> delay = this.register(new Setting<Integer>("Delay", 5));
+
     public AutoReconnect() {
-        super("AutoReconnect",  "Reconnects you if you disconnect.",  Category.MISC,  true,  false,  false);
-        this.delay = (Setting<Integer>)this.register(new Setting("Delay", 5));
+        super("AutoReconnect", "Reconnects you if you disconnect.", Module.Category.MISC, true, false, false);
         this.setInstance();
     }
-    
+
     public static AutoReconnect getInstance() {
-        if (AutoReconnect.INSTANCE == null) {
-            AutoReconnect.INSTANCE = new AutoReconnect();
+        if (INSTANCE == null) {
+            INSTANCE = new AutoReconnect();
         }
-        return AutoReconnect.INSTANCE;
+        return INSTANCE;
     }
-    
+
     private void setInstance() {
-        AutoReconnect.INSTANCE = this;
+        INSTANCE = this;
     }
-    
+
     @SubscribeEvent
-    public void sendPacket(final GuiOpenEvent event) {
+    public void sendPacket(GuiOpenEvent event) {
         if (event.getGui() instanceof GuiDisconnected) {
             this.updateLastConnectedServer();
             if (AutoLog.getInstance().isOff()) {
-                final GuiDisconnected disconnected = (GuiDisconnected)event.getGui();
+                GuiDisconnected disconnected = (GuiDisconnected)event.getGui();
                 event.setGui((GuiScreen)new GuiDisconnectedHook(disconnected));
             }
         }
     }
-    
+
     @SubscribeEvent
-    public void onWorldUnload(final WorldEvent.Unload event) {
+    public void onWorldUnload(WorldEvent.Unload event) {
         this.updateLastConnectedServer();
     }
-    
+
     public void updateLastConnectedServer() {
-        final ServerData data = AutoReconnect.mc.getCurrentServerData();
+        ServerData data = mc.func_147104_D();
         if (data != null) {
-            AutoReconnect.serverData = data;
+            serverData = data;
         }
     }
-    
+
     static {
-        AutoReconnect.INSTANCE = new AutoReconnect();
+        INSTANCE = new AutoReconnect();
     }
-    
-    private class GuiDisconnectedHook extends GuiDisconnected
-    {
+
+    private class GuiDisconnectedHook
+    extends GuiDisconnected {
         private final TimerUtil timer;
-        
-        public GuiDisconnectedHook(final GuiDisconnected disconnected) {
-            super(disconnected.parentScreen,  disconnected.reason,  disconnected.message);
-            (this.timer = new TimerUtil()).reset();
+
+        public GuiDisconnectedHook(GuiDisconnected disconnected) {
+            super(disconnected.field_146307_h, disconnected.field_146306_a, disconnected.field_146304_f);
+            this.timer = new TimerUtil();
+            this.timer.reset();
         }
-        
-        public void updateScreen() {
-            if (this.timer.passedS(AutoReconnect.this.delay.getValue())) {
-                this.mc.displayGuiScreen((GuiScreen)new GuiConnecting(this.parentScreen,  this.mc,  (AutoReconnect.serverData == null) ? this.mc.currentServerData : AutoReconnect.serverData));
+
+        public void func_73876_c() {
+            if (this.timer.passedS(((Integer)AutoReconnect.this.delay.getValue()).intValue())) {
+                this.field_146297_k.func_147108_a((GuiScreen)new GuiConnecting(this.field_146307_h, this.field_146297_k, serverData == null ? this.field_146297_k.field_71422_O : serverData));
             }
         }
-        
-        public void drawScreen(final int mouseX,  final int mouseY,  final float partialTicks) {
-            super.drawScreen(mouseX,  mouseY,  partialTicks);
-            final String s = "Reconnecting in " + MathUtil.round((AutoReconnect.this.delay.getValue() * 1000 - this.timer.getPassedTimeMs()) / 1000.0,  1);
-            AutoReconnect.this.renderer.drawString(s,  (float)(this.width / 2 - AutoReconnect.this.renderer.getStringWidth(s) / 2),  (float)(this.height - 16),  16777215,  true);
+
+        public void func_73863_a(int mouseX, int mouseY, float partialTicks) {
+            super.func_73863_a(mouseX, mouseY, partialTicks);
+            String s = "Reconnecting in " + MathUtil.round((double)((long)((Integer)AutoReconnect.this.delay.getValue() * 1000) - this.timer.getPassedTimeMs()) / 1000.0, 1);
+            AutoReconnect.this.renderer.drawString(s, this.field_146294_l / 2 - AutoReconnect.this.renderer.getStringWidth(s) / 2, this.field_146295_m - 16, 0xFFFFFF, true);
         }
     }
 }
+

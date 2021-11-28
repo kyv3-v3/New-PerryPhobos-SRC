@@ -1,72 +1,75 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ */
 package me.earth.phobos.features.gui.alts.iasencrypt;
 
-import java.security.*;
-import javax.crypto.*;
-import javax.crypto.spec.*;
-import java.util.*;
-import java.io.*;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.Base64;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
+import me.earth.phobos.features.gui.alts.iasencrypt.Standards;
 
-public final class EncryptionTools
-{
+public final class EncryptionTools {
     public static final String DEFAULT_ENCODING = "UTF-8";
-    private static final Base64.Encoder encoder;
-    private static final Base64.Decoder decoder;
-    private static final MessageDigest sha512;
-    private static final KeyGenerator keyGen;
+    private static final Base64.Encoder encoder = Base64.getEncoder();
+    private static final Base64.Decoder decoder = Base64.getDecoder();
+    private static final MessageDigest sha512 = EncryptionTools.getSha512Hasher();
+    private static final KeyGenerator keyGen = EncryptionTools.getAESGenerator();
     private static final String secretSalt = "${secretSalt}";
-    
-    public static String decodeOld(final String text) {
+
+    public static String decodeOld(String text) {
         try {
-            return new String(EncryptionTools.decoder.decode(text),  "UTF-8");
+            return new String(decoder.decode(text), DEFAULT_ENCODING);
         }
         catch (IOException e) {
             return null;
         }
     }
-    
-    public static String encode(final String text) {
+
+    public static String encode(String text) {
         try {
-            final byte[] data = text.getBytes("UTF-8");
-            final Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(1,  getSecretKey());
-            return new String(EncryptionTools.encoder.encode(cipher.doFinal(data)));
+            byte[] data = text.getBytes(DEFAULT_ENCODING);
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(1, EncryptionTools.getSecretKey());
+            return new String(encoder.encode(cipher.doFinal(data)));
         }
         catch (BadPaddingException e) {
-            throw new RuntimeException("The password does not match",  e);
+            throw new RuntimeException("The password does not match", e);
         }
-        catch (IllegalBlockSizeException | InvalidKeyException | IOException | NoSuchAlgorithmException | NoSuchPaddingException ex2) {
-            final Exception ex;
-            final Exception e2 = ex;
-            throw new RuntimeException(e2);
+        catch (IOException | InvalidKeyException | NoSuchAlgorithmException | IllegalBlockSizeException | NoSuchPaddingException e) {
+            throw new RuntimeException(e);
         }
     }
-    
-    public static String decode(final String text) {
+
+    public static String decode(String text) {
         try {
-            final byte[] data = EncryptionTools.decoder.decode(text);
-            final Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(2,  getSecretKey());
-            return new String(cipher.doFinal(data),  "UTF-8");
+            byte[] data = decoder.decode(text);
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(2, EncryptionTools.getSecretKey());
+            return new String(cipher.doFinal(data), DEFAULT_ENCODING);
         }
         catch (BadPaddingException e) {
-            throw new RuntimeException("The password does not match",  e);
+            throw new RuntimeException("The password does not match", e);
         }
-        catch (IllegalBlockSizeException | InvalidKeyException | IOException | NoSuchAlgorithmException | NoSuchPaddingException ex2) {
-            final Exception ex;
-            final Exception e2 = ex;
-            throw new RuntimeException(e2);
+        catch (IOException | InvalidKeyException | NoSuchAlgorithmException | IllegalBlockSizeException | NoSuchPaddingException e) {
+            throw new RuntimeException(e);
         }
     }
-    
+
     public static String generatePassword() {
-        EncryptionTools.keyGen.init(256);
-        return new String(EncryptionTools.encoder.encode(EncryptionTools.keyGen.generateKey().getEncoded()));
+        keyGen.init(256);
+        return new String(encoder.encode(keyGen.generateKey().getEncoded()));
     }
-    
+
     private static MessageDigest getSha512Hasher() {
         try {
             return MessageDigest.getInstance("SHA-512");
@@ -75,7 +78,7 @@ public final class EncryptionTools
             throw new RuntimeException(e);
         }
     }
-    
+
     private static KeyGenerator getAESGenerator() {
         try {
             return KeyGenerator.getInstance("AES");
@@ -84,22 +87,16 @@ public final class EncryptionTools
             throw new RuntimeException(e);
         }
     }
-    
+
     private static SecretKeySpec getSecretKey() {
         try {
-            final String password = "${secretSalt}" + Standards.getPassword() + "${secretSalt}";
-            final byte[] key = Arrays.copyOf(EncryptionTools.sha512.digest(password.getBytes("UTF-8")),  16);
-            return new SecretKeySpec(key,  "AES");
+            String password = secretSalt + Standards.getPassword() + secretSalt;
+            byte[] key = Arrays.copyOf(sha512.digest(password.getBytes(DEFAULT_ENCODING)), 16);
+            return new SecretKeySpec(key, "AES");
         }
         catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
     }
-    
-    static {
-        encoder = Base64.getEncoder();
-        decoder = Base64.getDecoder();
-        sha512 = getSha512Hasher();
-        keyGen = getAESGenerator();
-    }
 }
+

@@ -1,48 +1,56 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  com.mojang.authlib.Agent
+ *  com.mojang.authlib.UserAuthentication
+ *  com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService
+ *  com.mojang.util.UUIDTypeAdapter
+ *  net.minecraft.client.Minecraft
+ *  net.minecraft.util.Session
+ */
 package me.earth.phobos.features.gui.alts.tools.alt;
 
-import net.minecraft.client.*;
-import com.mojang.authlib.yggdrasil.*;
-import com.mojang.authlib.*;
-import me.earth.phobos.features.gui.alts.iasencrypt.*;
-import me.earth.phobos.features.gui.alts.ias.account.*;
-import com.mojang.util.*;
-import net.minecraft.util.*;
-import me.earth.phobos.features.gui.alts.*;
-import me.earth.phobos.features.gui.alts.ias.config.*;
-import java.util.*;
+import com.mojang.authlib.Agent;
+import com.mojang.authlib.UserAuthentication;
+import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+import com.mojang.util.UUIDTypeAdapter;
+import java.util.UUID;
+import me.earth.phobos.features.gui.alts.MR;
+import me.earth.phobos.features.gui.alts.ias.account.AlreadyLoggedInException;
+import me.earth.phobos.features.gui.alts.ias.config.ConfigValues;
+import me.earth.phobos.features.gui.alts.iasencrypt.EncryptionTools;
+import me.earth.phobos.features.gui.alts.tools.alt.AccountData;
+import me.earth.phobos.features.gui.alts.tools.alt.AltDatabase;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.Session;
 
-public class AltManager
-{
+public class AltManager {
     private static AltManager manager;
     private final UserAuthentication auth;
-    
+
     private AltManager() {
-        final UUID uuid = UUID.randomUUID();
-        final AuthenticationService authService = (AuthenticationService)new YggdrasilAuthenticationService(Minecraft.getMinecraft().getProxy(),  uuid.toString());
+        UUID uuid = UUID.randomUUID();
+        YggdrasilAuthenticationService authService = new YggdrasilAuthenticationService(Minecraft.func_71410_x().func_110437_J(), uuid.toString());
         this.auth = authService.createUserAuthentication(Agent.MINECRAFT);
         authService.createMinecraftSessionService();
     }
-    
+
     public static AltManager getInstance() {
-        if (AltManager.manager == null) {
-            AltManager.manager = new AltManager();
+        if (manager == null) {
+            manager = new AltManager();
         }
-        return AltManager.manager;
+        return manager;
     }
-    
-    public Throwable setUser(final String username,  final String password) {
-        Throwable throwable = null;
-        if (!Minecraft.getMinecraft().getSession().getUsername().equals(EncryptionTools.decode(username)) || Minecraft.getMinecraft().getSession().getToken().equals("0")) {
-            if (!Minecraft.getMinecraft().getSession().getToken().equals("0")) {
-                for (final AccountData data : AltDatabase.getInstance().getAlts()) {
-                    if (data.alias.equals(Minecraft.getMinecraft().getSession().getUsername()) && data.user.equals(username)) {
-                        throwable = (Throwable)new AlreadyLoggedInException();
-                        return throwable;
-                    }
+
+    public Throwable setUser(String username, String password) {
+        Exception throwable = null;
+        if (!Minecraft.func_71410_x().func_110432_I().func_111285_a().equals(EncryptionTools.decode(username)) || Minecraft.func_71410_x().func_110432_I().func_148254_d().equals("0")) {
+            if (!Minecraft.func_71410_x().func_110432_I().func_148254_d().equals("0")) {
+                for (AccountData data : AltDatabase.getInstance().getAlts()) {
+                    if (!data.alias.equals(Minecraft.func_71410_x().func_110432_I().func_111285_a()) || !data.user.equals(username)) continue;
+                    throwable = new AlreadyLoggedInException();
+                    return throwable;
                 }
             }
             this.auth.logOut();
@@ -50,28 +58,26 @@ public class AltManager
             this.auth.setPassword(EncryptionTools.decode(password));
             try {
                 this.auth.logIn();
-                final Session session = new Session(this.auth.getSelectedProfile().getName(),  UUIDTypeAdapter.fromUUID(this.auth.getSelectedProfile().getId()),  this.auth.getAuthenticatedToken(),  this.auth.getUserType().getName());
+                Session session = new Session(this.auth.getSelectedProfile().getName(), UUIDTypeAdapter.fromUUID((UUID)this.auth.getSelectedProfile().getId()), this.auth.getAuthenticatedToken(), this.auth.getUserType().getName());
                 MR.setSession(session);
                 for (int i = 0; i < AltDatabase.getInstance().getAlts().size(); ++i) {
-                    final AccountData data2 = AltDatabase.getInstance().getAlts().get(i);
-                    if (data2.user.equals(username) && data2.pass.equals(password)) {
-                        data2.alias = session.getUsername();
-                    }
+                    AccountData data = AltDatabase.getInstance().getAlts().get(i);
+                    if (!data.user.equals(username) || !data.pass.equals(password)) continue;
+                    data.alias = session.func_111285_a();
                 }
             }
             catch (Exception e) {
                 throwable = e;
             }
-        }
-        else if (!ConfigValues.ENABLERELOG) {
-            throwable = (Throwable)new AlreadyLoggedInException();
+        } else if (!ConfigValues.ENABLERELOG) {
+            throwable = new AlreadyLoggedInException();
         }
         return throwable;
     }
-    
-    public void setUserOffline(final String username) {
+
+    public void setUserOffline(String username) {
         this.auth.logOut();
-        final Session session = new Session(username,  username,  "0",  "legacy");
+        Session session = new Session(username, username, "0", "legacy");
         try {
             MR.setSession(session);
         }
@@ -80,3 +86,4 @@ public class AltManager
         }
     }
 }
+

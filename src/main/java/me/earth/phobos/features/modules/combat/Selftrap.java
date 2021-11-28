@@ -1,114 +1,111 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.block.BlockObsidian
+ *  net.minecraft.block.BlockWeb
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.entity.player.EntityPlayer
+ *  net.minecraft.util.EnumHand
+ *  net.minecraft.util.math.BlockPos
+ *  net.minecraft.util.math.Vec3i
+ *  net.minecraftforge.fml.common.eventhandler.EventPriority
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ *  net.minecraftforge.fml.common.gameevent.InputEvent$KeyInputEvent
+ *  org.lwjgl.input.Keyboard
+ */
 package me.earth.phobos.features.modules.combat;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import me.earth.phobos.*;
-import net.minecraft.entity.*;
-import me.earth.phobos.event.events.*;
-import net.minecraftforge.fml.common.gameevent.*;
-import org.lwjgl.input.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import me.earth.phobos.util.*;
-import net.minecraft.entity.player.*;
-import net.minecraft.util.math.*;
-import java.util.*;
-import net.minecraft.util.*;
-import net.minecraft.block.*;
-import me.earth.phobos.features.modules.player.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.event.events.UpdateWalkingPlayerEvent;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.modules.combat.Offhand;
+import me.earth.phobos.features.modules.player.BlockTweaks;
+import me.earth.phobos.features.modules.player.Freecam;
+import me.earth.phobos.features.setting.Bind;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.BlockUtil;
+import me.earth.phobos.util.EntityUtil;
+import me.earth.phobos.util.InventoryUtil;
+import me.earth.phobos.util.TimerUtil;
+import net.minecraft.block.BlockObsidian;
+import net.minecraft.block.BlockWeb;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent;
+import org.lwjgl.input.Keyboard;
 
-public class Selftrap extends Module
-{
-    private final Setting<Boolean> smart;
-    private final Setting<Double> smartRange;
-    private final Setting<Integer> delay;
-    private final Setting<Integer> blocksPerTick;
-    private final Setting<Boolean> rotate;
-    private final Setting<Boolean> disable;
-    private final Setting<Integer> disableTime;
-    private final Setting<Boolean> offhand;
-    private final Setting<InventoryUtil.Switch> switchMode;
-    private final Setting<Boolean> onlySafe;
-    private final Setting<Boolean> highWeb;
-    private final Setting<Boolean> freecam;
-    private final Setting<Boolean> packet;
-    private final TimerUtil offTimer;
-    private final TimerUtil timer;
-    private final Map<BlockPos,  Integer> retries;
-    private final TimerUtil retryTimer;
-    public Setting<Mode> mode;
-    public Setting<PlaceMode> placeMode;
-    public Setting<Bind> obbyBind;
-    public Setting<Bind> webBind;
-    public Mode currentMode;
+public class Selftrap
+extends Module {
+    private final Setting<Boolean> smart = this.register(new Setting<Boolean>("Smart", false));
+    private final Setting<Double> smartRange = this.register(new Setting<Double>("SmartRange", 6.0, 0.0, 10.0));
+    private final Setting<Integer> delay = this.register(new Setting<Integer>("Delay/Place", 50, 0, 250));
+    private final Setting<Integer> blocksPerTick = this.register(new Setting<Integer>("Block/Place", 8, 1, 20));
+    private final Setting<Boolean> rotate = this.register(new Setting<Boolean>("Rotate", true));
+    private final Setting<Boolean> disable = this.register(new Setting<Boolean>("Disable", true));
+    private final Setting<Integer> disableTime = this.register(new Setting<Integer>("Ms/Disable", 200, 1, 250));
+    private final Setting<Boolean> offhand = this.register(new Setting<Boolean>("OffHand", true));
+    private final Setting<InventoryUtil.Switch> switchMode = this.register(new Setting<InventoryUtil.Switch>("Switch", InventoryUtil.Switch.NORMAL));
+    private final Setting<Boolean> onlySafe = this.register(new Setting<Object>("OnlySafe", Boolean.valueOf(false), v -> this.offhand.getValue()));
+    private final Setting<Boolean> highWeb = this.register(new Setting<Boolean>("HighWeb", false));
+    private final Setting<Boolean> freecam = this.register(new Setting<Boolean>("Freecam", false));
+    private final Setting<Boolean> packet = this.register(new Setting<Boolean>("Packet", false));
+    private final TimerUtil offTimer = new TimerUtil();
+    private final TimerUtil timer = new TimerUtil();
+    private final Map<BlockPos, Integer> retries = new HashMap<BlockPos, Integer>();
+    private final TimerUtil retryTimer = new TimerUtil();
+    public Setting<Mode> mode = this.register(new Setting<Mode>("Mode", Mode.OBSIDIAN));
+    public Setting<PlaceMode> placeMode = this.register(new Setting<Object>("PlaceMode", (Object)PlaceMode.NORMAL, v -> this.mode.getValue() == Mode.OBSIDIAN));
+    public Setting<Bind> obbyBind = this.register(new Setting<Bind>("Obsidian", new Bind(-1)));
+    public Setting<Bind> webBind = this.register(new Setting<Bind>("Webs", new Bind(-1)));
+    public Mode currentMode = Mode.OBSIDIAN;
     private boolean accessedViaBind;
     private int blocksThisTick;
-    private Offhand.Mode offhandMode;
-    private Offhand.Mode2 offhandMode2;
+    private Offhand.Mode offhandMode = Offhand.Mode.CRYSTALS;
+    private Offhand.Mode2 offhandMode2 = Offhand.Mode2.CRYSTALS;
     private boolean isSneaking;
     private boolean hasOffhand;
     private boolean placeHighWeb;
-    private int lastHotbarSlot;
+    private int lastHotbarSlot = -1;
     private boolean switchedItem;
-    
+
     public Selftrap() {
-        super("Selftrap",  "Lure your enemies in!",  Category.COMBAT,  true,  false,  true);
-        this.smart = (Setting<Boolean>)this.register(new Setting("Smart", false));
-        this.smartRange = (Setting<Double>)this.register(new Setting("SmartRange", 6.0, 0.0, 10.0));
-        this.delay = (Setting<Integer>)this.register(new Setting("Delay/Place", 50, 0, 250));
-        this.blocksPerTick = (Setting<Integer>)this.register(new Setting("Block/Place", 8, 1, 20));
-        this.rotate = (Setting<Boolean>)this.register(new Setting("Rotate", true));
-        this.disable = (Setting<Boolean>)this.register(new Setting("Disable", true));
-        this.disableTime = (Setting<Integer>)this.register(new Setting("Ms/Disable", 200, 1, 250));
-        this.offhand = (Setting<Boolean>)this.register(new Setting("OffHand", true));
-        this.switchMode = (Setting<InventoryUtil.Switch>)this.register(new Setting("Switch", InventoryUtil.Switch.NORMAL));
-        this.onlySafe = (Setting<Boolean>)this.register(new Setting("OnlySafe", false,  v -> this.offhand.getValue()));
-        this.highWeb = (Setting<Boolean>)this.register(new Setting("HighWeb", false));
-        this.freecam = (Setting<Boolean>)this.register(new Setting("Freecam", false));
-        this.packet = (Setting<Boolean>)this.register(new Setting("Packet", false));
-        this.offTimer = new TimerUtil();
-        this.timer = new TimerUtil();
-        this.retries = new HashMap<BlockPos,  Integer>();
-        this.retryTimer = new TimerUtil();
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.OBSIDIAN));
-        this.placeMode = (Setting<PlaceMode>)this.register(new Setting("PlaceMode", PlaceMode.NORMAL,  v -> this.mode.getValue() == Mode.OBSIDIAN));
-        this.obbyBind = (Setting<Bind>)this.register(new Setting("Obsidian", new Bind(-1)));
-        this.webBind = (Setting<Bind>)this.register(new Setting("Webs", new Bind(-1)));
-        this.currentMode = Mode.OBSIDIAN;
-        this.offhandMode = Offhand.Mode.CRYSTALS;
-        this.offhandMode2 = Offhand.Mode2.CRYSTALS;
-        this.lastHotbarSlot = -1;
+        super("Selftrap", "Lure your enemies in!", Module.Category.COMBAT, true, false, true);
     }
-    
+
     @Override
     public void onEnable() {
-        if (fullNullCheck()) {
+        if (Selftrap.fullNullCheck()) {
             this.disable();
         }
-        this.lastHotbarSlot = Selftrap.mc.player.inventory.currentItem;
+        this.lastHotbarSlot = Selftrap.mc.field_71439_g.field_71071_by.field_70461_c;
         if (!this.accessedViaBind) {
             this.currentMode = this.mode.getValue();
         }
-        final Offhand module = Phobos.moduleManager.getModuleByClass(Offhand.class);
+        Offhand module = Phobos.moduleManager.getModuleByClass(Offhand.class);
         this.offhandMode = module.mode;
         this.offhandMode2 = module.currentMode;
-        if (this.offhand.getValue() && (EntityUtil.isSafe((Entity)Selftrap.mc.player) || !this.onlySafe.getValue())) {
+        if (this.offhand.getValue().booleanValue() && (EntityUtil.isSafe((Entity)Selftrap.mc.field_71439_g) || !this.onlySafe.getValue().booleanValue())) {
             if (module.type.getValue() == Offhand.Type.OLD) {
                 if (this.currentMode == Mode.WEBS) {
                     module.setMode(Offhand.Mode2.WEBS);
-                }
-                else {
+                } else {
                     module.setMode(Offhand.Mode2.OBSIDIAN);
                 }
-            }
-            else if (this.currentMode == Mode.WEBS) {
+            } else if (this.currentMode == Mode.WEBS) {
                 module.setSwapToTotem(false);
                 module.setMode(Offhand.Mode.WEBS);
-            }
-            else {
+            } else {
                 module.setSwapToTotem(false);
                 module.setMode(Offhand.Mode.OBSIDIAN);
             }
@@ -116,24 +113,24 @@ public class Selftrap extends Module
         Phobos.holeManager.update();
         this.offTimer.reset();
     }
-    
+
     @Override
     public void onTick() {
-        if (this.isOn() && (this.blocksPerTick.getValue() != 1 || !this.rotate.getValue())) {
+        if (this.isOn() && (this.blocksPerTick.getValue() != 1 || !this.rotate.getValue().booleanValue())) {
             this.doHoleFill();
         }
     }
-    
+
     @SubscribeEvent
-    public void onUpdateWalkingPlayer(final UpdateWalkingPlayerEvent event) {
-        if (this.isOn() && event.getStage() == 0 && this.blocksPerTick.getValue() == 1 && this.rotate.getValue()) {
+    public void onUpdateWalkingPlayer(UpdateWalkingPlayerEvent event) {
+        if (this.isOn() && event.getStage() == 0 && this.blocksPerTick.getValue() == 1 && this.rotate.getValue().booleanValue()) {
             this.doHoleFill();
         }
     }
-    
+
     @Override
     public void onDisable() {
-        if (this.offhand.getValue()) {
+        if (this.offhand.getValue().booleanValue()) {
             Phobos.moduleManager.getModuleByClass(Offhand.class).setMode(this.offhandMode);
             Phobos.moduleManager.getModuleByClass(Offhand.class).setMode(this.offhandMode2);
         }
@@ -143,9 +140,9 @@ public class Selftrap extends Module
         this.accessedViaBind = false;
         this.hasOffhand = false;
     }
-    
-    @SubscribeEvent(priority = EventPriority.NORMAL,  receiveCanceled = true)
-    public void onKeyInput(final InputEvent.KeyInputEvent event) {
+
+    @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+    public void onKeyInput(InputEvent.KeyInputEvent event) {
         if (Keyboard.getEventKeyState()) {
             if (this.obbyBind.getValue().getKey() == Keyboard.getEventKey()) {
                 this.accessedViaBind = true;
@@ -159,21 +156,19 @@ public class Selftrap extends Module
             }
         }
     }
-    
+
     private void doHoleFill() {
         if (this.check()) {
             return;
         }
         if (this.placeHighWeb) {
-            final BlockPos pos = new BlockPos(Selftrap.mc.player.posX,  Selftrap.mc.player.posY + 1.0,  Selftrap.mc.player.posZ);
+            BlockPos pos = new BlockPos(Selftrap.mc.field_71439_g.field_70165_t, Selftrap.mc.field_71439_g.field_70163_u + 1.0, Selftrap.mc.field_71439_g.field_70161_v);
             this.placeBlock(pos);
             this.placeHighWeb = false;
         }
-        for (final BlockPos position : this.getPositions()) {
-            if (this.smart.getValue() && !this.isPlayerInRange()) {
-                continue;
-            }
-            final int placeability = BlockUtil.isPositionPlaceable(position,  false);
+        for (BlockPos position : this.getPositions()) {
+            if (this.smart.getValue().booleanValue() && !this.isPlayerInRange()) continue;
+            int placeability = BlockUtil.isPositionPlaceable(position, false);
             if (placeability == 1) {
                 switch (this.currentMode) {
                     case WEBS: {
@@ -181,123 +176,105 @@ public class Selftrap extends Module
                         break;
                     }
                     case OBSIDIAN: {
-                        if (this.switchMode.getValue() != InventoryUtil.Switch.SILENT && (!BlockTweaks.getINSTANCE().isOn() || !BlockTweaks.getINSTANCE().noBlock.getValue())) {
-                            break;
-                        }
-                        if (this.retries.get(position) != null && this.retries.get(position) >= 4) {
-                            break;
-                        }
+                        if (this.switchMode.getValue() != InventoryUtil.Switch.SILENT && (!BlockTweaks.getINSTANCE().isOn() || !BlockTweaks.getINSTANCE().noBlock.getValue().booleanValue()) || this.retries.get((Object)position) != null && this.retries.get((Object)position) >= 4) break;
                         this.placeBlock(position);
-                        this.retries.put(position,  (this.retries.get(position) == null) ? 1 : (this.retries.get(position) + 1));
-                        break;
+                        this.retries.put(position, this.retries.get((Object)position) == null ? 1 : this.retries.get((Object)position) + 1);
                     }
                 }
             }
-            if (placeability != 3) {
-                continue;
-            }
+            if (placeability != 3) continue;
             this.placeBlock(position);
         }
     }
-    
+
     private boolean isPlayerInRange() {
-        for (final EntityPlayer player : Selftrap.mc.world.playerEntities) {
-            if (EntityUtil.isntValid((Entity)player,  this.smartRange.getValue())) {
-                continue;
-            }
+        for (EntityPlayer player : Selftrap.mc.field_71441_e.field_73010_i) {
+            if (EntityUtil.isntValid((Entity)player, this.smartRange.getValue())) continue;
             return true;
         }
         return false;
     }
-    
+
     private List<BlockPos> getPositions() {
-        final ArrayList<BlockPos> positions = new ArrayList<BlockPos>();
-        Label_0540: {
-            switch (this.currentMode) {
-                case WEBS: {
-                    positions.add(new BlockPos(Selftrap.mc.player.posX,  Selftrap.mc.player.posY,  Selftrap.mc.player.posZ));
-                    if (!this.highWeb.getValue()) {
-                        break;
+        ArrayList<BlockPos> positions = new ArrayList<BlockPos>();
+        block0 : switch (this.currentMode) {
+            case WEBS: {
+                positions.add(new BlockPos(Selftrap.mc.field_71439_g.field_70165_t, Selftrap.mc.field_71439_g.field_70163_u, Selftrap.mc.field_71439_g.field_70161_v));
+                if (!this.highWeb.getValue().booleanValue()) break;
+                positions.add(new BlockPos(Selftrap.mc.field_71439_g.field_70165_t, Selftrap.mc.field_71439_g.field_70163_u + 1.0, Selftrap.mc.field_71439_g.field_70161_v));
+                break;
+            }
+            case OBSIDIAN: {
+                if (this.placeMode.getValue() == PlaceMode.NORMAL) {
+                    positions.add(new BlockPos(Selftrap.mc.field_71439_g.field_70165_t, Selftrap.mc.field_71439_g.field_70163_u + 2.0, Selftrap.mc.field_71439_g.field_70161_v));
+                    int placeability = BlockUtil.isPositionPlaceable(positions.get(0), false);
+                    switch (placeability) {
+                        case 0: {
+                            return new ArrayList<BlockPos>();
+                        }
+                        case 3: {
+                            return positions;
+                        }
+                        case 1: {
+                            if (BlockUtil.isPositionPlaceable(positions.get(0), false, false) == 3) {
+                                return positions;
+                            }
+                        }
+                        case 2: {
+                            positions.add(new BlockPos(Selftrap.mc.field_71439_g.field_70165_t + 1.0, Selftrap.mc.field_71439_g.field_70163_u + 1.0, Selftrap.mc.field_71439_g.field_70161_v));
+                            positions.add(new BlockPos(Selftrap.mc.field_71439_g.field_70165_t + 1.0, Selftrap.mc.field_71439_g.field_70163_u + 2.0, Selftrap.mc.field_71439_g.field_70161_v));
+                            break block0;
+                        }
                     }
-                    positions.add(new BlockPos(Selftrap.mc.player.posX,  Selftrap.mc.player.posY + 1.0,  Selftrap.mc.player.posZ));
                     break;
                 }
-                case OBSIDIAN: {
-                    if (this.placeMode.getValue() == PlaceMode.NORMAL) {
-                        positions.add(new BlockPos(Selftrap.mc.player.posX,  Selftrap.mc.player.posY + 2.0,  Selftrap.mc.player.posZ));
-                        final int placeability = BlockUtil.isPositionPlaceable(positions.get(0),  false);
-                        switch (placeability) {
-                            case 0: {
-                                return new ArrayList<BlockPos>();
-                            }
-                            case 3: {
-                                return positions;
-                            }
-                            case 1: {
-                                if (BlockUtil.isPositionPlaceable(positions.get(0),  false,  false) == 3) {
-                                    return positions;
-                                }
-                            }
-                            case 2: {
-                                positions.add(new BlockPos(Selftrap.mc.player.posX + 1.0,  Selftrap.mc.player.posY + 1.0,  Selftrap.mc.player.posZ));
-                                positions.add(new BlockPos(Selftrap.mc.player.posX + 1.0,  Selftrap.mc.player.posY + 2.0,  Selftrap.mc.player.posZ));
-                                break Label_0540;
-                            }
-                            default: {
-                                break Label_0540;
-                            }
+                positions.add(new BlockPos(Selftrap.mc.field_71439_g.field_70165_t, Selftrap.mc.field_71439_g.field_70163_u, Selftrap.mc.field_71439_g.field_70161_v));
+                if (this.placeMode.getValue() == PlaceMode.SELFHIGH) {
+                    positions.add(new BlockPos(Selftrap.mc.field_71439_g.field_70165_t, Selftrap.mc.field_71439_g.field_70163_u + 1.0, Selftrap.mc.field_71439_g.field_70161_v));
+                }
+                int placeability = BlockUtil.isPositionPlaceable(positions.get(0), false);
+                switch (placeability) {
+                    case 0: {
+                        return new ArrayList<BlockPos>();
+                    }
+                    case 3: {
+                        return positions;
+                    }
+                    case 1: {
+                        if (BlockUtil.isPositionPlaceable(positions.get(0), false, false) == 3) {
+                            return positions;
                         }
                     }
-                    else {
-                        positions.add(new BlockPos(Selftrap.mc.player.posX,  Selftrap.mc.player.posY,  Selftrap.mc.player.posZ));
-                        if (this.placeMode.getValue() == PlaceMode.SELFHIGH) {
-                            positions.add(new BlockPos(Selftrap.mc.player.posX,  Selftrap.mc.player.posY + 1.0,  Selftrap.mc.player.posZ));
-                        }
-                        final int placeability = BlockUtil.isPositionPlaceable(positions.get(0),  false);
-                        switch (placeability) {
-                            case 0: {
-                                return new ArrayList<BlockPos>();
-                            }
-                            case 3: {
-                                return positions;
-                            }
-                            case 1: {
-                                if (BlockUtil.isPositionPlaceable(positions.get(0),  false,  false) == 3) {
-                                    return positions;
-                                }
-                            }
-                            case 2: {
-                                break Label_0540;
-                            }
-                        }
+                    case 2: {
+                        break block0;
                     }
-                    break;
                 }
             }
         }
-        positions.sort(Comparator.comparingDouble(Vec3i::getY));
+        positions.sort(Comparator.comparingDouble(Vec3i::func_177956_o));
         return positions;
     }
-    
-    private void placeBlock(final BlockPos pos) {
+
+    private void placeBlock(BlockPos pos) {
         if (this.blocksThisTick < this.blocksPerTick.getValue() && this.switchItem(false)) {
-            final boolean smartRotate = this.blocksPerTick.getValue() == 1 && this.rotate.getValue();
-            this.isSneaking = (smartRotate ? BlockUtil.placeBlockSmartRotate(pos,  this.hasOffhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND,  true,  this.packet.getValue(),  this.isSneaking) : BlockUtil.placeBlock(pos,  this.hasOffhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND,  this.rotate.getValue(),  this.packet.getValue(),  this.isSneaking));
+            boolean smartRotate;
+            boolean bl = smartRotate = this.blocksPerTick.getValue() == 1 && this.rotate.getValue() != false;
+            this.isSneaking = smartRotate ? BlockUtil.placeBlockSmartRotate(pos, this.hasOffhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, true, this.packet.getValue(), this.isSneaking) : BlockUtil.placeBlock(pos, this.hasOffhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, this.rotate.getValue(), this.packet.getValue(), this.isSneaking);
             this.timer.reset();
             ++this.blocksThisTick;
         }
     }
-    
+
     private boolean check() {
-        if (fullNullCheck() || (this.disable.getValue() && this.offTimer.passedMs(this.disableTime.getValue()))) {
+        if (Selftrap.fullNullCheck() || this.disable.getValue().booleanValue() && this.offTimer.passedMs(this.disableTime.getValue().intValue())) {
             this.disable();
             return true;
         }
-        if (Selftrap.mc.player.inventory.currentItem != this.lastHotbarSlot && Selftrap.mc.player.inventory.currentItem != InventoryUtil.findHotbarBlock((Class)((this.currentMode == Mode.WEBS) ? BlockWeb.class : BlockObsidian.class))) {
-            this.lastHotbarSlot = Selftrap.mc.player.inventory.currentItem;
+        if (Selftrap.mc.field_71439_g.field_71071_by.field_70461_c != this.lastHotbarSlot && Selftrap.mc.field_71439_g.field_71071_by.field_70461_c != InventoryUtil.findHotbarBlock(this.currentMode == Mode.WEBS ? BlockWeb.class : BlockObsidian.class)) {
+            this.lastHotbarSlot = Selftrap.mc.field_71439_g.field_71071_by.field_70461_c;
         }
         this.switchItem(true);
-        if (!this.freecam.getValue() && Phobos.moduleManager.isModuleEnabled(Freecam.class)) {
+        if (!this.freecam.getValue().booleanValue() && Phobos.moduleManager.isModuleEnabled(Freecam.class)) {
             return true;
         }
         this.blocksThisTick = 0;
@@ -309,42 +286,48 @@ public class Selftrap extends Module
         int targetSlot = -1;
         switch (this.currentMode) {
             case WEBS: {
-                this.hasOffhand = InventoryUtil.isBlock(Selftrap.mc.player.getHeldItemOffhand().getItem(),  BlockWeb.class);
+                this.hasOffhand = InventoryUtil.isBlock(Selftrap.mc.field_71439_g.func_184592_cb().func_77973_b(), BlockWeb.class);
                 targetSlot = InventoryUtil.findHotbarBlock(BlockWeb.class);
                 break;
             }
             case OBSIDIAN: {
-                this.hasOffhand = InventoryUtil.isBlock(Selftrap.mc.player.getHeldItemOffhand().getItem(),  BlockObsidian.class);
+                this.hasOffhand = InventoryUtil.isBlock(Selftrap.mc.field_71439_g.func_184592_cb().func_77973_b(), BlockObsidian.class);
                 targetSlot = InventoryUtil.findHotbarBlock(BlockObsidian.class);
-                break;
             }
         }
-        if (this.onlySafe.getValue() && !EntityUtil.isSafe((Entity)Selftrap.mc.player)) {
+        if (this.onlySafe.getValue().booleanValue() && !EntityUtil.isSafe((Entity)Selftrap.mc.field_71439_g)) {
             this.disable();
             return true;
         }
-        return (!this.hasOffhand && targetSlot == -1 && (!this.offhand.getValue() || (!EntityUtil.isSafe((Entity)Selftrap.mc.player) && this.onlySafe.getValue()))) || (this.offhand.getValue() && !this.hasOffhand) || !this.timer.passedMs(this.delay.getValue());
-    }
-    
-    private boolean switchItem(final boolean back) {
-        if (this.offhand.getValue()) {
+        if (!this.hasOffhand && targetSlot == -1 && (!this.offhand.getValue().booleanValue() || !EntityUtil.isSafe((Entity)Selftrap.mc.field_71439_g) && this.onlySafe.getValue().booleanValue())) {
             return true;
         }
-        final boolean[] value = InventoryUtil.switchItem(back,  this.lastHotbarSlot,  this.switchedItem,  this.switchMode.getValue(),  (Class)((this.currentMode == Mode.WEBS) ? BlockWeb.class : BlockObsidian.class));
+        if (this.offhand.getValue().booleanValue() && !this.hasOffhand) {
+            return true;
+        }
+        return !this.timer.passedMs(this.delay.getValue().intValue());
+    }
+
+    private boolean switchItem(boolean back) {
+        if (this.offhand.getValue().booleanValue()) {
+            return true;
+        }
+        boolean[] value = InventoryUtil.switchItem(back, this.lastHotbarSlot, this.switchedItem, this.switchMode.getValue(), this.currentMode == Mode.WEBS ? BlockWeb.class : BlockObsidian.class);
         this.switchedItem = value[0];
         return value[1];
     }
-    
-    public enum PlaceMode
-    {
-        NORMAL,  
-        SELF,  
-        SELFHIGH;
-    }
-    
-    public enum Mode
-    {
-        WEBS,  
+
+    public static enum Mode {
+        WEBS,
         OBSIDIAN;
+
+    }
+
+    public static enum PlaceMode {
+        NORMAL,
+        SELF,
+        SELFHIGH;
+
     }
 }
+

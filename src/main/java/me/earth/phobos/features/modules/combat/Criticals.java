@@ -1,56 +1,57 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.entity.EntityLivingBase
+ *  net.minecraft.network.Packet
+ *  net.minecraft.network.play.client.CPacketPlayer
+ *  net.minecraft.network.play.client.CPacketPlayer$Position
+ *  net.minecraft.network.play.client.CPacketUseEntity
+ *  net.minecraft.network.play.client.CPacketUseEntity$Action
+ *  net.minecraft.world.World
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.combat;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import me.earth.phobos.util.*;
-import me.earth.phobos.event.events.*;
-import net.minecraft.world.*;
-import net.minecraft.network.play.client.*;
-import net.minecraft.network.*;
-import net.minecraft.entity.*;
-import java.util.*;
-import net.minecraft.client.entity.*;
-import net.minecraftforge.fml.common.eventhandler.*;
+import java.util.Objects;
+import me.earth.phobos.event.events.PacketEvent;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.modules.combat.Auto32k;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.TimerUtil;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.network.play.client.CPacketUseEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class Criticals extends Module
-{
-    private final Setting<Mode> mode;
-    private final Setting<Integer> packets;
-    private final Setting<Integer> desyncDelay;
-    private final TimerUtil timer;
-    private final TimerUtil timer32k;
-    public Setting<Boolean> noDesync;
-    public Setting<Boolean> cancelFirst;
-    public Setting<Integer> delay32k;
+public class Criticals
+extends Module {
+    private final Setting<Mode> mode = this.register(new Setting<Mode>("Mode", Mode.PACKET));
+    private final Setting<Integer> packets = this.register(new Setting<Object>("Packets", 2, 1, 5, v -> this.mode.getValue() == Mode.PACKET, "Amount of packets you want to send."));
+    private final Setting<Integer> desyncDelay = this.register(new Setting<Object>("DesyncDelay", 10, 0, 500, v -> this.mode.getValue() == Mode.PACKET, "Amount of packets you want to send."));
+    private final TimerUtil timer = new TimerUtil();
+    private final TimerUtil timer32k = new TimerUtil();
+    public Setting<Boolean> noDesync = this.register(new Setting<Boolean>("NoDesync", true));
+    public Setting<Boolean> cancelFirst = this.register(new Setting<Boolean>("CancelFirst32k", true));
+    public Setting<Integer> delay32k = this.register(new Setting<Object>("32kDelay", Integer.valueOf(25), Integer.valueOf(0), Integer.valueOf(500), v -> this.cancelFirst.getValue()));
     private boolean firstCanceled;
     private boolean resetTimer;
-    
+
     public Criticals() {
-        super("Criticals",  "Scores criticals for you.",  Category.COMBAT,  true,  false,  false);
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.PACKET));
-        this.packets = (Setting<Integer>)this.register(new Setting("Packets", 2, 1, 5,  v -> this.mode.getValue() == Mode.PACKET,  "Amount of packets you want to send."));
-        this.desyncDelay = (Setting<Integer>)this.register(new Setting("DesyncDelay", 10, 0, 500,  v -> this.mode.getValue() == Mode.PACKET,  "Amount of packets you want to send."));
-        this.timer = new TimerUtil();
-        this.timer32k = new TimerUtil();
-        this.noDesync = (Setting<Boolean>)this.register(new Setting("NoDesync", true));
-        this.cancelFirst = (Setting<Boolean>)this.register(new Setting("CancelFirst32k", true));
-        this.delay32k = (Setting<Integer>)this.register(new Setting("32kDelay", 25, 0, 500,  v -> this.cancelFirst.getValue()));
+        super("Criticals", "Scores criticals for you.", Module.Category.COMBAT, true, false, false);
     }
-    
+
     @SubscribeEvent
-    public void onPacketSend(final PacketEvent.Send event) {
-        if (Auto32k.getInstance().isOn() && (Auto32k.getInstance().switching || !Auto32k.getInstance().autoSwitch.getValue() || Auto32k.getInstance().mode.getValue() == Auto32k.Mode.DISPENSER) && this.timer.passedMs(500L) && this.cancelFirst.getValue()) {
+    public void onPacketSend(PacketEvent.Send event) {
+        CPacketUseEntity packet;
+        if (Auto32k.getInstance().isOn() && (Auto32k.getInstance().switching || !Auto32k.getInstance().autoSwitch.getValue().booleanValue() || Auto32k.getInstance().mode.getValue() == Auto32k.Mode.DISPENSER) && this.timer.passedMs(500L) && this.cancelFirst.getValue().booleanValue()) {
             this.firstCanceled = true;
-        }
-        else if (Auto32k.getInstance().isOff() || (!Auto32k.getInstance().switching && Auto32k.getInstance().autoSwitch.getValue() && Auto32k.getInstance().mode.getValue() != Auto32k.Mode.DISPENSER) || !this.cancelFirst.getValue()) {
+        } else if (Auto32k.getInstance().isOff() || !Auto32k.getInstance().switching && Auto32k.getInstance().autoSwitch.getValue().booleanValue() && Auto32k.getInstance().mode.getValue() != Auto32k.Mode.DISPENSER || !this.cancelFirst.getValue().booleanValue()) {
             this.firstCanceled = false;
         }
-        final CPacketUseEntity packet;
-        if (event.getPacket() instanceof CPacketUseEntity && (packet = (CPacketUseEntity)event.getPacket()).getAction() == CPacketUseEntity.Action.ATTACK) {
+        if (event.getPacket() instanceof CPacketUseEntity && (packet = (CPacketUseEntity)event.getPacket()).func_149565_c() == CPacketUseEntity.Action.ATTACK) {
             if (this.firstCanceled) {
                 this.timer32k.reset();
                 this.resetTimer = true;
@@ -58,84 +59,81 @@ public class Criticals extends Module
                 this.firstCanceled = false;
                 return;
             }
-            if (this.resetTimer && !this.timer32k.passedMs(this.delay32k.getValue())) {
+            if (this.resetTimer && !this.timer32k.passedMs(this.delay32k.getValue().intValue())) {
                 return;
             }
-            if (this.resetTimer && this.timer32k.passedMs(this.delay32k.getValue())) {
+            if (this.resetTimer && this.timer32k.passedMs(this.delay32k.getValue().intValue())) {
                 this.resetTimer = false;
             }
-            if (!this.timer.passedMs(this.desyncDelay.getValue())) {
+            if (!this.timer.passedMs(this.desyncDelay.getValue().intValue())) {
                 return;
             }
-            if (Criticals.mc.player.onGround && !Criticals.mc.gameSettings.keyBindJump.isKeyDown() && (packet.getEntityFromWorld((World)Criticals.mc.world) instanceof EntityLivingBase || !this.noDesync.getValue()) && !Criticals.mc.player.isInWater() && !Criticals.mc.player.isInLava()) {
+            if (!(!Criticals.mc.field_71439_g.field_70122_E || Criticals.mc.field_71474_y.field_74314_A.func_151470_d() || !(packet.func_149564_a((World)Criticals.mc.field_71441_e) instanceof EntityLivingBase) && this.noDesync.getValue().booleanValue() || Criticals.mc.field_71439_g.func_70090_H() || Criticals.mc.field_71439_g.func_180799_ab())) {
                 if (this.mode.getValue() == Mode.PACKET) {
                     switch (this.packets.getValue()) {
                         case 1: {
-                            Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Criticals.mc.player.posX,  Criticals.mc.player.posY + 0.10000000149011612,  Criticals.mc.player.posZ,  false));
-                            Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Criticals.mc.player.posX,  Criticals.mc.player.posY,  Criticals.mc.player.posZ,  false));
+                            Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Criticals.mc.field_71439_g.field_70165_t, Criticals.mc.field_71439_g.field_70163_u + (double)0.1f, Criticals.mc.field_71439_g.field_70161_v, false));
+                            Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Criticals.mc.field_71439_g.field_70165_t, Criticals.mc.field_71439_g.field_70163_u, Criticals.mc.field_71439_g.field_70161_v, false));
                             break;
                         }
                         case 2: {
-                            Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Criticals.mc.player.posX,  Criticals.mc.player.posY + 0.0625101,  Criticals.mc.player.posZ,  false));
-                            Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Criticals.mc.player.posX,  Criticals.mc.player.posY,  Criticals.mc.player.posZ,  false));
-                            Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Criticals.mc.player.posX,  Criticals.mc.player.posY + 1.1E-5,  Criticals.mc.player.posZ,  false));
-                            Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Criticals.mc.player.posX,  Criticals.mc.player.posY,  Criticals.mc.player.posZ,  false));
+                            Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Criticals.mc.field_71439_g.field_70165_t, Criticals.mc.field_71439_g.field_70163_u + 0.0625101, Criticals.mc.field_71439_g.field_70161_v, false));
+                            Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Criticals.mc.field_71439_g.field_70165_t, Criticals.mc.field_71439_g.field_70163_u, Criticals.mc.field_71439_g.field_70161_v, false));
+                            Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Criticals.mc.field_71439_g.field_70165_t, Criticals.mc.field_71439_g.field_70163_u + 1.1E-5, Criticals.mc.field_71439_g.field_70161_v, false));
+                            Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Criticals.mc.field_71439_g.field_70165_t, Criticals.mc.field_71439_g.field_70163_u, Criticals.mc.field_71439_g.field_70161_v, false));
                             break;
                         }
                         case 3: {
-                            Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Criticals.mc.player.posX,  Criticals.mc.player.posY + 0.0625101,  Criticals.mc.player.posZ,  false));
-                            Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Criticals.mc.player.posX,  Criticals.mc.player.posY,  Criticals.mc.player.posZ,  false));
-                            Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Criticals.mc.player.posX,  Criticals.mc.player.posY + 0.0125,  Criticals.mc.player.posZ,  false));
-                            Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Criticals.mc.player.posX,  Criticals.mc.player.posY,  Criticals.mc.player.posZ,  false));
+                            Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Criticals.mc.field_71439_g.field_70165_t, Criticals.mc.field_71439_g.field_70163_u + 0.0625101, Criticals.mc.field_71439_g.field_70161_v, false));
+                            Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Criticals.mc.field_71439_g.field_70165_t, Criticals.mc.field_71439_g.field_70163_u, Criticals.mc.field_71439_g.field_70161_v, false));
+                            Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Criticals.mc.field_71439_g.field_70165_t, Criticals.mc.field_71439_g.field_70163_u + 0.0125, Criticals.mc.field_71439_g.field_70161_v, false));
+                            Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Criticals.mc.field_71439_g.field_70165_t, Criticals.mc.field_71439_g.field_70163_u, Criticals.mc.field_71439_g.field_70161_v, false));
                             break;
                         }
                         case 4: {
-                            Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Criticals.mc.player.posX,  Criticals.mc.player.posY + 0.05,  Criticals.mc.player.posZ,  false));
-                            Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Criticals.mc.player.posX,  Criticals.mc.player.posY,  Criticals.mc.player.posZ,  false));
-                            Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Criticals.mc.player.posX,  Criticals.mc.player.posY + 0.03,  Criticals.mc.player.posZ,  false));
-                            Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Criticals.mc.player.posX,  Criticals.mc.player.posY,  Criticals.mc.player.posZ,  false));
+                            Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Criticals.mc.field_71439_g.field_70165_t, Criticals.mc.field_71439_g.field_70163_u + 0.05, Criticals.mc.field_71439_g.field_70161_v, false));
+                            Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Criticals.mc.field_71439_g.field_70165_t, Criticals.mc.field_71439_g.field_70163_u, Criticals.mc.field_71439_g.field_70161_v, false));
+                            Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Criticals.mc.field_71439_g.field_70165_t, Criticals.mc.field_71439_g.field_70163_u + 0.03, Criticals.mc.field_71439_g.field_70161_v, false));
+                            Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Criticals.mc.field_71439_g.field_70165_t, Criticals.mc.field_71439_g.field_70163_u, Criticals.mc.field_71439_g.field_70161_v, false));
                             break;
                         }
                         case 5: {
-                            Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Criticals.mc.player.posX,  Criticals.mc.player.posY + 0.1625,  Criticals.mc.player.posZ,  false));
-                            Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Criticals.mc.player.posX,  Criticals.mc.player.posY,  Criticals.mc.player.posZ,  false));
-                            Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Criticals.mc.player.posX,  Criticals.mc.player.posY + 4.0E-6,  Criticals.mc.player.posZ,  false));
-                            Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Criticals.mc.player.posX,  Criticals.mc.player.posY,  Criticals.mc.player.posZ,  false));
-                            Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Criticals.mc.player.posX,  Criticals.mc.player.posY + 1.0E-6,  Criticals.mc.player.posZ,  false));
-                            Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Criticals.mc.player.posX,  Criticals.mc.player.posY,  Criticals.mc.player.posZ,  false));
-                            Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer());
-                            Criticals.mc.player.onCriticalHit((Entity)Objects.requireNonNull(packet.getEntityFromWorld((World)Criticals.mc.world)));
-                            break;
+                            Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Criticals.mc.field_71439_g.field_70165_t, Criticals.mc.field_71439_g.field_70163_u + 0.1625, Criticals.mc.field_71439_g.field_70161_v, false));
+                            Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Criticals.mc.field_71439_g.field_70165_t, Criticals.mc.field_71439_g.field_70163_u, Criticals.mc.field_71439_g.field_70161_v, false));
+                            Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Criticals.mc.field_71439_g.field_70165_t, Criticals.mc.field_71439_g.field_70163_u + 4.0E-6, Criticals.mc.field_71439_g.field_70161_v, false));
+                            Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Criticals.mc.field_71439_g.field_70165_t, Criticals.mc.field_71439_g.field_70163_u, Criticals.mc.field_71439_g.field_70161_v, false));
+                            Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Criticals.mc.field_71439_g.field_70165_t, Criticals.mc.field_71439_g.field_70163_u + 1.0E-6, Criticals.mc.field_71439_g.field_70161_v, false));
+                            Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Criticals.mc.field_71439_g.field_70165_t, Criticals.mc.field_71439_g.field_70163_u, Criticals.mc.field_71439_g.field_70161_v, false));
+                            Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer());
+                            Criticals.mc.field_71439_g.func_71009_b(Objects.requireNonNull(packet.func_149564_a((World)Criticals.mc.field_71441_e)));
                         }
                     }
-                }
-                else if (this.mode.getValue() == Mode.BYPASS) {
-                    Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Criticals.mc.player.posX,  Criticals.mc.player.posY + 0.11,  Criticals.mc.player.posZ,  false));
-                    Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Criticals.mc.player.posX,  Criticals.mc.player.posY + 0.1100013579,  Criticals.mc.player.posZ,  false));
-                    Criticals.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Position(Criticals.mc.player.posX,  Criticals.mc.player.posY + 0.1100013579,  Criticals.mc.player.posZ,  false));
-                }
-                else {
-                    Criticals.mc.player.jump();
+                } else if (this.mode.getValue() == Mode.BYPASS) {
+                    Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Criticals.mc.field_71439_g.field_70165_t, Criticals.mc.field_71439_g.field_70163_u + 0.11, Criticals.mc.field_71439_g.field_70161_v, false));
+                    Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Criticals.mc.field_71439_g.field_70165_t, Criticals.mc.field_71439_g.field_70163_u + 0.1100013579, Criticals.mc.field_71439_g.field_70161_v, false));
+                    Criticals.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketPlayer.Position(Criticals.mc.field_71439_g.field_70165_t, Criticals.mc.field_71439_g.field_70163_u + 0.1100013579, Criticals.mc.field_71439_g.field_70161_v, false));
+                } else {
+                    Criticals.mc.field_71439_g.func_70664_aZ();
                     if (this.mode.getValue() == Mode.MINIJUMP) {
-                        final EntityPlayerSP player = Criticals.mc.player;
-                        player.motionY /= 2.0;
+                        Criticals.mc.field_71439_g.field_70181_x /= 2.0;
                     }
                 }
                 this.timer.reset();
             }
         }
     }
-    
+
     @Override
     public String getDisplayInfo() {
         return this.mode.currentEnumName();
     }
-    
-    public enum Mode
-    {
-        JUMP,  
-        MINIJUMP,  
-        PACKET,  
+
+    public static enum Mode {
+        JUMP,
+        MINIJUMP,
+        PACKET,
         BYPASS;
+
     }
 }
+

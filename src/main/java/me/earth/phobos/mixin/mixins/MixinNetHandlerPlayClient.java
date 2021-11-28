@@ -1,34 +1,45 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.network.NetHandlerPlayClient
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.entity.player.EntityPlayer
+ *  net.minecraft.network.play.server.SPacketEntityMetadata
+ *  net.minecraftforge.common.MinecraftForge
+ *  net.minecraftforge.fml.common.eventhandler.Event
+ */
 package me.earth.phobos.mixin.mixins;
 
-import org.spongepowered.asm.mixin.*;
-import net.minecraft.client.network.*;
-import net.minecraft.network.play.server.*;
-import org.spongepowered.asm.mixin.injection.callback.*;
-import me.earth.phobos.util.*;
-import net.minecraft.entity.player.*;
-import net.minecraftforge.common.*;
-import me.earth.phobos.event.events.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import me.earth.phobos.*;
-import net.minecraft.entity.*;
-import org.spongepowered.asm.mixin.injection.*;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.event.events.DeathEvent;
+import me.earth.phobos.util.Util;
+import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.play.server.SPacketEntityMetadata;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.Event;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin({ NetHandlerPlayClient.class })
-public class MixinNetHandlerPlayClient
-{
-    @Inject(method = { "handleEntityMetadata" },  at = { @At("RETURN") },  cancellable = true)
-    private void handleEntityMetadataHook(final SPacketEntityMetadata packetIn,  final CallbackInfo info) {
-        final Entity entity;
-        final EntityPlayer player;
-        if (Util.mc.world != null && (entity = Util.mc.world.getEntityByID(packetIn.getEntityId())) instanceof EntityPlayer && (player = (EntityPlayer)entity).getHealth() <= 0.0f) {
-            MinecraftForge.EVENT_BUS.post((Event)new DeathEvent(player));
-            if (Phobos.totemPopManager != null) {
-                Phobos.totemPopManager.onDeath(player);
+@Mixin(value={NetHandlerPlayClient.class})
+public class MixinNetHandlerPlayClient {
+    @Inject(method={"handleEntityMetadata"}, at={@At(value="RETURN")}, cancellable=true)
+    private void handleEntityMetadataHook(SPacketEntityMetadata packetIn, CallbackInfo info) {
+        Entity entity;
+        if (Util.mc.field_71441_e != null && (entity = Util.mc.field_71441_e.func_73045_a(packetIn.func_149375_d())) instanceof EntityPlayer) {
+            EntityPlayer entityPlayer;
+            EntityPlayer player = (EntityPlayer)entity;
+            if (entityPlayer.func_110143_aJ() <= 0.0f) {
+                MinecraftForge.EVENT_BUS.post((Event)new DeathEvent(player));
+                if (Phobos.totemPopManager != null) {
+                    Phobos.totemPopManager.onDeath(player);
+                }
             }
         }
     }
 }
+

@@ -1,3 +1,29 @@
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  com.mojang.realmsclient.gui.ChatFormatting
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.entity.item.EntityEnderPearl
+ *  net.minecraft.entity.monster.EntityGhast
+ *  net.minecraft.entity.passive.EntityDonkey
+ *  net.minecraft.entity.passive.EntityLlama
+ *  net.minecraft.entity.passive.EntityMule
+ *  net.minecraft.entity.player.EntityPlayer
+ *  net.minecraft.init.Blocks
+ *  net.minecraft.init.MobEffects
+ *  net.minecraft.init.SoundEvents
+ *  net.minecraft.item.ItemStack
+ *  net.minecraft.item.ItemSword
+ *  net.minecraft.nbt.NBTTagList
+ *  net.minecraft.network.play.server.SPacketPlayerPosLook
+ *  net.minecraft.potion.Potion
+ *  net.minecraft.util.EnumHand
+ *  net.minecraft.util.math.BlockPos
+ *  net.minecraft.util.text.ITextComponent
+ *  net.minecraft.util.text.TextComponentString
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.client;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
@@ -42,172 +68,122 @@ import net.minecraft.network.play.server.SPacketPlayerPosLook;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class Notifications extends Module
-{
+public class Notifications
+extends Module {
     private static final String fileName = "phobos/util/ModuleMessage_List.txt";
-    private static final List<String> modules;
-    private static Notifications INSTANCE;
-    private final TimerUtil timer;
-    private final List<EntityPlayer> burrowedPlayers;
-    private final Set<EntityPlayer> sword;
-    private final TimerUtil weak;
-    private final TimerUtil strgh;
-    private final TimerUtil voids;
-    private final Set<EntityPlayer> str;
-    private final Set<Entity> ghasts;
-    private final Set<Entity> donkeys;
-    private final Set<Entity> mules;
-    private final Set<Entity> llamas;
-    public Setting<Boolean> totemPops;
-    public Setting<Boolean> totemNoti;
-    public Setting<Integer> delay;
-    public Setting<Boolean> clearOnLogout;
-    public Setting<Boolean> moduleMessage;
-    private final Setting<Boolean> bold;
-    private final Setting<Boolean> readfile;
-    public Setting<Boolean> list;
-    public Setting<Boolean> watermark;
-    public Setting<Boolean> visualRange;
-    public Setting<Boolean> VisualRangeSound;
-    public Setting<Boolean> coords;
-    public Setting<Boolean> leaving;
-    public Setting<Boolean> pearls;
-    public Setting<Boolean> crash;
-    public Setting<Boolean> popUp;
-    public Setting<Boolean> burrow;
-    public Setting<Boolean> strength;
-    public Setting<Integer> strcheckrate;
-    public Setting<Boolean> weakness;
-    public Setting<Boolean> strongness;
-    public Setting<Integer> checkrate;
-    public Setting<Boolean> thirtytwokay;
-    public Setting<Boolean> voider;
-    public Setting<Integer> voidcheckrate;
-    public Setting<Boolean> tp;
-    public Setting<Boolean> rb;
-    public Setting<Boolean> entities;
-    public Setting<Boolean> Desktop;
-    public Setting<Boolean> Ghasts;
-    public Setting<Boolean> Donkeys;
-    public Setting<Boolean> Mules;
-    public Setting<Boolean> Llamas;
-    public Setting<Boolean> Chat;
-    public Setting<Boolean> Sound;
-    public TimerUtil totemAnnounce;
-    Image image;
-    private final TrayIcon icon;
+    private static final List<String> modules = new ArrayList<String>();
+    private static Notifications INSTANCE = new Notifications();
+    private final TimerUtil timer = new TimerUtil();
+    private final List<EntityPlayer> burrowedPlayers = new ArrayList<EntityPlayer>();
+    private final Set<EntityPlayer> sword = Collections.newSetFromMap(new WeakHashMap());
+    private final TimerUtil weak = new TimerUtil();
+    private final TimerUtil strgh = new TimerUtil();
+    private final TimerUtil voids = new TimerUtil();
+    private final Set<EntityPlayer> str = Collections.newSetFromMap(new WeakHashMap());
+    private final Set<Entity> ghasts = new HashSet<Entity>();
+    private final Set<Entity> donkeys = new HashSet<Entity>();
+    private final Set<Entity> mules = new HashSet<Entity>();
+    private final Set<Entity> llamas = new HashSet<Entity>();
+    public Setting<Boolean> totemPops = this.register(new Setting<Boolean>("TotemPops", true));
+    public Setting<Boolean> totemNoti = this.register(new Setting<Object>("TotemNoti", Boolean.valueOf(false), v -> this.totemPops.getValue()));
+    public Setting<Integer> delay = this.register(new Setting<Object>("Delay", 0, 0, 5000, v -> this.totemPops.getValue(), "Delays messages."));
+    public Setting<Boolean> clearOnLogout = this.register(new Setting<Boolean>("LogoutClear", false));
+    public Setting<Boolean> moduleMessage = this.register(new Setting<Boolean>("ModuleMessage", true));
+    private final Setting<Boolean> bold = this.register(new Setting<Object>("BoldMsgs", Boolean.valueOf(false), v -> this.moduleMessage.getValue()));
+    private final Setting<Boolean> readfile = this.register(new Setting<Object>("LoadFile", Boolean.valueOf(false), v -> this.moduleMessage.getValue()));
+    public Setting<Boolean> list = this.register(new Setting<Object>("List", Boolean.valueOf(false), v -> this.moduleMessage.getValue()));
+    public Setting<Boolean> watermark = this.register(new Setting<Object>("Watermark", Boolean.valueOf(true), v -> this.moduleMessage.getValue()));
+    public Setting<Boolean> visualRange = this.register(new Setting<Boolean>("VisualRange", false));
+    public Setting<Boolean> VisualRangeSound = this.register(new Setting<Boolean>("VisualRangeSound", false));
+    public Setting<Boolean> coords = this.register(new Setting<Object>("Coords", Boolean.valueOf(true), v -> this.visualRange.getValue()));
+    public Setting<Boolean> leaving = this.register(new Setting<Object>("Leaving", Boolean.valueOf(true), v -> this.visualRange.getValue()));
+    public Setting<Boolean> pearls = this.register(new Setting<Boolean>("PearlNotifs", true));
+    public Setting<Boolean> crash = this.register(new Setting<Boolean>("Crash", true));
+    public Setting<Boolean> popUp = this.register(new Setting<Boolean>("PopUpVisualRange", false));
+    public Setting<Boolean> burrow = this.register(new Setting<Boolean>("Burrow", false));
+    public Setting<Boolean> strength = this.register(new Setting<Boolean>("Strength", false));
+    public Setting<Integer> strcheckrate = this.register(new Setting<Integer>("CheckRate", Integer.valueOf(500), Integer.valueOf(0), Integer.valueOf(5000), v -> this.strength.getValue()));
+    public Setting<Boolean> weakness = this.register(new Setting<Boolean>("Weakness", false));
+    public Setting<Boolean> strongness = this.register(new Setting<Boolean>("Strongness", Boolean.valueOf(false), v -> this.weakness.getValue()));
+    public Setting<Integer> checkrate = this.register(new Setting<Integer>("CheckRate", Integer.valueOf(500), Integer.valueOf(0), Integer.valueOf(5000), v -> this.weakness.getValue()));
+    public Setting<Boolean> thirtytwokay = this.register(new Setting<Boolean>("32k", false));
+    public Setting<Boolean> voider = this.register(new Setting<Boolean>("Void", false));
+    public Setting<Integer> voidcheckrate = this.register(new Setting<Integer>("CheckRate", Integer.valueOf(500), Integer.valueOf(0), Integer.valueOf(5000), v -> this.voider.getValue()));
+    public Setting<Boolean> tp = this.register(new Setting<Boolean>("Chorus", false));
+    public Setting<Boolean> rb = this.register(new Setting<Boolean>("Rubberband", false));
+    public Setting<Boolean> entities = this.register(new Setting<Boolean>("Entities", false));
+    public Setting<Boolean> Desktop = this.register(new Setting<Boolean>("DesktopNotifs", Boolean.valueOf(false), v -> this.entities.getValue()));
+    public Setting<Boolean> Ghasts = this.register(new Setting<Boolean>("Ghasts", Boolean.valueOf(false), v -> this.entities.getValue()));
+    public Setting<Boolean> Donkeys = this.register(new Setting<Boolean>("Donkeys", Boolean.valueOf(false), v -> this.entities.getValue()));
+    public Setting<Boolean> Mules = this.register(new Setting<Boolean>("Mules", Boolean.valueOf(false), v -> this.entities.getValue()));
+    public Setting<Boolean> Llamas = this.register(new Setting<Boolean>("Llamas", Boolean.valueOf(false), v -> this.entities.getValue()));
+    public Setting<Boolean> Chat = this.register(new Setting<Boolean>("Chat", Boolean.valueOf(false), v -> this.entities.getValue()));
+    public Setting<Boolean> Sound = this.register(new Setting<Boolean>("Sound", Boolean.valueOf(false), v -> this.entities.getValue()));
+    public TimerUtil totemAnnounce = new TimerUtil();
+    Image image = Toolkit.getDefaultToolkit().getImage("phobos.png");
+    private final TrayIcon icon = new TrayIcon(this.image, "Perry Phobos");
     private boolean flag;
-    private List<EntityPlayer> knownPlayers;
+    private List<EntityPlayer> knownPlayers = new ArrayList<EntityPlayer>();
     private boolean check;
     private boolean last;
-    
+
     public Notifications() {
-        super("Notifications",  "Sends Messages.",  Category.CLIENT,  true,  false,  false);
-        this.timer = new TimerUtil();
-        this.burrowedPlayers = new ArrayList<EntityPlayer>();
-        this.sword = Collections.newSetFromMap(new WeakHashMap<EntityPlayer,  Boolean>());
-        this.weak = new TimerUtil();
-        this.strgh = new TimerUtil();
-        this.voids = new TimerUtil();
-        this.str = Collections.newSetFromMap(new WeakHashMap<EntityPlayer,  Boolean>());
-        this.ghasts = new HashSet<Entity>();
-        this.donkeys = new HashSet<Entity>();
-        this.mules = new HashSet<Entity>();
-        this.llamas = new HashSet<Entity>();
-        this.totemPops = (Setting<Boolean>)this.register(new Setting("TotemPops", true));
-        this.totemNoti = (Setting<Boolean>)this.register(new Setting("TotemNoti", false,  v -> this.totemPops.getValue()));
-        this.delay = (Setting<Integer>)this.register(new Setting("Delay", 0, 0, 5000,  v -> this.totemPops.getValue(),  "Delays messages."));
-        this.clearOnLogout = (Setting<Boolean>)this.register(new Setting("LogoutClear", false));
-        this.moduleMessage = (Setting<Boolean>)this.register(new Setting("ModuleMessage", true));
-        this.bold = (Setting<Boolean>)this.register(new Setting("BoldMsgs", false,  v -> this.moduleMessage.getValue()));
-        this.readfile = (Setting<Boolean>)this.register(new Setting("LoadFile", false,  v -> this.moduleMessage.getValue()));
-        this.list = (Setting<Boolean>)this.register(new Setting("List", false,  v -> this.moduleMessage.getValue()));
-        this.watermark = (Setting<Boolean>)this.register(new Setting("Watermark", true,  v -> this.moduleMessage.getValue()));
-        this.visualRange = (Setting<Boolean>)this.register(new Setting("VisualRange", false));
-        this.VisualRangeSound = (Setting<Boolean>)this.register(new Setting("VisualRangeSound", false));
-        this.coords = (Setting<Boolean>)this.register(new Setting("Coords", true,  v -> this.visualRange.getValue()));
-        this.leaving = (Setting<Boolean>)this.register(new Setting("Leaving", true,  v -> this.visualRange.getValue()));
-        this.pearls = (Setting<Boolean>)this.register(new Setting("PearlNotifs", true));
-        this.crash = (Setting<Boolean>)this.register(new Setting("Crash", true));
-        this.popUp = (Setting<Boolean>)this.register(new Setting("PopUpVisualRange", false));
-        this.burrow = (Setting<Boolean>)this.register(new Setting("Burrow", false));
-        this.strength = (Setting<Boolean>)this.register(new Setting("Strength", false));
-        this.strcheckrate = (Setting<Integer>)this.register(new Setting("CheckRate", 500, 0, 5000,  v -> this.strength.getValue()));
-        this.weakness = (Setting<Boolean>)this.register(new Setting("Weakness", false));
-        this.strongness = (Setting<Boolean>)this.register(new Setting("Strongness", false,  v -> this.weakness.getValue()));
-        this.checkrate = (Setting<Integer>)this.register(new Setting("CheckRate", 500, 0, 5000,  v -> this.weakness.getValue()));
-        this.thirtytwokay = (Setting<Boolean>)this.register(new Setting("32k", false));
-        this.voider = (Setting<Boolean>)this.register(new Setting("Void", false));
-        this.voidcheckrate = (Setting<Integer>)this.register(new Setting("CheckRate", 500, 0, 5000,  v -> this.voider.getValue()));
-        this.tp = (Setting<Boolean>)this.register(new Setting("Chorus", false));
-        this.rb = (Setting<Boolean>)this.register(new Setting("Rubberband", false));
-        this.entities = (Setting<Boolean>)this.register(new Setting("Entities", false));
-        this.Desktop = (Setting<Boolean>)this.register(new Setting("DesktopNotifs", false,  v -> this.entities.getValue()));
-        this.Ghasts = (Setting<Boolean>)this.register(new Setting("Ghasts", false,  v -> this.entities.getValue()));
-        this.Donkeys = (Setting<Boolean>)this.register(new Setting("Donkeys", false,  v -> this.entities.getValue()));
-        this.Mules = (Setting<Boolean>)this.register(new Setting("Mules", false,  v -> this.entities.getValue()));
-        this.Llamas = (Setting<Boolean>)this.register(new Setting("Llamas", false,  v -> this.entities.getValue()));
-        this.Chat = (Setting<Boolean>)this.register(new Setting("Chat", false,  v -> this.entities.getValue()));
-        this.Sound = (Setting<Boolean>)this.register(new Setting("Sound", false,  v -> this.entities.getValue()));
-        this.totemAnnounce = new TimerUtil();
-        this.image = Toolkit.getDefaultToolkit().getImage("phobos.png");
-        this.icon = new TrayIcon(this.image,  "Perry Phobos");
-        this.knownPlayers = new ArrayList<EntityPlayer>();
+        super("Notifications", "Sends Messages.", Module.Category.CLIENT, true, false, false);
         this.setInstance();
         this.icon.setImageAutoSize(true);
         try {
-            final SystemTray tray = SystemTray.getSystemTray();
+            SystemTray tray = SystemTray.getSystemTray();
             tray.add(this.icon);
         }
         catch (Exception exception) {
             exception.printStackTrace();
         }
     }
-    
+
     public static Notifications getInstance() {
-        if (Notifications.INSTANCE == null) {
-            Notifications.INSTANCE = new Notifications();
+        if (INSTANCE == null) {
+            INSTANCE = new Notifications();
         }
-        return Notifications.INSTANCE;
+        return INSTANCE;
     }
-    
-    public static void displayCrash(final Exception e) {
-        Command.sendMessage("§cException caught: " + e.getMessage());
+
+    public static void displayCrash(Exception e) {
+        Command.sendMessage("\u00a7cException caught: " + e.getMessage());
     }
-    
+
     @SubscribeEvent
-    public void onPacketReceive(final PacketEvent.Receive event) {
-        if (event.getPacket() instanceof SPacketPlayerPosLook && this.rb.getValue()) {
-            Command.sendMessage(ChatFormatting.RED + "Rubberband Detected!");
+    public void onPacketReceive(PacketEvent.Receive event) {
+        if (event.getPacket() instanceof SPacketPlayerPosLook && this.rb.getValue().booleanValue()) {
+            Command.sendMessage((Object)ChatFormatting.RED + "Rubberband Detected!");
         }
     }
-    
+
     private void setInstance() {
-        Notifications.INSTANCE = this;
+        INSTANCE = this;
     }
-    
-    private boolean is32k(final ItemStack stack) {
-        if (stack.getItem() instanceof ItemSword) {
-            final NBTTagList enchants = stack.getEnchantmentTagList();
-            for (int i = 0; i < enchants.tagCount(); ++i) {
-                if (enchants.getCompoundTagAt(i).getShort("lvl") >= 32767) {
-                    return true;
-                }
+
+    private boolean is32k(ItemStack stack) {
+        if (stack.func_77973_b() instanceof ItemSword) {
+            NBTTagList enchants = stack.func_77986_q();
+            for (int i = 0; i < enchants.func_74745_c(); ++i) {
+                if (enchants.func_150305_b(i).func_74765_d("lvl") < 32767) continue;
+                return true;
             }
         }
         return false;
     }
-    
+
     @Override
     public void onLoad() {
         this.check = true;
         this.loadFile();
         this.check = false;
     }
-    
+
     @Override
     public void onEnable() {
         this.knownPlayers = new ArrayList<EntityPlayer>();
@@ -220,97 +196,73 @@ public class Notifications extends Module
         this.mules.clear();
         this.llamas.clear();
     }
-    
+
     @SubscribeEvent
-    public void onChorus(final ChorusEvent event) {
-        if (this.tp.getValue()) {
-            Command.sendMessage(ChatFormatting.DARK_PURPLE + "A player teleported " + MathUtil.getDirectionFromPlayer(event.getChorusX(),  event.getChorusZ()) + "!");
+    public void onChorus(ChorusEvent event) {
+        if (this.tp.getValue().booleanValue()) {
+            Command.sendMessage((Object)ChatFormatting.DARK_PURPLE + "A player teleported " + MathUtil.getDirectionFromPlayer(event.getChorusX(), event.getChorusZ()) + "!");
         }
     }
-    
+
     @Override
     public void onUpdate() {
-        if (this.entities.getValue() && this.Ghasts.getValue()) {
-            for (final Entity entity : Notifications.mc.world.getLoadedEntityList()) {
-                if (entity instanceof EntityGhast) {
-                    if (this.ghasts.contains(entity)) {
-                        continue;
-                    }
-                    if (this.Chat.getValue()) {
-                        Command.sendMessage("Ghast Detected at: " + Math.round((float)entity.getPosition().getX()) + ",  " + Math.round((float)entity.getPosition().getY()) + ",  " + Math.round((float)entity.getPosition().getZ()) + ".");
-                    }
-                    this.ghasts.add(entity);
-                    if (this.Desktop.getValue()) {
-                        this.icon.displayMessage("Perry Phobos",  "I found a ghast at: " + Math.round((float)entity.getPosition().getX()) + ",  " + Math.round((float)entity.getPosition().getY()) + ",  " + Math.round((float)entity.getPosition().getZ()) + ".",  TrayIcon.MessageType.INFO);
-                    }
-                    if (!this.Sound.getValue()) {
-                        continue;
-                    }
-                    Notifications.mc.player.playSound(SoundEvents.BLOCK_ANVIL_DESTROY,  1.0f,  1.0f);
+        if (this.entities.getValue().booleanValue() && this.Ghasts.getValue().booleanValue()) {
+            for (Object entity : Notifications.mc.field_71441_e.func_72910_y()) {
+                if (!(entity instanceof EntityGhast) || this.ghasts.contains(entity)) continue;
+                if (this.Chat.getValue().booleanValue()) {
+                    Command.sendMessage("Ghast Detected at: " + Math.round(entity.func_180425_c().func_177958_n()) + ", " + Math.round(entity.func_180425_c().func_177956_o()) + ", " + Math.round(entity.func_180425_c().func_177952_p()) + ".");
                 }
+                this.ghasts.add((Entity)entity);
+                if (this.Desktop.getValue().booleanValue()) {
+                    this.icon.displayMessage("Perry Phobos", "I found a ghast at: " + Math.round(entity.func_180425_c().func_177958_n()) + ", " + Math.round(entity.func_180425_c().func_177956_o()) + ", " + Math.round(entity.func_180425_c().func_177952_p()) + ".", TrayIcon.MessageType.INFO);
+                }
+                if (!this.Sound.getValue().booleanValue()) continue;
+                Notifications.mc.field_71439_g.func_184185_a(SoundEvents.field_187680_c, 1.0f, 1.0f);
             }
         }
-        if (this.entities.getValue() && this.Donkeys.getValue()) {
-            for (final Entity entity : Notifications.mc.world.getLoadedEntityList()) {
-                if (entity instanceof EntityDonkey) {
-                    if (this.donkeys.contains(entity)) {
-                        continue;
-                    }
-                    if (this.Chat.getValue()) {
-                        Command.sendMessage("Donkey Detected at: " + Math.round((float)entity.getPosition().getX()) + ",  " + Math.round((float)entity.getPosition().getY()) + ",  " + Math.round((float)entity.getPosition().getZ()) + ".");
-                    }
-                    this.donkeys.add(entity);
-                    if (this.Desktop.getValue()) {
-                        this.icon.displayMessage("Perry Phobos",  "I found a donkey at: " + Math.round((float)entity.getPosition().getX()) + ",  " + Math.round((float)entity.getPosition().getY()) + ",  " + Math.round((float)entity.getPosition().getZ()) + ".",  TrayIcon.MessageType.INFO);
-                    }
-                    if (!this.Sound.getValue()) {
-                        continue;
-                    }
-                    Notifications.mc.player.playSound(SoundEvents.BLOCK_ANVIL_DESTROY,  1.0f,  1.0f);
+        if (this.entities.getValue().booleanValue() && this.Donkeys.getValue().booleanValue()) {
+            for (Object entity : Notifications.mc.field_71441_e.func_72910_y()) {
+                if (!(entity instanceof EntityDonkey) || this.donkeys.contains(entity)) continue;
+                if (this.Chat.getValue().booleanValue()) {
+                    Command.sendMessage("Donkey Detected at: " + Math.round(entity.func_180425_c().func_177958_n()) + ", " + Math.round(entity.func_180425_c().func_177956_o()) + ", " + Math.round(entity.func_180425_c().func_177952_p()) + ".");
                 }
+                this.donkeys.add((Entity)entity);
+                if (this.Desktop.getValue().booleanValue()) {
+                    this.icon.displayMessage("Perry Phobos", "I found a donkey at: " + Math.round(entity.func_180425_c().func_177958_n()) + ", " + Math.round(entity.func_180425_c().func_177956_o()) + ", " + Math.round(entity.func_180425_c().func_177952_p()) + ".", TrayIcon.MessageType.INFO);
+                }
+                if (!this.Sound.getValue().booleanValue()) continue;
+                Notifications.mc.field_71439_g.func_184185_a(SoundEvents.field_187680_c, 1.0f, 1.0f);
             }
         }
-        if (this.entities.getValue() && this.Mules.getValue()) {
-            for (final Entity entity : Notifications.mc.world.getLoadedEntityList()) {
-                if (entity instanceof EntityMule) {
-                    if (this.mules.contains(entity)) {
-                        continue;
-                    }
-                    if (this.Chat.getValue()) {
-                        Command.sendMessage("Mule Detected at: " + Math.round((float)entity.getPosition().getX()) + ",  " + Math.round((float)entity.getPosition().getY()) + ",  " + Math.round((float)entity.getPosition().getZ()) + ".");
-                    }
-                    this.mules.add(entity);
-                    if (this.Desktop.getValue()) {
-                        this.icon.displayMessage("Perry Phobos",  "I found a mule at: " + Math.round((float)entity.getPosition().getX()) + ",  " + Math.round((float)entity.getPosition().getY()) + ",  " + Math.round((float)entity.getPosition().getZ()) + ".",  TrayIcon.MessageType.INFO);
-                    }
-                    if (!this.Sound.getValue()) {
-                        continue;
-                    }
-                    Notifications.mc.player.playSound(SoundEvents.BLOCK_ANVIL_DESTROY,  1.0f,  1.0f);
+        if (this.entities.getValue().booleanValue() && this.Mules.getValue().booleanValue()) {
+            for (Object entity : Notifications.mc.field_71441_e.func_72910_y()) {
+                if (!(entity instanceof EntityMule) || this.mules.contains(entity)) continue;
+                if (this.Chat.getValue().booleanValue()) {
+                    Command.sendMessage("Mule Detected at: " + Math.round(entity.func_180425_c().func_177958_n()) + ", " + Math.round(entity.func_180425_c().func_177956_o()) + ", " + Math.round(entity.func_180425_c().func_177952_p()) + ".");
                 }
+                this.mules.add((Entity)entity);
+                if (this.Desktop.getValue().booleanValue()) {
+                    this.icon.displayMessage("Perry Phobos", "I found a mule at: " + Math.round(entity.func_180425_c().func_177958_n()) + ", " + Math.round(entity.func_180425_c().func_177956_o()) + ", " + Math.round(entity.func_180425_c().func_177952_p()) + ".", TrayIcon.MessageType.INFO);
+                }
+                if (!this.Sound.getValue().booleanValue()) continue;
+                Notifications.mc.field_71439_g.func_184185_a(SoundEvents.field_187680_c, 1.0f, 1.0f);
             }
         }
-        if (this.entities.getValue() && this.Llamas.getValue()) {
-            for (final Entity entity : Notifications.mc.world.getLoadedEntityList()) {
-                if (entity instanceof EntityLlama) {
-                    if (this.llamas.contains(entity)) {
-                        continue;
-                    }
-                    if (this.Chat.getValue()) {
-                        Command.sendMessage("Llama Detected at: " + Math.round((float)entity.getPosition().getX()) + ",  " + Math.round((float)entity.getPosition().getY()) + ",  " + Math.round((float)entity.getPosition().getZ()) + ".");
-                    }
-                    this.llamas.add(entity);
-                    if (this.Desktop.getValue()) {
-                        this.icon.displayMessage("Perry Phobos",  "I found a llama at: " + Math.round((float)entity.getPosition().getX()) + ",  " + Math.round((float)entity.getPosition().getY()) + ",  " + Math.round((float)entity.getPosition().getZ()) + ".",  TrayIcon.MessageType.INFO);
-                    }
-                    if (!this.Sound.getValue()) {
-                        continue;
-                    }
-                    Notifications.mc.player.playSound(SoundEvents.BLOCK_ANVIL_DESTROY,  1.0f,  1.0f);
+        if (this.entities.getValue().booleanValue() && this.Llamas.getValue().booleanValue()) {
+            for (Object entity : Notifications.mc.field_71441_e.func_72910_y()) {
+                if (!(entity instanceof EntityLlama) || this.llamas.contains(entity)) continue;
+                if (this.Chat.getValue().booleanValue()) {
+                    Command.sendMessage("Llama Detected at: " + Math.round(entity.func_180425_c().func_177958_n()) + ", " + Math.round(entity.func_180425_c().func_177956_o()) + ", " + Math.round(entity.func_180425_c().func_177952_p()) + ".");
                 }
+                this.llamas.add((Entity)entity);
+                if (this.Desktop.getValue().booleanValue()) {
+                    this.icon.displayMessage("Perry Phobos", "I found a llama at: " + Math.round(entity.func_180425_c().func_177958_n()) + ", " + Math.round(entity.func_180425_c().func_177956_o()) + ", " + Math.round(entity.func_180425_c().func_177952_p()) + ".", TrayIcon.MessageType.INFO);
+                }
+                if (!this.Sound.getValue().booleanValue()) continue;
+                Notifications.mc.field_71439_g.func_184185_a(SoundEvents.field_187680_c, 1.0f, 1.0f);
             }
         }
-        if (this.readfile.getValue()) {
+        if (this.readfile.getValue().booleanValue()) {
             if (!this.check) {
                 Command.sendMessage("Loading File...");
                 this.timer.reset();
@@ -322,266 +274,232 @@ public class Notifications extends Module
             this.readfile.setValue(false);
             this.check = false;
         }
-        if (this.voider.getValue()) {
-            if (!this.voids.passedMs(this.voidcheckrate.getValue())) {
+        if (this.voider.getValue().booleanValue()) {
+            if (!this.voids.passedMs(this.voidcheckrate.getValue().intValue())) {
                 return;
             }
-            for (final Entity entity : Notifications.mc.world.loadedEntityList) {
-                if (entity instanceof EntityPlayer && entity.posY < 0.0 && !((EntityPlayer)entity).isSpectator()) {
-                    final DecimalFormat format = new DecimalFormat("#");
-                    Command.sendMessage(ChatFormatting.RED + entity.getName() + ChatFormatting.RESET + " Is in the void at Y " + format.format(entity.posY),  false);
-                }
+            for (Object entity : Notifications.mc.field_71441_e.field_72996_f) {
+                if (!(entity instanceof EntityPlayer) || !(((Entity)entity).field_70163_u < 0.0) || ((EntityPlayer)entity).func_175149_v()) continue;
+                DecimalFormat format = new DecimalFormat("#");
+                Command.sendMessage((Object)ChatFormatting.RED + entity.func_70005_c_() + (Object)ChatFormatting.RESET + " Is in the void at Y " + format.format(((Entity)entity).field_70163_u), false);
             }
             this.voids.reset();
         }
-        if (this.visualRange.getValue()) {
-            final ArrayList<EntityPlayer> tickPlayerList = new ArrayList<EntityPlayer>(Notifications.mc.world.playerEntities);
+        if (this.visualRange.getValue().booleanValue()) {
+            ArrayList tickPlayerList = new ArrayList(Notifications.mc.field_71441_e.field_73010_i);
             if (tickPlayerList.size() > 0) {
-                for (final EntityPlayer player : tickPlayerList) {
-                    if (!player.getName().equals(Notifications.mc.player.getName())) {
-                        if (this.knownPlayers.contains(player)) {
-                            continue;
-                        }
-                        this.knownPlayers.add(player);
-                        if (Phobos.friendManager.isFriend(player)) {
-                            Command.sendMessage("Player §a" + player.getName() + "§r entered your visual range" + (this.coords.getValue() ? (" at (" + (int)player.posX + ",  " + (int)player.posY + ",  " + (int)player.posZ + ")!") : "!"),  (boolean)this.popUp.getValue());
-                        }
-                        else {
-                            Command.sendMessage("Player §c" + player.getName() + "§r entered your visual range" + (this.coords.getValue() ? (" at (" + (int)player.posX + ",  " + (int)player.posY + ",  " + (int)player.posZ + ")!") : "!"),  (boolean)this.popUp.getValue());
-                        }
-                        if (this.VisualRangeSound.getValue()) {
-                            Notifications.mc.player.playSound(SoundEvents.BLOCK_ANVIL_LAND,  1.0f,  1.0f);
-                        }
-                        return;
+                for (EntityPlayer player : tickPlayerList) {
+                    if (player.func_70005_c_().equals(Notifications.mc.field_71439_g.func_70005_c_()) || this.knownPlayers.contains((Object)player)) continue;
+                    this.knownPlayers.add(player);
+                    if (Phobos.friendManager.isFriend(player)) {
+                        Command.sendMessage("Player \u00a7a" + player.func_70005_c_() + "\u00a7r entered your visual range" + (this.coords.getValue() != false ? " at (" + (int)player.field_70165_t + ", " + (int)player.field_70163_u + ", " + (int)player.field_70161_v + ")!" : "!"), this.popUp.getValue());
+                    } else {
+                        Command.sendMessage("Player \u00a7c" + player.func_70005_c_() + "\u00a7r entered your visual range" + (this.coords.getValue() != false ? " at (" + (int)player.field_70165_t + ", " + (int)player.field_70163_u + ", " + (int)player.field_70161_v + ")!" : "!"), this.popUp.getValue());
                     }
+                    if (this.VisualRangeSound.getValue().booleanValue()) {
+                        Notifications.mc.field_71439_g.func_184185_a(SoundEvents.field_187689_f, 1.0f, 1.0f);
+                    }
+                    return;
                 }
             }
             if (this.knownPlayers.size() > 0) {
-                for (final EntityPlayer player : this.knownPlayers) {
-                    if (tickPlayerList.contains(player)) {
-                        continue;
-                    }
-                    this.knownPlayers.remove(player);
-                    if (this.leaving.getValue()) {
+                for (EntityPlayer player : this.knownPlayers) {
+                    if (tickPlayerList.contains((Object)player)) continue;
+                    this.knownPlayers.remove((Object)player);
+                    if (this.leaving.getValue().booleanValue()) {
                         if (Phobos.friendManager.isFriend(player)) {
-                            Command.sendMessage("Player §a" + player.getName() + "§r left your visual range" + (this.coords.getValue() ? (" at (" + (int)player.posX + ",  " + (int)player.posY + ",  " + (int)player.posZ + ")!") : "!"),  (boolean)this.popUp.getValue());
-                        }
-                        else {
-                            Command.sendMessage("Player §c" + player.getName() + "§r left your visual range" + (this.coords.getValue() ? (" at (" + (int)player.posX + ",  " + (int)player.posY + ",  " + (int)player.posZ + ")!") : "!"),  (boolean)this.popUp.getValue());
+                            Command.sendMessage("Player \u00a7a" + player.func_70005_c_() + "\u00a7r left your visual range" + (this.coords.getValue() != false ? " at (" + (int)player.field_70165_t + ", " + (int)player.field_70163_u + ", " + (int)player.field_70161_v + ")!" : "!"), this.popUp.getValue());
+                        } else {
+                            Command.sendMessage("Player \u00a7c" + player.func_70005_c_() + "\u00a7r left your visual range" + (this.coords.getValue() != false ? " at (" + (int)player.field_70165_t + ", " + (int)player.field_70163_u + ", " + (int)player.field_70161_v + ")!" : "!"), this.popUp.getValue());
                         }
                     }
                     return;
                 }
             }
         }
-        if (this.pearls.getValue()) {
-            if (Notifications.mc.world == null || Notifications.mc.player == null) {
+        if (this.pearls.getValue().booleanValue()) {
+            if (Notifications.mc.field_71441_e == null || Notifications.mc.field_71439_g == null) {
                 return;
             }
             Entity enderPearl = null;
-            for (final Entity e : Notifications.mc.world.loadedEntityList) {
-                if (e instanceof EntityEnderPearl) {
-                    enderPearl = e;
-                    break;
-                }
+            for (Object e : Notifications.mc.field_71441_e.field_72996_f) {
+                if (!(e instanceof EntityEnderPearl)) continue;
+                enderPearl = e;
+                break;
             }
             if (enderPearl == null) {
                 this.flag = true;
                 return;
             }
             EntityPlayer closestPlayer = null;
-            for (final EntityPlayer entity2 : Notifications.mc.world.playerEntities) {
+            for (EntityPlayer entity : Notifications.mc.field_71441_e.field_73010_i) {
                 if (closestPlayer == null) {
-                    closestPlayer = entity2;
+                    closestPlayer = entity;
+                    continue;
                 }
-                else {
-                    if (closestPlayer.getDistance(enderPearl) <= entity2.getDistance(enderPearl)) {
-                        continue;
-                    }
-                    closestPlayer = entity2;
-                }
+                if (closestPlayer.func_70032_d(enderPearl) <= entity.func_70032_d(enderPearl)) continue;
+                closestPlayer = entity;
             }
-            if (closestPlayer == Notifications.mc.player) {
+            if (closestPlayer == Notifications.mc.field_71439_g) {
                 this.flag = false;
             }
             if (closestPlayer != null && this.flag) {
-                String facing = enderPearl.getHorizontalFacing().toString();
+                String facing = enderPearl.func_174811_aO().toString();
                 if (facing.equals("west")) {
                     facing = "east";
-                }
-                else if (facing.equals("east")) {
+                } else if (facing.equals("east")) {
                     facing = "west";
                 }
-                Command.sendSilentMessage(Phobos.friendManager.isFriend(closestPlayer.getName()) ? (ChatFormatting.AQUA + closestPlayer.getName() + ChatFormatting.DARK_GRAY + " has just thrown a pearl heading " + facing + "!") : (ChatFormatting.RED + closestPlayer.getName() + ChatFormatting.DARK_GRAY + " has just thrown a pearl heading " + facing + "!"));
+                Command.sendSilentMessage(Phobos.friendManager.isFriend(closestPlayer.func_70005_c_()) ? (Object)ChatFormatting.AQUA + closestPlayer.func_70005_c_() + (Object)ChatFormatting.DARK_GRAY + " has just thrown a pearl heading " + facing + "!" : (Object)ChatFormatting.RED + closestPlayer.func_70005_c_() + (Object)ChatFormatting.DARK_GRAY + " has just thrown a pearl heading " + facing + "!");
                 this.flag = false;
             }
         }
-        if (this.weakness.getValue()) {
-            if (!this.weak.passedMs(this.checkrate.getValue())) {
+        if (this.weakness.getValue().booleanValue()) {
+            if (!this.weak.passedMs(this.checkrate.getValue().intValue())) {
                 return;
             }
-            if (Notifications.mc.player.isPotionActive((Potion)Objects.requireNonNull(Potion.getPotionFromResourceLocation("weakness"))) && !this.last) {
-                Command.sendMessage(ChatFormatting.RED + "You have been weaknessed.");
+            if (Notifications.mc.field_71439_g.func_70644_a(Objects.requireNonNull(Potion.func_180142_b((String)"weakness"))) && !this.last) {
+                Command.sendMessage((Object)ChatFormatting.RED + "You have been weaknessed.");
                 this.last = true;
             }
-            if (!Notifications.mc.player.isPotionActive((Potion)Objects.requireNonNull(Potion.getPotionFromResourceLocation("weakness"))) && this.last) {
-                if (this.strongness.getValue()) {
-                    Command.sendMessage(ChatFormatting.GREEN + "You no longer have weakness.");
+            if (!Notifications.mc.field_71439_g.func_70644_a(Objects.requireNonNull(Potion.func_180142_b((String)"weakness"))) && this.last) {
+                if (this.strongness.getValue().booleanValue()) {
+                    Command.sendMessage((Object)ChatFormatting.GREEN + "You no longer have weakness.");
                 }
                 this.last = false;
             }
             this.weak.reset();
         }
-        if (this.strength.getValue()) {
-            for (final EntityPlayer entityPlayer : Notifications.mc.world.playerEntities) {
-                if (!this.strgh.passedMs(this.strcheckrate.getValue())) {
+        if (this.strength.getValue().booleanValue()) {
+            for (EntityPlayer entityPlayer : Notifications.mc.field_71441_e.field_73010_i) {
+                if (!this.strgh.passedMs(this.strcheckrate.getValue().intValue())) {
                     return;
                 }
-                if (entityPlayer.equals((Object)Notifications.mc.player)) {
-                    continue;
-                }
-                if (entityPlayer.isPotionActive(MobEffects.STRENGTH) && !this.str.contains(entityPlayer)) {
-                    Command.sendMessage(entityPlayer.getDisplayNameString() + ChatFormatting.RED + " has strength");
+                if (entityPlayer.equals((Object)Notifications.mc.field_71439_g)) continue;
+                if (entityPlayer.func_70644_a(MobEffects.field_76420_g) && !this.str.contains((Object)entityPlayer)) {
+                    Command.sendMessage(entityPlayer.getDisplayNameString() + (Object)ChatFormatting.RED + " has strength");
                     this.str.add(entityPlayer);
                 }
-                if (!this.str.contains(entityPlayer)) {
-                    continue;
-                }
-                if (entityPlayer.isPotionActive(MobEffects.STRENGTH)) {
-                    continue;
-                }
-                Command.sendMessage(entityPlayer.getDisplayNameString() + ChatFormatting.GREEN + " no longer has strength");
-                this.str.remove(entityPlayer);
+                if (!this.str.contains((Object)entityPlayer) || entityPlayer.func_70644_a(MobEffects.field_76420_g)) continue;
+                Command.sendMessage(entityPlayer.getDisplayNameString() + (Object)ChatFormatting.GREEN + " no longer has strength");
+                this.str.remove((Object)entityPlayer);
             }
         }
     }
-    
+
     @Override
     public void onTick() {
-        if (fullNullCheck()) {
+        if (Notifications.fullNullCheck()) {
             return;
         }
-        if (this.burrow.getValue()) {
-            for (final EntityPlayer entityPlayer2 : (List)Notifications.mc.world.playerEntities.stream().filter(entityPlayer -> entityPlayer != Notifications.mc.player).collect(Collectors.toList())) {
-                if (!this.burrowedPlayers.contains(entityPlayer2) && this.isInBurrow(entityPlayer2)) {
-                    Command.sendMessage(ChatFormatting.RED + entityPlayer2.getDisplayNameString() + ChatFormatting.GREEN + " has burrowed.");
-                    this.burrowedPlayers.add(entityPlayer2);
-                }
+        if (this.burrow.getValue().booleanValue()) {
+            for (EntityPlayer entityPlayer2 : Notifications.mc.field_71441_e.field_73010_i.stream().filter(entityPlayer -> entityPlayer != Notifications.mc.field_71439_g).collect(Collectors.toList())) {
+                if (this.burrowedPlayers.contains((Object)entityPlayer2) || !this.isInBurrow(entityPlayer2)) continue;
+                Command.sendMessage((Object)ChatFormatting.RED + entityPlayer2.getDisplayNameString() + (Object)ChatFormatting.GREEN + " has burrowed.");
+                this.burrowedPlayers.add(entityPlayer2);
             }
         }
-        if (this.thirtytwokay.getValue()) {
+        if (this.thirtytwokay.getValue().booleanValue()) {
             int once = 0;
-            for (final EntityPlayer player : Notifications.mc.world.playerEntities) {
-                if (player.equals((Object)Notifications.mc.player)) {
-                    continue;
-                }
-                if (this.is32k(player.getHeldItem(EnumHand.MAIN_HAND)) && !this.sword.contains(player)) {
-                    Command.sendMessage(ChatFormatting.RED + player.getDisplayNameString() + " is holding a 32k");
+            for (EntityPlayer player : Notifications.mc.field_71441_e.field_73010_i) {
+                if (player.equals((Object)Notifications.mc.field_71439_g)) continue;
+                if (this.is32k(player.func_184586_b(EnumHand.MAIN_HAND)) && !this.sword.contains((Object)player)) {
+                    Command.sendMessage((Object)ChatFormatting.RED + player.getDisplayNameString() + " is holding a 32k");
                     this.sword.add(player);
                 }
-                if (this.is32k(player.getHeldItem(EnumHand.MAIN_HAND))) {
+                if (this.is32k(player.func_184586_b(EnumHand.MAIN_HAND))) {
                     if (once > 0) {
                         return;
                     }
                     ++once;
                 }
-                if (!this.sword.contains(player)) {
-                    continue;
-                }
-                if (this.is32k(player.getHeldItem(EnumHand.MAIN_HAND))) {
-                    continue;
-                }
-                Command.sendMessage(ChatFormatting.GREEN + player.getDisplayNameString() + " is no longer holding a 32k");
-                this.sword.remove(player);
+                if (!this.sword.contains((Object)player) || this.is32k(player.func_184586_b(EnumHand.MAIN_HAND))) continue;
+                Command.sendMessage((Object)ChatFormatting.GREEN + player.getDisplayNameString() + " is no longer holding a 32k");
+                this.sword.remove((Object)player);
             }
         }
     }
-    
-    private boolean isInBurrow(final EntityPlayer entityPlayer) {
-        final BlockPos playerPos = new BlockPos(this.getMiddlePosition(entityPlayer.posX),  entityPlayer.posY,  this.getMiddlePosition(entityPlayer.posZ));
-        return Notifications.mc.world.getBlockState(playerPos).getBlock() == Blocks.OBSIDIAN || Notifications.mc.world.getBlockState(playerPos).getBlock() == Blocks.ENDER_CHEST || Notifications.mc.world.getBlockState(playerPos).getBlock() == Blocks.ANVIL;
+
+    private boolean isInBurrow(EntityPlayer entityPlayer) {
+        BlockPos playerPos = new BlockPos(this.getMiddlePosition(entityPlayer.field_70165_t), entityPlayer.field_70163_u, this.getMiddlePosition(entityPlayer.field_70161_v));
+        return Notifications.mc.field_71441_e.func_180495_p(playerPos).func_177230_c() == Blocks.field_150343_Z || Notifications.mc.field_71441_e.func_180495_p(playerPos).func_177230_c() == Blocks.field_150477_bB || Notifications.mc.field_71441_e.func_180495_p(playerPos).func_177230_c() == Blocks.field_150467_bQ;
     }
-    
-    private double getMiddlePosition(final double positionIn) {
-        double positionFinal = (double)Math.round(positionIn);
-        if (Math.round(positionIn) > positionIn) {
+
+    private double getMiddlePosition(double positionIn) {
+        double positionFinal = Math.round(positionIn);
+        if ((double)Math.round(positionIn) > positionIn) {
             positionFinal -= 0.5;
-        }
-        else if (Math.round(positionIn) <= positionIn) {
+        } else if ((double)Math.round(positionIn) <= positionIn) {
             positionFinal += 0.5;
         }
         return positionFinal;
     }
-    
+
     public void loadFile() {
-        final List<String> fileInput = FileManager.readTextFileAllLines("phobos/util/ModuleMessage_List.txt");
-        final Iterator<String> i = fileInput.iterator();
-        Notifications.modules.clear();
+        List<String> fileInput = FileManager.readTextFileAllLines(fileName);
+        Iterator<String> i = fileInput.iterator();
+        modules.clear();
         while (i.hasNext()) {
-            final String s = i.next();
-            if (s.replaceAll("\\s",  "").isEmpty()) {
-                continue;
-            }
-            Notifications.modules.add(s);
+            String s = i.next();
+            if (s.replaceAll("\\s", "").isEmpty()) continue;
+            modules.add(s);
         }
     }
-    
+
     @SubscribeEvent
-    public void onToggleModule(final ClientEvent event) {
-        if (!this.moduleMessage.getValue()) {
+    public void onToggleModule(ClientEvent event) {
+        int moduleNumber;
+        Module module;
+        if (!this.moduleMessage.getValue().booleanValue()) {
             return;
         }
-        Module module;
-        if (event.getStage() == 0 && !(module = (Module)event.getFeature()).equals(this) && (Notifications.modules.contains(module.getDisplayName()) || !this.list.getValue())) {
-            int moduleNumber = 0;
-            for (final char character : module.getDisplayName().toCharArray()) {
+        if (!(event.getStage() != 0 || (module = (Module)event.getFeature()).equals(this) || !modules.contains(module.getDisplayName()) && this.list.getValue().booleanValue())) {
+            moduleNumber = 0;
+            char[] arrc = module.getDisplayName().toCharArray();
+            int n = arrc.length;
+            for (int i = 0; i < n; ++i) {
+                char character = arrc[i];
                 moduleNumber += character;
                 moduleNumber *= 10;
             }
-            if (this.watermark.getValue()) {
-                final TextComponentString textComponentString = new TextComponentString(Phobos.commandManager.getClientMessage() + " §r§c" + module.getDisplayName() + " disabled.");
-                Notifications.mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion((ITextComponent)textComponentString,  moduleNumber);
-                if (this.bold.getValue()) {
-                    final TextComponentString textComponentString2 = new TextComponentString(Phobos.commandManager.getClientMessage() + " " + ChatFormatting.BOLD + module.getDisplayName() + ChatFormatting.RED + " disabled.");
-                    Notifications.mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion((ITextComponent)textComponentString2,  moduleNumber);
+            if (this.watermark.getValue().booleanValue()) {
+                TextComponentString textComponentString = new TextComponentString(Phobos.commandManager.getClientMessage() + " \u00a7r\u00a7c" + module.getDisplayName() + " disabled.");
+                Notifications.mc.field_71456_v.func_146158_b().func_146234_a((ITextComponent)textComponentString, moduleNumber);
+                if (this.bold.getValue().booleanValue()) {
+                    TextComponentString textComponentString2 = new TextComponentString(Phobos.commandManager.getClientMessage() + " " + (Object)ChatFormatting.BOLD + module.getDisplayName() + (Object)ChatFormatting.RED + " disabled.");
+                    Notifications.mc.field_71456_v.func_146158_b().func_146234_a((ITextComponent)textComponentString2, moduleNumber);
                 }
-            }
-            else {
-                final TextComponentString textComponentString = new TextComponentString("§c" + module.getDisplayName() + " disabled.");
-                Notifications.mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion((ITextComponent)textComponentString,  moduleNumber);
-                if (this.bold.getValue()) {
-                    final TextComponentString textComponentString2 = new TextComponentString(ChatFormatting.BOLD + module.getDisplayName() + ChatFormatting.RED + " disabled.");
-                    Notifications.mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion((ITextComponent)textComponentString2,  moduleNumber);
+            } else {
+                TextComponentString textComponentString = new TextComponentString("\u00a7c" + module.getDisplayName() + " disabled.");
+                Notifications.mc.field_71456_v.func_146158_b().func_146234_a((ITextComponent)textComponentString, moduleNumber);
+                if (this.bold.getValue().booleanValue()) {
+                    TextComponentString textComponentString2 = new TextComponentString((Object)ChatFormatting.BOLD + module.getDisplayName() + (Object)ChatFormatting.RED + " disabled.");
+                    Notifications.mc.field_71456_v.func_146158_b().func_146234_a((ITextComponent)textComponentString2, moduleNumber);
                 }
             }
         }
-        if (event.getStage() == 1 && (Notifications.modules.contains((module = (Module)event.getFeature()).getDisplayName()) || !this.list.getValue())) {
-            int moduleNumber = 0;
-            for (final char character : module.getDisplayName().toCharArray()) {
+        if (event.getStage() == 1 && (modules.contains((module = (Module)event.getFeature()).getDisplayName()) || !this.list.getValue().booleanValue())) {
+            moduleNumber = 0;
+            for (char character : module.getDisplayName().toCharArray()) {
                 moduleNumber += character;
                 moduleNumber *= 10;
             }
-            if (this.watermark.getValue()) {
-                final TextComponentString textComponentString = new TextComponentString(Phobos.commandManager.getClientMessage() + " §r§a" + module.getDisplayName() + " enabled.");
-                Notifications.mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion((ITextComponent)textComponentString,  moduleNumber);
-                if (this.bold.getValue()) {
-                    final TextComponentString textComponentString2 = new TextComponentString(Phobos.commandManager.getClientMessage() + " " + ChatFormatting.BOLD + module.getDisplayName() + ChatFormatting.GREEN + " enabled.");
-                    Notifications.mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion((ITextComponent)textComponentString2,  moduleNumber);
+            if (this.watermark.getValue().booleanValue()) {
+                TextComponentString textComponentString = new TextComponentString(Phobos.commandManager.getClientMessage() + " \u00a7r\u00a7a" + module.getDisplayName() + " enabled.");
+                Notifications.mc.field_71456_v.func_146158_b().func_146234_a((ITextComponent)textComponentString, moduleNumber);
+                if (this.bold.getValue().booleanValue()) {
+                    TextComponentString textComponentString2 = new TextComponentString(Phobos.commandManager.getClientMessage() + " " + (Object)ChatFormatting.BOLD + module.getDisplayName() + (Object)ChatFormatting.GREEN + " enabled.");
+                    Notifications.mc.field_71456_v.func_146158_b().func_146234_a((ITextComponent)textComponentString2, moduleNumber);
                 }
-            }
-            else {
-                final TextComponentString textComponentString = new TextComponentString("§a" + module.getDisplayName() + " enabled.");
-                Notifications.mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion((ITextComponent)textComponentString,  moduleNumber);
-                if (this.bold.getValue()) {
-                    final TextComponentString textComponentString2 = new TextComponentString(ChatFormatting.BOLD + module.getDisplayName() + ChatFormatting.GREEN + " enabled.");
-                    Notifications.mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion((ITextComponent)textComponentString2,  moduleNumber);
+            } else {
+                TextComponentString textComponentString = new TextComponentString("\u00a7a" + module.getDisplayName() + " enabled.");
+                Notifications.mc.field_71456_v.func_146158_b().func_146234_a((ITextComponent)textComponentString, moduleNumber);
+                if (this.bold.getValue().booleanValue()) {
+                    TextComponentString textComponentString2 = new TextComponentString((Object)ChatFormatting.BOLD + module.getDisplayName() + (Object)ChatFormatting.GREEN + " enabled.");
+                    Notifications.mc.field_71456_v.func_146158_b().func_146234_a((ITextComponent)textComponentString2, moduleNumber);
                 }
             }
         }
-    }
-    
-    static {
-        modules = new ArrayList<String>();
-        Notifications.INSTANCE = new Notifications();
     }
 }
+

@@ -1,43 +1,47 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.util.EnumFacing
+ *  net.minecraft.util.math.BlockPos
+ */
 package me.earth.phobos.features.modules.player;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import net.minecraft.util.*;
-import me.earth.phobos.util.*;
-import net.minecraft.util.math.*;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.BlockUtil;
+import me.earth.phobos.util.Util;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 
-public class AirPlace extends Module
-{
-    private final Setting<Mode> mode;
-    
+public class AirPlace
+extends Module {
+    private final Setting<Mode> mode = this.register(new Setting<Mode>("Mode", Mode.UP));
+
     public AirPlace() {
-        super("AirPlace",  "Place blocks in the air for 1.13+ servers.",  Module.Category.PLAYER,  false,  false,  false);
-        this.mode = (Setting<Mode>)this.register(new Setting("Mode", Mode.UP));
+        super("AirPlace", "Place blocks in the air for 1.13+ servers.", Module.Category.PLAYER, false, false, false);
     }
-    
+
+    @Override
     public void onEnable() {
         switch (this.mode.getValue()) {
             case UP: {
-                final BlockPos pos = Util.mc.player.getPosition().add(0,  1,  0);
-                BlockUtil.placeBlock(pos,  EnumFacing.UP,  false);
+                BlockPos pos = Util.mc.field_71439_g.func_180425_c().func_177982_a(0, 1, 0);
+                BlockUtil.placeBlock(pos, EnumFacing.UP, false);
                 this.disable();
             }
             case DOWN: {
-                final BlockPos pos = Util.mc.player.getPosition().add(0,  0,  0);
-                BlockUtil.placeBlock(pos,  EnumFacing.DOWN,  false);
+                BlockPos pos = Util.mc.field_71439_g.func_180425_c().func_177982_a(0, 0, 0);
+                BlockUtil.placeBlock(pos, EnumFacing.DOWN, false);
                 this.disable();
-                break;
             }
         }
     }
-    
-    public enum Mode
-    {
-        UP,  
+
+    public static enum Mode {
+        UP,
         DOWN;
+
     }
 }
+

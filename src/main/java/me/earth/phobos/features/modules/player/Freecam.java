@@ -1,184 +1,204 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.entity.EntityOtherPlayerMP
+ *  net.minecraft.client.entity.EntityPlayerSP
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.network.Packet
+ *  net.minecraft.network.play.client.CPacketChatMessage
+ *  net.minecraft.network.play.client.CPacketConfirmTeleport
+ *  net.minecraft.network.play.client.CPacketKeepAlive
+ *  net.minecraft.network.play.client.CPacketPlayer
+ *  net.minecraft.network.play.client.CPacketPlayerTryUseItem
+ *  net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
+ *  net.minecraft.network.play.client.CPacketUseEntity
+ *  net.minecraft.network.play.client.CPacketVehicleMove
+ *  net.minecraft.network.play.server.SPacketPlayerPosLook
+ *  net.minecraft.network.play.server.SPacketSetPassengers
+ *  net.minecraft.util.math.AxisAlignedBB
+ *  net.minecraft.util.math.Vec3d
+ *  net.minecraft.world.World
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.player;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import net.minecraft.util.math.*;
-import net.minecraft.entity.*;
-import me.earth.phobos.features.*;
-import net.minecraft.world.*;
-import me.earth.phobos.util.*;
-import net.minecraft.client.entity.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import net.minecraft.network.play.server.*;
-import net.minecraft.network.play.client.*;
-import net.minecraft.network.*;
-import me.earth.phobos.event.events.*;
+import me.earth.phobos.event.events.PacketEvent;
+import me.earth.phobos.event.events.PushEvent;
+import me.earth.phobos.features.Feature;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.MathUtil;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.entity.Entity;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.CPacketChatMessage;
+import net.minecraft.network.play.client.CPacketConfirmTeleport;
+import net.minecraft.network.play.client.CPacketKeepAlive;
+import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.network.play.client.CPacketPlayerTryUseItem;
+import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
+import net.minecraft.network.play.client.CPacketUseEntity;
+import net.minecraft.network.play.client.CPacketVehicleMove;
+import net.minecraft.network.play.server.SPacketPlayerPosLook;
+import net.minecraft.network.play.server.SPacketSetPassengers;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class Freecam extends Module
-{
-    private static Freecam INSTANCE;
-    public Setting<Double> speed;
-    public Setting<Boolean> view;
-    public Setting<Boolean> packet;
-    public Setting<Boolean> disable;
-    public Setting<Boolean> legit;
+public class Freecam
+extends Module {
+    private static Freecam INSTANCE = new Freecam();
+    public Setting<Double> speed = this.register(new Setting<Double>("Speed", 0.5, 0.1, 5.0));
+    public Setting<Boolean> view = this.register(new Setting<Boolean>("3D", false));
+    public Setting<Boolean> packet = this.register(new Setting<Boolean>("Packet", true));
+    public Setting<Boolean> disable = this.register(new Setting<Boolean>("Logout/Off", true));
+    public Setting<Boolean> legit = this.register(new Setting<Boolean>("Legit", false));
     private AxisAlignedBB oldBoundingBox;
     private EntityOtherPlayerMP entity;
     private Vec3d position;
     private Entity riding;
     private float yaw;
     private float pitch;
-    
+
     public Freecam() {
-        super("Freecam",  "Look around freely.",  Module.Category.PLAYER,  true,  false,  false);
-        this.speed = (Setting<Double>)this.register(new Setting("Speed", 0.5, 0.1, 5.0));
-        this.view = (Setting<Boolean>)this.register(new Setting("3D", false));
-        this.packet = (Setting<Boolean>)this.register(new Setting("Packet", true));
-        this.disable = (Setting<Boolean>)this.register(new Setting("Logout/Off", true));
-        this.legit = (Setting<Boolean>)this.register(new Setting("Legit", false));
+        super("Freecam", "Look around freely.", Module.Category.PLAYER, true, false, false);
         this.setInstance();
     }
-    
+
     public static Freecam getInstance() {
-        if (Freecam.INSTANCE == null) {
-            Freecam.INSTANCE = new Freecam();
+        if (INSTANCE == null) {
+            INSTANCE = new Freecam();
         }
-        return Freecam.INSTANCE;
+        return INSTANCE;
     }
-    
+
     private void setInstance() {
-        Freecam.INSTANCE = this;
+        INSTANCE = this;
     }
-    
+
+    @Override
     public void onEnable() {
         if (!Feature.fullNullCheck()) {
-            this.oldBoundingBox = Freecam.mc.player.getEntityBoundingBox();
-            Freecam.mc.player.setEntityBoundingBox(new AxisAlignedBB(Freecam.mc.player.posX,  Freecam.mc.player.posY,  Freecam.mc.player.posZ,  Freecam.mc.player.posX,  Freecam.mc.player.posY,  Freecam.mc.player.posZ));
-            if (Freecam.mc.player.getRidingEntity() != null) {
-                this.riding = Freecam.mc.player.getRidingEntity();
-                Freecam.mc.player.dismountRidingEntity();
+            this.oldBoundingBox = Freecam.mc.field_71439_g.func_174813_aQ();
+            Freecam.mc.field_71439_g.func_174826_a(new AxisAlignedBB(Freecam.mc.field_71439_g.field_70165_t, Freecam.mc.field_71439_g.field_70163_u, Freecam.mc.field_71439_g.field_70161_v, Freecam.mc.field_71439_g.field_70165_t, Freecam.mc.field_71439_g.field_70163_u, Freecam.mc.field_71439_g.field_70161_v));
+            if (Freecam.mc.field_71439_g.func_184187_bx() != null) {
+                this.riding = Freecam.mc.field_71439_g.func_184187_bx();
+                Freecam.mc.field_71439_g.func_184210_p();
             }
-            (this.entity = new EntityOtherPlayerMP((World)Freecam.mc.world,  Freecam.mc.session.getProfile())).copyLocationAndAnglesFrom((Entity)Freecam.mc.player);
-            this.entity.rotationYaw = Freecam.mc.player.rotationYaw;
-            this.entity.rotationYawHead = Freecam.mc.player.rotationYawHead;
-            this.entity.inventory.copyInventory(Freecam.mc.player.inventory);
-            Freecam.mc.world.addEntityToWorld(69420,  (Entity)this.entity);
-            this.position = Freecam.mc.player.getPositionVector();
-            this.yaw = Freecam.mc.player.rotationYaw;
-            this.pitch = Freecam.mc.player.rotationPitch;
-            Freecam.mc.player.noClip = true;
+            this.entity = new EntityOtherPlayerMP((World)Freecam.mc.field_71441_e, Freecam.mc.field_71449_j.func_148256_e());
+            this.entity.func_82149_j((Entity)Freecam.mc.field_71439_g);
+            this.entity.field_70177_z = Freecam.mc.field_71439_g.field_70177_z;
+            this.entity.field_70759_as = Freecam.mc.field_71439_g.field_70759_as;
+            this.entity.field_71071_by.func_70455_b(Freecam.mc.field_71439_g.field_71071_by);
+            Freecam.mc.field_71441_e.func_73027_a(69420, (Entity)this.entity);
+            this.position = Freecam.mc.field_71439_g.func_174791_d();
+            this.yaw = Freecam.mc.field_71439_g.field_70177_z;
+            this.pitch = Freecam.mc.field_71439_g.field_70125_A;
+            Freecam.mc.field_71439_g.field_70145_X = true;
         }
     }
-    
+
+    @Override
     public void onDisable() {
         if (!Feature.fullNullCheck()) {
-            Freecam.mc.player.setEntityBoundingBox(this.oldBoundingBox);
+            Freecam.mc.field_71439_g.func_174826_a(this.oldBoundingBox);
             if (this.riding != null) {
-                Freecam.mc.player.startRiding(this.riding,  true);
+                Freecam.mc.field_71439_g.func_184205_a(this.riding, true);
             }
             if (this.entity != null) {
-                Freecam.mc.world.removeEntity((Entity)this.entity);
+                Freecam.mc.field_71441_e.func_72900_e((Entity)this.entity);
             }
             if (this.position != null) {
-                Freecam.mc.player.setPosition(this.position.x,  this.position.y,  this.position.z);
+                Freecam.mc.field_71439_g.func_70107_b(this.position.field_72450_a, this.position.field_72448_b, this.position.field_72449_c);
             }
-            Freecam.mc.player.rotationYaw = this.yaw;
-            Freecam.mc.player.rotationPitch = this.pitch;
-            Freecam.mc.player.noClip = false;
+            Freecam.mc.field_71439_g.field_70177_z = this.yaw;
+            Freecam.mc.field_71439_g.field_70125_A = this.pitch;
+            Freecam.mc.field_71439_g.field_70145_X = false;
         }
     }
-    
+
+    @Override
     public void onUpdate() {
-        Freecam.mc.player.noClip = true;
-        Freecam.mc.player.setVelocity(0.0,  0.0,  0.0);
-        Freecam.mc.player.jumpMovementFactor = this.speed.getValue().floatValue();
-        final double[] dir = MathUtil.directionSpeed(this.speed.getValue());
-        if (Freecam.mc.player.movementInput.moveStrafe != 0.0f || Freecam.mc.player.movementInput.moveForward != 0.0f) {
-            Freecam.mc.player.motionX = dir[0];
-            Freecam.mc.player.motionZ = dir[1];
+        Freecam.mc.field_71439_g.field_70145_X = true;
+        Freecam.mc.field_71439_g.func_70016_h(0.0, 0.0, 0.0);
+        Freecam.mc.field_71439_g.field_70747_aH = this.speed.getValue().floatValue();
+        double[] dir = MathUtil.directionSpeed(this.speed.getValue());
+        if (Freecam.mc.field_71439_g.field_71158_b.field_78902_a != 0.0f || Freecam.mc.field_71439_g.field_71158_b.field_192832_b != 0.0f) {
+            Freecam.mc.field_71439_g.field_70159_w = dir[0];
+            Freecam.mc.field_71439_g.field_70179_y = dir[1];
+        } else {
+            Freecam.mc.field_71439_g.field_70159_w = 0.0;
+            Freecam.mc.field_71439_g.field_70179_y = 0.0;
         }
-        else {
-            Freecam.mc.player.motionX = 0.0;
-            Freecam.mc.player.motionZ = 0.0;
+        Freecam.mc.field_71439_g.func_70031_b(false);
+        if (this.view.getValue().booleanValue() && !Freecam.mc.field_71474_y.field_74311_E.func_151470_d() && !Freecam.mc.field_71474_y.field_74314_A.func_151470_d()) {
+            Freecam.mc.field_71439_g.field_70181_x = this.speed.getValue() * -MathUtil.degToRad(Freecam.mc.field_71439_g.field_70125_A) * (double)Freecam.mc.field_71439_g.field_71158_b.field_192832_b;
         }
-        Freecam.mc.player.setSprinting(false);
-        if (this.view.getValue() && !Freecam.mc.gameSettings.keyBindSneak.isKeyDown() && !Freecam.mc.gameSettings.keyBindJump.isKeyDown()) {
-            Freecam.mc.player.motionY = this.speed.getValue() * -MathUtil.degToRad(Freecam.mc.player.rotationPitch) * Freecam.mc.player.movementInput.moveForward;
+        if (Freecam.mc.field_71474_y.field_74314_A.func_151470_d()) {
+            EntityPlayerSP player = Freecam.mc.field_71439_g;
+            player.field_70181_x += this.speed.getValue().doubleValue();
         }
-        if (Freecam.mc.gameSettings.keyBindJump.isKeyDown()) {
-            final EntityPlayerSP player;
-            final EntityPlayerSP player = player = Freecam.mc.player;
-            player.motionY += this.speed.getValue();
-        }
-        if (Freecam.mc.gameSettings.keyBindSneak.isKeyDown()) {
-            final EntityPlayerSP player2;
-            final EntityPlayerSP player2 = player2 = Freecam.mc.player;
-            player2.motionY -= this.speed.getValue();
+        if (Freecam.mc.field_71474_y.field_74311_E.func_151470_d()) {
+            EntityPlayerSP player2 = Freecam.mc.field_71439_g;
+            player2.field_70181_x -= this.speed.getValue().doubleValue();
         }
     }
-    
+
+    @Override
     public void onLogout() {
-        if (this.disable.getValue()) {
+        if (this.disable.getValue().booleanValue()) {
             this.disable();
         }
     }
-    
+
     @SubscribeEvent
-    public void onPacketSend(final PacketEvent.Send event) {
-        if (this.legit.getValue() && this.entity != null && event.getPacket() instanceof CPacketPlayer) {
-            final CPacketPlayer packetPlayer = (CPacketPlayer)event.getPacket();
-            packetPlayer.x = this.entity.posX;
-            packetPlayer.y = this.entity.posY;
-            packetPlayer.z = this.entity.posZ;
+    public void onPacketSend(PacketEvent.Send event) {
+        if (this.legit.getValue().booleanValue() && this.entity != null && event.getPacket() instanceof CPacketPlayer) {
+            CPacketPlayer packetPlayer = (CPacketPlayer)event.getPacket();
+            packetPlayer.field_149479_a = this.entity.field_70165_t;
+            packetPlayer.field_149477_b = this.entity.field_70163_u;
+            packetPlayer.field_149478_c = this.entity.field_70161_v;
             return;
         }
-        if (this.packet.getValue()) {
+        if (this.packet.getValue().booleanValue()) {
             if (event.getPacket() instanceof CPacketPlayer) {
                 event.setCanceled(true);
             }
-        }
-        else if (!(event.getPacket() instanceof CPacketUseEntity) && !(event.getPacket() instanceof CPacketPlayerTryUseItem) && !(event.getPacket() instanceof CPacketPlayerTryUseItemOnBlock) && !(event.getPacket() instanceof CPacketPlayer) && !(event.getPacket() instanceof CPacketVehicleMove) && !(event.getPacket() instanceof CPacketChatMessage) && !(event.getPacket() instanceof CPacketKeepAlive)) {
+        } else if (!(event.getPacket() instanceof CPacketUseEntity || event.getPacket() instanceof CPacketPlayerTryUseItem || event.getPacket() instanceof CPacketPlayerTryUseItemOnBlock || event.getPacket() instanceof CPacketPlayer || event.getPacket() instanceof CPacketVehicleMove || event.getPacket() instanceof CPacketChatMessage || event.getPacket() instanceof CPacketKeepAlive)) {
             event.setCanceled(true);
         }
     }
-    
+
     @SubscribeEvent
-    public void onPacketReceive(final PacketEvent.Receive event) {
-        if (event.getPacket() instanceof SPacketSetPassengers) {
-            final SPacketSetPassengers packet = (SPacketSetPassengers)event.getPacket();
-            final Entity riding = Freecam.mc.world.getEntityByID(packet.getEntityId());
-            if (riding != null && riding == this.riding) {
-                this.riding = null;
-            }
+    public void onPacketReceive(PacketEvent.Receive event) {
+        SPacketSetPassengers packet;
+        Entity riding;
+        if (event.getPacket() instanceof SPacketSetPassengers && (riding = Freecam.mc.field_71441_e.func_73045_a((packet = (SPacketSetPassengers)event.getPacket()).func_186972_b())) != null && riding == this.riding) {
+            this.riding = null;
         }
         if (event.getPacket() instanceof SPacketPlayerPosLook) {
-            final SPacketPlayerPosLook packet2 = (SPacketPlayerPosLook)event.getPacket();
-            if (this.packet.getValue()) {
+            SPacketPlayerPosLook packet2 = (SPacketPlayerPosLook)event.getPacket();
+            if (this.packet.getValue().booleanValue()) {
                 if (this.entity != null) {
-                    this.entity.setPositionAndRotation(packet2.getX(),  packet2.getY(),  packet2.getZ(),  packet2.getYaw(),  packet2.getPitch());
+                    this.entity.func_70080_a(packet2.func_148932_c(), packet2.func_148928_d(), packet2.func_148933_e(), packet2.func_148931_f(), packet2.func_148930_g());
                 }
-                this.position = new Vec3d(packet2.getX(),  packet2.getY(),  packet2.getZ());
-                Freecam.mc.player.connection.sendPacket((Packet)new CPacketConfirmTeleport(packet2.getTeleportId()));
+                this.position = new Vec3d(packet2.func_148932_c(), packet2.func_148928_d(), packet2.func_148933_e());
+                Freecam.mc.field_71439_g.field_71174_a.func_147297_a((Packet)new CPacketConfirmTeleport(packet2.func_186965_f()));
                 event.setCanceled(true);
-            }
-            else {
+            } else {
                 event.setCanceled(true);
             }
         }
     }
-    
+
     @SubscribeEvent
-    public void onPush(final PushEvent event) {
+    public void onPush(PushEvent event) {
         if (event.getStage() == 1) {
             event.setCanceled(true);
         }
     }
-    
-    static {
-        Freecam.INSTANCE = new Freecam();
-    }
 }
+

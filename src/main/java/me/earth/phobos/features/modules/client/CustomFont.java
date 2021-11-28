@@ -1,83 +1,76 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.client;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import java.awt.*;
-import me.earth.phobos.features.command.*;
-import me.earth.phobos.event.events.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import me.earth.phobos.*;
+import java.awt.GraphicsEnvironment;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.event.events.ClientEvent;
+import me.earth.phobos.features.command.Command;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.setting.Setting;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class CustomFont extends Module
-{
-    private static CustomFont INSTANCE;
-    public Setting<String> fontName;
-    public Setting<Integer> fontSize;
-    public Setting<Integer> fontStyle;
-    public Setting<Boolean> antiAlias;
-    public Setting<Boolean> fractionalMetrics;
-    public Setting<Boolean> shadow;
-    public Setting<Boolean> showFonts;
-    public Setting<Boolean> full;
+public class CustomFont
+extends Module {
+    private static CustomFont INSTANCE = new CustomFont();
+    public Setting<String> fontName = this.register(new Setting<String>("FontName", "Arial", "Name of the font."));
+    public Setting<Integer> fontSize = this.register(new Setting<Integer>("FontSize", Integer.valueOf(18), "Size of the font."));
+    public Setting<Integer> fontStyle = this.register(new Setting<Integer>("FontStyle", Integer.valueOf(0), "Style of the font."));
+    public Setting<Boolean> antiAlias = this.register(new Setting<Boolean>("AntiAlias", Boolean.valueOf(true), "Smoother font."));
+    public Setting<Boolean> fractionalMetrics = this.register(new Setting<Boolean>("Metrics", Boolean.valueOf(true), "Thinner font."));
+    public Setting<Boolean> shadow = this.register(new Setting<Boolean>("Shadow", Boolean.valueOf(true), "Less shadow offset font."));
+    public Setting<Boolean> showFonts = this.register(new Setting<Boolean>("Fonts", Boolean.valueOf(false), "Shows all fonts."));
+    public Setting<Boolean> full = this.register(new Setting<Boolean>("Full", false));
     private boolean reloadFont;
-    
+
     public CustomFont() {
-        super("CustomFont",  "CustomFont for all of the clients text. Use the font command.",  Category.CLIENT,  true,  false,  false);
-        this.fontName = (Setting<String>)this.register(new Setting("FontName", "Arial",  "Name of the font."));
-        this.fontSize = (Setting<Integer>)this.register(new Setting("FontSize", 18,  "Size of the font."));
-        this.fontStyle = (Setting<Integer>)this.register(new Setting("FontStyle", 0,  "Style of the font."));
-        this.antiAlias = (Setting<Boolean>)this.register(new Setting("AntiAlias", true,  "Smoother font."));
-        this.fractionalMetrics = (Setting<Boolean>)this.register(new Setting("Metrics", true,  "Thinner font."));
-        this.shadow = (Setting<Boolean>)this.register(new Setting("Shadow", true,  "Less shadow offset font."));
-        this.showFonts = (Setting<Boolean>)this.register(new Setting("Fonts", false,  "Shows all fonts."));
-        this.full = (Setting<Boolean>)this.register(new Setting("Full", false));
+        super("CustomFont", "CustomFont for all of the clients text. Use the font command.", Module.Category.CLIENT, true, false, false);
         this.setInstance();
     }
-    
+
     public static CustomFont getInstance() {
-        if (CustomFont.INSTANCE == null) {
-            CustomFont.INSTANCE = new CustomFont();
+        if (INSTANCE == null) {
+            INSTANCE = new CustomFont();
         }
-        return CustomFont.INSTANCE;
+        return INSTANCE;
     }
-    
-    public static boolean checkFont(final String font,  final boolean message) {
-        for (final String s : GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()) {
+
+    public static boolean checkFont(String font, boolean message) {
+        for (String s : GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()) {
             if (!message && s.equals(font)) {
                 return true;
             }
-            if (message) {
-                Command.sendMessage(s);
-            }
+            if (!message) continue;
+            Command.sendMessage(s);
         }
         return false;
     }
-    
+
     private void setInstance() {
-        CustomFont.INSTANCE = this;
+        INSTANCE = this;
     }
-    
+
     @SubscribeEvent
-    public void onSettingChange(final ClientEvent event) {
-        final Setting setting;
+    public void onSettingChange(ClientEvent event) {
+        Setting setting;
         if (event.getStage() == 2 && (setting = event.getSetting()) != null && setting.getFeature().equals(this)) {
-            if (setting.getName().equals("FontName") && !checkFont(setting.getPlannedValue().toString(),  false)) {
-                Command.sendMessage("§cThat font doesnt exist.");
+            if (setting.getName().equals("FontName") && !CustomFont.checkFont(setting.getPlannedValue().toString(), false)) {
+                Command.sendMessage("\u00a7cThat font doesnt exist.");
                 event.setCanceled(true);
                 return;
             }
             this.reloadFont = true;
         }
     }
-    
+
     @Override
     public void onTick() {
-        if (this.showFonts.getValue()) {
-            checkFont("Hello",  true);
+        if (this.showFonts.getValue().booleanValue()) {
+            CustomFont.checkFont("Hello", true);
             Command.sendMessage("Current Font: " + this.fontName.getValue());
             this.showFonts.setValue(false);
         }
@@ -86,8 +79,5 @@ public class CustomFont extends Module
             this.reloadFont = false;
         }
     }
-    
-    static {
-        CustomFont.INSTANCE = new CustomFont();
-    }
 }
+

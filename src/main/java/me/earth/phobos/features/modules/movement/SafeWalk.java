@@ -1,62 +1,66 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.entity.EntityPlayerSP
+ *  net.minecraft.entity.Entity
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ */
 package me.earth.phobos.features.modules.movement;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.event.events.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import net.minecraft.entity.*;
-import net.minecraft.client.entity.*;
+import me.earth.phobos.event.events.MoveEvent;
+import me.earth.phobos.features.modules.Module;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.entity.Entity;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class SafeWalk extends Module
-{
+public class SafeWalk
+extends Module {
     public SafeWalk() {
-        super("SafeWalk",  "Prevents u from walking off the sides of blocks.",  Module.Category.MOVEMENT,  true,  false,  false);
+        super("SafeWalk", "Prevents u from walking off the sides of blocks.", Module.Category.MOVEMENT, true, false, false);
     }
-    
+
     @SubscribeEvent
-    public void onMove(final MoveEvent event) {
+    public void onMove(MoveEvent event) {
         if (event.getStage() == 0) {
             double x = event.getX();
-            final double y = event.getY();
+            double y = event.getY();
             double z = event.getZ();
-            if (SafeWalk.mc.player.onGround) {
-                final double increment = 0.05;
-                while (x != 0.0 && this.isOffsetBBEmpty(x,  -1.0,  0.0)) {
+            if (SafeWalk.mc.field_71439_g.field_70122_E) {
+                double increment = 0.05;
+                while (x != 0.0 && this.isOffsetBBEmpty(x, -1.0, 0.0)) {
                     if (x < increment && x >= -increment) {
                         x = 0.0;
+                        continue;
                     }
-                    else if (x > 0.0) {
+                    if (x > 0.0) {
                         x -= increment;
+                        continue;
                     }
-                    else {
-                        x += increment;
-                    }
+                    x += increment;
                 }
-                while (z != 0.0 && this.isOffsetBBEmpty(0.0,  -1.0,  z)) {
+                while (z != 0.0 && this.isOffsetBBEmpty(0.0, -1.0, z)) {
                     if (z < increment && z >= -increment) {
                         z = 0.0;
+                        continue;
                     }
-                    else if (z > 0.0) {
+                    if (z > 0.0) {
                         z -= increment;
+                        continue;
                     }
-                    else {
-                        z += increment;
-                    }
+                    z += increment;
                 }
-                while (x != 0.0 && z != 0.0 && this.isOffsetBBEmpty(x,  -1.0,  z)) {
-                    x = ((x < increment && x >= -increment) ? 0.0 : ((x > 0.0) ? (x - increment) : (x + increment)));
+                while (x != 0.0 && z != 0.0 && this.isOffsetBBEmpty(x, -1.0, z)) {
+                    double d = x < increment && x >= -increment ? 0.0 : (x = x > 0.0 ? x - increment : x + increment);
                     if (z < increment && z >= -increment) {
                         z = 0.0;
+                        continue;
                     }
-                    else if (z > 0.0) {
+                    if (z > 0.0) {
                         z -= increment;
+                        continue;
                     }
-                    else {
-                        z += increment;
-                    }
+                    z += increment;
                 }
             }
             event.setX(x);
@@ -64,9 +68,10 @@ public class SafeWalk extends Module
             event.setZ(z);
         }
     }
-    
-    public boolean isOffsetBBEmpty(final double offsetX,  final double offsetY,  final double offsetZ) {
-        final EntityPlayerSP playerSP = SafeWalk.mc.player;
-        return SafeWalk.mc.world.getCollisionBoxes((Entity)playerSP,  playerSP.getEntityBoundingBox().offset(offsetX,  offsetY,  offsetZ)).isEmpty();
+
+    public boolean isOffsetBBEmpty(double offsetX, double offsetY, double offsetZ) {
+        EntityPlayerSP playerSP = SafeWalk.mc.field_71439_g;
+        return SafeWalk.mc.field_71441_e.func_184144_a((Entity)playerSP, playerSP.func_174813_aQ().func_72317_d(offsetX, offsetY, offsetZ)).isEmpty();
     }
 }
+

@@ -1,138 +1,121 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.client.renderer.GlStateManager
+ *  net.minecraft.entity.Entity
+ *  net.minecraft.entity.item.EntityEnderCrystal
+ *  net.minecraft.network.play.server.SPacketDestroyEntities
+ *  net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+ *  org.lwjgl.opengl.GL11
+ */
 package me.earth.phobos.features.modules.render;
 
-import me.earth.phobos.features.modules.*;
-import me.earth.phobos.features.setting.*;
-import net.minecraft.entity.item.*;
-import java.util.concurrent.*;
-import net.minecraft.entity.*;
-import java.util.*;
-import net.minecraft.network.play.server.*;
-import net.minecraftforge.fml.common.eventhandler.*;
-import me.earth.phobos.event.events.*;
-import me.earth.phobos.features.modules.client.*;
-import me.earth.phobos.util.*;
-import org.lwjgl.opengl.*;
-import net.minecraft.client.renderer.*;
-import java.awt.*;
+import java.awt.Color;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import me.earth.phobos.event.events.PacketEvent;
+import me.earth.phobos.event.events.RenderEntityModelEvent;
+import me.earth.phobos.features.modules.Module;
+import me.earth.phobos.features.modules.client.Colors;
+import me.earth.phobos.features.setting.Setting;
+import me.earth.phobos.util.EntityUtil;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityEnderCrystal;
+import net.minecraft.network.play.server.SPacketDestroyEntities;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.lwjgl.opengl.GL11;
 
-public class CrystalModifier extends Module
-{
+public class CrystalModifier
+extends Module {
     public static CrystalModifier INSTANCE;
-    public Setting<Boolean> animateScale;
-    public Setting<Boolean> chams;
-    public Setting<Boolean> throughWalls;
-    public Setting<Boolean> wireframeThroughWalls;
-    public Setting<Boolean> glint;
-    public Setting<Boolean> wireframe;
-    public Setting<Float> scale;
-    public Setting<Float> lineWidth;
-    public Setting<Boolean> colorSync;
-    public Setting<Boolean> rainbow;
-    public Setting<Integer> saturation;
-    public Setting<Integer> brightness;
-    public Setting<Integer> speed;
-    public Setting<Boolean> xqz;
-    public Setting<Integer> hiddenRed;
-    public Setting<Integer> hiddenGreen;
-    public Setting<Integer> hiddenBlue;
-    public Setting<Integer> hiddenAlpha;
-    public Setting<Integer> red;
-    public Setting<Integer> green;
-    public Setting<Integer> blue;
-    public Setting<Integer> alpha;
-    public Map<EntityEnderCrystal,  Float> scaleMap;
-    
+    public Setting<Boolean> animateScale = this.register(new Setting<Boolean>("AnimateScale", false));
+    public Setting<Boolean> chams = this.register(new Setting<Boolean>("Chams", false));
+    public Setting<Boolean> throughWalls = this.register(new Setting<Boolean>("ThroughWalls", true));
+    public Setting<Boolean> wireframeThroughWalls = this.register(new Setting<Boolean>("WireThroughWalls", true));
+    public Setting<Boolean> glint = this.register(new Setting<Object>("Glint", Boolean.valueOf(false), v -> this.chams.getValue()));
+    public Setting<Boolean> wireframe = this.register(new Setting<Boolean>("Wireframe", false));
+    public Setting<Float> scale = this.register(new Setting<Float>("Scale", Float.valueOf(1.0f), Float.valueOf(0.1f), Float.valueOf(10.0f)));
+    public Setting<Float> lineWidth = this.register(new Setting<Float>("LineWidth", Float.valueOf(1.0f), Float.valueOf(0.1f), Float.valueOf(3.0f)));
+    public Setting<Boolean> colorSync = this.register(new Setting<Boolean>("Sync", false));
+    public Setting<Boolean> rainbow = this.register(new Setting<Boolean>("Rainbow", false));
+    public Setting<Integer> saturation = this.register(new Setting<Object>("Saturation", Integer.valueOf(50), Integer.valueOf(0), Integer.valueOf(100), v -> this.rainbow.getValue()));
+    public Setting<Integer> brightness = this.register(new Setting<Object>("Brightness", Integer.valueOf(100), Integer.valueOf(0), Integer.valueOf(100), v -> this.rainbow.getValue()));
+    public Setting<Integer> speed = this.register(new Setting<Object>("Speed", Integer.valueOf(40), Integer.valueOf(1), Integer.valueOf(100), v -> this.rainbow.getValue()));
+    public Setting<Boolean> xqz = this.register(new Setting<Object>("XQZ", Boolean.valueOf(false), v -> this.rainbow.getValue() == false && this.throughWalls.getValue() != false));
+    public Setting<Integer> hiddenRed = this.register(new Setting<Object>("Hidden Red", Integer.valueOf(255), Integer.valueOf(0), Integer.valueOf(255), v -> this.xqz.getValue() != false && this.rainbow.getValue() == false));
+    public Setting<Integer> hiddenGreen = this.register(new Setting<Object>("Hidden Green", Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(255), v -> this.xqz.getValue() != false && this.rainbow.getValue() == false));
+    public Setting<Integer> hiddenBlue = this.register(new Setting<Object>("Hidden Blue", Integer.valueOf(255), Integer.valueOf(0), Integer.valueOf(255), v -> this.xqz.getValue() != false && this.rainbow.getValue() == false));
+    public Setting<Integer> hiddenAlpha = this.register(new Setting<Object>("Hidden Alpha", Integer.valueOf(255), Integer.valueOf(0), Integer.valueOf(255), v -> this.xqz.getValue() != false && this.rainbow.getValue() == false));
+    public Setting<Integer> red = this.register(new Setting<Object>("Red", Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(255), v -> this.rainbow.getValue() == false));
+    public Setting<Integer> green = this.register(new Setting<Object>("Green", Integer.valueOf(255), Integer.valueOf(0), Integer.valueOf(255), v -> this.rainbow.getValue() == false));
+    public Setting<Integer> blue = this.register(new Setting<Object>("Blue", Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(255), v -> this.rainbow.getValue() == false));
+    public Setting<Integer> alpha = this.register(new Setting<Integer>("Alpha", 255, 0, 255));
+    public Map<EntityEnderCrystal, Float> scaleMap = new ConcurrentHashMap<EntityEnderCrystal, Float>();
+
     public CrystalModifier() {
-        super("CrystalModifier",  "Modifies crystal rendering in different ways.",  Module.Category.RENDER,  true,  false,  false);
-        this.animateScale = (Setting<Boolean>)this.register(new Setting("AnimateScale", false));
-        this.chams = (Setting<Boolean>)this.register(new Setting("Chams", false));
-        this.throughWalls = (Setting<Boolean>)this.register(new Setting("ThroughWalls", true));
-        this.wireframeThroughWalls = (Setting<Boolean>)this.register(new Setting("WireThroughWalls", true));
-        this.glint = (Setting<Boolean>)this.register(new Setting("Glint", false,  v -> this.chams.getValue()));
-        this.wireframe = (Setting<Boolean>)this.register(new Setting("Wireframe", false));
-        this.scale = (Setting<Float>)this.register(new Setting("Scale", 1.0f, 0.1f, 10.0f));
-        this.lineWidth = (Setting<Float>)this.register(new Setting("LineWidth", 1.0f, 0.1f, 3.0f));
-        this.colorSync = (Setting<Boolean>)this.register(new Setting("Sync", false));
-        this.rainbow = (Setting<Boolean>)this.register(new Setting("Rainbow", false));
-        this.saturation = (Setting<Integer>)this.register(new Setting("Saturation", 50, 0, 100,  v -> this.rainbow.getValue()));
-        this.brightness = (Setting<Integer>)this.register(new Setting("Brightness", 100, 0, 100,  v -> this.rainbow.getValue()));
-        this.speed = (Setting<Integer>)this.register(new Setting("Speed", 40, 1, 100,  v -> this.rainbow.getValue()));
-        this.xqz = (Setting<Boolean>)this.register(new Setting("XQZ", false,  v -> !this.rainbow.getValue() && this.throughWalls.getValue()));
-        this.hiddenRed = (Setting<Integer>)this.register(new Setting("Hidden Red", 255, 0, 255,  v -> this.xqz.getValue() && !this.rainbow.getValue()));
-        this.hiddenGreen = (Setting<Integer>)this.register(new Setting("Hidden Green", 0, 0, 255,  v -> this.xqz.getValue() && !this.rainbow.getValue()));
-        this.hiddenBlue = (Setting<Integer>)this.register(new Setting("Hidden Blue", 255, 0, 255,  v -> this.xqz.getValue() && !this.rainbow.getValue()));
-        this.hiddenAlpha = (Setting<Integer>)this.register(new Setting("Hidden Alpha", 255, 0, 255,  v -> this.xqz.getValue() && !this.rainbow.getValue()));
-        this.red = (Setting<Integer>)this.register(new Setting("Red", 0, 0, 255,  v -> !this.rainbow.getValue()));
-        this.green = (Setting<Integer>)this.register(new Setting("Green", 255, 0, 255,  v -> !this.rainbow.getValue()));
-        this.blue = (Setting<Integer>)this.register(new Setting("Blue", 0, 0, 255,  v -> !this.rainbow.getValue()));
-        this.alpha = (Setting<Integer>)this.register(new Setting("Alpha", 255, 0, 255));
-        this.scaleMap = new ConcurrentHashMap<EntityEnderCrystal,  Float>();
-        CrystalModifier.INSTANCE = this;
+        super("CrystalModifier", "Modifies crystal rendering in different ways.", Module.Category.RENDER, true, false, false);
+        INSTANCE = this;
     }
-    
+
+    @Override
     public void onUpdate() {
         try {
-            if (fullNullCheck()) {
+            if (CrystalModifier.fullNullCheck()) {
                 return;
             }
-            for (final Entity crystal : CrystalModifier.mc.world.loadedEntityList) {
-                if (!(crystal instanceof EntityEnderCrystal)) {
-                    continue;
+            for (Entity crystal : CrystalModifier.mc.field_71441_e.field_72996_f) {
+                if (!(crystal instanceof EntityEnderCrystal)) continue;
+                if (!this.scaleMap.containsKey((Object)crystal)) {
+                    this.scaleMap.put((EntityEnderCrystal)crystal, Float.valueOf(3.125E-4f));
+                } else {
+                    this.scaleMap.put((EntityEnderCrystal)crystal, Float.valueOf(this.scaleMap.get((Object)crystal).floatValue() + 3.125E-4f));
                 }
-                if (!this.scaleMap.containsKey(crystal)) {
-                    this.scaleMap.put((EntityEnderCrystal)crystal,  3.125E-4f);
-                }
-                else {
-                    this.scaleMap.put((EntityEnderCrystal)crystal,  this.scaleMap.get(crystal) + 3.125E-4f);
-                }
-                if (this.scaleMap.get(crystal) < 0.0625f * this.scale.getValue()) {
-                    continue;
-                }
-                this.scaleMap.remove(crystal);
+                if (!(this.scaleMap.get((Object)crystal).floatValue() >= 0.0625f * this.scale.getValue().floatValue())) continue;
+                this.scaleMap.remove((Object)crystal);
             }
         }
-        catch (NullPointerException ex) {}
+        catch (NullPointerException nullPointerException) {
+            // empty catch block
+        }
     }
-    
+
     @SubscribeEvent
-    public void onReceivePacket(final PacketEvent.Receive event) {
+    public void onReceivePacket(PacketEvent.Receive event) {
         if (event.getPacket() instanceof SPacketDestroyEntities) {
-            final SPacketDestroyEntities packet = (SPacketDestroyEntities)event.getPacket();
-            for (final int id : packet.getEntityIDs()) {
-                final Entity entity = CrystalModifier.mc.world.getEntityByID(id);
-                if (entity instanceof EntityEnderCrystal) {
-                    this.scaleMap.remove(entity);
-                }
+            SPacketDestroyEntities packet = (SPacketDestroyEntities)event.getPacket();
+            for (int id : packet.func_149098_c()) {
+                Entity entity = CrystalModifier.mc.field_71441_e.func_73045_a(id);
+                if (!(entity instanceof EntityEnderCrystal)) continue;
+                this.scaleMap.remove((Object)entity);
             }
         }
     }
-    
-    public void onRenderModel(final RenderEntityModelEvent event) {
-        if (event.getStage() != 0 || !(event.entity instanceof EntityEnderCrystal) || !this.wireframe.getValue()) {
+
+    public void onRenderModel(RenderEntityModelEvent event) {
+        if (event.getStage() != 0 || !(event.entity instanceof EntityEnderCrystal) || !this.wireframe.getValue().booleanValue()) {
             return;
         }
-        final Color color = this.colorSync.getValue() ? Colors.INSTANCE.getCurrentColor() : EntityUtil.getColor(event.entity,  this.red.getValue(),  this.green.getValue(),  this.blue.getValue(),  this.alpha.getValue(),  false);
-        CrystalModifier.mc.gameSettings.fancyGraphics = false;
-        CrystalModifier.mc.gameSettings.gammaSetting = 10000.0f;
+        Color color = this.colorSync.getValue() != false ? Colors.INSTANCE.getCurrentColor() : EntityUtil.getColor(event.entity, this.red.getValue(), this.green.getValue(), this.blue.getValue(), this.alpha.getValue(), false);
+        CrystalModifier.mc.field_71474_y.field_74347_j = false;
+        CrystalModifier.mc.field_71474_y.field_74333_Y = 10000.0f;
         GL11.glPushMatrix();
-        GL11.glPushAttrib(1048575);
-        GL11.glPolygonMode(1032,  6913);
-        GL11.glDisable(3553);
-        GL11.glDisable(2896);
-        if (this.wireframeThroughWalls.getValue()) {
-            GL11.glDisable(2929);
+        GL11.glPushAttrib((int)1048575);
+        GL11.glPolygonMode((int)1032, (int)6913);
+        GL11.glDisable((int)3553);
+        GL11.glDisable((int)2896);
+        if (this.wireframeThroughWalls.getValue().booleanValue()) {
+            GL11.glDisable((int)2929);
         }
-        GL11.glEnable(2848);
-        GL11.glEnable(3042);
-        GlStateManager.blendFunc(770,  771);
-        GlStateManager.color(color.getRed() / 255.0f,  color.getGreen() / 255.0f,  color.getBlue() / 255.0f,  color.getAlpha() / 255.0f);
-        GlStateManager.glLineWidth((float)this.lineWidth.getValue());
-        event.modelBase.render(event.entity,  event.limbSwing,  event.limbSwingAmount,  event.age,  event.headYaw,  event.headPitch,  event.scale);
+        GL11.glEnable((int)2848);
+        GL11.glEnable((int)3042);
+        GlStateManager.func_179112_b((int)770, (int)771);
+        GlStateManager.func_179131_c((float)((float)color.getRed() / 255.0f), (float)((float)color.getGreen() / 255.0f), (float)((float)color.getBlue() / 255.0f), (float)((float)color.getAlpha() / 255.0f));
+        GlStateManager.func_187441_d((float)this.lineWidth.getValue().floatValue());
+        event.modelBase.func_78088_a(event.entity, event.limbSwing, event.limbSwingAmount, event.age, event.headYaw, event.headPitch, event.scale);
         GL11.glPopAttrib();
         GL11.glPopMatrix();
     }
 }
+

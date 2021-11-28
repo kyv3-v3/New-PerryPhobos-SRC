@@ -1,28 +1,28 @@
-
-
-
-
+/*
+ * Decompiled with CFR 0.150.
+ */
 package me.earth.phobos.features.command.commands;
 
-import me.earth.phobos.features.command.*;
-import me.earth.phobos.*;
-import java.util.*;
+import java.util.Map;
+import java.util.UUID;
+import me.earth.phobos.Phobos;
+import me.earth.phobos.features.command.Command;
 
-public class FriendCommand extends Command
-{
+public class FriendCommand
+extends Command {
     public FriendCommand() {
-        super("friend",  new String[] { "<add/del/name/clear>",  "<name>" });
+        super("friend", new String[]{"<add/del/name/clear>", "<name>"});
     }
-    
-    public void execute(final String[] commands) {
+
+    @Override
+    public void execute(String[] commands) {
         if (commands.length == 1) {
             if (Phobos.friendManager.getFriends().isEmpty()) {
-                sendMessage("You currently don't have any friends added.");
-            }
-            else {
-                sendMessage("Friends: ");
-                for (final Map.Entry<String,  UUID> entry : Phobos.friendManager.getFriends().entrySet()) {
-                    sendMessage((String)entry.getKey());
+                FriendCommand.sendMessage("You currently don't have any friends added.");
+            } else {
+                FriendCommand.sendMessage("Friends: ");
+                for (Map.Entry<String, UUID> entry : Phobos.friendManager.getFriends().entrySet()) {
+                    FriendCommand.sendMessage(entry.getKey());
                 }
             }
             return;
@@ -30,31 +30,29 @@ public class FriendCommand extends Command
         if (commands.length == 2) {
             if ("reset".equals(commands[0])) {
                 Phobos.friendManager.onLoad();
-                sendMessage("Friends got reset.");
-            }
-            else {
-                sendMessage(commands[0] + (Phobos.friendManager.isFriend(commands[0]) ? " is friended." : " isnt friended."));
+                FriendCommand.sendMessage("Friends got reset.");
+            } else {
+                FriendCommand.sendMessage(commands[0] + (Phobos.friendManager.isFriend(commands[0]) ? " is friended." : " isnt friended."));
             }
             return;
         }
         if (commands.length >= 2) {
-            final String s = commands[0];
-            switch (s) {
+            switch (commands[0]) {
                 case "add": {
                     Phobos.friendManager.addFriend(commands[1]);
-                    sendMessage("§b" + commands[1] + " has been friended");
+                    FriendCommand.sendMessage("\u00a7b" + commands[1] + " has been friended");
                     break;
                 }
                 case "del": {
                     Phobos.friendManager.removeFriend(commands[1]);
-                    sendMessage("§c" + commands[1] + " has been unfriended");
+                    FriendCommand.sendMessage("\u00a7c" + commands[1] + " has been unfriended");
                     break;
                 }
                 default: {
-                    sendMessage("§cBad Command,  try: friend <add/del/name> <name>.");
-                    break;
+                    FriendCommand.sendMessage("\u00a7cBad Command, try: friend <add/del/name> <name>.");
                 }
             }
         }
     }
 }
+
