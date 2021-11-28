@@ -19,7 +19,6 @@ import me.earth.phobos.features.gui.custom.GuiCustomMainScreen;
 import me.earth.phobos.features.modules.client.PhobosChat;
 import me.earth.phobos.features.modules.misc.RPC;
 import me.earth.phobos.manager.CapeManager;
-import me.earth.phobos.manager.ClassManager;
 import me.earth.phobos.manager.ColorManager;
 import me.earth.phobos.manager.CommandManager;
 import me.earth.phobos.manager.ConfigManager;
